@@ -1,0 +1,41 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --surface-canvas: #F8FAFC;
+    --surface-card: #FFFFFF;
+    --surface-subtle: #F1F5F9;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --border-subtle: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --status-success-bg: #ECFDF5;
+    --status-danger-bg: #FEF2F2;
+    --status-warning-bg: #FFFBEB;
+    --status-info-bg: #EFF6FF;
+  }
+
+  .dark {
+    --surface-canvas: #0f172a; /* Slate 900 */
+    --surface-card: #1e293b; /* Slate 800 */
+    --surface-subtle: #334155; /* Slate 700 */
+    --text-primary: #f8fafc; /* Slate 50 */
+    --text-secondary: #cbd5e1; /* Slate 300 */
+    --text-muted: #64748b; /* Slate 500 */
+    --border-subtle: #334155; /* Slate 700 */
+    --border-strong: #475569; /* Slate 600 */
+    --status-success-bg: #064e3b;
+    --status-danger-bg: #7f1d1d;
+    --status-warning-bg: #78350f;
+    --status-info-bg: #1e3a8a;
+  }
+
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; }
+  main > :first-child { margin-top: 0 !important; }
+  main > :last-child { margin-bottom: 0 !important; }
+}
+
+::-webkit-scrollbar { display: none; }
