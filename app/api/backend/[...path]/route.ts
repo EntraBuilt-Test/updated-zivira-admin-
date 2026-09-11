@@ -60,7 +60,11 @@ async function handleRequest(request: NextRequest, paramsPromise: Promise<{ path
     response.headers.forEach((value, key) => {
       // Don't pass back CORS headers from backend, let Next.js handle it
       const lowerKey = key.toLowerCase();
-      if (!lowerKey.startsWith('access-control-')) {
+      if (
+        !lowerKey.startsWith('access-control-') &&
+        lowerKey !== 'content-encoding' &&
+        lowerKey !== 'content-length'
+      ) {
         responseHeaders.set(key, value);
       }
     });
