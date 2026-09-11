@@ -370,7 +370,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* ROW 3: Rajesh Kumar (Delhi - GPS Alert Flagged) */}
 <tr className="hover:bg-status-danger-bg/20 transition-colors h-table-row-height bg-status-danger-bg/10">
 <td className="w-10 px-4 text-center">
-<input defaultChecked="" className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
+<input defaultChecked={true} className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-3 py-3">
 <div className="flex items-center gap-3">

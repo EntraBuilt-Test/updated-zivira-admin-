@@ -743,7 +743,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-status-info inline-block"></span> Anniversaries</span>
 </div>
 </div>
-<svg className="w-full h-20 text-primary" fill="none" preserveaspectratio="none" viewBox="0 0 600 80">
+<svg className="w-full h-20 text-primary" fill="none" preserveAspectRatio="none" viewBox="0 0 600 80">
 {/* Grid lines */}
 <line stroke="#E2E8F0" strokeDasharray="3 3" x1="0" x2="600" y1="20" y2="20"></line>
 <line stroke="#E2E8F0" strokeDasharray="3 3" x1="0" x2="600" y1="50" y2="50"></line>
@@ -814,7 +814,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
-<input defaultChecked="" className="sr-only peer" type="checkbox"/>
+<input defaultChecked={true} className="sr-only peer" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
@@ -831,7 +831,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
-<input defaultChecked="" className="sr-only peer" type="checkbox"/>
+<input defaultChecked={true} className="sr-only peer" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
@@ -848,7 +848,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
-<input defaultChecked="" className="sr-only peer" type="checkbox"/>
+<input defaultChecked={true} className="sr-only peer" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
@@ -865,7 +865,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
-<input defaultChecked="" className="sr-only peer" type="checkbox"/>
+<input defaultChecked={true} className="sr-only peer" type="checkbox"/>
 <div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>

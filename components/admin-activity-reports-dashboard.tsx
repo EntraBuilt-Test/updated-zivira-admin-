@@ -986,7 +986,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Manager Feedback Field */}
 <div className="space-y-1.5">
 <label className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Manager Audit Feedback &amp; Observations</label>
-<textarea className="w-full p-3 rounded-lg bg-surface-subtle text-text-primary text-body-sm font-body-sm focus:outline-none focus:bg-surface-card focus:shadow-sm" placeholder="Add administrative verification notes or compliance sign-off remarks..." rows="2"></textarea>
+<textarea className="w-full p-3 rounded-lg bg-surface-subtle text-text-primary text-body-sm font-body-sm focus:outline-none focus:bg-surface-card focus:shadow-sm" placeholder="Add administrative verification notes or compliance sign-off remarks..." rows={2}></textarea>
 </div>
 </div>
 {/* Modal Footer */}

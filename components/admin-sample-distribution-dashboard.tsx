@@ -252,7 +252,7 @@ Form 13-A Filing: Up to Date
 {/* Row 1: CardioCare 20mg (Active selected) */}
 <tr className="bg-orange-50/60 hover:bg-orange-50/80 transition-colors cursor-pointer">
 <td className="py-3 px-3 text-center">
-<input defaultChecked="" className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
+<input defaultChecked={true} className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
 <div className="flex items-center gap-2.5">

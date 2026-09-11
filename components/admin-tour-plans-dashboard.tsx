@@ -286,7 +286,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 {/* ROW 1 (Selected Row for Side Inspection) */}
 <tr className="hover:bg-orange-50/40 bg-orange-50/20 transition-colors">
 <td className="p-3.5 text-center">
-<input defaultChecked="" className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
+<input defaultChecked={true} className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </td>
 <td className="p-3.5">
 <div className="flex items-center gap-2.5">

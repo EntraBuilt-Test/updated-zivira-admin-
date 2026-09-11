@@ -274,7 +274,7 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 {/* Row 1: Active / Inspected (Rajesh Sharma) */}
 <tr className="bg-orange-50/60 hover:bg-orange-50/80 transition-colors cursor-pointer">
 <td className="py-3 px-3 text-center">
-<input defaultChecked="" className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
+<input defaultChecked={true} className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
 <div className="flex items-center gap-2.5">
