@@ -97,6 +97,16 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
     return <AdminSampleDistributionDashboard node={node} path={rootPath} />;
   }
 
+  if (tab === "kpi-engine") {
+    const { AdminKpiEngineDashboard } = await import("@/components/admin-kpi-engine-dashboard");
+    return <AdminKpiEngineDashboard node={node} path={rootPath} />;
+  }
+
+  if (tab === "bi-reports") {
+    const { AdminBiReportsDashboard } = await import("@/components/admin-bi-reports-dashboard");
+    return <AdminBiReportsDashboard node={node} path={rootPath} />;
+  }
+
   return (
     <>
       <PageHeader

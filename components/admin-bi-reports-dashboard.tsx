@@ -15,8 +15,8 @@
 // New file — purely additive, does not touch any existing component.
 import { ArrowRight, BarChart3, ClipboardList, MapPin, ShieldCheck, Stethoscope, Users } from "lucide-react";
 import Link from "next/link";
+import { AdminTabGrid } from "@/components/admin-tab-grid";
 import type { LucideIcon } from "lucide-react";
-import { BackButton } from "@/components/back-button";
 
 type ReportLink = { label: string; href: string } | { label: string; note: string };
 
@@ -75,25 +75,22 @@ const GROUPS: ReportGroup[] = [
   }
 ];
 
-export function BiAnalyticsHub() {
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Business Intelligence</p>
-          <h2>BI Reports</h2>
-          <p>Every report category from the project brief, pointing at the live data already powering it — organized so nothing has to be found twice.</p>
-        </div>
-        <BackButton fallback="/admin/home" />
-      </div>
+import type { ZiviraTreeNode } from "@zivira/types";
 
-      <div className="grid grid-2" style={{ gap: 16 }}>
+export function AdminBiReportsDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
+  return (
+    <div className="flex flex-col w-full h-full bg-surface-canvas overflow-y-auto">
+      <AdminTabGrid node={node} path={path} />
+
+      <section className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {GROUPS.map((group) => (
-          <div key={group.title} className="card" style={{ padding: 18 }}>
-            <h3 className="section-title" style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+          <div key={group.title} className="bg-surface-card border border-border-subtle rounded-xl p-5 shadow-sm">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-text-primary mb-4">
               <group.icon size={16} /> {group.title}
             </h3>
-            <div style={{ display: "grid", gap: 2 }}>
+            <div className="grid gap-1">
               {group.items.map((item) =>
                 "href" in item ? (
                   <Link
@@ -130,5 +127,6 @@ export function BiAnalyticsHub() {
         </p>
       </div>
     </section>
+    </div>
   );
 }

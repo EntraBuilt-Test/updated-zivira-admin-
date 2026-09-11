@@ -271,7 +271,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <thead>
 <tr className="bg-surface-subtle h-table-header-height text-label-sm font-label-sm uppercase tracking-wider text-text-secondary select-none">
 <th className="w-12 px-4 py-2.5">
-<input className="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleSelectAll(this)" type="checkbox"/>
+<input className="w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </th>
 <th className="px-4 py-2.5">Field Personnel</th>
 <th className="px-4 py-2.5">Submission &amp; Timing</th>
@@ -287,7 +287,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Row 1 */}
 <tr className="hover:bg-surface-subtle/60 transition-colors group">
 <td className="px-4 py-3">
-<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleRowSelection(this)" type="checkbox"/>
+<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-4 py-3">
 <div className="flex items-center gap-3">
@@ -359,7 +359,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Row 2 */}
 <tr className="hover:bg-surface-subtle/60 transition-colors group">
 <td className="px-4 py-3">
-<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleRowSelection(this)" type="checkbox"/>
+<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-4 py-3">
 <div className="flex items-center gap-3">
@@ -430,7 +430,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Row 3 */}
 <tr className="hover:bg-surface-subtle/60 transition-colors group">
 <td className="px-4 py-3">
-<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleRowSelection(this)" type="checkbox"/>
+<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-4 py-3">
 <div className="flex items-center gap-3">
@@ -502,7 +502,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Row 4 */}
 <tr className="hover:bg-surface-subtle/60 transition-colors group">
 <td className="px-4 py-3">
-<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleRowSelection(this)" type="checkbox"/>
+<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-4 py-3">
 <div className="flex items-center gap-3">
@@ -573,7 +573,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Row 5 */}
 <tr className="hover:bg-surface-subtle/60 transition-colors group">
 <td className="px-4 py-3">
-<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleRowSelection(this)" type="checkbox"/>
+<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-4 py-3">
 <div className="flex items-center gap-3">
@@ -644,7 +644,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Row 6 */}
 <tr className="hover:bg-surface-subtle/60 transition-colors group">
 <td className="px-4 py-3">
-<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" onchange="toggleRowSelection(this)" type="checkbox"/>
+<input className="row-selector w-4 h-4 rounded text-primary focus:ring-0 cursor-pointer" type="checkbox"/>
 </td>
 <td className="px-4 py-3">
 <div className="flex items-center gap-3">

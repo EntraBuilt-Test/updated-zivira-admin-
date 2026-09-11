@@ -392,7 +392,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </td>
 <td className="py-3.5 px-4">
-<span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-amber-50 text-amber-700 font-medium">Resp-Care</span>
+<span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-status-warning-bg text-status-warning font-medium">Resp-Care</span>
 </td>
 <td className="py-3.5 px-4 text-right font-medium">₹44,00,000</td>
 <td className="py-3.5 px-4 text-right font-bold text-text-primary">₹39,16,000</td>

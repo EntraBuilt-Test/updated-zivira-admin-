@@ -17,7 +17,9 @@ const tabSlugMap: Record<string, string> = {
   "rep-vs-manager": "rep-vs-manager",
   "territory-coverage": "territory-coverage",
   "product-exposure": "product-exposure",
-  "sample-distribution": "sample-distribution"
+  "sample-distribution": "sample-distribution",
+  "kpi-engine": "kpi-engine",
+  "bi-reports": "bi-reports"
 };
 
 function findNode(nodes: ZiviraTreeNode[], slug: string): ZiviraTreeNode | undefined {
@@ -121,5 +123,15 @@ export const adminTabMeta: Record<string, { eyebrow: string; title: string; desc
     eyebrow: "Sample Distribution",
     title: "Sample Distribution Dashboard",
     description: "Distribution of samples"
+  },
+  "kpi-engine": {
+    eyebrow: "KPI Engine",
+    title: "KPI Engine Dashboard",
+    description: "Key Performance Indicators"
+  },
+  "bi-reports": {
+    eyebrow: "BI Reports",
+    title: "Business Intelligence",
+    description: "Analytics and intelligence reports"
   }
 };

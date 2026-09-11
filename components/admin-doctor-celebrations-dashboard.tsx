@@ -52,7 +52,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
         </p>
 </div>
 {/* Action Button */}
-<div className="flex items-center gap-2.5 flex-shrink-0"><button className="h-10 px-4 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md inline-flex items-center gap-2 border border-slate-200 shadow-xs transition-colors focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-text-secondary">download</span><span className="">Export Roster</span></button><button className="h-10 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a3412] text-white font-label-md text-label-md inline-flex items-center gap-2 shadow-sm transition-all transform active:scale-95 focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-white">card_giftcard</span><span className="font-semibold">+ Schedule Custom Greeting / Gift Dispatch</span></button></div>
+<div className="flex items-center gap-2.5 flex-shrink-0"><button className="h-10 px-4 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md inline-flex items-center gap-2 border border-border-subtle shadow-xs transition-colors focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-text-secondary">download</span><span className="">Export Roster</span></button><button className="h-10 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a3412] text-white font-label-md text-label-md inline-flex items-center gap-2 shadow-sm transition-all transform active:scale-95 focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-white">card_giftcard</span><span className="font-semibold">+ Schedule Custom Greeting / Gift Dispatch</span></button></div>
 </div>
 {/* Filter Strip */}
 <div className="mt-6 pt-5 bg-surface-canvas rounded-lg p-3.5 flex flex-wrap items-center justify-between gap-3">
@@ -815,7 +815,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
 <input defaultChecked="" className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
+<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
 {/* Toggle 2: SMS Greeting */}
@@ -832,7 +832,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
 <input defaultChecked="" className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
+<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
 {/* Toggle 3: Field Rep Notification 24h prior */}
@@ -849,7 +849,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
 <input defaultChecked="" className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
+<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
 {/* Toggle 4: Manager CC Escalation */}
@@ -866,7 +866,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Toggle Pill Active */}
 <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
 <input defaultChecked="" className="sr-only peer" type="checkbox"/>
-<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
+<div className="w-11 h-6 bg-surface-subtle peer-focus:outline-none rounded-full peer peer-defaultChecked:after:translate-x-full peer-defaultChecked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-card after:rounded-full after:h-5 after:w-5 after:transition-all peer-defaultChecked:bg-primary"></div>
 </label>
 </div>
 </div>
