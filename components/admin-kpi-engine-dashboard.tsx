@@ -16,8 +16,9 @@ import { PageHeader } from "@/components/page-components";
 import { BackButton } from "@/components/back-button";
 import { ExportMenuButton } from "@/components/export-menu-button";
 import { apiClient, type ManagerKpi, type RepKpi } from "@/lib/api-client";
+import type { ZiviraTreeNode } from "@zivira/types";
 
-export function AdminKpiEngineDashboard() {
+export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const [reps, setReps] = useState<RepKpi[]>([]);
   const [managers, setManagers] = useState<ManagerKpi[]>([]);
   const [loading, setLoading] = useState(true);
