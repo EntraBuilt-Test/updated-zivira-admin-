@@ -61,8 +61,8 @@ export const companyNav: NavGroup[] = [
       { title: "Sample Distribution", href: "/admin/sample-distribution", icon: PackageSearch },
       { title: "KPI Engine", href: "/admin/kpi-engine", icon: Gauge },
       { title: "BI Reports", href: "/admin/bi-reports", icon: ClipboardList },
-      { title: "Alerts", href: "/admin/analytics/alerts", icon: AlertTriangle },
-      { title: "Executive Dashboard", href: "/admin/analytics/executive", icon: ClipboardList },
+      { title: "Alerts", href: "/admin/alerts", icon: AlertTriangle },
+      { title: "Executive Dashboard", href: "/admin/executive", icon: ClipboardList },
     ]
   }
 ];

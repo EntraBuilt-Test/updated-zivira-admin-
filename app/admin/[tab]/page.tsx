@@ -107,6 +107,16 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
     return <AdminBiReportsDashboard node={node} path={rootPath} />;
   }
 
+  if (tab === "alerts") {
+    const { AdminAlertsDashboard } = await import("@/components/admin-alerts-dashboard");
+    return <AdminAlertsDashboard node={node} path={rootPath} />;
+  }
+
+  if (tab === "executive") {
+    const { AdminExecutiveDashboard } = await import("@/components/admin-executive-dashboard");
+    return <AdminExecutiveDashboard node={node} path={rootPath} />;
+  }
+
   return (
     <>
       <PageHeader

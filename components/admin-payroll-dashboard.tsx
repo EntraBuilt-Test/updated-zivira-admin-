@@ -13,7 +13,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
     <header className="h-16 bg-surface-card border-b border-border-subtle px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
       <div className="flex items-center gap-4 flex-1 max-w-xl">
         <div className="relative w-full">
-          <i className="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-text-muted"></i>
+          <span className="material-symbols-outlined absolute left-3 top-3 text-xs text-text-muted">{`search`}</span>
           <input type="text" placeholder="Search MR name, employee code, TA/DA claims, station bills..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-[#b43403] text-text-primary placeholder-slate-400"/>
         </div>
       </div>
@@ -27,7 +27,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             <option>Respiratory Care Division</option>
             <option>Pediatric &amp; Ortho Division</option>
           </select>
-          <i className="fa-solid fa-chevron-down absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none"></i>
+          <span className="material-symbols-outlined absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         {/* Payroll Month Picker */}
@@ -37,17 +37,17 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             <option>August 2026 (Processed)</option>
             <option>July 2026 (Audited)</option>
           </select>
-          <i className="fa-solid fa-chevron-down absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none"></i>
+          <span className="material-symbols-outlined absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         {/* Refresh Button */}
         <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle" title="Sync Expense Ledgers">
-          <i className="fa-solid fa-arrows-rotate text-xs"></i>
+          <span className="material-symbols-outlined text-xs">{`sync`}</span>
         </button>
 
         {/* Alerts */}
         <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle relative" title="Notifications">
-          <i className="fa-regular fa-bell text-xs"></i>
+          <span className="material-symbols-outlined text-xs">{`circle`}</span>
           <span className="w-2 h-2 bg-[#b43403] rounded-full absolute top-2 right-2"></span>
         </button>
 
@@ -83,7 +83,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Cycle: Sep 2026
             </span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-status-success-bg text-status-success border border-status-success-bg">
-              <i className="fa-regular fa-building-bank text-[10px]"></i> Bank Cutoff: 01 Oct
+              <span className="material-symbols-outlined text-[10px]">{`circle`}</span> Bank Cutoff: 01 Oct
             </span>
           </div>
           <p className="text-xs text-text-secondary mt-1">
@@ -94,11 +94,11 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         {/* Action CTAs */}
         <div className="flex items-center gap-2.5">
           <button className="px-3.5 py-2 border border-border-subtle text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle flex items-center gap-2 transition-colors">
-            <i className="fa-regular fa-file-excel text-xs"></i>
+            <span className="material-symbols-outlined text-xs">{`circle`}</span>
             <span>Export Bank NEFT Batch</span>
           </button>
           <button className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors">
-            <i className="fa-regular fa-money-check-dollar-pen text-xs"></i>
+            <span className="material-symbols-outlined text-xs">{`circle`}</span>
             <span>Run Final Payroll Lock &amp; Disburse</span>
           </button>
         </div>
@@ -122,7 +122,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center">
-              <i className="fa-solid fa-wallet text-lg"></i>
+              <span className="material-symbols-outlined text-lg">{`account_balance_wallet`}</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -142,7 +142,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center">
-              <i className="fa-solid fa-route text-lg"></i>
+              <span className="material-symbols-outlined text-lg">{`route`}</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -162,7 +162,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-warning-bg text-amber-600 flex items-center justify-center">
-              <i className="fa-solid fa-receipt text-lg"></i>
+              <span className="material-symbols-outlined text-lg">{`receipt`}</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -182,7 +182,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-[#b43403]/10 text-[#b43403] flex items-center justify-center">
-              <i className="fa-solid fa-user-check text-lg"></i>
+              <span className="material-symbols-outlined text-lg">{`how_to_reg`}</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -196,21 +196,21 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
       {/* PAYROLL SUB-TABS */}
       <div className="flex items-center gap-6 border-b border-border-subtle text-xs font-semibold">
         <button className="pb-3 border-b-2 border-[#b43403] text-[#b43403] flex items-center gap-2">
-          <i className="fa-regular fa-table-list"></i>
+          <span className="material-symbols-outlined">{`circle`}</span>
           <span>Field Staff Salary &amp; Allowance Roll (428)</span>
         </button>
         <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <i className="fa-regular fa-gas-pump"></i>
+          <span className="material-symbols-outlined">{`circle`}</span>
           <span>Kilometre Fare &amp; DA Tier Matrix</span>
           <span className="px-1.5 py-0.2 text-[10px] bg-surface-subtle text-text-secondary rounded">Pan-India Rates</span>
         </button>
         <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <i className="fa-regular fa-hotel"></i>
+          <span className="material-symbols-outlined">{`circle`}</span>
           <span>Outstation Lodge &amp; Boarding Ledger</span>
           <span className="px-1.5 py-0.2 text-[10px] bg-status-warning-bg text-status-warning rounded font-bold">14 Claims</span>
         </button>
         <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <i className="fa-regular fa-landmark"></i>
+          <span className="material-symbols-outlined">{`circle`}</span>
           <span>Statutory Tax &amp; TDS Section 192/194R Declarations</span>
         </button>
       </div>
@@ -220,7 +220,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Text search */}
           <div className="relative min-w-[240px]">
-            <i className="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-text-muted"></i>
+            <span className="material-symbols-outlined absolute left-3 top-2.5 text-xs text-text-muted">{`search`}</span>
             <input type="text" placeholder="Search by Rep Name, Emp ID, Territory, Grade..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#b43403] text-text-secondary placeholder-slate-400"/>
           </div>
 
@@ -254,7 +254,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         <div className="flex items-center gap-3">
           <span className="text-xs text-text-secondary font-medium">Showing <strong>5 of 428</strong> Staff</span>
           <button className="text-xs text-text-secondary hover:text-text-primary font-semibold flex items-center gap-1 p-1">
-            <i className="fa-regular fa-arrow-rotate-left text-[11px]"></i>
+            <span className="material-symbols-outlined text-[11px]">{`circle`}</span>
             <span>Reset</span>
           </button>
         </div>
@@ -323,7 +323,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
                   </td>
                 </tr>
@@ -356,7 +356,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
                   </td>
                 </tr>
@@ -389,7 +389,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
                   </td>
                 </tr>
@@ -422,7 +422,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Audit</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
                   </td>
                 </tr>
@@ -455,7 +455,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
                   </td>
                 </tr>
@@ -469,13 +469,13 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             <span className="text-text-secondary">1 Staff Selected &bull; Total 428 Records</span>
             <div className="flex items-center gap-1">
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card disabled:opacity-40" disabled={true}>
-                <i className="fa-solid fa-chevron-left text-[10px]"></i>
+                <span className="material-symbols-outlined text-[10px]">{`chevron_left`}</span>
               </button>
               <button className="w-7 h-7 flex items-center justify-center bg-[#b43403] text-white rounded font-bold">1</button>
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium">2</button>
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium">3</button>
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card">
-                <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
               </button>
             </div>
           </div>
@@ -563,11 +563,11 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
                 <button className="w-full py-2 bg-[#b43403] hover:bg-[#9a3412] text-white font-semibold rounded-lg text-xs shadow-sm flex items-center justify-center gap-2">
-                  <i className="fa-regular fa-check-double"></i>
+                  <span className="material-symbols-outlined">{`circle`}</span>
                   <span>Approve &amp; Send to Bank NEFT Batch</span>
                 </button>
                 <button className="w-full py-2 border border-border-subtle text-text-secondary font-semibold rounded-lg text-xs hover:bg-surface-subtle flex items-center justify-center gap-2">
-                  <i className="fa-regular fa-print text-text-secondary"></i>
+                  <span className="material-symbols-outlined text-text-secondary">{`circle`}</span>
                   <span>Download Verified Salary Slip</span>
                 </button>
               </div>
@@ -577,7 +577,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           {/* Automated Statutory & Expense Compliance Widget */}
           <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm space-y-3">
             <h4 className="text-xs font-bold text-text-primary flex items-center gap-2">
-              <i className="fa-solid fa-calculator-simple text-blue-600"></i>
+              <span className="material-symbols-outlined text-blue-600">{`calculate`}</span>
               <span>Expense Audit Rule Engine (DCR Verified)</span>
             </h4>
             
@@ -612,7 +612,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
       <div className="p-4 bg-status-info-bg/50 border border-status-info-bg rounded-xl flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
-            <i className="fa-solid fa-file-invoice-dollar text-lg"></i>
+            <span className="material-symbols-outlined text-lg">{`request_quote`}</span>
           </div>
           <div>
             <h4 className="text-xs font-bold text-text-primary">Statutory Tax &amp; Field Force Daily Allowance Reimbursement Policy</h4>

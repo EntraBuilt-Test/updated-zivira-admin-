@@ -259,6 +259,8 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
       node("Sample Distribution", "sample-distribution", "division"),
       node("KPI Engine", "kpi-engine", "division"),
       node("BI Reports", "bi-reports", "division"),
+      node("Alerts", "alerts", "division"),
+      node("Executive Dashboard", "executive", "division"),
       node("Logout", "division-logout", "division", [node("Session Termination", "session-termination", "division"), node("Redirect to Login", "redirect-to-login", "division")])
     ])
   ]),

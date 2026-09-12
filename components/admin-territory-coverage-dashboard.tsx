@@ -30,7 +30,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <option>South Zone (KA, TN, TS)</option>
             <option>East Zone (WB, Bihar, Odisha)</option>
           </select>
-          <i className="fa-solid fa-chevron-down absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none"></i>
+          <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         <div className="relative">
@@ -38,15 +38,15 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <option>Q3 FY2026-27 (Sep 2026 Active)</option>
             <option>Q2 FY2026-27</option>
           </select>
-          <i className="fa-solid fa-chevron-down absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none"></i>
+          <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs">
-          <i className="fa-solid fa-arrows-rotate"></i>
+          <span className="material-symbols-outlined">{`sync`}</span>
         </button>
 
         <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs relative">
-          <i className="fa-regular fa-bell"></i>
+          <span className="material-symbols-outlined">{`circle`}</span>
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta rounded-full"></span>
         </button>
 
@@ -65,7 +65,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 91.4% Coverage Achieved
             </span>
             <span className="bg-status-warning-bg text-amber-800 border border-status-warning-bg text-[11px] font-bold px-2.5 py-0.5 rounded-full">
-              <i className="fa-solid fa-triangle-exclamation mr-1 text-amber-600"></i> 14 Uncovered Micro-Beats
+              <span className="material-symbols-outlined mr-1 text-amber-600">{`warning`}</span> 14 Uncovered Micro-Beats
             </span>
           </div>
           <p className="text-xs text-text-secondary">Real-time territorial audit tracking doctor reach density, chemist stockist coverage, patch saturation, and white-space opportunity zones.</p>
@@ -73,11 +73,11 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
 
         <div className="flex items-center gap-2.5 shrink-0">
           <button className="flex items-center gap-2 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors">
-            <i className="fa-solid fa-file-export text-text-muted"></i>
+            <span className="material-symbols-outlined text-text-muted">{`file_download`}</span>
             <span>Export Territory Atlas (GIS)</span>
           </button>
           <button className="flex items-center gap-2 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors">
-            <i className="fa-solid fa-map-pin"></i>
+            <span className="material-symbols-outlined">{`location_on`}</span>
             <span>Reallocate Territory Boundaries</span>
           </button>
         </div>
@@ -93,7 +93,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-2xs">
           <div className="flex items-center justify-between text-xs text-text-secondary font-medium mb-2">
             <span>TERRITORY PENETRATION</span>
-            <div className="w-7 h-7 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center text-xs"><i className="fa-solid fa-chart-line"></i></div>
+            <div className="w-7 h-7 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`show_chart`}</span></div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">91.4%</span>
@@ -109,7 +109,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-2xs">
           <div className="flex items-center justify-between text-xs text-text-secondary font-medium mb-2">
             <span>HCP DENSITY / SQ KM</span>
-            <div className="w-7 h-7 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center text-xs"><i className="fa-solid fa-user-doctor"></i></div>
+            <div className="w-7 h-7 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`medical_services`}</span></div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">34.6</span>
@@ -125,7 +125,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-2xs">
           <div className="flex items-center justify-between text-xs text-text-secondary font-medium mb-2">
             <span>WHITE SPACE OPPORTUNITY</span>
-            <div className="w-7 h-7 rounded-lg bg-status-warning-bg text-amber-600 flex items-center justify-center text-xs"><i className="fa-solid fa-compass-drafting"></i></div>
+            <div className="w-7 h-7 rounded-lg bg-status-warning-bg text-amber-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`architecture`}</span></div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">₹ 86.4 L</span>
@@ -141,7 +141,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-2xs">
           <div className="flex items-center justify-between text-xs text-text-secondary font-medium mb-2">
             <span>CHEMIST RCPA OVERLAP</span>
-            <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs"><i className="fa-solid fa-prescription-bottle-medical"></i></div>
+            <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`medication`}</span></div>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">84.2%</span>
@@ -180,7 +180,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           <div className="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-surface-subtle/50">
             <div className="flex items-center gap-2 flex-1 min-w-[240px]">
               <div className="relative w-full">
-                <i className="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-text-muted text-xs"></i>
+                <span className="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-xs">{`search`}</span>
                 <input type="text" placeholder="Search Territory, Beat Code, Assigned MR or ASM..." className="w-full bg-surface-card border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-secondary placeholder-slate-400 focus:outline-none focus:border-slate-400"/>
               </div>
             </div>
@@ -200,7 +200,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
               </select>
 
               <button className="text-xs text-text-secondary hover:text-text-secondary font-semibold px-2 py-1.5 flex items-center gap-1">
-                <i className="fa-solid fa-rotate-left text-[11px]"></i> Reset
+                <span className="material-symbols-outlined text-[11px]">{`refresh`}</span> Reset
               </button>
             </div>
           </div>
@@ -347,11 +347,11 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           <div className="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-text-secondary">
             <span>Showing <strong>5 of 428</strong> Registered Territory Beats</span>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-muted"><i className="fa-solid fa-chevron-left text-[10px]"></i></button>
+              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-muted"><span className="material-symbols-outlined text-[10px]">{`chevron_left`}</span></button>
               <button className="w-7 h-7 rounded bg-terracotta text-white font-bold text-xs flex items-center justify-center">1</button>
               <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle font-medium text-xs flex items-center justify-center">2</button>
               <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle font-medium text-xs flex items-center justify-center">3</button>
-              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-secondary"><i className="fa-solid fa-chevron-right text-[10px]"></i></button>
+              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-secondary"><span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span></button>
             </div>
           </div>
         </div>
@@ -371,8 +371,8 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <div className="text-xs font-bold text-text-primary">Mumbai Central — Dadar Hub</div>
             <div className="text-[11px] text-text-secondary">Covers KEM Hospital, Tata Memorial Corridors, Hinduja Environs & Shivaji Park clinics.</div>
             <div className="text-[10px] font-medium text-text-muted flex items-center gap-3 pt-1">
-              <span><i className="fa-solid fa-user-tie text-text-muted mr-1"></i> MR Rahul Sharma</span>
-              <span><i className="fa-solid fa-user-shield text-text-muted mr-1"></i> ASM Rajesh Sharma</span>
+              <span><span className="material-symbols-outlined text-text-muted mr-1">{`tie`}</span> MR Rahul Sharma</span>
+              <span><span className="material-symbols-outlined text-text-muted mr-1">{`admin_panel_settings`}</span> ASM Rajesh Sharma</span>
             </div>
           </div>
 
@@ -438,11 +438,11 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           {/* Immediate Actions */}
           <div className="pt-2 space-y-2">
             <button className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-2">
-              <i className="fa-solid fa-plus-circle"></i>
+              <span className="material-symbols-outlined">{`add_circle`}</span>
               <span>Assign White Space HCPs to MTP</span>
             </button>
             <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
-              <i className="fa-solid fa-route"></i>
+              <span className="material-symbols-outlined">{`route`}</span>
               <span>View Route & GPS Beat Optimization</span>
             </button>
           </div>
@@ -453,7 +453,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
       <div className="bg-orange-50/70 border border-orange-200 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-terracotta text-white flex items-center justify-center text-sm shrink-0">
-            <i className="fa-solid fa-map-location-dot"></i>
+            <span className="material-symbols-outlined">{`pin_drop`}</span>
           </div>
           <div>
             <div className="text-xs font-bold text-text-primary">Territory Rationalization Norms & Call Balancing</div>

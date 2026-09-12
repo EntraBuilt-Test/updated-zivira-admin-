@@ -13,7 +13,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
     <header className="h-16 bg-surface-card border-b border-border-subtle px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
       <div className="flex items-center gap-4 flex-1 max-w-xl">
         <div className="relative w-full">
-          <i className="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-text-muted"></i>
+          <span className="material-symbols-outlined absolute left-3 top-3 text-[16px] text-text-muted">search</span>
           <input type="text" placeholder="Search HCP, UCPMP logs, MR audit, gift declarations..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-[#b43403] text-text-primary placeholder-slate-400"/>
         </div>
       </div>
@@ -28,7 +28,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
             <option>South Zone (Bengaluru, Chennai)</option>
             <option>East Zone (Kolkata, Bihar)</option>
           </select>
-          <i className="fa-solid fa-chevron-down absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none"></i>
+          <span className="material-symbols-outlined absolute right-2.5 top-3 text-[14px] text-text-muted pointer-events-none">expand_more</span>
         </div>
 
         {/* Audit Period Selector */}
@@ -38,17 +38,17 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
             <option>Sep 2026 (Monthly Rollup)</option>
             <option>Aug 2026 (Archived)</option>
           </select>
-          <i className="fa-solid fa-chevron-down absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none"></i>
+          <span className="material-symbols-outlined absolute right-2.5 top-3 text-[14px] text-text-muted pointer-events-none">expand_more</span>
         </div>
 
         {/* Sync Icon */}
         <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle" title="Refresh Audit Stream">
-          <i className="fa-solid fa-arrows-rotate text-xs"></i>
+          <span className="material-symbols-outlined text-[16px]">sync</span>
         </button>
 
         {/* Notification */}
         <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle relative" title="Alerts">
-          <i className="fa-regular fa-bell text-xs"></i>
+          <span className="material-symbols-outlined text-[16px]">notifications</span>
           <span className="w-2 h-2 bg-amber-500 rounded-full absolute top-2 right-2"></span>
         </button>
 
@@ -84,7 +84,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> UCPMP 2024 Active
             </span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-status-warning-bg text-status-warning border border-status-warning-bg">
-              <i className="fa-regular fa-clock text-[10px]"></i> Filing Due: 15 Oct
+              <span className="material-symbols-outlined text-[14px]">schedule</span> Filing Due: 15 Oct
             </span>
           </div>
           <p className="text-xs text-text-secondary mt-1">
@@ -95,11 +95,11 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
         {/* Action CTAs */}
         <div className="flex items-center gap-2.5">
           <button className="px-3.5 py-2 border border-border-subtle text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle flex items-center gap-2 transition-colors">
-            <i className="fa-regular fa-file-arrow-down text-xs"></i>
+            <span className="material-symbols-outlined text-[16px]">download</span>
             <span>Export Statutory Audit (CSV/PDF)</span>
           </button>
           <button className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors">
-            <i className="fa-regular fa-shield-check text-xs"></i>
+            <span className="material-symbols-outlined text-[16px]">verified_user</span>
             <span>Run UCPMP Integrity Check</span>
           </button>
         </div>
@@ -123,7 +123,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center">
-              <i className="fa-solid fa-badge-check text-lg"></i>
+              <span className="material-symbols-outlined text-[24px]">verified</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -143,7 +143,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-warning-bg text-amber-600 flex items-center justify-center">
-              <i className="fa-solid fa-triangle-exclamation text-lg"></i>
+              <span className="material-symbols-outlined text-[24px]">warning</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -163,7 +163,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center">
-              <i className="fa-solid fa-pills text-lg"></i>
+              <span className="material-symbols-outlined text-[24px]">medication</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -183,7 +183,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
-              <i className="fa-solid fa-hand-holding-hand text-lg"></i>
+              <span className="material-symbols-outlined text-[24px]">volunteer_activism</span>
             </div>
           </div>
           <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
@@ -197,21 +197,21 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
       {/* WORKFLOW SUB-TABS */}
       <div className="flex items-center gap-6 border-b border-border-subtle text-xs font-semibold">
         <button className="pb-3 border-b-2 border-[#b43403] text-[#b43403] flex items-center gap-2">
-          <i className="fa-regular fa-clipboard-list-check"></i>
+          <span className="material-symbols-outlined">assignment_turned_in</span>
           <span>UCPMP Exception Roster (12)</span>
         </button>
         <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <i className="fa-regular fa-box-circle-check"></i>
+          <span className="material-symbols-outlined">inventory_2</span>
           <span>Physician Sample Dispensation Audit</span>
           <span className="px-1.5 py-0.2 text-[10px] bg-surface-subtle text-text-secondary rounded">Pan-India</span>
         </button>
         <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <i className="fa-regular fa-user-shield"></i>
+          <span className="material-symbols-outlined">admin_panel_settings</span>
           <span>Field Force Code of Conduct Declarations</span>
           <span className="px-1.5 py-0.2 text-[10px] bg-status-success-bg text-status-success rounded font-bold">428/428</span>
         </button>
         <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <i className="fa-regular fa-scale-balanced"></i>
+          <span className="material-symbols-outlined">balance</span>
           <span>Statutory Audit Logs &amp; MCI Registry Sync</span>
         </button>
       </div>
@@ -221,7 +221,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
         <div className="flex flex-wrap items-center gap-2.5 flex-1">
           {/* Text search */}
           <div className="relative min-w-[240px]">
-            <i className="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-text-muted"></i>
+            <span className="material-symbols-outlined absolute left-3 top-2.5 text-[16px] text-text-muted">search</span>
             <input type="text" placeholder="Filter by Doctor, MR, Territory, Clause ID..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#b43403] text-text-secondary placeholder-slate-400"/>
           </div>
 
@@ -256,7 +256,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
         <div className="flex items-center gap-3">
           <span className="text-xs text-text-secondary font-medium">Showing <strong>5 of 12</strong> Exceptions</span>
           <button className="text-xs text-text-secondary hover:text-text-primary font-semibold flex items-center gap-1 p-1">
-            <i className="fa-regular fa-arrow-rotate-left text-[11px]"></i>
+            <span className="material-symbols-outlined text-[11px]">undo</span>
             <span>Reset</span>
           </button>
         </div>
@@ -326,7 +326,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
                   </td>
                 </tr>
@@ -361,7 +361,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
                   </td>
                 </tr>
@@ -396,7 +396,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
                   </td>
                 </tr>
@@ -431,7 +431,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
                   </td>
                 </tr>
@@ -466,7 +466,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                   </td>
                   <td className="py-3.5 px-4 text-right">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                      <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
                   </td>
                 </tr>
@@ -480,13 +480,13 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
             <span className="text-text-secondary">1 Item Selected &bull; Total 12 Violations</span>
             <div className="flex items-center gap-1">
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card disabled:opacity-40" disabled={true}>
-                <i className="fa-solid fa-chevron-left text-[10px]"></i>
+                <span className="material-symbols-outlined text-[14px]">chevron_left</span>
               </button>
               <button className="w-7 h-7 flex items-center justify-center bg-[#b43403] text-white rounded font-bold">1</button>
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium">2</button>
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium">3</button>
               <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card">
-                <i className="fa-solid fa-chevron-right text-[10px]"></i>
+                <span className="material-symbols-outlined text-[14px]">chevron_right</span>
               </button>
             </div>
           </div>
@@ -547,11 +547,11 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
                 <button className="w-full py-2 bg-[#b43403] hover:bg-[#9a3412] text-white font-semibold rounded-lg text-xs shadow-sm flex items-center justify-center gap-2">
-                  <i className="fa-regular fa-badge-check"></i>
+                  <span className="material-symbols-outlined">verified</span>
                   <span>Approve Exception &amp; Archive Log</span>
                 </button>
                 <button className="w-full py-2 border border-border-subtle text-text-secondary font-semibold rounded-lg text-xs hover:bg-surface-subtle flex items-center justify-center gap-2">
-                  <i className="fa-regular fa-ban text-rose-500"></i>
+                  <span className="material-symbols-outlined text-rose-500">block</span>
                   <span>Flag as Non-Compliant &amp; Deduct TA/DA</span>
                 </button>
               </div>
@@ -561,7 +561,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
           {/* Legal & Compliance Declaration Status */}
           <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm space-y-3">
             <h4 className="text-xs font-bold text-text-primary flex items-center gap-2">
-              <i className="fa-solid fa-file-contract text-emerald-600"></i>
+              <span className="material-symbols-outlined text-emerald-600">contract</span>
               <span>Statutory Filing Readiness (CBDT &amp; MCI)</span>
             </h4>
             
@@ -598,7 +598,7 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
       <div className="p-4 bg-status-warning-bg/50 border border-status-warning-bg rounded-xl flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-amber-100 text-[#b43403] flex items-center justify-center shrink-0">
-            <i className="fa-solid fa-shield-halved text-lg"></i>
+            <span className="material-symbols-outlined text-[24px]">gpp_good</span>
           </div>
           <div>
             <h4 className="text-xs font-bold text-text-primary">UCPMP 2024 &amp; DoP Guidelines Compliance Protocol</h4>
