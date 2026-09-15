@@ -52,7 +52,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
         </p>
 </div>
 {/* Action Button */}
-<div className="flex items-center gap-2.5 flex-shrink-0"><button className="h-10 px-4 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md inline-flex items-center gap-2 border border-border-subtle shadow-xs transition-colors focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-text-secondary">download</span><span className="">Export Roster</span></button><button className="h-10 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a3412] text-white font-label-md text-label-md inline-flex items-center gap-2 shadow-sm transition-all transform active:scale-95 focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-white">card_giftcard</span><span className="font-semibold">+ Schedule Custom Greeting / Gift Dispatch</span></button></div>
+<div className="flex items-center gap-2.5 flex-shrink-0"><button className="h-10 px-4 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md inline-flex items-center gap-2 border border-border-subtle shadow-xs transition-colors focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-text-secondary">download</span><span className="">Export Roster</span></button><button className="h-10 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a3412] text-white font-label-md text-label-md inline-flex items-center gap-2 shadow-sm transition-all transform active:scale-95 focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-white">card_giftcard</span><span className="font-semibold">Schedule Custom Greeting / Gift Dispatch</span></button></div>
 </div>
 {/* Filter Strip */}
 <div className="mt-6 pt-5 bg-surface-canvas rounded-lg p-3.5 flex flex-wrap items-center justify-between gap-3">
@@ -329,7 +329,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <span className="material-symbols-outlined text-primary text-[18px]">military_tech</span>
 <div>
 <span className="font-label-md text-label-md text-text-primary block truncate max-w-[220px]">Personalized Desk Plaque</span>
-<span className="font-body-sm text-body-sm text-text-muted">+ Gourmet Artisanal Box</span>
+<span className="font-body-sm text-body-sm text-text-muted">Gourmet Artisanal Box</span>
 </div>
 </div>
 </td>

@@ -29,7 +29,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 <path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
 </svg>
-<span className="">+ Rebalance Doctor Allocation / Add HCP</span>
+<span className="">Rebalance Doctor Allocation / Add HCP</span>
 </button>
 </div>
 </section>

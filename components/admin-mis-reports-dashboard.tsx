@@ -53,7 +53,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md transition-all shadow-sm" type="button">
 <span className="material-symbols-outlined text-[18px]">tune</span>
-<span className="">+ Build Custom Query</span>
+<span className="">Build Custom Query</span>
 </button>
 </div>
 </div>

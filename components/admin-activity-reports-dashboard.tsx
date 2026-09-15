@@ -78,7 +78,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Generate Custom Report CTA */}
 <button className="h-[38px] px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-brand-primary-hover flex items-center gap-2 transition-transform active:scale-95" type="button">
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
-<span className="">+ Generate Custom Report</span>
+<span className="">Generate Custom Report</span>
 </button>
 </div>
 </div>

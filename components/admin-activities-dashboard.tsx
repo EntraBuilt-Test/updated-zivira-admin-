@@ -35,7 +35,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 <button className="flex items-center gap-2 bg-primary hover:bg-brand-primary-hover active:scale-[0.98] text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md shadow-md transition-all" type="button">
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
-<span className="">+ Log Field Activity</span>
+<span className="">Log Field Activity</span>
 </button>
 </div>
 </div>

@@ -34,7 +34,7 @@ export function AdminMastersDashboard() {
           </button>
           <button className="h-[38px] px-4 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all active:scale-95" type="button">
             <span className="material-symbols-outlined text-[18px]">add</span>
-            <span className="">+ Quick Add Master Record</span>
+            <span className="">Quick Add Master Record</span>
           </button>
         </div>
       </section>

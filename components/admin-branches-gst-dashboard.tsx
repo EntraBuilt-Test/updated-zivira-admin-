@@ -33,7 +33,7 @@ export function AdminBranchesDashboard({ node, path }: { node: ZiviraTreeNode; p
 <span className="material-symbols-outlined text-[18px] text-text-secondary">file_download</span>
 <span className="">Export Tax Ledger &amp; GST 3B (CSV/XLS)</span>
 </button>
-<button className="h-9 px-4 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg flex items-center gap-2 shadow-sm shadow-orange-500/20 transition-all active:scale-95"><span className="material-symbols-outlined text-[18px]">add_business</span><span className="">+ Register New Branch / Depot</span></button>
+<button className="h-9 px-4 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg flex items-center gap-2 shadow-sm shadow-orange-500/20 transition-all active:scale-95"><span className="material-symbols-outlined text-[18px]">add_business</span><span className="">Register New Branch / Depot</span></button>
 </div>
 </div>
 </div>

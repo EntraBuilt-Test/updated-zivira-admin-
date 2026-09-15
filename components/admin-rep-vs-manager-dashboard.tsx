@@ -85,7 +85,7 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 </button>
 <button className="h-9 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a2c02] text-white font-semibold text-xs flex items-center gap-2 shadow-sm shadow-orange-950/20 transition-all active:scale-[0.98]" type="button">
 <span className="material-symbols-outlined text-[18px]">co_present</span>
-<span>+ Schedule Mandatory Supervisory Rides</span>
+<span>Schedule Mandatory Supervisory Rides</span>
 </button>
 </div>
 </div>

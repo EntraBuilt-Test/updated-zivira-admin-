@@ -71,7 +71,7 @@ Form 13-A Filing: Up to Date
 </button>
 <button className="h-9 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a2c02] text-white font-semibold text-xs flex items-center gap-2 shadow-sm shadow-orange-950/20 transition-all active:scale-[0.98]" type="button">
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
-<span>+ Allocate Sample Quota</span>
+<span>Allocate Sample Quota</span>
 </button>
 </div>
 </div></div>
