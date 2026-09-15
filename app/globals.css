@@ -52,7 +52,21 @@
   }
 }
 
-::-webkit-scrollbar { display: none; }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
 
 @layer components {
   .button {
@@ -112,6 +126,12 @@
   }
   .subdivision-head p:not(.subdivision-eyebrow) {
     @apply text-sm text-text-muted mt-1 leading-relaxed;
+  }
+  .subdivision-icon-button {
+    @apply p-1.5 rounded text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 transition-colors inline-flex items-center justify-center;
+  }
+  .subdivision-danger-button {
+    @apply p-1.5 rounded text-text-muted hover:text-red-500 hover:bg-red-500/10 hover:shadow-[0_0_12px_rgba(239,68,68,0.5)] transition-all inline-flex items-center justify-center;
   }
 }
 
