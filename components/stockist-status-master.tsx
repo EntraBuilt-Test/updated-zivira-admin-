@@ -3,6 +3,7 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { BackButton } from "@/components/back-button";
+import { PageHeader } from "@/components/page-components";
 
 type StockistStatusRow = {
   id: string;

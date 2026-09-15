@@ -4,6 +4,7 @@ import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown,
 import { useState } from "react";
 import { formatDate } from "@/lib/format-date";
 import { BackButton } from "@/components/back-button";
+import { PageHeader } from "@/components/page-components";
 
 type LicenseRow = {
   id: string;

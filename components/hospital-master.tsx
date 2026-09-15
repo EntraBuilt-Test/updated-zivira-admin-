@@ -4,6 +4,7 @@ import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
+import { PageHeader } from "@/components/page-components";
 type HospitalRow = {
   id: string;
   code: string;

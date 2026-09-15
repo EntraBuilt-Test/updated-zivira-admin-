@@ -3,6 +3,7 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiClient, type ProductCatalogItem } from "@/lib/api-client";
+import { PageHeader } from "@/components/page-components";
 
 type FormFields = {
   id: string;

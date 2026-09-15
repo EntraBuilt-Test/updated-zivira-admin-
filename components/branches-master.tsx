@@ -5,6 +5,7 @@ import { Pencil, Star, Ban } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
+import { PageHeader } from "@/components/page-components";
 const INDIAN_STATES = ["Tamil Nadu", "Kerala", "Karnataka", "Andhra Pradesh", "Telangana", "Maharashtra", "Delhi", "West Bengal", "Gujarat", "Punjab"];
 const emptyForm = { branchName: "", gstNumber: "", address: "", city: "", state: INDIAN_STATES[0], pincode: "", isHeadquarters: false };
 export function BranchesMaster() {

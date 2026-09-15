@@ -3,6 +3,7 @@
 import { Check, Pencil, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiClient, type ProductBrand } from "@/lib/api-client";
+import { PageHeader } from "@/components/page-components";
 
 // Mock database mappings to initialize the additional fields for existing brands
 const initialBrandDetails: Record<string, { division: string; molecule: string; therapy: string }> = {

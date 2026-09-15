@@ -2,6 +2,7 @@
 
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X, Ban } from "lucide-react";
 import { useState } from "react";
+import { PageHeader } from "@/components/page-components";
 
 type DealerMappingRow = {
   id: string;

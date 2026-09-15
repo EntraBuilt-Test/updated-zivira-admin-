@@ -3,6 +3,7 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/lib/format-date";
+import { PageHeader } from "@/components/page-components";
 
 type CampRow = {
   id: string;

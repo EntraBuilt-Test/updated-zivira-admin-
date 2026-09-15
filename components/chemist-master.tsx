@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { apiClient } from "@/lib/api-client";
+import { PageHeader } from "@/components/page-components";
 type ChemistRow = {
   id: string;
   code: string;
