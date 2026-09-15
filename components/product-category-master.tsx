@@ -208,7 +208,7 @@ function DeactivateDialog({ name, onConfirm, onCancel }: { name: string; onConfi
       <div style={{ background:"var(--panel)", borderRadius:"16px", padding:"32px 28px", maxWidth:"400px", width:"90%", boxShadow:"0 20px 60px rgba(0,0,0,0.18)" }}>
         <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"12px" }}>
           <span style={{ background:"#fef2f2", borderRadius:"50%", width:"44px", height:"44px", display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <Ban />
+            <Ban size={15} />
           </span>
           <div>
             <h3 style={{ margin:0, fontSize:"17px", fontWeight:700, color:"var(--ink)" }}>Deactivate Therapy?</h3>
@@ -221,7 +221,7 @@ function DeactivateDialog({ name, onConfirm, onCancel }: { name: string; onConfi
         <div style={{ display:"flex", gap:"10px", justifyContent:"flex-end" }}>
           <button className="button button-secondary" onClick={onCancel} type="button">Cancel</button>
           <button onClick={onConfirm} type="button" style={{ display:"flex", alignItems:"center", gap:"6px", padding:"8px 18px", borderRadius:"8px", border:"none", background:"#ef4444", color:"#fff", fontWeight:600, fontSize:"14px", cursor:"pointer" }}>
-            <Ban /> Yes, Deactivate
+            <Ban size={15} /> Yes, Deactivate
           </button>
         </div>
       </div>
@@ -467,7 +467,7 @@ export function ProductCategoryMaster() {
                       )}
                     </td>
                     <td>
-                      <button className="subdivision-danger-button" onClick={() => setDeactivateTarget(row)} title="Deactivate" type="button"><Ban /></button>
+                      <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => setDeactivateTarget(row)} title="Deactivate" type="button"><Ban size={15} /></button>
                     </td>
                   </tr>
                 );

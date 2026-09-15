@@ -131,17 +131,7 @@
     @apply p-1.5 rounded text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 transition-colors inline-flex items-center justify-center cursor-pointer;
   }
   .subdivision-danger-button {
-    @apply p-1.5 rounded text-text-muted transition-all inline-flex items-center justify-center cursor-pointer;
-  }
-  .subdivision-danger-button:hover {
-    color: #dc2626 !important; /* text-red-600 */
-    background-color: #fef2f2 !important; /* bg-red-50 */
-    box-shadow: 0 0 12px rgba(220, 38, 38, 0.6) !important;
-  }
-  .dark .subdivision-danger-button:hover {
-    color: #ef4444 !important; /* text-red-500 */
-    background-color: rgba(127, 29, 29, 0.3) !important; /* bg-red-900/30 */
-    box-shadow: 0 0 12px rgba(239, 68, 68, 0.6) !important;
+    @apply p-1.5 rounded text-text-muted hover:text-red-500 hover:bg-red-500/10 hover:shadow-md hover:shadow-red-500/50 transition-all inline-flex items-center justify-center cursor-pointer;
   }
 }
 

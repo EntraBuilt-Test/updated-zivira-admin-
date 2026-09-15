@@ -440,8 +440,8 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </button>
                     </td>
                     <td>
-                      <button className="subdivision-danger-button" onClick={() => handleStateDelete(row.id)} type="button">
-                        <Ban />
+                      <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleStateDelete(row.id)} type="button">
+                        <Ban size={15} />
                       </button>
                     </td>
                   </tr>
@@ -600,8 +600,8 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </button>
                     </td>
                     <td>
-                      <button className="subdivision-danger-button" onClick={() => handleCalDelete(row.id)} type="button">
-                        <Ban />
+                      <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleCalDelete(row.id)} type="button">
+                        <Ban size={15} />
                       </button>
                     </td>
                   </tr>

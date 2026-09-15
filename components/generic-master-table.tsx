@@ -1347,7 +1347,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
                     )}
                     {!isReadonly && (
                       <td className="px-4 py-3 text-center w-16 whitespace-nowrap">
-                        <button className="text-text-muted hover:text-status-error transition-colors p-1.5 rounded-md hover:bg-status-error/10" onClick={() => setDeleteTarget(row)} type="button" title="Deactivate">
+                        <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => setDeleteTarget(row)} type="button" title="Deactivate">
                           <Ban size={15} />
                         </button>
                       </td>

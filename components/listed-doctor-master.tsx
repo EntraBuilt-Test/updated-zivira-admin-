@@ -572,7 +572,7 @@ export function ListedDoctorMaster() {
                     </button>
                   </td>
                   <td>
-                    <button className="subdivision-danger-button" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
+                    <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                       <Ban size={15} />
                     </button>
                   </td>

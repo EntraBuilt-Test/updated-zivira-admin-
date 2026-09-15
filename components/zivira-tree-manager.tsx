@@ -39,7 +39,7 @@ function TreeNodeView({ node, basePath, depth, pathSegments, onAdd, onDelete }: 
           <button className="icon-button" onClick={() => onAdd(node.slug)} title="Add child" type="button">
           </button>
           <button className="icon-button danger" onClick={() => onDelete(node.slug)} title="Delete" type="button">
-            <Ban />
+            <Ban size={15} />
           </button>
         </span>
       </div>
