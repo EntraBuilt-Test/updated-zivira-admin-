@@ -8,10 +8,10 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
       <div className="flex flex-col w-full space-y-6">
 {/* TOP BREADCRUMB & EXECUTIVE ACTION BAR */}
 <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 pb-1">
-<div className="flex flex-col space-y-1"><div className="flex items-center gap-2"><span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span><span className="text-text-muted text-body-sm font-body-sm">/</span><span className="font-label-md text-label-md text-primary font-semibold">Activities</span></div><div className="flex items-center gap-3 flex-wrap"><h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Activities</h1><span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-md text-label-md"><span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>Live In-Flight (Sync 10s)</span></div><p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2"><span className="">Real-time field force telemetry, physician call audit, sample custody verification, and geofence verification across nationwide operating hubs.</span></p></div>
+<div className="flex flex-col space-y-1"><div className="flex items-center gap-4"><span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span><span className="text-text-muted text-body-sm font-body-sm">/</span><span className="font-label-md text-label-md text-primary font-semibold">Activities</span></div><div className="flex items-center gap-3 flex-wrap"><h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Activities</h1><span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-md text-label-md"><span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>Live In-Flight (Sync 10s)</span></div><p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-4"><span className="">Real-time field force telemetry, physician call audit, sample custody verification, and geofence verification across nationwide operating hubs.</span></p></div>
 {/* ACTION CONTROLS & COMMAND FILTERS */}
-<div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<div className="flex flex-wrap items-center gap-4.5 flex-shrink-0">
+<div className="flex items-center gap-4 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">public</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none cursor-pointer">
 <option>All Zones / West Hub</option>
@@ -21,19 +21,19 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <option>East Region - Kolkata Hub</option>
 </select>
 </div>
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<div className="flex items-center gap-4 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
 <span className="font-label-md text-label-md text-text-primary">Today: 10 Sep 2026</span>
 <span className="material-symbols-outlined text-text-muted text-[16px] cursor-pointer">expand_more</span>
 </div>
 <div className="relative group">
-<button className="flex items-center gap-2 bg-surface-card hover:bg-surface-subtle text-text-primary px-3.5 py-2 rounded-lg font-label-md text-label-md shadow-sm transition-all" type="button">
+<button className="flex items-center gap-4 bg-surface-card hover:bg-surface-subtle text-text-primary px-3.5 py-2 rounded-lg font-label-md text-label-md shadow-sm transition-all" type="button">
 <span className="material-symbols-outlined text-secondary text-[18px]">download</span>
 <span className="">Export DCR</span>
 <span className="material-symbols-outlined text-[16px] text-text-muted">keyboard_arrow_down</span>
 </button>
 </div>
-<button className="flex items-center gap-2 bg-primary hover:bg-brand-primary-hover active:scale-[0.98] text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md shadow-md transition-all" type="button">
+<button className="flex items-center gap-4 bg-primary hover:bg-brand-primary-hover active:scale-[0.98] text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md shadow-md transition-all" type="button">
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
 <span className="">+ Log Field Activity</span>
 </button>
@@ -46,7 +46,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="flex items-start justify-between">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Total Calls Logged</span>
-<div className="flex items-baseline gap-2 mt-1">
+<div className="flex items-baseline gap-4 mt-1">
 <span className="font-metric-value text-metric-value text-text-primary">1,420</span>
 <span className="font-body-sm text-body-sm text-text-muted">/ 1,600 Target</span>
 </div>
@@ -72,7 +72,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="flex items-start justify-between">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Doctor Detailing Visits</span>
-<div className="flex items-baseline gap-2 mt-1">
+<div className="flex items-baseline gap-4 mt-1">
 <span className="font-metric-value text-metric-value text-text-primary">1,105</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Visits</span>
 </div>
@@ -97,7 +97,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="flex items-start justify-between">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Chemist &amp; Stockist Orders</span>
-<div className="flex items-baseline gap-2 mt-1">
+<div className="flex items-baseline gap-4 mt-1">
 <span className="font-metric-value text-metric-value text-text-primary">315</span>
 <span className="font-body-sm text-body-sm text-text-muted">Bookings (POB)</span>
 </div>
@@ -121,7 +121,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="flex items-start justify-between">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-status-danger">Pending Approvals &amp; Alerts</span>
-<div className="flex items-baseline gap-2 mt-1">
+<div className="flex items-baseline gap-4 mt-1">
 <span className="font-metric-value text-metric-value text-status-danger">14</span>
 <span className="font-body-sm text-body-sm text-text-muted">Flagged Logs</span>
 </div>
@@ -130,7 +130,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="material-symbols-outlined text-[22px]">warning_amber</span>
 </div>
 </div>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="px-2 py-0.5 rounded-full bg-status-danger-bg text-status-danger font-label-sm text-label-sm">
           9 GPS Mismatches
         </span>
@@ -168,7 +168,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </button>
 </div>
 {/* Quick Operations Actions */}
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-status-success-bg hover:bg-status-success/20 text-status-success font-label-md text-label-md transition-all" type="button">
 <span className="material-symbols-outlined text-[16px]">done_all</span>
 <span className="">Bulk Approve Selected</span>
@@ -185,7 +185,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[20px]">search</span>
 <input className="w-full h-10 pl-10 pr-4 rounded-lg bg-surface-canvas text-text-primary placeholder:text-text-muted font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-inner" placeholder="Search by Doctor name, Medical Rep (MR), Specialization, or Clinic..." type="text"/>
 </div>
-<div className="flex flex-wrap items-center gap-2 font-label-sm text-label-sm text-text-secondary">
+<div className="flex flex-wrap items-center gap-4 font-label-sm text-label-sm text-text-secondary">
 <span className="text-text-muted uppercase">Status:</span>
 <button className="px-2.5 py-1 rounded-full bg-brand-primary-subtle text-primary font-semibold" type="button">
           All (1,420)
@@ -208,7 +208,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* MAIN DATA ROSTER: COMPREHENSIVE DCR & FIELD ACTIVITIES TABLE */}
 <div className="bg-surface-card rounded-xl shadow-sm overflow-hidden flex flex-col">
 <div className="px-card-padding-spacious py-3.5 bg-surface-card flex items-center justify-between">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-primary text-[20px]">badge</span>
 <span className="font-headline-sm text-headline-sm text-text-primary">Real-time Field Activity Telemetry (Audited DCRs)</span>
 </div>
@@ -227,7 +227,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Responsive Scrollable Data Grid */}
 <div className="w-full overflow-x-auto">
-<table className="w-full text-left font-table-cell text-table-cell text-text-primary min-w-[1240px]">
+<table className="w-full text-center font-table-cell text-table-cell text-text-primary min-w-[1240px]">
 <thead>
 <tr className="bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider h-table-header-height">
 <th className="w-10 px-4 text-center">
@@ -613,7 +613,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Table Pagination Footer */}
 <div className="px-card-padding-spacious py-3 bg-surface-canvas/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-<div className="flex items-center gap-2 font-body-sm text-body-sm text-text-muted">
+<div className="flex items-center gap-4 font-body-sm text-body-sm text-text-muted">
 <span className="">Rows per page:</span>
 <select className="bg-surface-card px-2 py-1 rounded text-text-primary font-label-md text-label-md focus:outline-none">
 <option>25</option>
@@ -644,7 +644,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* PANEL A: LIVE GEO-VERIFICATION & DOCTOR COVERAGE FEED (7 COLUMNS) */}
 <div className="lg:col-span-7 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col justify-between space-y-4">
 <div className="flex items-center justify-between">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
 <span className="material-symbols-outlined text-[20px]">explore</span>
 </div>
@@ -663,7 +663,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent"></div>
 {/* Live Route HUD Overlay */}
 <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-on-primary">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-status-success text-[18px]">satellite_alt</span>
 <span className="font-label-sm text-label-sm tracking-wide">GPS Signal: High Precision (HDOP 0.8)</span>
 </div>
@@ -675,7 +675,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* Linear Route Milestone Progress */}
 <div className="space-y-2 pt-1">
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Today's Sequenced Route Progress</span>
-<div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+<div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
 <div className="p-2 rounded-lg bg-surface-canvas flex flex-col justify-between">
 <div className="flex items-center justify-between text-status-success font-label-sm text-label-sm">
 <span className="">09:30 AM</span>
@@ -714,7 +714,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* PANEL B: E-DETAILING INSIGHTS (VA SESSION METRICS - 5 COLUMNS) */}
 <div className="lg:col-span-5 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col justify-between space-y-4">
 <div className="flex items-center justify-between">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-8 h-8 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center">
 <span className="material-symbols-outlined text-[20px]">analytics</span>
 </div>

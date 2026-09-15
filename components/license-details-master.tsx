@@ -26,100 +26,18 @@ function LicenseForm({ row, onSave, onBack }: { row: any; onSave: (r: LicenseRow
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>{isEdit ? "Edit License" : "Add License"}</h2>
-          <p>Maintain general registration and license validation profiles.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button">
-          <RotateCcw size={16} /> Back
-        </button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Drug License</span>
-          <input value={form.drugLicense} onChange={e => setForm({ ...form, drugLicense: e.target.value })} placeholder="e.g. DL-12345/2026" />
-        </label>
-        <label className="field">
-          <span>* Expiry Date</span>
-          <input
-            type="date"
-            value={form.expiryDate}
-            onChange={e => setForm({ ...form, expiryDate: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
-          />
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </label>
-        <button
-          className="button"
-          style={{ marginTop: "12px" }}
-          onClick={() => onSave(form)}
-          type="button"
-          disabled={!form.drugLicense.trim()}
-        >
-          <Check size={16} /> Save License
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function LicenseDetailsMaster() {
-  const [list, setList] = useState<LicenseRow[]>(initialLicenses);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<LicenseRow | null>(null);
-
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (statusFilter === "All" || item.status === statusFilter) &&
-      (item.drugLicense.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: LicenseRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `LIC${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
-  }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <LicenseForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <LicenseForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>License Details</h2>
-          <p>Configure general profiles, mappings, and status settings.</p>
-        </div>
-        <div className="subdivision-actions">
-          <BackButton />
+      <PageHeader
+  eyebrow="Master Setup"
+  title="License Details"
+  description="Configure general profiles, mappings, and status settings."
+  action={
+    <>
+<BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add License</button>
-        </div>
-      </div>
+          <button className="button" onClick={() => setView("add")} type="button">Add License</button>
+    </>
+  }
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

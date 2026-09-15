@@ -211,7 +211,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
                   }}
                   className="flex items-center justify-between p-3 rounded-lg cursor-pointer transition-colors hover:bg-surface-subtle group"
                 >
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-4.5">
                     <span className="text-[11px] font-semibold px-1.5 py-0.5 rounded bg-primary text-white uppercase">
                       {page.category}
                     </span>
@@ -242,7 +242,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
         <div className="flex flex-col flex-1 overflow-hidden">
           {/* Sidebar Header */}
           <div className="h-header-height px-4 flex items-center justify-between border-b border-border-subtle flex-shrink-0">
-            <div className={clsx("flex items-center min-w-0 transition-all", sidebarOpen ? "gap-2.5" : "gap-0")}>
+            <div className={clsx("flex items-center min-w-0 transition-all", sidebarOpen ? "gap-4.5" : "gap-0")}>
               <div className="w-8 h-8 rounded-lg bg-primary text-on-primary font-headline-md font-bold flex items-center justify-center flex-shrink-0 shadow-sm">
                 Z
               </div>
@@ -279,7 +279,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
                 title={!sidebarOpen ? "Home" : undefined}
               >
                 {sidebarOpen ? (
-                  <div className="flex items-center gap-2.5">
+                  <div className="flex items-center gap-4.5">
                     <span className={clsx("material-symbols-outlined text-[18px]", pathname === "/admin/home" ? "text-primary" : "text-text-muted")}>dashboard</span>
                     <span className={clsx("font-bold text-[14px]")}>Home</span>
                   </div>
@@ -329,7 +329,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
                               active ? "bg-brand-primary-subtle text-primary font-label-md shadow-sm" : "text-[13px] text-text-secondary hover:text-text-primary hover:bg-surface-subtle"
                             )}
                           >
-                            <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-4.5">
                               <Icon size={18} className={clsx(active ? "text-primary" : "text-text-muted")} />
                               <span className={clsx(active ? "font-bold" : "")}>{item.title}</span>
                             </div>
@@ -350,11 +350,11 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
               {/* Theme Settings */}
               <div>
                 <span className="font-label-sm text-[11px] font-bold text-text-secondary uppercase tracking-wider mb-2 block">Theme</span>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-4">
                   <button 
                     onClick={() => setTheme('light')}
                     className={clsx(
-                      "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border",
+                      "flex-1 flex items-center justify-center gap-4 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border",
                       theme === 'light' ? "bg-surface-subtle border-border-strong text-text-primary" : "bg-transparent border-border-subtle text-text-muted hover:bg-surface-subtle"
                     )}
                   >
@@ -363,7 +363,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
                   <button 
                     onClick={() => setTheme('dark')}
                     className={clsx(
-                      "flex-1 flex items-center justify-center gap-2 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border",
+                      "flex-1 flex items-center justify-center gap-4 py-1.5 rounded-lg text-[12px] font-semibold transition-colors border",
                       theme === 'dark' ? "bg-surface-subtle border-border-strong text-text-primary" : "bg-transparent border-border-subtle text-text-muted hover:bg-surface-subtle"
                     )}
                   >
@@ -374,7 +374,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
 
               {/* User Profile + Logout Combined */}
               <div className="flex items-center justify-between group pt-3 border-t border-border-subtle">
-                <div className="flex items-center gap-2 min-w-0">
+                <div className="flex items-center gap-4 min-w-0">
                   <div className="w-8 h-8 rounded-full bg-[#A33900] text-white font-bold text-[13px] flex items-center justify-center flex-shrink-0">AZ</div>
                   <div className="flex flex-col min-w-0">
                     <span className="text-[13px] text-text-primary truncate font-bold leading-tight">Admin Zivira</span>
@@ -455,11 +455,11 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
                       <X size={15} />
                     </button>
                   </div>
-                  <div className="flex flex-col gap-2.5 max-h-[280px] overflow-y-auto pr-1">
+                  <div className="flex flex-col gap-4.5 max-h-[280px] overflow-y-auto pr-1">
                     {notifications.map((notif) => (
                       <div
                         key={notif.id}
-                        className="flex gap-2.5 p-2.5 rounded-lg bg-surface-canvas border border-border-subtle"
+                        className="flex gap-4.5 p-2.5 rounded-lg bg-surface-canvas border border-border-subtle"
                       >
                         <span className="mt-0.5">
                           {notif.type === "urgent" || notif.type === "warning" ? (

@@ -41,132 +41,16 @@ function SurveyForm({ row, onSave, onBack }: { row: any; onSave: (r: SurveyRow) 
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Daily MR Work</p>
-          <h2>{row.id ? "Edit Market Survey" : "Add Market Survey"}</h2>
-          <p>Record competitor products pricing, stock levels and retailer feedback.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Survey Date</span>
-          <input type="date" value={form.surveyDate} onChange={e => setForm({ ...form, surveyDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Employee Name</span>
-          <input value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Chennai Central HQ">Chennai Central HQ</option>
-            <option value="Coimbatore HQ">Coimbatore HQ</option>
-            <option value="Madurai HQ">Madurai HQ</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Patch</span>
-          <input value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T-Nagar" />
-        </label>
-        <label className="field">
-          <span>Chemist</span>
-          <input value={form.chemist} onChange={e => setForm({ ...form, chemist: e.target.value })} placeholder="e.g. Apollo Pharmacy" />
-        </label>
-        <label className="field">
-          <span>Competitor Company</span>
-          <input value={form.competitorCompany} onChange={e => setForm({ ...form, competitorCompany: e.target.value })} placeholder="e.g. Abbott Labs" />
-        </label>
-        <label className="field">
-          <span>Competitor Brand</span>
-          <input value={form.competitorBrand} onChange={e => setForm({ ...form, competitorBrand: e.target.value })} placeholder="e.g. Thyronorm" />
-        </label>
-        <label className="field">
-          <span>Competitor Product</span>
-          <input value={form.competitorProduct} onChange={e => setForm({ ...form, competitorProduct: e.target.value })} placeholder="e.g. Levothyroxine 50mcg" />
-        </label>
-        <label className="field">
-          <span>Competitor MRP (INR)</span>
-          <input type="number" value={form.competitorMrp || ""} onChange={e => setForm({ ...form, competitorMrp: parseFloat(e.target.value) || 0 })} placeholder="120" />
-        </label>
-        <label className="field">
-          <span>Availability</span>
-          <select value={form.availability} onChange={e => setForm({ ...form, availability: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Available">Available</option>
-            <option value="Out of Stock">Out of Stock</option>
-            <option value="Short Supply">Short Supply</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Chemist/Retailer Feedback</span>
-          <input value={form.feedback} onChange={e => setForm({ ...form, feedback: e.target.value })} placeholder="High demand during winter season" />
-        </label>
-        <label className="field">
-          <span>Remarks</span>
-          <input value={form.remarks} onChange={e => setForm({ ...form, remarks: e.target.value })} placeholder="Stock issues reported by local distributors" />
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employee.trim()}>
-          <Check size={16} /> Save Survey Details
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function MarketSurveyView() {
-  const [list, setList] = useState<SurveyRow[]>(initialSurveys);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<SurveyRow | null>(null);
-
-  const [hqFilter, setHqFilter] = useState<string>("All");
-  const [hqFilterOpen, setHqFilterOpen] = useState(false);
-  const [availabilityFilter, setAvailabilityFilter] = useState<string>("All");
-  const [availabilityFilterOpen, setAvailabilityFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (hqFilter === "All" || item.hq === hqFilter) &&
-      (availabilityFilter === "All" || item.availability === availabilityFilter) &&
-      (item.employee.toLowerCase().includes(search.toLowerCase()) ||
-        item.chemist.toLowerCase().includes(search.toLowerCase()) ||
-        item.competitorBrand.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: SurveyRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `SURV${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Daily MR Work"
+  title="Market Survey"
+  description="Collect and review drug availability and competitor price logs."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Survey</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <SurveyForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <SurveyForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Daily MR Work</p>
-          <h2>Market Survey</h2>
-          <p>Collect and review drug availability and competitor price logs.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Survey</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

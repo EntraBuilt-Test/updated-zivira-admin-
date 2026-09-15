@@ -58,7 +58,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
       {/* TITLE & CTA ROW */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-4 mb-1">
             <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Product Exposure & Brand Detailing Share</h1>
             <span className="bg-status-info-bg text-status-info border border-status-info-bg text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span> 10,455 Physician Exposures
@@ -70,21 +70,19 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
           <p className="text-xs text-text-secondary">Track visual aid e-detailing duration, slide engagement, priority brand share-of-voice (SOV), and chemist stockist pull-through.</p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button className="flex items-center gap-2 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors">
+        <div className="flex items-center gap-4.5 shrink-0">
+          <button className="flex items-center gap-4 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors">
             <span className="material-symbols-outlined text-text-muted">{`download`}</span>
             <span>Export Brand SOV Report (XLS)</span>
           </button>
-          <button className="flex items-center gap-2 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors">
+          <button className="flex items-center gap-4 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors">
             <span className="material-symbols-outlined">{`tune`}</span>
             <span>Adjust Brand Detailing Priorities</span>
           </button>
         </div>
       </div>
 
-      <div className="bg-surface-card rounded-xl shadow-sm p-4 space-y-4 mb-6">
-        <AdminTabGrid node={node} path={path} />
-      </div>
+
 
       {/* 4-COLUMN EXECUTIVE PULSE METRIC CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -94,7 +92,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
             <span>TOTAL DETAILING SESSIONS</span>
             <div className="w-7 h-7 rounded-lg bg-orange-50 text-terracotta flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`tablet_mac`}</span></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-4">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">10,455</span>
             <span className="text-[11px] font-bold text-emerald-600">+11.4% MoM</span>
           </div>
@@ -110,7 +108,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
             <span>AVG TIME SPENT PER CALL</span>
             <div className="w-7 h-7 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`timer`}</span></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-4">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">3m 42s</span>
             <span className="text-[11px] font-bold text-blue-600">Target 3m 30s</span>
           </div>
@@ -126,7 +124,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
             <span>PRIORITY BRAND SHARE (SOV)</span>
             <div className="w-7 h-7 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`pie_chart`}</span></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-4">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">68.2%</span>
             <span className="text-[11px] font-bold text-emerald-600">Target ≥65%</span>
           </div>
@@ -142,7 +140,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
             <span>CHEMIST RX CONVERSION</span>
             <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`medication`}</span></div>
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-4">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">76.4%</span>
             <span className="text-[11px] font-bold text-purple-600">+4.8% Lift</span>
           </div>
@@ -155,17 +153,17 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
 
       {/* SUB-NAVIGATION TABS */}
       <div className="border-b border-border-subtle flex items-center gap-6 text-xs font-semibold">
-        <button className="pb-2.5 border-b-2 border-terracotta text-terracotta flex items-center gap-2">
+        <button className="pb-2.5 border-b-2 border-terracotta text-terracotta flex items-center gap-4">
           <span>Brand Exposure Matrix & Roster</span>
           <span className="bg-terracotta/10 text-terracotta text-[10px] font-bold px-1.5 py-0.2 rounded-full">16 Core SKUs</span>
         </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
+        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
           <span>Interactive Visual Aid (e-Detailing) Duration Logs</span>
         </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
+        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
           <span>Therapeutic Segment Share-of-Voice (SOV)</span>
         </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
+        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
           <span>Doctor Brand Recall & Feedback Ledger</span>
         </button>
       </div>
@@ -176,14 +174,14 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
         <div className="lg:col-span-8 bg-surface-card border border-border-subtle rounded-xl shadow-2xs overflow-hidden flex flex-col">
           {/* Filter Controls */}
           <div className="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-surface-subtle/50">
-            <div className="flex items-center gap-2 flex-1 min-w-[240px]">
+            <div className="flex items-center gap-4 flex-1 min-w-[240px]">
               <div className="relative w-full">
                 <span className="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-xs">{`search`}</span>
                 <input type="text" placeholder="Search Brand, Molecule, Therapeutic Category or SKU..." className="w-full bg-surface-card border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-secondary placeholder-slate-400 focus:outline-none focus:border-slate-400"/>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-4">
               <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
                 <option>All Segments (Cardio, Diab, Ortho, Pulmo)</option>
                 <option>Cardio-Vascular</option>
@@ -205,7 +203,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
 
           {/* Table Header & Rows */}
           <div className="overflow-x-auto flex-1">
-            <table className="w-full text-left text-xs">
+            <table className="w-full text-center text-xs">
               <thead className="bg-surface-subtle text-text-muted text-[10px] font-bold uppercase tracking-wider border-b border-border-subtle">
                 <tr>
                   <th className="py-3 px-3.5 w-6"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
@@ -416,11 +414,11 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
 
           {/* Immediate Actions */}
           <div className="pt-2 space-y-2">
-            <button className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-2">
+            <button className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-4">
               <span className="material-symbols-outlined">{`cloud_upload`}</span>
               <span>Push Updated VA Slide Deck to Field Reps</span>
             </button>
-            <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
+            <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-4">
               <span className="material-symbols-outlined">{`science`}</span>
               <span>Correlate with Sample Dispensation</span>
             </button>
@@ -439,7 +437,7 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
             <div className="text-[11px] text-text-secondary">All visual aid detailing slides must feature approved Indian Drug Regulatory monograph numbers and approved indication literature. Promotional claims without clinical trial citations are automatically flagged.</div>
           </div>
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-4 shrink-0">
           <button className="bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3 py-1.5 rounded-lg text-xs">Clinical Monograph Audit</button>
           <button className="bg-terracotta text-white font-semibold px-3 py-1.5 rounded-lg text-xs hover:bg-terracotta-hover">Regulatory VA Log</button>
         </div>

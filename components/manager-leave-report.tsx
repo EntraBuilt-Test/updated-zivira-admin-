@@ -35,127 +35,16 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: LeaveReport
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>{row.id ? "Edit Leave Request" : "Add Leave Request"}</h2>
-          <p>Record daily manager or MR team leave applications.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Employee Name</span>
-          <input value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Chennai Central HQ">Chennai Central HQ</option>
-            <option value="Coimbatore HQ">Coimbatore HQ</option>
-            <option value="Madurai HQ">Madurai HQ</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Leave Type</span>
-          <select value={form.leaveType} onChange={e => setForm({ ...form, leaveType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Casual Leave">Casual Leave</option>
-            <option value="Sick Leave">Sick Leave</option>
-            <option value="Earned Leave">Earned Leave</option>
-            <option value="Loss of Pay">Loss of Pay</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>* From Date</span>
-          <input type="date" value={form.fromDate} onChange={e => setForm({ ...form, fromDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* To Date</span>
-          <input type="date" value={form.toDate} onChange={e => setForm({ ...form, toDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Total Days</span>
-          <input type="number" value={form.totalDays || ""} onChange={e => setForm({ ...form, totalDays: parseInt(e.target.value) || 0 })} placeholder="3" />
-        </label>
-        <label className="field">
-          <span>Reason</span>
-          <input value={form.reason} onChange={e => setForm({ ...form, reason: e.target.value })} placeholder="Family event or medical reasons" />
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Approved By</span>
-          <input value={form.approvedBy} onChange={e => setForm({ ...form, approvedBy: e.target.value })} placeholder="Priya Nair (Manager)" />
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employee.trim() || form.totalDays <= 0}>
-          <Check size={16} /> Save Leave Claim
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function ManagerLeaveReport() {
-  const [list, setList] = useState<LeaveReportRow[]>(initialReports);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<LeaveReportRow | null>(null);
-
-  const [hqFilter, setHqFilter] = useState<string>("All");
-  const [hqFilterOpen, setHqFilterOpen] = useState(false);
-  const [typeFilter, setTypeFilter] = useState<string>("All");
-  const [typeFilterOpen, setTypeFilterOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (hqFilter === "All" || item.hq === hqFilter) &&
-      (typeFilter === "All" || item.leaveType === typeFilter) &&
-      (statusFilter === "All" || item.status === statusFilter) &&
-      (item.employee.toLowerCase().includes(search.toLowerCase()) ||
-        item.reason.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: LeaveReportRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `REP${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Manager Activity Report"
+  title="Leave Report"
+  description="Review comprehensive field force daily leave logs and status logs."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Leave</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <ReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <ReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>Leave Report</h2>
-          <p>Review comprehensive field force daily leave logs and status logs.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Leave</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

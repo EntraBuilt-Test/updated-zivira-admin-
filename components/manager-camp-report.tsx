@@ -35,114 +35,16 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CampReportR
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>{row.id ? "Edit Camp Report" : "Add Camp Report"}</h2>
-          <p>Record medical camp patient visits and sample distributions.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Camp Date</span>
-          <input type="date" value={form.campDate} onChange={e => setForm({ ...form, campDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Camp Name</span>
-          <input value={form.campName} onChange={e => setForm({ ...form, campName: e.target.value })} placeholder="e.g. Free Cardiac Camp" />
-        </label>
-        <label className="field">
-          <span>Hospital</span>
-          <input value={form.hospital} onChange={e => setForm({ ...form, hospital: e.target.value })} placeholder="e.g. Apollo Hospital" />
-        </label>
-        <label className="field">
-          <span>Doctor</span>
-          <input value={form.doctor} onChange={e => setForm({ ...form, doctor: e.target.value })} placeholder="e.g. Dr. Ramesh Kumar" />
-        </label>
-        <label className="field">
-          <span>* MR Name</span>
-          <input value={form.mr} onChange={e => setForm({ ...form, mr: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>No. of Patients</span>
-          <input type="number" value={form.patients || ""} onChange={e => setForm({ ...form, patients: parseInt(e.target.value) || 0 })} placeholder="50" />
-        </label>
-        <label className="field">
-          <span>Products Promoted</span>
-          <input value={form.productsPromoted} onChange={e => setForm({ ...form, productsPromoted: e.target.value })} placeholder="e.g. Cardivas 12.5mg, Telma 40" />
-        </label>
-        <label className="field">
-          <span>Samples Distributed</span>
-          <input value={form.samples} onChange={e => setForm({ ...form, samples: e.target.value })} placeholder="e.g. 10 strips" />
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.campName.trim() || !form.mr.trim()}>
-          <Check size={16} /> Save Camp Report
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function ManagerCampReport() {
-  const [list, setList] = useState<CampReportRow[]>(initialReports);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<CampReportRow | null>(null);
-
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (statusFilter === "All" || item.status === statusFilter) &&
-      (item.campName.toLowerCase().includes(search.toLowerCase()) ||
-        item.hospital.toLowerCase().includes(search.toLowerCase()) ||
-        item.doctor.toLowerCase().includes(search.toLowerCase()) ||
-        item.mr.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: CampReportRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `CAMP${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Manager Activity Report"
+  title="Camp Report"
+  description="Review comprehensive field force daily medical camp reports."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Report</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <ReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <ReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>Camp Report</h2>
-          <p>Review comprehensive field force daily medical camp reports.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Report</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

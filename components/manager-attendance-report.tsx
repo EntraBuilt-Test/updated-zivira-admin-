@@ -45,155 +45,16 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: AttendanceR
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>{row.id ? "Edit Attendance Log" : "Add Attendance Log"}</h2>
-          <p>Record manager or MR daily field force attendance logs.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Date</span>
-          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Employee Code</span>
-          <input value={form.employeeCode} onChange={e => setForm({ ...form, employeeCode: e.target.value })} placeholder="EMP-MR-0001" />
-        </label>
-        <label className="field">
-          <span>* Employee Name</span>
-          <input value={form.employeeName} onChange={e => setForm({ ...form, employeeName: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>Division</span>
-          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Zivira">Zivira</option>
-            <option value="Astra">Astra</option>
-            <option value="Aura">Aura</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Chennai Central HQ">Chennai Central HQ</option>
-            <option value="Coimbatore HQ">Coimbatore HQ</option>
-            <option value="Madurai HQ">Madurai HQ</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Patch</span>
-          <input value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T-Nagar" />
-        </label>
-        <label className="field">
-          <span>Attendance Type</span>
-          <select value={form.attendanceType} onChange={e => setForm({ ...form, attendanceType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Field Work">Field Work</option>
-            <option value="Meeting">Meeting</option>
-            <option value="Holiday">Holiday</option>
-            <option value="Leave">Leave</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Check In</span>
-          <input value={form.checkIn} onChange={e => setForm({ ...form, checkIn: e.target.value })} placeholder="09:00 AM" />
-        </label>
-        <label className="field">
-          <span>Check Out</span>
-          <input value={form.checkOut} onChange={e => setForm({ ...form, checkOut: e.target.value })} placeholder="05:30 PM" />
-        </label>
-        <label className="field">
-          <span>Total Working Hours</span>
-          <input value={form.totalWorkingHours} onChange={e => setForm({ ...form, totalWorkingHours: e.target.value })} placeholder="e.g. 8.5 Hours" />
-        </label>
-        <label className="field">
-          <span>GPS Check-In</span>
-          <input value={form.gpsCheckIn} onChange={e => setForm({ ...form, gpsCheckIn: e.target.value })} placeholder="13.0827, 80.2707" />
-        </label>
-        <label className="field">
-          <span>GPS Check-Out</span>
-          <input value={form.gpsCheckOut} onChange={e => setForm({ ...form, gpsCheckOut: e.target.value })} placeholder="13.0830, 80.2710" />
-        </label>
-        <label className="field">
-          <span>Manager Approval Status</span>
-          <select value={form.managerApproval} onChange={e => setForm({ ...form, managerApproval: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Remarks</span>
-          <input value={form.remarks} onChange={e => setForm({ ...form, remarks: e.target.value })} placeholder="Completed joint field visits" />
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employeeCode.trim() || !form.employeeName.trim()}>
-          <Check size={16} /> Save Attendance Record
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function ManagerAttendanceReport() {
-  const [list, setList] = useState<AttendanceReportRow[]>(initialReports);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<AttendanceReportRow | null>(null);
-
-  const [divisionFilter, setDivisionFilter] = useState<string>("All");
-  const [divisionFilterOpen, setDivisionFilterOpen] = useState(false);
-  const [hqFilter, setHqFilter] = useState<string>("All");
-  const [hqFilterOpen, setHqFilterOpen] = useState(false);
-  const [typeFilter, setTypeFilter] = useState<string>("All");
-  const [typeFilterOpen, setTypeFilterOpen] = useState(false);
-  const [approvalFilter, setApprovalFilter] = useState<string>("All");
-  const [approvalFilterOpen, setApprovalFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (divisionFilter === "All" || item.division === divisionFilter) &&
-      (hqFilter === "All" || item.hq === hqFilter) &&
-      (typeFilter === "All" || item.attendanceType === typeFilter) &&
-      (approvalFilter === "All" || item.managerApproval === approvalFilter) &&
-      (item.employeeName.toLowerCase().includes(search.toLowerCase()) ||
-        item.employeeCode.toLowerCase().includes(search.toLowerCase()) ||
-        item.patch.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: AttendanceReportRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `LOG${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Manager Activity Report"
+  title="Attendance Report"
+  description="Review comprehensive field force daily attendance check logs."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Log</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <ReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <ReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>Attendance Report</h2>
-          <p>Review comprehensive field force daily attendance check logs.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Log</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

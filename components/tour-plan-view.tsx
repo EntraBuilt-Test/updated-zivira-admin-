@@ -35,120 +35,16 @@ function TourPlanForm({ row, onSave, onBack }: { row: any; onSave: (r: TourPlanR
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Daily MR Work</p>
-          <h2>{row.id ? "Edit Tour Plan" : "Add Tour Plan"}</h2>
-          <p>Define future travel plans and doctor visit schedules.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Tour Date</span>
-          <input type="date" value={form.tourDate} onChange={e => setForm({ ...form, tourDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Employee Name</span>
-          <input value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Chennai Central HQ">Chennai Central HQ</option>
-            <option value="Coimbatore HQ">Coimbatore HQ</option>
-            <option value="Madurai HQ">Madurai HQ</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Patch</span>
-          <input value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T-Nagar" />
-        </label>
-        <label className="field">
-          <span>Planned Doctors</span>
-          <input value={form.plannedDoctors} onChange={e => setForm({ ...form, plannedDoctors: e.target.value })} placeholder="Dr. John Doe, Dr. Sarah" />
-        </label>
-        <label className="field">
-          <span>Planned Chemists</span>
-          <input value={form.plannedChemists} onChange={e => setForm({ ...form, plannedChemists: e.target.value })} placeholder="Apollo Pharmacy" />
-        </label>
-        <label className="field">
-          <span>Planned Hospitals</span>
-          <input value={form.plannedHospitals} onChange={e => setForm({ ...form, plannedHospitals: e.target.value })} placeholder="Apollo Hospital" />
-        </label>
-        <label className="field">
-          <span>Purpose</span>
-          <input value={form.purpose} onChange={e => setForm({ ...form, purpose: e.target.value })} placeholder="Quarterly product presentation" />
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employee.trim()}>
-          <Check size={16} /> Save Tour Plan
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function TourPlanView() {
-  const [list, setList] = useState<TourPlanRow[]>(initialTourPlans);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<TourPlanRow | null>(null);
-
-  const [hqFilter, setHqFilter] = useState<string>("All");
-  const [hqFilterOpen, setHqFilterOpen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (hqFilter === "All" || item.hq === hqFilter) &&
-      (statusFilter === "All" || item.status === statusFilter) &&
-      (item.employee.toLowerCase().includes(search.toLowerCase()) ||
-        item.patch.toLowerCase().includes(search.toLowerCase()) ||
-        item.hq.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: TourPlanRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `TP${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Daily MR Work"
+  title="Tour Plan"
+  description="Create and manage future field force routes and physician coverage."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Tour Plan</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <TourPlanForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <TourPlanForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Daily MR Work</p>
-          <h2>Tour Plan</h2>
-          <p>Create and manage future field force routes and physician coverage.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Tour Plan</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

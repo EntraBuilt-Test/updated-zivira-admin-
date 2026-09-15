@@ -5,7 +5,7 @@ export function AdminMastersDashboard() {
     <div className="flex flex-col w-full space-y-6">
       <section className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 min-w-0">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span>
             <span className="text-text-muted text-body-sm font-body-sm">/</span>
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Masters</span>
@@ -19,11 +19,11 @@ export function AdminMastersDashboard() {
               Live Sync Active • Synced 1 min ago
             </span>
           </div>
-          <p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2">
+          <p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-4">
             <span className="">SubDivision, Product, Field Force, Doctor, Input, Stockist, Expense, and personal information setup.</span>
           </p>
         </div>
-        <div className="flex items-center flex-wrap gap-2.5">
+        <div className="flex items-center flex-wrap gap-4.5">
           <div className="relative min-w-[240px]">
             <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[17px]">search</span>
             <input className="w-full h-[38px] pl-8 pr-3 rounded-lg bg-surface-canvas text-text-primary font-body-sm placeholder:text-text-muted border border-transparent focus:outline-none focus:border-border-strong focus:bg-surface-card shadow-sm transition-colors" placeholder="Search master records, SKUs, doctors..." type="text"/>
@@ -44,7 +44,7 @@ export function AdminMastersDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Total Master Entities</span>
-              <div className="flex items-baseline gap-2 mt-1">
+              <div className="flex items-baseline gap-4 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">12</span>
                 <span className="font-label-sm text-label-sm text-status-success bg-status-success-bg px-1.5 py-0.5 rounded font-semibold">All Configured</span>
               </div>
@@ -68,7 +68,7 @@ export function AdminMastersDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Total Active Records</span>
-              <div className="flex items-baseline gap-2 mt-1">
+              <div className="flex items-baseline gap-4 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">28,490</span>
                 <span className="font-label-sm text-label-sm text-status-info bg-status-info-bg px-1.5 py-0.5 rounded font-semibold">+4.2% MoM</span>
               </div>
@@ -92,7 +92,7 @@ export function AdminMastersDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Validation Status</span>
-              <div className="flex items-baseline gap-2 mt-1">
+              <div className="flex items-baseline gap-4 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">99.4%</span>
                 <span className="font-label-sm text-label-sm text-status-success bg-status-success-bg px-1.5 py-0.5 rounded font-semibold">Verified</span>
               </div>
@@ -116,7 +116,7 @@ export function AdminMastersDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Audit &amp; Change Log</span>
-              <div className="flex items-baseline gap-2 mt-1">
+              <div className="flex items-baseline gap-4 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">42</span>
                 <span className="font-label-sm text-label-sm text-text-secondary bg-surface-subtle px-1.5 py-0.5 rounded font-semibold">Today</span>
               </div>
@@ -155,7 +155,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">account_tree</span>
                   </div>
@@ -169,7 +169,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Organizational division hierarchies, zone mapping, and team alignment.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">14 Divisions</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">4 Super Zones</span>
               </div>
@@ -188,7 +188,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">medication</span>
                   </div>
@@ -202,7 +202,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">SKU catalogs, brand molecules, composition pricing, packaging &amp; batch codes.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">148 SKUs</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">24 Molecules</span>
               </div>
@@ -221,7 +221,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">badge</span>
                   </div>
@@ -235,7 +235,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Medical representatives, territory managers, hierarchy &amp; designation mappings.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">194 Active</span>
                 <span className="px-2 py-0.5 rounded bg-status-warning-bg text-status-warning font-label-sm text-[11px]">2 Vacancies</span>
               </div>
@@ -254,7 +254,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">clinical_notes</span>
                   </div>
@@ -268,7 +268,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Prescriber registry, specialization, hospital tags, MCL categories &amp; core list.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">12,450 Doctors</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">98% MCL tagged</span>
               </div>
@@ -287,7 +287,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">featured_play_list</span>
                   </div>
@@ -301,7 +301,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Physician sampling kits, promotional visual aids, LBLs, gift inventories &amp; giveaways.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">86 Items</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">Active Samples</span>
               </div>
@@ -320,7 +320,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-secondary-container text-secondary flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">map</span>
                   </div>
@@ -334,7 +334,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Batch territory operations, beat realignment, patch status toggling.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">48 Beats</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">Bulk Controls</span>
               </div>
@@ -353,7 +353,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">calendar_month</span>
                   </div>
@@ -367,7 +367,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">State-specific gazetted calendars, field off-days, and seasonal scheduling.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">28 States</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">2026 Calendar</span>
               </div>
@@ -386,7 +386,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">store</span>
                   </div>
@@ -400,7 +400,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Authorized pharmaceutical distributors, stockist ledger, DL/GSTIN verification.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">860 Stockists</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">GSTIN Synced</span>
               </div>
@@ -419,7 +419,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">receipt_long</span>
                   </div>
@@ -433,7 +433,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">HQ/Ex-HQ/Outstation daily allowances, kilometer rates, and lodgings policy.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">Grade A/B/C Bands</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">DA &amp; TA Rules</span>
               </div>
@@ -452,7 +452,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-secondary-container text-secondary flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">supervisor_account</span>
                   </div>
@@ -466,7 +466,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Area &amp; regional managerial expense caps, joint fieldwork allowance rules.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">5 Policy Tiers</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">Manager Slab</span>
               </div>
@@ -485,7 +485,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">person_pin</span>
                   </div>
@@ -499,7 +499,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Emergency contacts, bank disbursement details, PF/ESI numbers.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">100% Onboarded</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">Statutory Cleared</span>
               </div>
@@ -518,7 +518,7 @@ export function AdminMastersDashboard() {
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-4.5">
                   <div className="w-9 h-9 rounded-lg bg-status-success-bg text-status-success flex items-center justify-center group-hover:scale-105 transition-transform">
                     <span className="material-symbols-outlined text-[20px]">trending_up</span>
                   </div>
@@ -532,7 +532,7 @@ export function AdminMastersDashboard() {
                 </span>
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Primary vs secondary targets, opening stock master, and liquidation thresholds.</p>
-              <div className="flex items-center gap-2 pt-1">
+              <div className="flex items-center gap-4 pt-1">
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">Target Rules</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">Opening Stock</span>
               </div>
@@ -556,7 +556,7 @@ export function AdminMastersDashboard() {
             <h2 className="font-headline-md text-headline-md text-text-primary">Recent Master Modifications &amp; Audit Trail</h2>
             <p className="font-body-sm text-body-sm text-text-muted">Real-time changelog of data definitions, doctor registries, pricing and territory alignments</p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex items-center gap-4 flex-wrap">
             <div className="relative min-w-[200px]">
               <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[17px]">filter_list</span>
               <input className="w-full h-[36px] pl-8 pr-3 rounded-lg bg-surface-canvas text-text-primary font-body-sm focus:outline-none focus:bg-surface-card shadow-sm border border-border-subtle focus:border-border-strong" placeholder="Filter logs by user or entity..." type="text"/>
@@ -572,7 +572,7 @@ export function AdminMastersDashboard() {
           </div>
         </div>
         <div className="w-full overflow-x-auto rounded-lg border border-border-subtle">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-center border-collapse">
             <thead>
               <tr className="h-table-header-height bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider border-b border-border-subtle">
                 <th className="px-4">Module</th>
@@ -586,7 +586,7 @@ export function AdminMastersDashboard() {
             <tbody className="divide-y divide-border-subtle font-body-sm text-body-sm text-text-primary">
               <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
                 <td className="px-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <span className="w-2 h-2 rounded-full bg-status-info"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Doctor</span>
                   </div>
@@ -611,7 +611,7 @@ export function AdminMastersDashboard() {
               </tr>
               <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
                 <td className="px-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <span className="w-2 h-2 rounded-full bg-primary"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Product</span>
                   </div>
@@ -636,7 +636,7 @@ export function AdminMastersDashboard() {
               </tr>
               <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
                 <td className="px-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <span className="w-2 h-2 rounded-full bg-secondary"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Territory Bulk</span>
                   </div>
@@ -661,7 +661,7 @@ export function AdminMastersDashboard() {
               </tr>
               <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
                 <td className="px-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <span className="w-2 h-2 rounded-full bg-status-warning"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Expense Setup</span>
                   </div>
@@ -686,7 +686,7 @@ export function AdminMastersDashboard() {
               </tr>
               <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
                 <td className="px-4">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-4">
                     <span className="w-2 h-2 rounded-full bg-status-danger"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Stockist Details</span>
                   </div>
@@ -712,7 +712,7 @@ export function AdminMastersDashboard() {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 font-body-sm text-body-sm text-text-secondary">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-3 font-body-sm text-body-sm text-text-secondary">
           <div className="">Showing <strong className="text-text-primary">1 to 5</strong> of <strong className="text-text-primary">42</strong> Audit Records Today</div>
           <div className="flex items-center gap-1.5">
             <button className="px-2.5 py-1 rounded bg-surface-canvas border border-border-subtle hover:bg-surface-subtle text-text-muted disabled:opacity-40 font-label-md text-label-md" disabled={true} type="button">Prev</button>

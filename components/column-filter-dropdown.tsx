@@ -60,17 +60,19 @@ export function ColumnFilterDropdown({
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "center",
+          gap: "4px",
           background: "none",
           border: "none",
           color: "var(--muted)",
           cursor: "pointer",
           padding: "2px",
           fontFamily: "inherit",
+          width: "100%",
         }}
       >
         <span style={{ fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{title}</span>
-        <ChevronDown size={14} style={{ color: "var(--muted)", marginLeft: "4px" }} />
+        <ChevronDown size={14} style={{ color: "var(--muted)", flexShrink: 0 }} />
       </button>
 
       {open && menuPos && (

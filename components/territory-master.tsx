@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/page-components";
 import { Check, Plus, RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 
@@ -240,17 +241,16 @@ export function TerritoryMaster() {
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Field Force Entries</p>
-          <h2>Patch Name</h2>
-          <p>Maintain territories and map Medical Representatives (MR) and Area Managers.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={handleAdd} type="button"><Plus size={16} /> Add Patch</button>
-        </div>
-      </div>
+      <PageHeader
+  eyebrow="Field Force Entries"
+  title="Patch Name"
+  description="Maintain territories and map Medical Representatives (MR) and Area Managers."
+  action={
+    <>
+<button className="button" onClick={handleAdd} type="button"><Plus size={16} /> Add Patch</button>
+    </>
+  }
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

@@ -39,142 +39,16 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: TourPlanRep
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>{row.id ? "Edit Tour Plan Log" : "Add Tour Plan Log"}</h2>
-          <p>Record and update field force tour plan achievement statistics.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Tour Date</span>
-          <input type="date" value={form.tourDate} onChange={e => setForm({ ...form, tourDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Employee Code</span>
-          <input value={form.employeeCode} onChange={e => setForm({ ...form, employeeCode: e.target.value })} placeholder="EMP-MR-0001" />
-        </label>
-        <label className="field">
-          <span>* Medical Representative</span>
-          <input value={form.medicalRepresentative} onChange={e => setForm({ ...form, medicalRepresentative: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>Division</span>
-          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Zivira">Zivira</option>
-            <option value="Astra">Astra</option>
-            <option value="Aura">Aura</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Chennai Central HQ">Chennai Central HQ</option>
-            <option value="Coimbatore HQ">Coimbatore HQ</option>
-            <option value="Madurai HQ">Madurai HQ</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Patch</span>
-          <input value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T-Nagar" />
-        </label>
-        <label className="field">
-          <span>Planned Doctor Visits</span>
-          <input type="number" value={form.plannedDoctorVisits || ""} onChange={e => setForm({ ...form, plannedDoctorVisits: parseInt(e.target.value) || 0 })} placeholder="15" />
-        </label>
-        <label className="field">
-          <span>Actual Doctor Visits</span>
-          <input type="number" value={form.actualDoctorVisits || ""} onChange={e => setForm({ ...form, actualDoctorVisits: parseInt(e.target.value) || 0 })} placeholder="12" />
-        </label>
-        <label className="field">
-          <span>Achievement %</span>
-          <input type="number" value={form.achievementPercentage || ""} onChange={e => setForm({ ...form, achievementPercentage: parseFloat(e.target.value) || 0 })} placeholder="80" />
-        </label>
-        <label className="field">
-          <span>Tour Status</span>
-          <select value={form.tourStatus} onChange={e => setForm({ ...form, tourStatus: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Pending">Pending</option>
-            <option value="Completed">Completed</option>
-            <option value="Cancelled">Cancelled</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Manager Approval Status</span>
-          <select value={form.managerApproval} onChange={e => setForm({ ...form, managerApproval: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Pending">Pending</option>
-            <option value="Approved">Approved</option>
-            <option value="Rejected">Rejected</option>
-          </select>
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employeeCode.trim() || !form.medicalRepresentative.trim()}>
-          <Check size={16} /> Save Tour Plan Report
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function ManagerTourPlanReport() {
-  const [list, setList] = useState<TourPlanReportRow[]>(initialReports);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<TourPlanReportRow | null>(null);
-
-  const [divisionFilter, setDivisionFilter] = useState<string>("All");
-  const [divisionFilterOpen, setDivisionFilterOpen] = useState(false);
-  const [hqFilter, setHqFilter] = useState<string>("All");
-  const [hqFilterOpen, setHqFilterOpen] = useState(false);
-  const [tourStatusFilter, setTourStatusFilter] = useState<string>("All");
-  const [tourStatusFilterOpen, setTourStatusFilterOpen] = useState(false);
-  const [approvalFilter, setApprovalFilter] = useState<string>("All");
-  const [approvalFilterOpen, setApprovalFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (divisionFilter === "All" || item.division === divisionFilter) &&
-      (hqFilter === "All" || item.hq === hqFilter) &&
-      (tourStatusFilter === "All" || item.tourStatus === tourStatusFilter) &&
-      (approvalFilter === "All" || item.managerApproval === approvalFilter) &&
-      (item.medicalRepresentative.toLowerCase().includes(search.toLowerCase()) ||
-        item.employeeCode.toLowerCase().includes(search.toLowerCase()) ||
-        item.patch.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: TourPlanReportRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `REP${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Manager Activity Report"
+  title="Tour Plan Report"
+  description="Review planned doctor visits, actual visits and coverage achievement ratios."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Report</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <ReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <ReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>Tour Plan Report</h2>
-          <p>Review planned doctor visits, actual visits and coverage achievement ratios.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Report</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

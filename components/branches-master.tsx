@@ -50,17 +50,17 @@ export function BranchesMaster() {
   }
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Options · Company Settings</p>
-          <h2>Branches &amp; GST</h2>
-          <p>Every branch's GST number, resolved automatically on Tour Plans, claims and distributor statements (PRD Section 12.5).</p>
-        </div>
-        <div className="subdivision-actions">
-          <button className="button button-secondary" onClick={exportCsv} disabled={!branches.length} type="button">Export CSV</button>
+      <PageHeader
+  eyebrow="Options · Company Settings"
+  title="Branches &amp; GST"
+  description="Every branch's GST number, resolved automatically on Tour Plans, claims and distributor statements (PRD Section 12.5)."
+  action={
+    <>
+<button className="button button-secondary" onClick={exportCsv} disabled={!branches.length} type="button">Export CSV</button>
           <button className="button" onClick={openAdd} type="button"> Add Branch</button>
-        </div>
-      </div>
+    </>
+  }
+/>
       {error && <p className="form-error">{error}</p>}
       {view !== "list" ? (
         <form onSubmit={save} className="card form-grid">
@@ -82,7 +82,7 @@ export function BranchesMaster() {
           </div>
           <div className="field">
             <label>State</label>
-            <select value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}>
+            <select className="input" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}>
               {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>

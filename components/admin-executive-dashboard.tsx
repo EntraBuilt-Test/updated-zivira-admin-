@@ -27,16 +27,16 @@ export function AdminExecutiveDashboard({
             productivity, compliance, and payroll status at a glance.
           </p>
         </div>
-        <div className="flex items-center gap-2.5 self-start md:self-center">
+        <div className="flex items-center gap-4.5 self-start md:self-center">
           <button
-            className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 transition shadow-sm"
+            className="inline-flex items-center gap-4 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 transition shadow-sm"
             type="button"
           >
             <span className="material-symbols-outlined text-[11px]">{`arrow_back`}</span>
             <span>Back</span>
           </button>
           <button
-            className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 hover:text-orange-600 dark:text-orange-500 transition shadow-sm group"
+            className="inline-flex items-center gap-4 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 hover:text-orange-600 dark:text-orange-500 transition shadow-sm group"
             id="refreshMetricsBtn"
             type="button"
           >
@@ -255,8 +255,8 @@ export function AdminExecutiveDashboard({
       >
         {/*  Left Panel: Top Performers  */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800/50">
-            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+          <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100 dark:border-slate-800/50">
+            <div className="flex items-center gap-4 text-emerald-600 dark:text-emerald-400">
               <span className="material-symbols-outlined text-sm">{`trending_up`}</span>
               <h3 className="font-heading font-bold text-sm text-slate-800 dark:text-slate-200 tracking-tight">
                 Top Performers (Joint Visit %)
@@ -348,8 +348,8 @@ export function AdminExecutiveDashboard({
         </div>
         {/*  Right Panel: Bottom Performers  */}
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-5 shadow-sm">
-          <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800/50">
-            <div className="flex items-center gap-2 text-rose-600">
+          <div className="flex items-center justify-between mb-6 pb-3 border-b border-slate-100 dark:border-slate-800/50">
+            <div className="flex items-center gap-4 text-rose-600">
               <span className="material-symbols-outlined text-sm">{`bar_chart`}</span>
               <h3 className="font-heading font-bold text-sm text-slate-800 dark:text-slate-200 tracking-tight">
                 Bottom Performers (Joint Visit %)

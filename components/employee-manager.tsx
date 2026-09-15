@@ -142,15 +142,22 @@ export function EmployeeManager() {
 
   return (
     <>
-      <div className="toolbar">
-        <button className="button button-secondary" onClick={loadEmployees} type="button">
-          <RefreshCw size={17} />
-          {loading ? "Refreshing" : "Refresh"}
-        </button>
-        <button className="button" onClick={() => setShowForm((value) => !value)} type="button">
-          Add Employee
-        </button>
-      </div>
+      <section className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Master Setup</p>
+            <h2 className="text-2xl font-bold text-text-primary">Field Force</h2>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="bg-surface-card border border-border-subtle text-text-primary hover:bg-surface-subtle px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4 shadow-sm" onClick={loadEmployees} type="button">
+              <RefreshCw size={16} className="text-text-secondary" />
+              <span>{loading ? "Refreshing" : "Refresh"}</span>
+            </button>
+            <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4 shadow-sm" onClick={() => setShowForm((value) => !value)} type="button">
+              <span>Add Employee</span>
+            </button>
+          </div>
+        </div>
       {error && (
         <div
           style={{
@@ -158,7 +165,7 @@ export function EmployeeManager() {
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200
           }}
         >
-          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <AlertTriangle size={18} color="#ef4444" />
@@ -178,7 +185,7 @@ export function EmployeeManager() {
 
       {showForm ? (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <div style={{ background: "var(--panel)", borderRadius: "10px", width: "100%", maxWidth: "800px", maxHeight: "90vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", width: "100%", maxWidth: "800px", maxHeight: "90vh", display: "flex", flexDirection: "column", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)" }}>
             <div className="subdivision-head" style={{ padding: "20px 24px", borderBottom: "1px solid #e5e7eb", marginBottom: 0 }}>
               <div>
                 <h2>Add Employee</h2>
@@ -195,7 +202,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Gender</label>
-            <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
+            <select className="input" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
@@ -219,7 +226,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Department</label>
-            <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
+            <select className="input" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
               <option value="Sales">Sales</option>
               <option value="Marketing">Marketing</option>
               <option value="Medical Affairs">Medical Affairs</option>
@@ -231,7 +238,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Designation</label>
-            <select value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })}>
+            <select className="input" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })}>
               <option value="Medical Representative">Medical Representative (MR)</option>
               <option value="Area Sales Manager">Area Sales Manager (ASM)</option>
               <option value="Regional Sales Manager">Regional Sales Manager (RSM)</option>
@@ -243,7 +250,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Division</label>
-            <select value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value })}>
+            <select className="input" value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value })}>
               <option value="Astra">Astra</option>
               <option value="Aura">Aura</option>
               <option value="Zivira">Zivira</option>
@@ -255,7 +262,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Region</label>
-            <select required value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })}>
+            <select className="input" required value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })}>
               <option value="Tamil Nadu">Tamil Nadu</option>
               <option value="Kerala">Kerala</option>
               <option value="Karnataka">Karnataka</option>
@@ -280,7 +287,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Employee Status</label>
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
+            <select className="input" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
             </select>
@@ -294,12 +301,13 @@ export function EmployeeManager() {
         </div>
       ) : null}
 
-      <div className="table-wrap" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "calc(100vh - 240px)" }}>
-        <table className="subdivision-table" style={{ minWidth: "1600px" }}>
-          <thead>
-            <tr>
-              <th>Employee Code</th>
-              <th>Employee Name</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 250px)", minHeight: "220px" }}>
+        <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
+          <table className="w-full text-center border-collapse" style={{ minWidth: "1600px" }}>
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Code</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Name</th>
               {[
                 { key: "gender", label: "Gender" },
                 { key: "dob", label: "DOB" },
@@ -323,7 +331,7 @@ export function EmployeeManager() {
                 }
                 
                 return (
-                  <th key={f.key}>
+                  <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                     {isFiltered ? (
                       <div style={{ minWidth: "140px" }}>
                         <ColumnFilterDropdown 
@@ -339,28 +347,28 @@ export function EmployeeManager() {
                   </th>
                 );
               })}
-              <th>Employee Status</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filteredEmployees.map((employee, i) => (
-              <tr key={employee.id || i}>
-                <td style={{ fontWeight: 600 }}>{employee.employeeCode}</td>
-                <td><strong>{employee.name}</strong></td>
-                <td>{employee.gender}</td>
-                <td>{formatDate(employee.dob)}</td>
-                <td>{formatDate(employee.joinDate)}</td>
-                <td>{employee.phone || "—"}</td>
-                <td>{employee.email || "—"}</td>
-                <td>{employee.department}</td>
-                <td>{employee.designation}</td>
-                <td>{employee.division}</td>
-                <td>{employee.reportingManager || "—"}</td>
-                <td>{employee.region}</td>
-                <td>{employee.hq || "—"}</td>
-                <td>{employee.patch || "—"}</td>
-                <td>{(employee as any).drivingLicense || "—"}</td>
-                <td>
+              <tr key={employee.id || i} className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{employee.employeeCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{employee.name}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.gender}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.dob)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.joinDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.phone || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.email || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.department}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.designation}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.division}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.reportingManager || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.region}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.hq || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.patch || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{(employee as any).drivingLicense || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
                     borderRadius: "999px", 
@@ -377,14 +385,16 @@ export function EmployeeManager() {
             ))}
             {employees.length === 0 && (
               <tr>
-                <td colSpan={16} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <td colSpan={16} className="px-4 py-8 text-center text-text-muted text-sm">
                   No field force found
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        </div>
       </div>
+      </section>
     </>
   );
 }

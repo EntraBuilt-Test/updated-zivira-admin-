@@ -117,7 +117,7 @@ export function ChemistMaster() {
       type: "Retailer", // Defaulting as dealer doesn't have type
       city: row.city || "Chennai",
       mr: row.employeeName || row.employeeCode || "",
-      // Backend stores "ACTIVE"/"INACTIVE" but the <select> options below
+      // Backend stores "ACTIVE"/"INACTIVE" but the <select className="input"> options below
       // are value="Active"/"Inactive" — without normalizing case here, an
       // edited record's dropdown matched neither option and rendered blank
       // instead of showing the record's real status.
@@ -234,7 +234,7 @@ export function ChemistMaster() {
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 70
           }}
         >
-          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <AlertTriangle size={18} color="#ef4444" />
@@ -251,38 +251,41 @@ export function ChemistMaster() {
           </div>
         </div>
       )}
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Field Force Entries</p>
-          <h2>Chemist - Dealer - Details</h2>
-          <p>Maintain pharmacy networks and retail distributor mappings.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
-        </div>
-      </div>
+      <PageHeader
+  eyebrow="Field Force Entries"
+  title="Chemist - Dealer - Details"
+  description="Maintain pharmacy networks and retail distributor mappings."
+  action={
+    <>
+<button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
+    </>
+  }
+/>
       <div className="subdivision-stats" style={{ marginBottom: "16px", display: "flex", gap: "16px" }}>
-        <article style={{ background: "var(--panel)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border)", minWidth: "160px" }}>
+        <article style={{ background: "var(--surface-card)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border)", minWidth: "160px" }}>
           <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)", textTransform: "uppercase" }}>Total Records</span>
           <strong style={{ display: "block", fontSize: "28px", marginTop: "4px" }}>{filtered.length}</strong>
         </article>
-        <Link className="card module-card" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" style={{ borderLeft: "4px solid var(--brand-strong)", width: "300px", textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 16px" }}>
-          <h3 className="section-title">Doctor</h3>
+        <Link className="button button-secondary" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" style={{ textDecoration: "none" }}>
+          Doctor
         </Link>
       </div>
-      <div style={{ marginBottom: "16px" }}>
-        <input
-          placeholder="Search by name, code or MR..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
-        />
+      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center mb-6">
+        <div className="relative flex-1 max-w-md w-full">
+          <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-[20px]">search</span>
+          <input
+            type="text"
+            placeholder="Search by name, code or MR..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-surface-subtle border border-border-subtle rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-all text-text-primary"
+          />
+        </div>
       </div>
       {view !== "list" ? (
         <div style={{ marginTop: "16px" }}>
           {/* Tabs row */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "6px 0", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
+          <div className="modern-tabs">
             {[
               { id: 1, label: "Chemist Master" },
               { id: 2, label: "Address" },
@@ -295,8 +298,7 @@ export function ChemistMaster() {
               <button
                 key={t.id}
                 onClick={() => setActiveFormTab(t.id)}
-                className={`button ${activeFormTab === t.id ? "" : "button-secondary"}`}
-                style={{ whiteSpace: "nowrap", padding: "6px 12px", fontSize: "12px" }}
+                className={`modern-tab-button ${activeFormTab === t.id ? "active" : "inactive"}`}
                 type="button"
               >
                 {t.label}
@@ -316,7 +318,7 @@ export function ChemistMaster() {
                 </div>
                 <div className="field">
                   <label>Type</label>
-                  <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                  <select className="input" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
                     <option value="Retailer">Retailer</option>
                     <option value="Wholesaler">Wholesaler</option>
                     <option value="Hospital Pharmacy">Hospital Pharmacy</option>
@@ -332,7 +334,7 @@ export function ChemistMaster() {
                 </div>
                 <div className="field">
                   <label>Status</label>
-                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                  <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
@@ -363,7 +365,7 @@ export function ChemistMaster() {
               <>
                 <div className="field">
                   <label>Sales Territory (Patch)</label>
-                  <select value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
+                  <select className="input" value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
                     <option value="T. Nagar">T. Nagar</option>
                     <option value="Mylapore">Mylapore</option>
                     <option value="Adyar">Adyar</option>
@@ -442,11 +444,11 @@ export function ChemistMaster() {
             <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading chemists...</div>
           ) : (
             <table className="subdivision-table">
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Chemist Code</th>
-                  <th>Chemist Name</th>
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Name</th>
                   {[
                     { key: "type", label: "Type" },
                     { key: "city", label: "City" },
@@ -454,7 +456,7 @@ export function ChemistMaster() {
                     const uniqueValues = Array.from(new Set(list.map(r => String((r as any)[f.key] || "")))).filter(Boolean).sort();
                     const options = uniqueValues.map(v => ({ label: v, value: v }));
                     return (
-                      <th key={f.key}>
+                      <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                         <div style={{ minWidth: "120px" }}>
                           <ColumnFilterDropdown 
                             title={f.label} 
@@ -466,9 +468,9 @@ export function ChemistMaster() {
                       </th>
                     );
                   })}
-                  <th>Medical Representative</th>
-                  <th>Pin Code</th>
-                  <th>Contact</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pin Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Contact</th>
                   <th key="area">
                     <div style={{ minWidth: "120px" }}>
                       <ColumnFilterDropdown 
@@ -504,7 +506,7 @@ export function ChemistMaster() {
                           position: "absolute",
                           top: "100%",
                           right: 0,
-                          background: "var(--panel)",
+                          background: "var(--surface-card)",
                           border: "1px solid var(--border)",
                           borderRadius: "6px",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -565,23 +567,23 @@ export function ChemistMaster() {
                       </div>
                     )}
                   </th>
-                  <th>Edit</th>
-                  <th>Inactive</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Inactive</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((row, idx) => (
-                  <tr key={row.id}>
-                    <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
-                    <td style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
-                    <td><strong>{row.dealerName}</strong></td>
-                    <td>{row.type || "Retailer"}</td>
-                    <td>{row.city || "-"}</td>
-                    <td>{row.employeeName || row.employeeCode || "-"}</td>
-                    <td>{row.pincode || "-"}</td>
-                    <td>{row.dealerPhone || "-"}</td>
-                    <td>{row.location || "-"}</td>
-                    <td>
+                  <tr key={row.id} className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap" style={{ fontWeight: 500 }}>{idx + 1}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.dealerName}</strong></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.type || "Retailer"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.employeeName || row.employeeCode || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.pincode || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.dealerPhone || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.location || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{
                         padding: "2px 8px",
                         borderRadius: "999px",
@@ -594,12 +596,12 @@ export function ChemistMaster() {
                         {row.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-danger-button" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                         <Ban size={15} />
                       </button>
@@ -608,7 +610,7 @@ export function ChemistMaster() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                    <td colSpan={16} className="px-4 py-8 text-center text-text-muted text-sm">
                       No records found
                     </td>
                   </tr>

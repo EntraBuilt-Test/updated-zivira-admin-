@@ -24,7 +24,7 @@ export default function LoginPage() {
         }`}
       >
         <div className="p-8">
-          <div className="flex items-center gap-2.5 mb-6">
+          <div className="flex items-center gap-4.5 mb-6">
             <div className="w-7 h-7 rounded-md bg-[#f7931e] flex items-center justify-center text-white font-bold text-sm shadow-sm">
               Z
             </div>

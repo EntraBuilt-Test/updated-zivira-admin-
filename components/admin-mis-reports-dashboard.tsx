@@ -13,7 +13,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* Top Utility Ribbon & Executive Header */}
 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-surface-card p-card-padding-standard rounded-xl shadow-sm">
 <div className="space-y-1">
-<div className="flex items-center gap-2 font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
+<div className="flex items-center gap-4 font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
 <a className="hover:text-primary transition-colors" href="#">Platform</a>
 <span className="material-symbols-outlined text-[14px]">chevron_right</span>
 <span className="text-primary font-semibold">MIS Reports</span>
@@ -28,7 +28,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
         </p>
 </div>
 {/* Quick Actions Toolbar */}
-<div className="flex flex-wrap items-center gap-2.5">
+<div className="flex flex-wrap items-center gap-4.5">
 <button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle hover:bg-surface-variant text-text-secondary font-label-md text-label-md transition-colors shadow-sm" type="button">
 <span className="material-symbols-outlined text-[18px]">schedule_send</span>
 <span className="">Schedule Dispatch</span>
@@ -40,18 +40,18 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="material-symbols-outlined text-[16px]">expand_more</span>
 </button>
 <div className="hidden absolute right-0 mt-1.5 w-48 rounded-lg bg-surface-card shadow-xl py-1 z-30" id="exportMenu">
-<a className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
+<a className="flex items-center gap-4 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
 <span className="material-symbols-outlined text-[16px] text-status-success">table_chart</span> Executive Excel (XLSX)
             </a>
-<a className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
+<a className="flex items-center gap-4 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
 <span className="material-symbols-outlined text-[16px] text-status-danger">picture_as_pdf</span> Executive Boardpack (PDF)
             </a>
-<a className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
+<a className="flex items-center gap-4 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
 <span className="material-symbols-outlined text-[16px] text-status-info">terminal</span> Direct SQL Query Dump
             </a>
 </div>
 </div>
-<button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md transition-all shadow-sm" type="button">
+<button className="button" type="button">
 <span className="material-symbols-outlined text-[18px]">tune</span>
 <span className="">+ Build Custom Query</span>
 </button>
@@ -95,7 +95,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="mt-3">
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">₹4.86 Cr</span>
 <span className="font-label-md text-label-md text-text-secondary">/ ₹5.10 Cr Target</span>
 </div>
@@ -120,7 +120,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="mt-3">
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">11.2</span>
 <span className="font-label-md text-label-md text-text-secondary">Calls/MR/Day</span>
 </div>
@@ -145,7 +145,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="mt-3">
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">92.4%</span>
 <span className="font-label-md text-label-md text-status-success font-semibold">Tier-1 Optimal</span>
 </div>
@@ -167,7 +167,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="mt-3">
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">3.42x</span>
 <span className="font-label-md text-label-md text-text-secondary">Yield Ratio</span>
 </div>
@@ -185,23 +185,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Navigation Sub-Tabs for MIS Multi-Perspective Analysis */}
 <div className="bg-surface-card rounded-xl p-1.5 shadow-sm flex flex-wrap items-center gap-1">
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-primary-subtle text-primary font-label-md text-label-md shadow-sm" type="button">
+<button className="button" type="button">
 <span className="material-symbols-outlined text-[18px]">hub</span>
 <span className="">Division &amp; Territory Sales Variance</span>
 </button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
+<button className="flex items-center gap-4 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
 <span className="material-symbols-outlined text-[18px]">grid_view</span>
 <span className="">HQ Productivity Matrix</span>
 </button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
+<button className="flex items-center gap-4 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
 <span className="material-symbols-outlined text-[18px]">pie_chart</span>
 <span className="">Brand Basket Performance</span>
 </button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
+<button className="flex items-center gap-4 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
 <span className="material-symbols-outlined text-[18px]">query_stats</span>
 <span className="">Doctor Detailing Yield &amp; ROI</span>
 </button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
+<button className="flex items-center gap-4 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
 <span className="material-symbols-outlined text-[18px]">mark_email_read</span>
 <span className="">Scheduled Automated MIS Reports</span>
 </button>
@@ -216,7 +216,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <input className="w-full h-[38px] pl-10 pr-4 rounded-lg bg-surface-canvas text-text-primary placeholder:text-text-muted font-body-md text-body-md focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Search zone, territory HQ, RSM/ABM, or product SKU..." type="text"/>
 </div>
 {/* Filter Clusters */}
-<div className="flex flex-wrap items-center gap-2">
+<div className="flex flex-wrap items-center gap-4">
 {/* Zone Filter Pills */}
 <div className="inline-flex rounded-lg bg-surface-canvas p-0.5">
 <button className="px-2.5 py-1 text-label-sm font-label-sm rounded-md bg-surface-card text-text-primary shadow-sm">All Zones (18)</button>
@@ -243,7 +243,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Master MIS Sales & Productivity Matrix Table */}
 <div className="overflow-x-auto w-full">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-center border-collapse">
 <thead>
 <tr className="bg-surface-subtle text-text-secondary font-label-sm text-label-sm uppercase tracking-wider">
 <th className="py-3 px-4 w-12 text-center">
@@ -269,7 +269,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-success" title="Healthy Execution"></div>
 <div>
 <div className="font-headline-sm text-headline-sm text-text-primary leading-tight">Ahmedabad Metro - HQ-041</div>
@@ -283,7 +283,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <td className="py-3.5 px-4 text-right font-medium">₹52,00,000</td>
 <td className="py-3.5 px-4 text-right font-bold text-text-primary">₹56,42,000</td>
 <td className="py-3.5 px-4 text-center">
-<div className="flex items-center justify-center gap-2">
+<div className="flex items-center justify-center gap-4">
 <span className="font-bold text-status-success font-label-md text-label-md">108.5%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
 <div className="bg-status-success h-full" style={{ "width": "100%" }}></div>
@@ -326,7 +326,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-info" title="Balanced Velocity"></div>
 <div>
 <div className="font-headline-sm text-headline-sm text-text-primary leading-tight">Bengaluru Urban - HQ-012</div>
@@ -340,7 +340,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <td className="py-3.5 px-4 text-right font-medium">₹68,00,000</td>
 <td className="py-3.5 px-4 text-right font-bold text-text-primary">₹65,28,000</td>
 <td className="py-3.5 px-4 text-center">
-<div className="flex items-center justify-center gap-2">
+<div className="flex items-center justify-center gap-4">
 <span className="font-bold text-text-primary font-label-md text-label-md">96.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
 <div className="bg-status-info h-full" style={{ "width": "96%" }}></div>
@@ -383,7 +383,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-warning" title="Field Effort Lagging"></div>
 <div>
 <div className="font-headline-sm text-headline-sm text-text-primary leading-tight">Delhi North &amp; Rohini - HQ-004</div>
@@ -397,7 +397,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <td className="py-3.5 px-4 text-right font-medium">₹44,00,000</td>
 <td className="py-3.5 px-4 text-right font-bold text-text-primary">₹39,16,000</td>
 <td className="py-3.5 px-4 text-center">
-<div className="flex items-center justify-center gap-2">
+<div className="flex items-center justify-center gap-4">
 <span className="font-bold text-status-warning font-label-md text-label-md">89.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
 <div className="bg-status-warning h-full" style={{ "width": "89%" }}></div>
@@ -440,7 +440,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-danger" title="Critical Run-rate Risk"></div>
 <div>
 <div className="font-headline-sm text-headline-sm text-text-primary leading-tight">Kolkata Central &amp; Howrah - HQ-088</div>
@@ -454,7 +454,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <td className="py-3.5 px-4 text-right font-medium">₹58,00,000</td>
 <td className="py-3.5 px-4 text-right font-bold text-status-danger">₹44,08,000</td>
 <td className="py-3.5 px-4 text-center">
-<div className="flex items-center justify-center gap-2">
+<div className="flex items-center justify-center gap-4">
 <span className="font-bold text-status-danger font-label-md text-label-md">76.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
 <div className="bg-status-danger h-full" style={{ "width": "76%" }}></div>
@@ -497,7 +497,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-success" title="High Run-rate"></div>
 <div>
 <div className="font-headline-sm text-headline-sm text-text-primary leading-tight">Mumbai Thane &amp; Navi - HQ-009</div>
@@ -511,7 +511,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <td className="py-3.5 px-4 text-right font-medium">₹62,00,000</td>
 <td className="py-3.5 px-4 text-right font-bold text-text-primary">₹64,48,000</td>
 <td className="py-3.5 px-4 text-center">
-<div className="flex items-center justify-center gap-2">
+<div className="flex items-center justify-center gap-4">
 <span className="font-bold text-status-success font-label-md text-label-md">104.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
 <div className="bg-status-success h-full" style={{ "width": "100%" }}></div>
@@ -553,7 +553,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Pagination & Table Summary Footer */}
 <div className="px-card-padding-standard py-3 bg-surface-subtle/50 flex flex-wrap items-center justify-between gap-3 text-text-secondary font-body-sm text-body-sm">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="">Showing <strong>1 to 5</strong> of <strong>48 Territory HQs</strong></span>
 <span className="text-text-muted">•</span>
 <span className="text-text-muted">Total Secondary Sample Base: ₹2.84 Cr</span>
@@ -580,7 +580,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
             Key pharma formulation secondary sales yield, primary prescription volume, and month-over-month trajectory.
           </p>
 {/* Contribution Stacked Visual Bar */}
-<div className="w-full h-4 rounded-lg flex overflow-hidden shadow-inner mb-4">
+<div className="w-full h-4 rounded-lg flex overflow-hidden shadow-inner mb-6">
 <div className="bg-primary hover:opacity-90 transition-opacity" style={{ "width": "34.6%" }} title="CardioCare 20 (34.6%)"></div>
 <div className="bg-primary-container hover:opacity-90 transition-opacity" style={{ "width": "25.1%" }} title="ZiviCal D3 Forte (25.1%)"></div>
 <div className="bg-tertiary hover:opacity-90 transition-opacity" style={{ "width": "20.2%" }} title="GlycoZiv XR (20.2%)"></div>
@@ -681,20 +681,20 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="lg:col-span-5 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
 <div>
 <div className="flex items-center justify-between mb-1">
-<h2 className="font-headline-sm text-headline-sm text-text-primary flex items-center gap-2">
+<h2 className="font-headline-sm text-headline-sm text-text-primary flex items-center gap-4">
 <span className="material-symbols-outlined text-status-danger text-[20px]">notification_important</span>
 <span className="">Executive Exception Alerts</span>
 </h2>
 <span className="w-2.5 h-2.5 rounded-full bg-status-danger animate-ping"></span>
 </div>
-<p className="font-body-sm text-body-sm text-text-secondary mb-4">
+<p className="font-body-sm text-body-sm text-text-secondary mb-6">
             Automated threshold anomalies requiring headquarters operational decisions or RSM escalations.
           </p>
 <div className="space-y-3.5">
 {/* Alert Item 1 */}
-<div className="p-3.5 rounded-xl bg-status-danger-bg/40 border border-status-danger-border flex flex-col gap-2.5">
-<div className="flex items-start justify-between gap-2">
-<div className="flex items-center gap-2 text-status-danger font-label-md text-label-md">
+<div className="p-3.5 rounded-xl bg-status-danger-bg/40 border border-status-danger-border flex flex-col gap-4.5">
+<div className="flex items-start justify-between gap-4">
+<div className="flex items-center gap-4 text-status-danger font-label-md text-label-md">
 <span className="material-symbols-outlined text-[18px]">trending_down</span>
 <span className="">East Central Cluster Deficit</span>
 </div>
@@ -711,9 +711,9 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 {/* Alert Item 2 */}
-<div className="p-3.5 rounded-xl bg-status-warning-bg/40 border border-status-warning-border flex flex-col gap-2.5">
-<div className="flex items-start justify-between gap-2">
-<div className="flex items-center gap-2 text-status-warning font-label-md text-label-md">
+<div className="p-3.5 rounded-xl bg-status-warning-bg/40 border border-status-warning-border flex flex-col gap-4.5">
+<div className="flex items-start justify-between gap-4">
+<div className="flex items-center gap-4 text-status-warning font-label-md text-label-md">
 <span className="material-symbols-outlined text-[18px]">inventory</span>
 <span className="">C&amp;F Stock-Out Hazard</span>
 </div>
@@ -730,9 +730,9 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 {/* Alert Item 3 */}
-<div className="p-3.5 rounded-xl bg-surface-subtle border border-border-subtle flex flex-col gap-2.5">
-<div className="flex items-start justify-between gap-2">
-<div className="flex items-center gap-2 text-text-primary font-label-md text-label-md">
+<div className="p-3.5 rounded-xl bg-surface-subtle border border-border-subtle flex flex-col gap-4.5">
+<div className="flex items-start justify-between gap-4">
+<div className="flex items-center gap-4 text-text-primary font-label-md text-label-md">
 <span className="material-symbols-outlined text-[18px] text-primary">policy</span>
 <span className="">Field Adherence Deviation</span>
 </div>

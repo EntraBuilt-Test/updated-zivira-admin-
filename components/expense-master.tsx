@@ -44,8 +44,8 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
   if (embed) {
     return (
       <>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", padding: "8px 0", marginBottom: "20px", borderBottom: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", gap: "8px", overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", marginBottom: "20px" }}>
+          <div className="modern-tabs">
             {[
               { id: "sfc", label: "SFC Updation" },
               { id: "allowance", label: "Allowance Fixation" },
@@ -54,9 +54,8 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
             ].map((t) => (
               <button
                 key={t.id}
-                className={`button ${activeTab === t.id ? "" : "button-secondary"}`}
+                className={`modern-tab ${activeTab === t.id ? "active" : ""}`}
                 onClick={() => setActiveTab(t.id)}
-                style={{ whiteSpace: "nowrap", padding: "6px 12px", fontSize: "12px" }}
                 type="button"
               >
                 {t.label}
@@ -83,21 +82,21 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
             </div>
             <div className="subdivision-table-card">
               <table className="subdivision-table">
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Station</th>
-                    <th>Kilometer / Distance</th>
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>From</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>To</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Station</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Kilometer / Distance</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody >
                   {sfcRows.map(row => (
-                    <tr key={row.id}>
-                      <td>{row.employeeName ?? "—"}</td>
-                      <td>{row.patchName ?? "—"}</td>
-                      <td>{row.hq ?? "—"}</td>
-                      <td>{row.oneWayKms ?? "—"}</td>
+                    <tr key={row.id} >
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.employeeName ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.patchName ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.hq ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.oneWayKms ?? "—"}</td>
                     </tr>
                   ))}
                   {sfcRows.length === 0 && <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No SFC records found</td></tr>}
@@ -114,21 +113,21 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
             </div>
             <div className="subdivision-table-card">
               <table className="subdivision-table">
-                <thead>
-                  <tr>
-                    <th>Headquarter</th>
-                    <th>Station</th>
-                    <th>Metro Type</th>
-                    <th>Amount</th>
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Headquarter</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Station</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Metro Type</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Amount</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody >
                   {expenseRows.map(row => (
-                    <tr key={row.id}>
-                      <td>—</td>
-                      <td>{row.station ?? "—"}</td>
-                      <td>{row.metroType ?? "—"}</td>
-                      <td>{row.amountNC ?? "—"}</td>
+                    <tr key={row.id} >
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>—</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.station ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.metroType ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.amountNC ?? "—"}</td>
                     </tr>
                   ))}
                   {expenseRows.length === 0 && <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No expense records found</td></tr>}
@@ -149,25 +148,25 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
             ) : (
               <div className="subdivision-table-card">
                 <table className="subdivision-table">
-                  <thead>
-                    <tr>
-                      <th>Attendance Status</th>
-                      <th>HQ Allowance Type</th>
-                      <th>EX Allowance Type</th>
-                      <th>OS Allowance Type</th>
+                  <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                      <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Attendance Status</th>
+                      <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>HQ Allowance Type</th>
+                      <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>EX Allowance Type</th>
+                      <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>OS Allowance Type</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody >
                     {/* Built from real SFC routes — typeRaw ("Tour", "Outstation Work",
                         "Outstation Excursion", "Admin") is the closest real field to an
                         attendance-work-type split, so each route becomes one row instead
                         of fabricating figures with no backing data. */}
                     {sfcRows.map((row) => (
-                      <tr key={row.id}>
-                        <td>{row.employeeName ?? row.employeeCode ?? "—"}</td>
-                        <td>{row.typeRaw === "Tour" ? `HQ · ${row.oneWayKms ?? "—"} km` : "—"}</td>
-                        <td>{row.typeRaw === "Outstation Excursion" ? `EX · ${row.oneWayKms ?? "—"} km` : "—"}</td>
-                        <td>{row.typeRaw === "Outstation Work" ? `OS · ${row.oneWayKms ?? "—"} km` : "—"}</td>
+                      <tr key={row.id} >
+                        <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.employeeName ?? row.employeeCode ?? "—"}</td>
+                        <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.typeRaw === "Tour" ? `HQ · ${row.oneWayKms ?? "—"} km` : "—"}</td>
+                        <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.typeRaw === "Outstation Excursion" ? `EX · ${row.oneWayKms ?? "—"} km` : "—"}</td>
+                        <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.typeRaw === "Outstation Work" ? `OS · ${row.oneWayKms ?? "—"} km` : "—"}</td>
                       </tr>
                     ))}
                     {sfcRows.length === 0 && (
@@ -186,27 +185,27 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
             </div>
             <div className="subdivision-table-card">
               <table className="subdivision-table">
-                <thead>
-                  <tr>
-                    <th>Role</th>
-                    <th>List of Expense</th>
-                    <th>Daily/Work</th>
-                    <th>Station Type</th>
-                    <th>Metro Type</th>
-                    <th>Amount (NC)</th>
-                    <th>Frequency</th>
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Role</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>List of Expense</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Daily/Work</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Station Type</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Metro Type</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Amount (NC)</th>
+                    <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Frequency</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody >
                   {expenseRows.map(row => (
-                    <tr key={row.id}>
-                      <td>{row.role}</td>
-                      <td>{row.listOfExpenseTypes ?? "—"}</td>
-                      <td>{row.dailyWork ?? "—"}</td>
-                      <td>{row.station ?? "—"}</td>
-                      <td>{row.metroType ?? "—"}</td>
-                      <td>{row.amountNC ?? "—"}</td>
-                      <td>{row.frequency ?? "—"}</td>
+                    <tr key={row.id} >
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.role}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.listOfExpenseTypes ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.dailyWork ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.station ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.metroType ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.amountNC ?? "—"}</td>
+                      <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.frequency ?? "—"}</td>
                     </tr>
                   ))}
                   {expenseRows.length === 0 && <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No expense records found</td></tr>}
@@ -230,7 +229,7 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
         </div>
       </div>
       {/* Main Settings Form Panel */}
-      <div className="card" style={{ padding: "28px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+      <div className="card" style={{ padding: "28px", background: "var(--surface-card)", borderRadius: "12px", border: "1px solid var(--border)" }}>
         <form onSubmit={(e) => e.preventDefault()} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px" }}>
           {/* Left Column */}
           <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
@@ -441,16 +440,16 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
                   "BH", "RBM", "ABM", "ZBM", "BRM", "NBM", "Sr ABM", "MH", "SM"
                 ].map((designation) => (
                   <div key={designation} style={{ display: "grid", gridTemplateColumns: "180px 140px 100px", gap: "12px", alignItems: "center" }}>
-                    <select style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--line)", background: "var(--panel)", fontSize: "13px", color: "var(--ink)", outline: "none" }}>
+                    <select className="input" >
                       <option>{designation}</option>
                     </select>
-                    <select style={{ padding: "4px 8px", borderRadius: "4px", border: "1px solid var(--line)", background: "var(--panel)", fontSize: "13px", color: "var(--ink)", outline: "none" }}>
+                    <select className="input" >
                       <option>Manual</option>
                       <option>Automatic</option>
                     </select>
                     <div style={{ display: "flex", gap: "6px", justifyContent: "center" }}>
-                      <button type="button" style={{ width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--line)", background: "var(--panel)", borderRadius: "4px", cursor: "pointer", fontSize: "14px", color: "var(--ink)" }}>+</button>
-                      <button type="button" style={{ width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--line)", background: "var(--panel)", borderRadius: "4px", cursor: "pointer", fontSize: "14px", color: "var(--ink)" }}>-</button>
+                      <button type="button" style={{ width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--line)", background: "var(--surface-card)", borderRadius: "4px", cursor: "pointer", fontSize: "14px", color: "var(--ink)" }}>+</button>
+                      <button type="button" style={{ width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--line)", background: "var(--surface-card)", borderRadius: "4px", cursor: "pointer", fontSize: "14px", color: "var(--ink)" }}>-</button>
                     </div>
                   </div>
                 ))}
@@ -466,38 +465,20 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
               </label>
               <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "6px" }}>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)" }}>From</span>
-                <select
+                <select className="input"
                   value={rangeFrom}
                   onChange={(e) => setRangeFrom(e.target.value)}
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid var(--line)",
-                    background: "var(--panel)",
-                    color: "var(--ink)",
-                    fontSize: "13px",
-                    outline: "none",
-                    cursor: "pointer"
-                  }}
+                  
                 >
                   {rangeNumbers.map((num) => (
                     <option key={num} value={num}>{num}</option>
                   ))}
                 </select>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--ink)" }}>To</span>
-                <select
+                <select className="input"
                   value={rangeTo}
                   onChange={(e) => setRangeTo(e.target.value)}
-                  style={{
-                    padding: "6px 12px",
-                    borderRadius: "6px",
-                    border: "1px solid var(--line)",
-                    background: "var(--panel)",
-                    color: "var(--ink)",
-                    fontSize: "13px",
-                    outline: "none",
-                    cursor: "pointer"
-                  }}
+                  
                 >
                   {rangeNumbers.map((num) => (
                     <option key={num} value={num}>{num}</option>

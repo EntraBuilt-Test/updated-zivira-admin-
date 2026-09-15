@@ -318,7 +318,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (!node.children?.length && !isMisDcr) {
     return (
       <article className="bg-surface-card rounded-xl p-card-padding-standard border border-border-subtle flex flex-col justify-center items-center py-12 text-center shadow-sm">
-        <div className="w-12 h-12 rounded-full bg-surface-subtle flex items-center justify-center mb-4">
+        <div className="w-12 h-12 rounded-full bg-surface-subtle flex items-center justify-center mb-6">
           <span className="material-symbols-outlined text-text-muted text-[24px]">construction</span>
         </div>
         <h3 className="font-headline-md text-headline-md text-text-primary mb-2">{node.title}</h3>
@@ -337,7 +337,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
       {isMisDcr && (
         <div className="mt-8">
-          <h2 className="font-headline-sm text-text-primary mb-4 pb-2 border-b border-border-subtle">
+          <h2 className="font-headline-sm text-text-primary mb-6 pb-2 border-b border-border-subtle">
             Activities
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

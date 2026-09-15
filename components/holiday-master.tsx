@@ -1,5 +1,6 @@
 "use client";
 
+import { PageHeader } from "@/components/page-components";
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/lib/format-date";
@@ -307,18 +308,18 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Division Setup</p>
-          <h2>{isStateTab ? "State Master" : "Holiday Calendar"}</h2>
-          <p>Review comprehensive list of declared regional holidays and policy rules.</p>
-        </div>
-        <div className="subdivision-actions">
-          <BackButton />
+      <PageHeader
+  eyebrow="Division Setup"
+  title={isStateTab ? "State Master" : "Holiday Calendar"}
+  description="Review comprehensive list of declared regional holidays and policy rules."
+  action={
+    <>
+<BackButton />
           
           <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Holiday</button>
-        </div>
-      </div>
+    </>
+  }
+/>
 
       {isStateTab ? (
         <>

@@ -26,109 +26,16 @@ function ClassForm({ row, onSave, onBack }: { row: any; onSave: (r: ClassRow) =>
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>{isEdit ? "Edit Classification" : "Add Classification"}</h2>
-          <p>Configure doctor category, business potential, and visit frequency rules.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>Doctor Category</span>
-          <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="A">A (High-value doctor)</option>
-            <option value="B">B (Moderate-value doctor)</option>
-            <option value="C">C (Low-value doctor)</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Potential</span>
-          <select value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Visit Frequency</span>
-          <select value={form.frequency} onChange={e => setForm({ ...form, frequency: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Weekly">Weekly (4 visits/month)</option>
-            <option value="Twice a Month">Twice a Month (2 visits/month)</option>
-            <option value="Fortnightly">Fortnightly (Every 15 days)</option>
-            <option value="Monthly">Monthly (1 visit/month)</option>
-            <option value="Once in Two Months">Once in Two Months (Every 60 days)</option>
-            <option value="Quarterly">Quarterly (Once every 3 months)</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button">
-          Add Classification
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function DoctorManager() {
-  const [classifications, setClassifications] = useState<ClassRow[]>(initialClassifications);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<ClassRow | null>(null);
-
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = classifications.filter(
-    (c) =>
-      (statusFilter === "All" ||
-        (statusFilter === "Active" && c.status === "Active") ||
-        (statusFilter === "Inactive" && c.status === "Inactive")) &&
-      (c.category.toLowerCase().includes(search.toLowerCase()) ||
-        c.potential.toLowerCase().includes(search.toLowerCase()) ||
-        c.frequency.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: ClassRow) {
-    if (view === "add") {
-      const newClass = {
-        ...form,
-        id: `CL${String(classifications.length + 1).padStart(3, "0")}`
-      };
-      setClassifications([...classifications, newClass]);
-    } else {
-      setClassifications(classifications.map(c => c.id === form.id ? { ...form } : c));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Master Setup"
+  title="Doctor Classification"
+  description="Create and manage doctor visit classifications based on sales potential."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Classification</button>
+    </>
   }
-
-  function handleDeactivate(id: string) {
-    setClassifications(classifications.map(c => c.id === id ? { ...c, status: "Inactive" as const } : c));
-  }
-
-  if (view === "add") return <ClassForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <ClassForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>Doctor Classification</h2>
-          <p>Create and manage doctor visit classifications based on sales potential.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Classification</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

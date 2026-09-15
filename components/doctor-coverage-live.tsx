@@ -30,17 +30,17 @@ export function DoctorCoverageLive() {
   }
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">MIS Reports</p>
-          <h2>Doctor Coverage</h2>
-          <p>Visits, drug samples and gifts given per doctor this month — live from DCR submissions (PRD Section 12.2 &amp; 12.3). MCI gift-value alert threshold: ₹{threshold}.</p>
-        </div>
-        <div className="subdivision-actions">
-          <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
+      <PageHeader
+  eyebrow="MIS Reports"
+  title="Doctor Coverage"
+  description="Visits, drug samples and gifts given per doctor this month — live from DCR submissions (PRD Section 12.2 &amp; 12.3). MCI gift-value alert threshold: ₹{threshold}."
+  action={
+    <>
+<button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <button className="button" onClick={exportCsv} disabled={!rows.length} type="button">Export CSV</button>
-        </div>
-      </div>
+    </>
+  }
+/>
       {error && <p className="form-error">{error}</p>}
       <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
         <table className="subdivision-table">

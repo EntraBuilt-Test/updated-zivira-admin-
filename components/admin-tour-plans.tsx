@@ -31,17 +31,17 @@ export function AdminTourPlans() {
   }
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Activities</p>
-          <h2>Tour Plans — All Managers</h2>
-          <p>Every Tour Plan across the tenant, including voided/reassigned history (PRD Section 12.1).</p>
-        </div>
-        <div className="subdivision-actions">
-          <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
+      <PageHeader
+  eyebrow="Activities"
+  title="Tour Plans — All Managers"
+  description="Every Tour Plan across the tenant, including voided/reassigned history (PRD Section 12.1)."
+  action={
+    <>
+<button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <button className="button" onClick={exportCsv} disabled={!tps.length} type="button">Export CSV</button>
-        </div>
-      </div>
+    </>
+  }
+/>
       {error && <p className="form-error">{error}</p>}
       <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
         <table className="subdivision-table">

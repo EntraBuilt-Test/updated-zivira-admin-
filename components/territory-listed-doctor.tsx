@@ -212,7 +212,7 @@ export function TerritoryListedDoctor() {
             backdropFilter: "blur(4px)"
           }}
         >
-          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "500px", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "500px", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <h2 style={{ margin: 0, fontSize: "1.25rem" }}>{view === "add" ? "Map Doctor to Territory" : "Edit Territory Mapping"}</h2>
               <button className="button button-secondary" onClick={() => setView("list")} type="button">
@@ -228,7 +228,7 @@ export function TerritoryListedDoctor() {
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Select Patch</label>
-                <select value={form.patch} onChange={e => handlePatchChange(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+                <select className="input" value={form.patch} onChange={e => handlePatchChange(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--surface-card)" }}>
                   {patchesList.map(p => (
                     <option key={p.name} value={p.name}>{p.name}</option>
                   ))}
@@ -237,7 +237,7 @@ export function TerritoryListedDoctor() {
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Select Doctor</label>
-                <select value={form.doctorCode} onChange={e => handleDoctorChange(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+                <select className="input" value={form.doctorCode} onChange={e => handleDoctorChange(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--surface-card)" }}>
                   {doctorsList.map(d => (
                     <option key={d.code} value={d.code}>{d.name} ({d.code})</option>
                   ))}
@@ -266,7 +266,7 @@ export function TerritoryListedDoctor() {
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+                <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--surface-card)" }}>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
@@ -280,42 +280,43 @@ export function TerritoryListedDoctor() {
         </div>
       )}
 
-      <section className="subdivision-console">
-        <div className="subdivision-head">
+      <section className="flex flex-col gap-6 w-full">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="subdivision-eyebrow">Field Force Entries</p>
-            <h2>Territory - Listed Doctor</h2>
-            <p>Map and manage doctors assigned under respective patch sales networks.</p>
+            <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Field Force Entries</p>
+            <h2 className="text-2xl font-bold text-text-primary">Territory - Listed Doctor</h2>
+            <p className="text-sm text-text-secondary mt-1">Map and manage doctors assigned under respective patch sales networks.</p>
           </div>
-          <div className="subdivision-actions">
-            
-            <button className="button" onClick={handleAdd} type="button"> Map Doctor</button>
+          <div className="flex items-center gap-3">
+            <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4 shadow-sm" onClick={handleAdd} type="button">
+              Map Doctor
+            </button>
           </div>
-      </div>
+        </div>
 
-      <div style={{ marginBottom: "16px" }}>
+      <div className="flex items-center w-full max-w-sm mb-6">
         <input
           placeholder="Search by doctor code, name or patch..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
+          className="button button-secondary"
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 250px)", minHeight: "220px" }}>
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading mappings...</div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "40px", color: "red" }}>{error}</div>
         ) : (
           <table className="subdivision-table">
-            <thead>
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
               <tr>
-                <th>S.No</th>
-                <th>Patch</th>
-                <th>Doctor Code</th>
-                <th>Doctor Name</th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Patch</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Code</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Specialty" 
@@ -325,7 +326,7 @@ export function TerritoryListedDoctor() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Category" 
@@ -335,8 +336,8 @@ export function TerritoryListedDoctor() {
                     />
                   </div>
                 </th>
-                <th>Medical Representative</th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="HQ"
@@ -346,31 +347,31 @@ export function TerritoryListedDoctor() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                   </div>
                 </th>
-                <th>Edit</th>
-                <th>Inactive</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Inactive</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border-subtle">
               {filtered.map((row, idx) => (
-                <tr key={row.id}>
-                  <td style={{ color: "var(--muted)", fontWeight: 500 }}>{(pagination.page - 1) * pagination.limit + idx + 1}</td>
-                  <td>
+                <tr key={row.id} className="hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap" style={{ fontWeight: 500 }}>{(pagination.page - 1) * pagination.limit + idx + 1}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <span style={{ background: "#f3f4f6", borderRadius: "6px", padding: "3px 10px", fontSize: "12px", fontWeight: 600 }}>
                       {row.territory || row.patch || "-"}
                     </span>
                   </td>
-                  <td style={{ fontWeight: 600 }}>{row.doctorCode || row.code || "-"}</td>
-                  <td><strong>{row.name || row.doctorName}</strong></td>
-                  <td>{row.specialty || "-"}</td>
-                  <td>{row.category || "-"}</td>
-                  <td>{row.mappedEmployeeCode || row.mr || "-"}</td>
-                  <td>{row.hq || row.territory || "-"}</td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.doctorCode || row.code || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name || row.doctorName}</strong></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.specialty || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.category || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.mappedEmployeeCode || row.mr || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq || row.territory || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <span style={{
                       padding: "2px 8px",
                       borderRadius: "999px",
@@ -383,12 +384,12 @@ export function TerritoryListedDoctor() {
                       {row.status}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                       <Pencil size={15} />
                     </button>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="subdivision-danger-button" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                       <Ban size={15} />
                     </button>
@@ -397,7 +398,7 @@ export function TerritoryListedDoctor() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                  <td colSpan={16} className="px-4 py-8 text-center text-text-muted text-sm">
                     No records found
                   </td>
                 </tr>

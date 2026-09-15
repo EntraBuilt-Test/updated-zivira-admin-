@@ -81,7 +81,7 @@ export function ManagerAllowanceAutomatic() {
               <ChevronDown size={15} style={{ color: "var(--muted)" }} />
             </button>
             {dropdownOpen && (
-              <div className="command-select-menu" style={{ width: "260px", top: "calc(100% + 6px)", left: 0, right: "auto" }}>
+              <div className="command-select-menu" >
                 {dummyOptions.map((opt) => (
                   <button
                     key={opt}
@@ -93,7 +93,7 @@ export function ManagerAllowanceAutomatic() {
                     type="button"
                   >
                     <span>{opt}</span>
-                    {selectedDropdownVal === opt && <Check size={14} />}
+
                   </button>
                 ))}
               </div>

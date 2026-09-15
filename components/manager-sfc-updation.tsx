@@ -17,7 +17,7 @@ const ROLE_COLOR: Record<string, { bg: string; text: string; border: string }> =
   MR: { bg: "#ffe4e6", text: "#9f1239", border: "#fecdd3" },
   SR_MR: { bg: "#ffe4e6", text: "#9f1239", border: "#fecdd3" }
 };
-const DEFAULT_ROLE_COLOR = { bg: "var(--panel)", text: "var(--muted)", border: "var(--border)" };
+const DEFAULT_ROLE_COLOR = { bg: "var(--surface-card)", text: "var(--muted)", border: "var(--border)" };
 
 function roleColor(role?: string | null) {
   return ROLE_COLOR[String(role ?? "").toUpperCase()] ?? DEFAULT_ROLE_COLOR;
@@ -189,19 +189,7 @@ export function ManagerSfcUpdation() {
     }
   }
 
-  const inputBoxStyle: CSSProperties = {
-    width: "220px",
-    height: "30px",
-    padding: "0 12px",
-    borderRadius: "6px",
-    border: "1px solid var(--line)",
-    background: "var(--panel)",
-    color: "var(--ink)",
-    fontSize: "13px",
-    outline: "none",
-    boxSizing: "border-box"
-  };
-
+  
   return (
     <section className="subdivision-console">
       {/* Page Header */}
@@ -214,7 +202,7 @@ export function ManagerSfcUpdation() {
       </div>
 
       {/* Main Settings Panel */}
-      <div className="card" style={{ padding: "28px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+      <div className="card" style={{ padding: "28px", background: "var(--surface-card)", borderRadius: "12px", border: "1px solid var(--border)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
           {/* Label */}
           <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap" }}>
@@ -231,7 +219,7 @@ export function ManagerSfcUpdation() {
             }}
             onFocus={() => setDropdownOpen(true)}
             placeholder="Search fieldforce name..."
-            style={inputBoxStyle}
+            className="field-input"
           />
 
           {/* Box 2: Color-coded fieldforce dropdown */}
@@ -268,7 +256,7 @@ export function ManagerSfcUpdation() {
               <ChevronDown size={15} style={{ color: "var(--muted)" }} />
             </button>
             {dropdownOpen && (
-              <div className="command-select-menu" style={{ width: "320px", top: "calc(100% + 6px)", left: 0, right: "auto", maxHeight: "320px", overflowY: "auto" }}>
+              <div className="command-select-menu" >
                 {filteredEmployees.length === 0 && (
                   <div style={{ padding: "10px 14px", fontSize: "13px", color: "var(--muted)" }}>No fieldforce found.</div>
                 )}
@@ -303,7 +291,7 @@ export function ManagerSfcUpdation() {
                       >
                         {emp.name} · {emp.role}
                       </span>
-                      {active && <Check size={14} />}
+
                     </button>
                   );
                 })}
@@ -321,7 +309,7 @@ export function ManagerSfcUpdation() {
               padding: "0 22px",
               borderRadius: "6px",
               border: "1px solid var(--brand)",
-              background: selectedEmployee ? "var(--brand)" : "var(--panel)",
+              background: selectedEmployee ? "var(--brand)" : "var(--surface-card)",
               color: selectedEmployee ? "#fff" : "var(--muted)",
               fontSize: "13px",
               fontWeight: 600,
@@ -338,7 +326,7 @@ export function ManagerSfcUpdation() {
 
       {/* Results table — only after Go is clicked */}
       {activeEmployee && (
-        <div className="card" style={{ marginTop: "20px", padding: "24px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+        <div className="card" style={{ marginTop: "20px", padding: "24px", background: "var(--surface-card)", borderRadius: "12px", border: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
             <span
               style={{
@@ -372,9 +360,9 @@ export function ManagerSfcUpdation() {
                   <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Add/Del</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody >
                 {rowsForActive.map((row) => (
-                  <tr key={row.id} style={{ borderBottom: "1px solid var(--line)" }}>
+                  <tr key={row.id} style={{ borderBottom: "1px solid var(--line)" }} >
                     <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.hq ?? "—"}</td>
                     <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.patchName ?? "—"}</td>
                     <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.oneWayKms ?? "—"}</td>
@@ -404,19 +392,10 @@ export function ManagerSfcUpdation() {
                 <tr>
                   <td style={{ padding: "8px 10px", color: "var(--muted)" }}>{activeEmployee.territory ?? "—"}</td>
                   <td style={{ padding: "8px 10px" }}>
-                    <select
+                    <select className="input"
                       value={newToTerritory}
                       onChange={(e) => setNewToTerritory(e.target.value)}
-                      style={{
-                        width: "100%",
-                        height: "30px",
-                        borderRadius: "6px",
-                        border: "1px solid var(--line)",
-                        background: "var(--panel)",
-                        color: "var(--ink)",
-                        fontSize: "13px",
-                        padding: "0 8px"
-                      }}
+                      className="field-input" style={{ width: "100%" }}
                     >
                       <option value="">Select To Territory</option>
                       {patchOptions.map((p) => (
@@ -430,17 +409,7 @@ export function ManagerSfcUpdation() {
                       value={newDistance}
                       onChange={(e) => setNewDistance(e.target.value)}
                       placeholder="e.g. 25"
-                      style={{
-                        width: "110px",
-                        height: "30px",
-                        borderRadius: "6px",
-                        border: "1px solid var(--line)",
-                        background: "var(--panel)",
-                        color: "var(--ink)",
-                        fontSize: "13px",
-                        padding: "0 8px",
-                        boxSizing: "border-box"
-                      }}
+                      className="field-input" style={{ width: "110px" }}
                     />
                   </td>
                   <td style={{ padding: "8px 10px" }}>

@@ -5,7 +5,7 @@ export function BackButton({ fallback = "/admin/home" }: { fallback?: string }) 
   const router = useRouter();
   return (
     <button
-      className="flex items-center gap-2 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-primary px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
+      className="flex items-center gap-4 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-primary px-4 py-2 rounded-lg font-medium text-sm transition-colors shadow-sm"
       onClick={() => {
         if (window.history.length > 1) {
           router.back();

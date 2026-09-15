@@ -37,116 +37,16 @@ function CampForm({ row, onSave, onBack }: { row: any; onSave: (r: CampRow) => v
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Daily MR Work</p>
-          <h2>{row.id ? "Edit Medical Camp" : "Add Medical Camp"}</h2>
-          <p>Organize and schedule community healthcare and awareness camps.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Camp Code</span>
-          <input value={form.campCode} onChange={e => setForm({ ...form, campCode: e.target.value })} placeholder="CAMP-001" />
-        </label>
-        <label className="field">
-          <span>* Camp Name</span>
-          <input value={form.campName} onChange={e => setForm({ ...form, campName: e.target.value })} placeholder="Free Cardiac Screening Camp" />
-        </label>
-        <label className="field">
-          <span>* Camp Date</span>
-          <input type="date" value={form.campDate} onChange={e => setForm({ ...form, campDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>Hospital</span>
-          <input value={form.hospital} onChange={e => setForm({ ...form, hospital: e.target.value })} placeholder="Metro General Hospital" />
-        </label>
-        <label className="field">
-          <span>Doctor</span>
-          <input value={form.doctor} onChange={e => setForm({ ...form, doctor: e.target.value })} placeholder="Dr. John Watson" />
-        </label>
-        <label className="field">
-          <span>Organizer</span>
-          <input value={form.organizer} onChange={e => setForm({ ...form, organizer: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>No. of Patients Attended</span>
-          <input type="number" value={form.noOfPatients || ""} onChange={e => setForm({ ...form, noOfPatients: parseInt(e.target.value) || 0 })} placeholder="50" />
-        </label>
-        <label className="field">
-          <span>Products Displayed</span>
-          <input value={form.productsDisplayed} onChange={e => setForm({ ...form, productsDisplayed: e.target.value })} placeholder="Zivira API Brands, Consumables" />
-        </label>
-        <label className="field">
-          <span>Remarks</span>
-          <input value={form.remarks} onChange={e => setForm({ ...form, remarks: e.target.value })} placeholder="High visitor response, positive doctor feedback" />
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.campCode.trim() || !form.campName.trim()}>
-          <Check size={16} /> Save Camp Details
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function CampView() {
-  const [list, setList] = useState<CampRow[]>(initialCamps);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<CampRow | null>(null);
-
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (statusFilter === "All" || item.status === statusFilter) &&
-      (item.campName.toLowerCase().includes(search.toLowerCase()) ||
-        item.campCode.toLowerCase().includes(search.toLowerCase()) ||
-        item.organizer.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: CampRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `CMP${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Daily MR Work"
+  title="Camp"
+  description="Organize and review medical camps details."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Camp</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <CampForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <CampForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Daily MR Work</p>
-          <h2>Camp</h2>
-          <p>Organize and review medical camps details.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Camp</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

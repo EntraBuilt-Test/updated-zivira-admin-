@@ -199,29 +199,28 @@ export function UnlistedDoctorMaster() {
     return statusMatch && (nameStr.includes(s) || codeStr.includes(s) || mrStr.includes(s));
   });
   return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
+    <section className="flex flex-col gap-6 w-full">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <p className="subdivision-eyebrow">Field Force Entries</p>
-          <h2>Unlisted Doctors</h2>
-          <p>Verify temporary doctor profiles registered during field visits before official listing.</p>
+          <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Field Force Entries</p>
+          <h2 className="text-2xl font-bold text-text-primary">Unlisted Doctors</h2>
+          <p className="text-sm text-text-secondary mt-1">Verify temporary doctor profiles registered during field visits before official listing.</p>
         </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={handleAdd} type="button"> Add Unlisted Doctor</button>
+        <div className="flex items-center gap-3">
+          <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4 shadow-sm" onClick={handleAdd} type="button"> Add Unlisted Doctor</button>
         </div>
       </div>
-      <div style={{ marginBottom: "16px" }}>
-        <input
-          placeholder="Search by name, code or MR..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
-        />
-      </div>
+      <div className="flex items-center w-full max-w-sm mb-6">
+      <input
+        placeholder="Search by name, code or MR..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        className="button button-secondary"
+      />
+    </div>
       {view !== "list" && (
         <div className="modal-overlay" style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "40px 20px", overflowY: "auto" }}>
-          <div style={{ background: "var(--panel)", borderRadius: "12px", width: "100%", maxWidth: "500px", padding: "24px", boxShadow: "0 10px 40px rgba(0,0,0,0.15)", position: "relative" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "12px", width: "100%", maxWidth: "500px", padding: "24px", boxShadow: "0 10px 40px rgba(0,0,0,0.15)", position: "relative" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
               <h2>{view === "add" ? "Add Unlisted Doctor" : "Edit Unlisted Doctor"}</h2>
               <button className="button button-secondary" onClick={() => setView("list")} type="button">Close</button>
@@ -274,7 +273,7 @@ export function UnlistedDoctorMaster() {
                 </div>
                 <div className="field">
                   <label>Status</label>
-                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                  <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                     <option value="Pending">Pending</option>
                     <option value="Approved">Approved</option>
                     <option value="Rejected">Rejected</option>
@@ -334,7 +333,7 @@ export function UnlistedDoctorMaster() {
               <>
                 <div className="field">
                   <label>Visit Frequency</label>
-                  <select value={form.visitFrequency} onChange={e => setForm({ ...form, visitFrequency: e.target.value })}>
+                  <select className="input" value={form.visitFrequency} onChange={e => setForm({ ...form, visitFrequency: e.target.value })}>
                     <option value="Weekly">Weekly</option>
                     <option value="Fortnight">Fortnight</option>
                     <option value="Monthly">Monthly</option>
@@ -342,7 +341,7 @@ export function UnlistedDoctorMaster() {
                 </div>
                 <div className="field">
                   <label>Potential</label>
-                  <select value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value })}>
+                  <select className="input" value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value })}>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
                     <option value="Low">Low</option>
@@ -390,21 +389,21 @@ export function UnlistedDoctorMaster() {
           </div>
         </div>
       )}
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 250px)", minHeight: "220px" }}>
           {loading ? (
             <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading doctors...</div>
           ) : error ? (
             <div style={{ textAlign: "center", padding: "40px", color: "red" }}>{error}</div>
           ) : (
             <table className="subdivision-table">
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Temporary Doctor Code</th>
-                  <th>Doctor Name</th>
-                  <th>Specialty</th>
-                  <th>City</th>
-                  <th>Medical Representative</th>
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Temporary Doctor Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Specialty</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">City</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
                   <th style={{ minWidth: "130px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Status</span>
@@ -430,7 +429,7 @@ export function UnlistedDoctorMaster() {
                           position: "absolute",
                           top: "100%",
                           right: 0,
-                          background: "var(--panel)",
+                          background: "var(--surface-card)",
                           border: "1px solid var(--border)",
                           borderRadius: "6px",
                           boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -507,20 +506,20 @@ export function UnlistedDoctorMaster() {
                       </div>
                     )}
                   </th>
-                  <th>Edit</th>
-                  <th>Reject</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reject</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((row, idx) => (
-                  <tr key={row.id}>
-                    <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
-                    <td style={{ fontWeight: 600 }}>{row.tempCode}</td>
-                    <td><strong>{row.name}</strong></td>
-                    <td>{row.specialty || "-"}</td>
-                    <td>{row.city || "-"}</td>
-                    <td>{row.mr || "-"}</td>
-                    <td>
+                  <tr key={row.id} className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap" style={{ fontWeight: 500 }}>{idx + 1}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.tempCode}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.specialty || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.mr || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{
                         padding: "2px 8px",
                         borderRadius: "999px",
@@ -533,12 +532,12 @@ export function UnlistedDoctorMaster() {
                         {row.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-danger-button" onClick={() => handleDelete(row.id)} title="Reject" type="button">
                         <Ban size={15} />
                       </button>
@@ -547,7 +546,7 @@ export function UnlistedDoctorMaster() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                    <td colSpan={16} className="px-4 py-8 text-center text-text-muted text-sm">
                       No records found
                     </td>
                   </tr>

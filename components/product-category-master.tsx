@@ -1,4 +1,5 @@
 "use client";
+import { PageHeader } from "@/components/page-components";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { Check, Pencil, Plus, RefreshCw, RotateCcw, SlidersHorizontal, Trash2, X, Package, ChevronDown, Ban } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -377,19 +378,19 @@ export function ProductCategoryMaster() {
       {deactivateTarget && <DeactivateDialog name={deactivateTarget.categoryName} onConfirm={handleDeactivate} onCancel={() => setDeactivateTarget(null)} />}
 
       <section className="subdivision-console">
-        <div className="subdivision-head">
-          <div>
-            <p className="subdivision-eyebrow">Master Setup</p>
-            <h2>Therapy Master</h2>
-            <p>Create and manage product therapies used across the platform.</p>
-          </div>
-          <div className="subdivision-actions">
-            <button className="button button-secondary" onClick={() => setView("reactivation")} type="button"><RefreshCw size={16} /> Reactivation</button>
+        <PageHeader
+  eyebrow="Master Setup"
+  title="Therapy Master"
+  description="Create and manage product therapies used across the platform."
+  action={
+    <>
+<button className="button button-secondary" onClick={() => setView("reactivation")} type="button"><RefreshCw size={16} /> Reactivation</button>
             <button className="button button-secondary" onClick={() => setView("serialNo")} type="button"><SlidersHorizontal size={16} /> S.No Gen</button>
             <button className="button button-secondary" onClick={() => setView("bulkEdit")} type="button"><Pencil size={16} /> Bulk Edit</button>
             <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add</button>
-          </div>
-        </div>
+    </>
+  }
+/>
 
         {error && <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
 

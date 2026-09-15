@@ -87,7 +87,7 @@ export function AdminBiReportsDashboard({ node, path }: { node: ZiviraTreeNode; 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {GROUPS.map((group) => (
           <div key={group.title} className="bg-surface-card border border-border-subtle rounded-xl p-5 shadow-sm">
-            <h3 className="flex items-center gap-2 text-lg font-semibold text-text-primary mb-4">
+            <h3 className="flex items-center gap-4 text-lg font-semibold text-text-primary mb-6">
               <group.icon size={16} /> {group.title}
             </h3>
             <div className="grid gap-1">

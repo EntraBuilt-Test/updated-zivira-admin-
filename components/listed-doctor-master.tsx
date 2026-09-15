@@ -1,4 +1,5 @@
 "use client";
+import { PageHeader } from "@/components/page-components";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { RotateCcw, SlidersHorizontal, Trash2, Pencil, Ban, X, AlertTriangle } from "lucide-react";
@@ -462,17 +463,16 @@ export function ListedDoctorMaster() {
   return (
     <section className="subdivision-console">
       {errorModal}
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Field Force Entries</p>
-          <h2>Listed Doctors</h2>
-          <p>Maintain general registries of approved practicing doctors.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={handleAdd} type="button"> Add Listed Doctor</button>
-        </div>
-      </div>
+      <PageHeader
+  eyebrow="Field Force Entries"
+  title="Listed Doctors"
+  description="Maintain general registries of approved practicing doctors."
+  action={
+    <>
+<button className="button" onClick={handleAdd} type="button"> Add Listed Doctor</button>
+    </>
+  }
+/>
       <div style={{ marginBottom: "16px" }}>
         <input
           placeholder="Search by doctor code, name or specialty..."

@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Pencil, Ban, Download, X, AlertTriangle, FileText, Sheet } from "lucide-react";
+import { Plus, Pencil, Ban, Download, X, AlertTriangle, FileText, Sheet, Check } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { apiClient, type MasterField, type MasterRecord, type MasterSchema } from "@/lib/api-client";
@@ -1029,7 +1029,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 70
           }}
         >
-          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <AlertTriangle size={18} color="#ef4444" />
@@ -1040,9 +1040,11 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
               </button>
             </div>
             <p style={{ margin: 0, fontSize: "13px", color: "var(--ink)" }}>{error}</p>
-            <button className="button button-secondary" style={{ marginTop: "16px", width: "100%" }} onClick={() => setError(null)} type="button">
-              Close
-            </button>
+            <div style={{ marginTop: "16px", display: "flex", justifyContent: "flex-end" }}>
+              <button className="button button-secondary" onClick={() => setError(null)} type="button">
+                Close
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -1053,10 +1055,10 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 50
           }}
         >
-          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px" }}>
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "320px" }}>
             <p>Deactivate this record?</p>
             <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-              <button className="button" onClick={confirmDeactivate} type="button" disabled={saving}>
+              <button className="button button-danger" onClick={confirmDeactivate} type="button" disabled={saving}>
                 {saving ? "Working..." : "Yes, deactivate"}
               </button>
               <button className="button button-secondary" onClick={() => setDeleteTarget(null)} type="button">
@@ -1076,11 +1078,11 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
               padding: "20px"
             }}
           >
-            <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "500px", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
-                <h2 style={{ margin: 0, fontSize: "1.25rem" }}>{isEdit ? `Edit ${schema.title}` : `Add ${schema.title}`}</h2>
-                <button className="button button-secondary" onClick={() => setFormRow(null)} type="button">
-                  Close
+            <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "500px", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "16px", marginBottom: "16px" }}>
+                <h2 style={{ margin: 0, fontSize: "1.25rem", lineHeight: 1.3 }}>{isEdit ? `Edit ${schema.title}` : `Add ${schema.title}`}</h2>
+                <button className="button button-secondary" style={{ flexShrink: 0 }} onClick={() => setFormRow(null)} type="button">
+                  <X size={16} /> Close
                 </button>
               </div>
               <div className="subdivision-form-card" style={{ boxShadow: "none", padding: 0 }}>
@@ -1113,9 +1115,9 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
                     const taken = new Set(rows.map((r) => String((r as any)[f.key])));
                     opts = opts.filter((code) => !taken.has(code));
                   }
-                  const commonStyle: CSSProperties = {
-                    width: "100%", padding: "8px 12px", borderRadius: "6px",
-                    border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)"
+                  const commonStyle: React.CSSProperties = {
+                    width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid var(--border-strong)",
+                    background: "transparent", color: "var(--text-primary)", fontSize: "14px"
                   };
                   if (masterKey === "doctorAdditionalInfo" && f.key === "latitude") {
                     const lat = formRow["latitude"];
@@ -1135,7 +1137,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
                           title={hasLocation ? "Click to re-capture the current location" : "Click to capture the current location"}
                           style={{
                             width: "100%", padding: 0, borderRadius: "8px",
-                            border: "1px dashed var(--line)", background: "var(--panel)",
+                            border: "1px dashed var(--line)", background: "var(--surface-card)",
                             cursor: capturingLocation ? "wait" : "pointer", overflow: "hidden",
                             display: "block"
                           }}
@@ -1193,7 +1195,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
                     </label>
                   );
                 })}
-                <button className="button" style={{ marginTop: "16px", width: "100%" }} onClick={saveForm} type="button" disabled={saving}>
+                <button className="button" onClick={saveForm} type="button" disabled={saving}>
                   {saving ? "Saving..." : isEdit ? "Save Changes" : `Add ${schema.title}`}
                 </button>
               </div>
@@ -1209,8 +1211,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
             <p className="text-sm text-text-muted mt-1">{schema.fields.length} fields, matching the Technical Report exactly.</p>
           </div>
           <div className="flex items-center gap-3">
-            <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm" onClick={openAddForm} type="button">
-              <Plus size={16} />
+            <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4 shadow-sm" onClick={openAddForm} type="button">
               <span>Add {schema.title}</span>
             </button>
           </div>
@@ -1219,12 +1220,12 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
         <div className="flex flex-wrap items-center gap-4 bg-surface-card p-4 rounded-xl border border-border-subtle shadow-sm">
           <article className="flex items-center gap-3 pr-4 border-r border-border-subtle">
             <span className="text-sm text-text-muted">Total Records</span>
-            <strong className="text-lg font-semibold text-text-primary">{rows.length}</strong>
+            <strong className="text-lg font-semibold text-brand-primary bg-brand-primary/10 px-3 py-1.5 rounded-md inline-block">{rows.length}</strong>
           </article>
           
           <div ref={exportMenuRef} className="relative">
             <button
-              className="bg-surface-card border border-border-subtle text-text-primary hover:bg-surface-subtle px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+              className="bg-surface-card border border-border-subtle text-text-primary hover:bg-surface-subtle px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4"
               onClick={() => setExportMenuOpen((v) => !v)}
               type="button"
             >
@@ -1234,10 +1235,10 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
               <div
                 className="absolute top-[calc(100%+6px)] left-0 z-30 bg-surface-card border border-border-subtle rounded-lg shadow-lg min-w-[160px] overflow-hidden py-1"
               >
-                <button type="button" onClick={() => { exportToExcel(); setExportMenuOpen(false); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-text-primary hover:bg-surface-subtle transition-colors text-left">
+                <button type="button" onClick={() => { exportToExcel(); setExportMenuOpen(false); }} className="flex items-center gap-4 w-full px-4 py-2 text-sm text-text-primary hover:bg-surface-subtle transition-colors text-left">
                   <Sheet size={15} className="text-text-secondary" /> Excel
                 </button>
-                <button type="button" onClick={() => { exportToPDF(); setExportMenuOpen(false); }} className="flex items-center gap-2 w-full px-4 py-2 text-sm text-text-primary hover:bg-surface-subtle transition-colors text-left">
+                <button type="button" onClick={() => { exportToPDF(); setExportMenuOpen(false); }} className="flex items-center gap-4 w-full px-4 py-2 text-sm text-text-primary hover:bg-surface-subtle transition-colors text-left">
                   <FileText size={15} className="text-text-secondary" /> PDF
                 </button>
               </div>
@@ -1281,7 +1282,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
 
         <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 250px)", minHeight: "220px" }}>
           <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-center border-collapse">
               <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
                 <tr>
                   {tableFields.map((f) => {

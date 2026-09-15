@@ -10,8 +10,8 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex flex-col w-full">
 
 {/* Breadcrumb and Quick Status Strip */}
-<div className="flex items-center justify-between gap-4 mb-4">
-<div className="flex items-center gap-2 text-text-secondary font-body-sm text-body-sm">
+<div className="flex items-center justify-between gap-4 mb-6">
+<div className="flex items-center gap-4 text-text-secondary font-body-sm text-body-sm">
 <a className="hover:text-primary transition-colors flex items-center gap-1" href="#">
 <span className="material-symbols-outlined text-[16px]">domain</span>
 <span className="">Platform</span>
@@ -40,7 +40,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="absolute right-0 top-0 translate-x-12 -translate-y-8 w-96 h-96 bg-gradient-to-bl from-brand-primary-subtle via-transparent to-transparent rounded-full pointer-events-none opacity-70"></div>
 <div className="relative z-10 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
 <div className="max-w-3xl space-y-1.5">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
 <span className="font-label-sm text-label-sm uppercase tracking-widest text-primary">Healthcare Professional Care &amp; Retention</span>
 </div>
@@ -52,12 +52,12 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
         </p>
 </div>
 {/* Action Button */}
-<div className="flex items-center gap-2.5 flex-shrink-0"><button className="h-10 px-4 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md inline-flex items-center gap-2 border border-border-subtle shadow-xs transition-colors focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-text-secondary">download</span><span className="">Export Roster</span></button><button className="h-10 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a3412] text-white font-label-md text-label-md inline-flex items-center gap-2 shadow-sm transition-all transform active:scale-95 focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-white">card_giftcard</span><span className="font-semibold">+ Schedule Custom Greeting / Gift Dispatch</span></button></div>
+<div className="flex items-center gap-4.5 flex-shrink-0"><button className="h-10 px-4 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md inline-flex items-center gap-4 border border-border-subtle shadow-xs transition-colors focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-text-secondary">download</span><span className="">Export Roster</span></button><button className="h-10 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a3412] text-white font-label-md text-label-md inline-flex items-center gap-4 shadow-sm transition-all transform active:scale-95 focus:outline-none" type="button"><span className="material-symbols-outlined text-[18px] text-white">card_giftcard</span><span className="font-semibold">+ Schedule Custom Greeting / Gift Dispatch</span></button></div>
 </div>
 {/* Filter Strip */}
 <div className="mt-6 pt-5 bg-surface-canvas rounded-lg p-3.5 flex flex-wrap items-center justify-between gap-3">
 <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<div className="flex items-center gap-4 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">travel_explore</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
 <option>All Territories / Pan-India HQ</option>
@@ -68,7 +68,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <option>Chennai Kodambakkam Hub</option>
 </select>
 </div>
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<div className="flex items-center gap-4 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">celebration</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
 <option>Celebration Type: All (68)</option>
@@ -78,7 +78,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <option>Medical Accolades &amp; Fellowships (5)</option>
 </select>
 </div>
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<div className="flex items-center gap-4 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">calendar_month</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
 <option>Date Range: This Month (Sep 2026)</option>
@@ -88,7 +88,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <option>Q3 Consolidated</option>
 </select>
 </div>
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<div className="flex items-center gap-4 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">stars</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
 <option>Physician Tier: All</option>
@@ -98,7 +98,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </select>
 </div>
 </div>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-body-sm text-body-sm text-text-muted">Showing 24 of 68 Events</span>
 <button className="w-8 h-8 rounded-lg bg-surface-card hover:bg-surface-subtle flex items-center justify-center text-text-secondary transition-colors" title="Reset Filters" type="button">
 <span className="material-symbols-outlined text-[18px]">restart_alt</span>
@@ -118,7 +118,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">Celebrations This Month</span>
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">68</span>
 <span className="font-label-md text-label-md text-text-secondary">Doctors</span>
 </div>
@@ -145,7 +145,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">Greetings Dispatched</span>
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">54</span>
 <span className="font-label-md text-label-md text-text-muted">/ 68</span>
 </div>
@@ -172,7 +172,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">Personalized Cakes &amp; Hampers</span>
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">28</span>
 <span className="font-label-md text-label-md text-text-secondary">Delivered</span>
 </div>
@@ -196,7 +196,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">MR Acknowledgement Rate</span>
-<div className="flex items-baseline gap-2">
+<div className="flex items-baseline gap-4">
 <span className="font-metric-value text-metric-value text-text-primary">91.2%</span>
 <span className="font-label-sm text-label-sm text-status-success font-semibold flex items-center">
 <span className="material-symbols-outlined text-[14px]">trending_up</span> +3.4%
@@ -219,22 +219,22 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 {/* Interactive Navigation Tabs */}
-<div className="flex items-center gap-2 border-b-0 mb-4 bg-surface-card rounded-xl p-1.5 shadow-sm max-w-fit">
-<button className="px-4 py-2 rounded-lg bg-brand-primary-subtle text-primary font-label-md text-label-md flex items-center gap-2 shadow-xs transition-all" type="button">
+<div className="flex items-center gap-4 border-b-0 mb-6 bg-surface-card rounded-xl p-1.5 shadow-sm max-w-fit">
+<button className="button" type="button">
 <span className="material-symbols-outlined text-[18px]">event_upcoming</span>
 <span className="">Upcoming Celebrations (Next 14 Days)</span>
 <span className="w-5 h-5 rounded-full bg-[#b43403] text-white text-[11px] font-bold flex items-center justify-center">24</span>
 </button>
-<button className="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-label-md text-label-md flex items-center gap-2 transition-all" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">done_all</span>
 <span className="">Completed &amp; Dispatched This Month</span>
 <span className="font-label-sm text-label-sm text-text-muted">(44)</span>
 </button>
-<button className="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-label-md text-label-md flex items-center gap-2 transition-all" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">drafts</span>
 <span className="">Automated Digital Greeting Templates</span>
 </button>
-<button className="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-label-md text-label-md flex items-center gap-2 transition-all" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">military_tech</span>
 <span className="">Executive Gift &amp; CME Sponsorship Tracker</span>
 </button>
@@ -249,7 +249,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <p className="font-body-sm text-body-sm text-text-muted">Real-time status tracking for greeting cards, automated communications, and representative deliveries.</p>
 </div>
 </div>
-<div className="flex items-center gap-2.5">
+<div className="flex items-center gap-4.5">
 <div className="relative">
 <input className="h-9 w-64 pl-8 pr-3 rounded-lg bg-surface-card text-text-primary placeholder:text-text-muted font-body-sm text-body-sm shadow-xs focus:outline-none focus:ring-1 focus:ring-primary" placeholder="Filter roster by doctor name, clinic, or rep..." type="text"/>
 <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[16px]">filter_list</span>
@@ -262,7 +262,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Table */}
 <div className="overflow-x-auto">
-<table className="w-full text-left font-table-cell text-table-cell">
+<table className="w-full text-center font-table-cell text-table-cell">
 <thead>
 <tr className="bg-surface-canvas text-text-secondary font-label-sm text-label-sm uppercase tracking-wider h-10">
 <th className="pl-card-padding-spacious pr-3 py-2 w-10">
@@ -288,7 +288,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <img className="w-full h-full object-cover" data-alt="Senior Indian physician portrait wearing white medical coat with stethoscope in a clean modern clinic setting, warm ambient lighting, authoritative healthcare professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYjR09nS0O_vm4OElLqgo03aN8H7ynVb7j3xIjpDKwihSdMrkPhXYjWgpmQ3iHIXX31XzWzANsvAEUlILjryUso7XlZgPBQGxcC6PJWQmCwVbhP33sK0rw5hbtYWN3ivf3Ycj3gu9CsbEiTB8jxhHMbIZQDfHV1pkpKw97-mmqbHi8Z9bCzr0n56QYNXgxrtVBa3WyUgXE1VyyEmzci9cHqeF-hzehfjG7ru38Lufr5hW3wddNV2fQ"/>
 </div>
 <div className="min-w-0">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-headline-sm text-headline-sm text-text-primary truncate">Dr. Rajesh V. Merchant</span>
 <span className="px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm font-bold">Tier A+</span>
 </div>
@@ -297,7 +297,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">cake</span>
 </div>
@@ -310,7 +310,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">RS</div>
 <div>
 <span className="font-label-md text-label-md text-text-primary block">Rahul Sharma</span>
@@ -325,7 +325,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
               </span>
 </td>
 <td className="px-4 py-3.5">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-primary text-[18px]">military_tech</span>
 <div>
 <span className="font-label-md text-label-md text-text-primary block truncate max-w-[220px]">Personalized Desk Plaque</span>
@@ -360,7 +360,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <img className="w-full h-full object-cover" data-alt="Confident female Indian endocrinologist in smart medical attire sitting in consultation room with modern clinic diplomas on wall, natural soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZa-pQfl4mt58c5fijVWqarKXo2nXxjbJyEimIXfoZV33l5kzNvH91zPx5nYhtGGHyHdoZcNwFW6FdYUDyvby2jmJ9ISlu8o7aqSfWsJA8zhvk1AXntmklO4zpH3NslKk8CNV7DEsi1X9AFBAiqLRvxvXu7O5YXfOXUzsZ_Zlo05sT2rjen7UPNBZ_FYqeflE1kcscWTNBuMNckSfQ-5I4Cj9Ol9QZEAyJhqN5NhvCkWaGsGDcq0Pi"/>
 </div>
 <div className="min-w-0">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-headline-sm text-headline-sm text-text-primary truncate">Dr. Sunita K. Nambiar</span>
 <span className="px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm font-bold">Tier A+</span>
 </div>
@@ -369,7 +369,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-8 h-8 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">domain_verification</span>
 </div>
@@ -382,7 +382,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">VK</div>
 <div>
 <span className="font-label-md text-label-md text-text-primary block">Vikas Kulkarni</span>
@@ -397,7 +397,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
               </span>
 </td>
 <td className="px-4 py-3.5">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-status-info text-[18px]">featured_seasonal_and_gifts</span>
 <div>
 <span className="font-label-md text-label-md text-text-primary block truncate max-w-[220px]">Custom Crystal Milestone Trophy</span>
@@ -432,7 +432,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <img className="w-full h-full object-cover" data-alt="Distinguished senior male physician with spectacles and stethoscope in consultation chambers, warm interior lighting with medical references" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7dMrfp_ttzq8xYcasOudNMSaQC-k6SzoT68HbBMH2481OuEALjCXf8g1XGWOx6AwoIGiFG1JJHYq92ovhNfKQbL7-jGzTBc4CG_wQ6WQKNRIcbAwO90DINNd7IqVXNs5f8sIn5Hr-m9vidDJJObyj854-x6n1fRhz357gEkOn_r-U7n1KuRX0kT30wFOJH2miJyBiD2Nb6HfbXIxrxR0SEn1Dfdh65vJz9BbgKhi4BKR3ZNh2p7Rp"/>
 </div>
 <div className="min-w-0">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-headline-sm text-headline-sm text-text-primary truncate">Dr. Arvind Sen</span>
 <span className="px-2 py-0.5 rounded-full bg-surface-container text-text-secondary font-label-sm text-label-sm font-semibold">Tier A</span>
 </div>
@@ -441,7 +441,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">cake</span>
 </div>
@@ -454,7 +454,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">AD</div>
 <div>
 <span className="font-label-md text-label-md text-text-primary block">Amit Duggal</span>
@@ -469,7 +469,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
               </span>
 </td>
 <td className="px-4 py-3.5">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-primary text-[18px]">local_florist</span>
 <div>
 <span className="font-label-md text-label-md text-text-primary block truncate max-w-[220px]">Premium Floral Bouquet &amp; Letter</span>
@@ -504,7 +504,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <img className="w-full h-full object-cover" data-alt="Middle-aged female physician specialist smiling gracefully in clean executive clinical office with medical books and research awards in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe4FJaFViveQgXkbCT_8eooSxhoaV4PeJYYfHh7uZupTLN3VpUcttnM7o2sU3PWBkmzQ2QNWuMOqaom93_cGjX7Y1mVWIF4IJCWfE23VJY79SkQTnYoce3T2_TdwSRql4pDDPIXr4Od0wW-GRs6Csbl7yLFAGaN5msSqnaOehQZBfNoYjU_nNrtQjvcjtfz1bi75Bhzj1poQqkW8bJX2dolIhIssPm5_yvRZtsBH3MM7y3_w2HBDRK"/>
 </div>
 <div className="min-w-0">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-headline-sm text-headline-sm text-text-primary truncate">Dr. Meenakshi Sundaram</span>
 <span className="px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm font-bold">Tier A+</span>
 </div>
@@ -513,7 +513,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-8 h-8 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">workspace_premium</span>
 </div>
@@ -526,7 +526,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">KN</div>
 <div>
 <span className="font-label-md text-label-md text-text-primary block">Karthik Nathan</span>
@@ -541,7 +541,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
               </span>
 </td>
 <td className="px-4 py-3.5">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-primary text-[18px]">verified</span>
 <div>
 <span className="font-label-md text-label-md text-text-primary block truncate max-w-[220px]">Executive Leather Portfolio</span>
@@ -572,7 +572,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <img className="w-full h-full object-cover" data-alt="Energetic senior male pediatrician in modern pediatric clinic office with warm colorful healthcare equipment and awards on shelf" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw4Hlp0flClxxHU-SfOq4khWtTt0WbvyGu0B492Pz_LXhWs0rElspBzguSh4cF_VwnMKKlsGUgEG-5IXOFeYgnLC6gB6CBUo0dTPDdHItCCpW__TEx84ffWM5d1UBhZTlNkJX3_y0aq1HkgqXXGe4bm-O1B5cQWwSlOqF2HCLictrk0tVKqzysmsWXHlKCqFSlf3TbW5gfvPIU_mGb-CS7mlzcToysvOvaOh8a3WCkuuFUEm_Yq_FB"/>
 </div>
 <div className="min-w-0">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-headline-sm text-headline-sm text-text-primary truncate">Dr. Pradip Roy</span>
 <span className="px-2 py-0.5 rounded-full bg-surface-container text-text-secondary font-label-sm text-label-sm font-semibold">Tier A</span>
 </div>
@@ -581,7 +581,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">foundation</span>
 </div>
@@ -594,7 +594,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </td>
 <td className="px-4 py-3.5 whitespace-nowrap">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">SM</div>
 <div>
 <span className="font-label-md text-label-md text-text-primary block">Subhashish Mitra</span>
@@ -609,7 +609,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
               </span>
 </td>
 <td className="px-4 py-3.5">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="material-symbols-outlined text-primary text-[18px]">cake</span>
 <div>
 <span className="font-label-md text-label-md text-text-primary block truncate max-w-[220px]">Celebration Cake &amp; Sweets Hamper</span>
@@ -638,7 +638,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Table Pagination & Footer Status */}
 <div className="px-card-padding-spacious py-3.5 bg-surface-card flex flex-col sm:flex-row items-center justify-between gap-3 text-text-secondary font-body-sm text-body-sm">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="">Displaying rows 1 - 5 of 24 upcoming events</span>
 <span className="w-1 h-1 rounded-full bg-text-muted"></span>
 <span className="text-primary font-label-sm text-label-sm">3 events require manager clearance</span>
@@ -661,14 +661,14 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Left: Monthly Celebration Distribution Calendar Preview (7 Cols) */}
 <div className="lg:col-span-7 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
 <div>
-<div className="flex items-center justify-between mb-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center justify-between mb-6">
+<div className="flex items-center gap-4.5">
 <span className="w-2.5 h-2.5 rounded-full bg-status-info"></span>
 <h3 className="font-headline-sm text-headline-sm text-text-primary">Monthly Celebration Distribution Calendar (Sep 2026)</h3>
 </div>
 <span className="font-label-sm text-label-sm text-text-muted bg-surface-subtle px-2.5 py-1 rounded-md">Peak Cluster: Week 3</span>
 </div>
-<p className="font-body-sm text-body-sm text-text-secondary mb-4">
+<p className="font-body-sm text-body-sm text-text-secondary mb-6">
           Heatmap overview of HCP milestones across 4 distinct weeks. Optimize representative physical visits and prevent dispatch bottlenecks.
         </p>
 {/* Inline Visual Heatmap Grid */}
@@ -789,14 +789,14 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Right: Automated Greeting Channel Configuration (5 Cols) */}
 <div className="lg:col-span-5 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
 <div>
-<div className="flex items-center justify-between mb-4">
-<div className="flex items-center gap-2.5">
+<div className="flex items-center justify-between mb-6">
+<div className="flex items-center gap-4.5">
 <span className="w-2.5 h-2.5 rounded-full bg-primary"></span>
 <h3 className="font-headline-sm text-headline-sm text-text-primary">Greeting Channel Automation</h3>
 </div>
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm font-bold">4 Active Flows</span>
 </div>
-<p className="font-body-sm text-body-sm text-text-secondary mb-4">
+<p className="font-body-sm text-body-sm text-text-secondary mb-6">
           Centralized CRM triggers coordinating headquarters digital communications and field rep notifications.
         </p>
 {/* Automation Controls List */}

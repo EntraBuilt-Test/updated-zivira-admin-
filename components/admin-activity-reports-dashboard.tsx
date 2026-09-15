@@ -11,7 +11,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Top Hero Header with Platform Breadcrumb & Global Action Stripe */}
 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
 <div className="flex flex-col space-y-1">
-<div className="flex items-center gap-2 text-label-sm font-label-sm tracking-wider uppercase text-text-muted">
+<div className="flex items-center gap-4 text-label-sm font-label-sm tracking-wider uppercase text-text-muted">
 <span className="">PLATFORM</span>
 <span className="material-symbols-outlined text-[13px] text-text-muted">chevron_right</span>
 <span className="text-primary font-bold">Activity Reports</span>
@@ -24,7 +24,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
       </p>
 </div>
 {/* Actions & Filter Controls */}
-<div className="flex flex-wrap items-center gap-2.5">
+<div className="flex flex-wrap items-center gap-4.5">
 {/* Preset Timeframes */}
 <div className="flex items-center p-1 bg-surface-subtle rounded-lg">
 <button className="px-3 py-1.5 text-label-md font-label-md rounded-md hover:bg-surface-card text-text-secondary transition-all" type="button">Today</button>
@@ -61,22 +61,22 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <span className="material-symbols-outlined text-[16px] text-text-muted">arrow_drop_down</span>
 </button>
 <div className="hidden absolute right-0 mt-1.5 w-44 bg-surface-card rounded-lg shadow-xl z-30 py-1.5" id="export-dropdown-menu">
-<button className="w-full px-3.5 py-2 text-left text-body-sm font-body-sm text-text-primary hover:bg-surface-subtle flex items-center gap-2" type="button">
+<button className="w-full px-3.5 py-2 text-left text-body-sm font-body-sm text-text-primary hover:bg-surface-subtle flex items-center gap-4" type="button">
 <span className="material-symbols-outlined text-[16px] text-status-success">table_view</span>
 <span className="">Excel Workbook (.xlsx)</span>
 </button>
-<button className="w-full px-3.5 py-2 text-left text-body-sm font-body-sm text-text-primary hover:bg-surface-subtle flex items-center gap-2" type="button">
+<button className="w-full px-3.5 py-2 text-left text-body-sm font-body-sm text-text-primary hover:bg-surface-subtle flex items-center gap-4" type="button">
 <span className="material-symbols-outlined text-[16px] text-status-danger">picture_as_pdf</span>
 <span className="">Audited PDF Dossier</span>
 </button>
-<button className="w-full px-3.5 py-2 text-left text-body-sm font-body-sm text-text-primary hover:bg-surface-subtle flex items-center gap-2" type="button">
+<button className="w-full px-3.5 py-2 text-left text-body-sm font-body-sm text-text-primary hover:bg-surface-subtle flex items-center gap-4" type="button">
 <span className="material-symbols-outlined text-[16px] text-status-info">csv</span>
 <span className="">Raw CSV Extract</span>
 </button>
 </div>
 </div>
 {/* Generate Custom Report CTA */}
-<button className="h-[38px] px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-brand-primary-hover flex items-center gap-2 transition-transform active:scale-95" type="button">
+<button className="h-[38px] px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-brand-primary-hover flex items-center gap-4 transition-transform active:scale-95" type="button">
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
 <span className="">+ Generate Custom Report</span>
 </button>
@@ -204,29 +204,29 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
 {/* Report Tabs */}
 <div className="flex items-center p-1 bg-surface-subtle rounded-lg overflow-x-auto">
-<button className="report-tab-btn px-4 py-2 text-label-md font-label-md bg-surface-card text-primary shadow-sm rounded-lg transition-colors font-semibold flex items-center gap-2 whitespace-nowrap" type="button">
+<button className="report-tab-btn px-4 py-2 text-label-md font-label-md bg-surface-card text-primary shadow-sm rounded-lg transition-colors font-semibold flex items-center gap-4 whitespace-nowrap" type="button">
 <span className="material-symbols-outlined text-[18px]">calendar_today</span>
 <span className="">Daily Field Call Log</span>
 </button>
-<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap" type="button">
+<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-4 whitespace-nowrap" type="button">
 <span className="material-symbols-outlined text-[18px]">repeat</span>
 <span className="">Doctor Detailing Frequency</span>
 </button>
-<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap" type="button">
+<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-4 whitespace-nowrap" type="button">
 <span className="material-symbols-outlined text-[18px]">receipt_long</span>
 <span className="">Chemist &amp; Stockist POB</span>
 </button>
-<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap" type="button">
+<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-4 whitespace-nowrap" type="button">
 <span className="material-symbols-outlined text-[18px]">rule_folder</span>
 <span className="">Missed Calls &amp; Deviations</span>
 </button>
-<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap" type="button">
+<button className="report-tab-btn px-4 py-2 text-label-md font-label-md text-text-secondary hover:text-text-primary rounded-lg transition-colors flex items-center gap-4 whitespace-nowrap" type="button">
 <span className="material-symbols-outlined text-[18px]">slideshow</span>
 <span className="">VA Slide Analytics</span>
 </button>
 </div>
 {/* Bulk Actions / Selection Indicator */}
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="hidden px-2.5 py-1 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm font-semibold" id="selected-count-badge">
           0 Selected
         </span>
@@ -246,7 +246,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-text-muted">search</span>
 <input className="w-full h-10 pl-9 pr-4 rounded-lg bg-surface-subtle text-text-primary placeholder:text-text-muted font-body-sm text-body-sm focus:outline-none focus:bg-surface-card focus:shadow-sm transition-all" placeholder="Search by MR Name, Employee ID, Doctor, or Headquarter..." type="text"/>
 </div>
-<div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+<div className="flex items-center gap-4 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
 {/* Status Pills */}
 <span className="text-label-sm font-label-sm text-text-muted whitespace-nowrap">Status:</span>
 <button className="px-2.5 py-1 rounded-full text-label-sm font-label-sm bg-text-primary text-on-primary" type="button">All</button>
@@ -267,7 +267,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Comprehensive Audited Report Data Table (High-density, executive-grade) */}
 <div className="bg-surface-card rounded-xl shadow-sm overflow-hidden" id="audit-table">
 <div className="overflow-x-auto">
-<table className="w-full text-left border-collapse">
+<table className="w-full text-center border-collapse">
 <thead>
 <tr className="bg-surface-subtle h-table-header-height text-label-sm font-label-sm uppercase tracking-wider text-text-secondary select-none">
 <th className="w-12 px-4 py-2.5">
@@ -717,7 +717,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </div>
 {/* Table Pagination & Footer */}
 <div className="px-4 py-3 bg-surface-card flex flex-col sm:flex-row items-center justify-between gap-3 text-body-sm font-body-sm text-text-secondary">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="">Showing <strong>1 to 6</strong> of <strong>4,892</strong> entries</span>
 <span className="text-text-muted">|</span>
 <div className="flex items-center gap-1">
@@ -766,7 +766,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Cardiologists */}
 <div>
 <div className="flex items-center justify-between text-body-sm font-body-sm mb-1.5">
-<span className="font-semibold text-text-primary flex items-center gap-2">
+<span className="font-semibold text-text-primary flex items-center gap-4">
 <span className="w-2.5 h-2.5 rounded-full bg-primary inline-block"></span>
               Cardiologists (Consultants &amp; Interventionists)
             </span>
@@ -779,7 +779,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Diabetologists & Endocrinologists */}
 <div>
 <div className="flex items-center justify-between text-body-sm font-body-sm mb-1.5">
-<span className="font-semibold text-text-primary flex items-center gap-2">
+<span className="font-semibold text-text-primary flex items-center gap-4">
 <span className="w-2.5 h-2.5 rounded-full bg-status-info inline-block"></span>
               Diabetologists &amp; Endocrinologists
             </span>
@@ -792,7 +792,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Consulting General Physicians */}
 <div>
 <div className="flex items-center justify-between text-body-sm font-body-sm mb-1.5">
-<span className="font-semibold text-text-primary flex items-center gap-2">
+<span className="font-semibold text-text-primary flex items-center gap-4">
 <span className="w-2.5 h-2.5 rounded-full bg-status-warning inline-block"></span>
               General Physicians &amp; Internal Medicine
             </span>
@@ -805,7 +805,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {/* Pulmonologists & Chest Physicians */}
 <div>
 <div className="flex items-center justify-between text-body-sm font-body-sm mb-1.5">
-<span className="font-semibold text-text-primary flex items-center gap-2">
+<span className="font-semibold text-text-primary flex items-center gap-4">
 <span className="w-2.5 h-2.5 rounded-full bg-status-success inline-block"></span>
               Pulmonologists &amp; Critical Care
             </span>
@@ -817,7 +817,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </div>
 </div>
 <div className="p-3 bg-brand-primary-subtle/50 rounded-lg flex items-center justify-between">
-<div className="flex items-center gap-2 text-body-sm font-body-sm text-text-primary">
+<div className="flex items-center gap-4 text-body-sm font-body-sm text-text-primary">
 <span className="material-symbols-outlined text-primary text-[18px]">lightbulb</span>
 <span className="">Cardiology detailing exceeds quarterly focus plan by <strong>+4.0%</strong>. GP visits currently lag slightly behind plan.</span>
 </div>
@@ -894,7 +894,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <div className="text-body-sm font-body-sm text-text-secondary">29 Active MRs • 9 Delays</div>
 </div>
 </div>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="font-bold text-status-danger text-body-md font-body-md">78.1%</span>
 <button className="px-2.5 py-1 rounded bg-status-danger text-on-primary text-label-sm font-label-sm shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1" type="button">
 <span className="material-symbols-outlined text-[13px]">notification_important</span>
@@ -991,15 +991,13 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </div>
 {/* Modal Footer */}
 <div className="p-card-padding-spacious bg-surface-subtle flex items-center justify-between">
-<button className="px-4 py-2 rounded-lg bg-status-danger-bg text-status-danger font-label-md text-label-md hover:bg-status-danger hover:text-on-primary transition-colors flex items-center gap-1.5" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">flag</span>
 <span className="">Flag Inconsistency</span>
 </button>
-<div className="flex items-center gap-2">
-<button className="px-4 py-2 rounded-lg hover:bg-surface-card text-text-secondary font-label-md text-label-md transition-colors" type="button">
-            Cancel
-          </button>
-<button className="px-4 py-2 rounded-lg bg-status-success text-on-primary font-label-md text-label-md shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1.5" type="button">
+<div className="flex items-center gap-4">
+<button className="button button-secondary" type="button">Cancel</button>
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">done_all</span>
 <span className="">Approve DCR Audit</span>
 </button>

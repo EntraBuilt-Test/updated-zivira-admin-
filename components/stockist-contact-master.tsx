@@ -27,101 +27,18 @@ function ContactForm({ row, onSave, onBack }: { row: any; onSave: (r: ContactRow
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>{isEdit ? "Edit Contact" : "Add Contact"}</h2>
-          <p>Maintain general registration and contact profiles.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button">
-          <RotateCcw size={16} /> Back
-        </button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Contact Person</span>
-          <input value={form.contactPerson} onChange={e => setForm({ ...form, contactPerson: e.target.value })} placeholder="e.g. John Doe" />
-        </label>
-        <label className="field">
-          <span>* Mobile</span>
-          <input value={form.mobile} onChange={e => setForm({ ...form, mobile: e.target.value })} placeholder="e.g. 9876543210" />
-        </label>
-        <label className="field">
-          <span>* Email</span>
-          <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder="e.g. email@example.com" />
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </label>
-        <button
-          className="button"
-          style={{ marginTop: "12px" }}
-          onClick={() => onSave(form)}
-          type="button"
-          disabled={!form.contactPerson.trim() || !form.mobile.trim() || !form.email.trim()}
-        >
-          <Check size={16} /> Save Contact
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function StockistContactMaster() {
-  const [list, setList] = useState<ContactRow[]>(initialContacts);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<ContactRow | null>(null);
-
-  const [statusFilter, setStatusFilter] = useState("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (statusFilter === "All" || item.status === statusFilter) &&
-      (item.contactPerson.toLowerCase().includes(search.toLowerCase()) ||
-        item.mobile.toLowerCase().includes(search.toLowerCase()) ||
-        item.email.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: ContactRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `CON${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
-  }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <ContactForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <ContactForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>Contact</h2>
-          <p>Configure general profiles, mappings, and status settings.</p>
-        </div>
-        <div className="subdivision-actions">
-          <BackButton />
+      <PageHeader
+  eyebrow="Master Setup"
+  title="Contact"
+  description="Configure general profiles, mappings, and status settings."
+  action={
+    <>
+<BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Contact</button>
-        </div>
-      </div>
+          <button className="button" onClick={() => setView("add")} type="button">Add Contact</button>
+    </>
+  }
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

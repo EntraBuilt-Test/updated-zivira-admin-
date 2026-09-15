@@ -9,7 +9,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 {/* BEGIN: PageHeaderAndActions */}
 <section className="flex flex-col md:flex-row md:items-center md:justify-between gap-4" data-purpose="page-title-actions">
 <div>
-<div className="inline-flex items-center gap-2 mb-1">
+<div className="inline-flex items-center gap-4 mb-1">
 <span className="w-2 h-2 rounded-full bg-brand-corporate"></span>
 <span className="text-[11px] font-extrabold uppercase tracking-wider text-brand-corporate">Physician Network &amp; Call Frequency Compliance</span>
 </div>
@@ -18,14 +18,14 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
             Monitor target physician call frequencies, core list adherence, coverage gaps across specialty tiers (Core A+, A, B), and field representative visit reach.
           </p>
 </div>
-<div className="flex items-center gap-2.5">
-<button className="inline-flex items-center gap-2 px-3.5 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-semibold text-text-secondary hover:bg-surface-subtle shadow-sm transition-all">
+<div className="flex items-center gap-4.5">
+<button className="inline-flex items-center gap-4 px-3.5 py-2 bg-surface-card border border-border-subtle rounded-lg text-xs font-semibold text-text-secondary hover:bg-surface-subtle shadow-sm transition-all">
 <svg className="w-4 h-4 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
 </svg>
 <span className="">Export Coverage Audit (CSV/XLS)</span>
 </button>
-<button className="inline-flex items-center gap-2 px-4 py-2 bg-brand-corporate hover:bg-brand-800 text-white rounded-lg text-xs font-semibold shadow-sm transition-all">
+<button className="inline-flex items-center gap-4 px-4 py-2 bg-brand-corporate hover:bg-brand-800 text-white rounded-lg text-xs font-semibold shadow-sm transition-all">
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 <path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
 </svg>
@@ -43,7 +43,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div className="flex items-start justify-between">
 <div>
 <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">Total Registered Doctors</span>
-<div className="mt-1 flex items-baseline gap-2">
+<div className="mt-1 flex items-baseline gap-4">
 <span className="text-2xl font-extrabold text-text-primary">14,820</span>
 <span className="text-[11px] font-semibold text-emerald-600 bg-status-success-bg px-1.5 py-0.5 rounded border border-status-success-bg">+310 Qtr</span>
 </div>
@@ -63,7 +63,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div className="flex items-start justify-between">
 <div>
 <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">Monthly Reached (Coverage Rate)</span>
-<div className="mt-1 flex items-baseline gap-2">
+<div className="mt-1 flex items-baseline gap-4">
 <span className="text-2xl font-extrabold text-brand-corporate">88.4%</span>
 <span className="text-xs font-semibold text-text-secondary">13,101 / 14,820</span>
 </div>
@@ -92,7 +92,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div className="flex items-start justify-between">
 <div>
 <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">Average Call Frequency</span>
-<div className="mt-1 flex items-baseline gap-2">
+<div className="mt-1 flex items-baseline gap-4">
 <span className="text-2xl font-extrabold text-text-primary">2.4</span>
 <span className="text-xs text-text-secondary">calls / doctor / mo</span>
 </div>
@@ -115,7 +115,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <span className="text-[11px] font-bold uppercase tracking-wider text-rose-700">Zero-Visit Uncovered Doctors</span>
 <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
 </div>
-<div className="mt-1 flex items-baseline gap-2">
+<div className="mt-1 flex items-baseline gap-4">
 <span className="text-2xl font-extrabold text-rose-700">1,719</span>
 <span className="text-[11px] font-bold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded border border-rose-200">11.6% GAP</span>
 </div>
@@ -135,26 +135,26 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 {/* BEGIN: NavigationTabsAndFilterBar */}
 <section className="space-y-3" data-purpose="table-controls-and-tabs">
 {/* View Switcher Tabs */}
-<div className="flex items-center gap-2 border-b border-border-subtle">
-<button className="px-4 py-2.5 text-xs font-bold text-brand-corporate border-b-2 border-brand-corporate flex items-center gap-2">
+<div className="flex items-center gap-4 border-b border-border-subtle">
+<button className="px-4 py-2.5 text-xs font-bold text-brand-corporate border-b-2 border-brand-corporate flex items-center gap-4">
 <span className="">Doctor Coverage Master List</span>
 <span className="bg-orange-100 text-brand-corporate px-2 py-0.5 rounded-full text-[10px] font-extrabold">14,820</span>
 </button>
-<button className="px-4 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
+<button className="px-4 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
 <span className="">Territory &amp; Zone Coverage Matrix</span>
 <span className="bg-surface-subtle text-text-secondary px-2 py-0.5 rounded-full text-[10px]">48</span>
 </button>
 <button className="px-4 py-2.5 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors">
             Specialty-wise Adherence &amp; Call Frequency
           </button>
-<button className="px-4 py-2.5 text-xs font-semibold text-rose-600 hover:text-rose-700 transition-colors flex items-center gap-2">
+<button className="px-4 py-2.5 text-xs font-semibold text-rose-600 hover:text-rose-700 transition-colors flex items-center gap-4">
 <span className="">Unvisited / At-Risk Doctors</span>
 <span className="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full text-[10px] font-bold">1,719</span>
 </button>
 </div>
 {/* Filter Controls Row */}
 <div className="bg-surface-card p-3 rounded-xl border border-border-subtle flex flex-wrap items-center justify-between gap-3 text-xs shadow-sm">
-<div className="flex flex-wrap items-center gap-2 flex-1">
+<div className="flex flex-wrap items-center gap-4 flex-1">
 {/* Search Doctor Filter */}
 <div className="relative min-w-[240px] flex-1">
 <svg className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -205,7 +205,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 {/* BEGIN: DoctorCoverageRosterTable */}
 <section className="bg-surface-card border border-border-subtle rounded-xl overflow-hidden shadow-sm" data-purpose="roster-table">
 <div className="overflow-x-auto">
-<table className="w-full text-left border-collapse text-xs">
+<table className="w-full text-center border-collapse text-xs">
 <thead>
 <tr className="bg-surface-subtle border-b border-border-subtle text-text-secondary font-semibold uppercase tracking-wider text-[10px]">
 <th className="py-3 px-4 w-10 text-center">
@@ -243,7 +243,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
                   </span>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">SM</span>
 <div>
 <div className="font-semibold text-text-primary">Subhashish Mitra</div>
@@ -273,7 +273,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </td>
 <td className="py-3.5 px-4 text-right">
-<div className="flex items-center justify-end gap-2">
+<div className="flex items-center justify-end gap-4">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Target Met
                     </span>
@@ -305,7 +305,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
                   </span>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">AD</span>
 <div>
 <div className="font-semibold text-text-primary">Amit Duggal</div>
@@ -335,7 +335,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </td>
 <td className="py-3.5 px-4 text-right">
-<div className="flex items-center justify-end gap-2">
+<div className="flex items-center justify-end gap-4">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-status-info-bg">
                       On Track
                     </span>
@@ -367,7 +367,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
                   </span>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">VK</span>
 <div>
 <div className="font-semibold text-text-primary">Vikas Kulkarni</div>
@@ -397,7 +397,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </td>
 <td className="py-3.5 px-4 text-right">
-<div className="flex items-center justify-end gap-2">
+<div className="flex items-center justify-end gap-4">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-status-warning-bg">
                       Under-visited
                     </span>
@@ -429,7 +429,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
                   </span>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold flex items-center justify-center">RS</span>
 <div>
 <div className="font-semibold text-text-primary">Rahul Sharma</div>
@@ -456,7 +456,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div className="text-[11px] text-text-muted italic">No samples delivered</div>
 </td>
 <td className="py-3.5 px-4 text-right">
-<div className="flex items-center justify-end gap-2">
+<div className="flex items-center justify-end gap-4">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-700 border border-rose-300 animate-pulse">
                       Zero-Visit Gap
                     </span>
@@ -488,7 +488,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
                   </span>
 </td>
 <td className="py-3.5 px-4">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">KN</span>
 <div>
 <div className="font-semibold text-text-primary">Karthik Nathan</div>
@@ -517,7 +517,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </td>
 <td className="py-3.5 px-4 text-right">
-<div className="flex items-center justify-end gap-2">
+<div className="flex items-center justify-end gap-4">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Target Met
                     </span>
@@ -568,7 +568,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div>
 <div className="flex justify-between items-center mb-1">
 <span className="font-semibold text-text-secondary">Cardiology (3,420 Doctors)</span>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="text-[11px] text-text-muted font-medium">3,214 reached</span>
 <span className="font-bold text-emerald-600">94.0%</span>
 </div>
@@ -581,7 +581,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div>
 <div className="flex justify-between items-center mb-1">
 <span className="font-semibold text-text-secondary">Diabetology &amp; Endocrinology (2,890 Doctors)</span>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="text-[11px] text-text-muted font-medium">2,630 reached</span>
 <span className="font-bold text-emerald-600">91.0%</span>
 </div>
@@ -594,7 +594,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div>
 <div className="flex justify-between items-center mb-1">
 <span className="font-semibold text-text-secondary">Pulmonology (2,150 Doctors)</span>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="text-[11px] text-text-muted font-medium">1,892 reached</span>
 <span className="font-bold text-brand-corporate">88.0%</span>
 </div>
@@ -607,7 +607,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div>
 <div className="flex justify-between items-center mb-1">
 <span className="font-semibold text-text-secondary">General Medicine (3,980 Doctors)</span>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="text-[11px] text-text-muted font-medium">3,422 reached</span>
 <span className="font-bold text-amber-600">86.0%</span>
 </div>
@@ -620,7 +620,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div>
 <div className="flex justify-between items-center mb-1">
 <span className="font-semibold text-text-secondary">Pediatrics (2,380 Doctors)</span>
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="text-[11px] text-text-muted font-medium">1,951 reached</span>
 <span className="font-bold text-amber-600">82.0%</span>
 </div>
@@ -635,7 +635,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <div className="lg:col-span-5 bg-surface-card rounded-xl border border-border-subtle p-5 shadow-sm flex flex-col justify-between">
 <div>
 <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-<div className="flex items-center gap-2">
+<div className="flex items-center gap-4">
 <span className="w-2 h-2 rounded-full bg-rose-500"></span>
 <h3 className="font-bold text-text-primary text-sm">Territory Coverage Bottlenecks</h3>
 </div>

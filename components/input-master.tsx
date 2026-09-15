@@ -26,120 +26,16 @@ function InputForm({ row, onSave, onBack }: { row: any; onSave: (r: InputRow) =>
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>{isEdit ? "Edit Input" : "Add Input"}</h2>
-          <p>Configure input materials distributed to the field force.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Input Name</span>
-          <input value={form.inputName} onChange={e => setForm({ ...form, inputName: e.target.value })} placeholder="e.g. Visual Aid" />
-        </label>
-        <label className="field">
-          <span>Category</span>
-          <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Active Pharmaceutical Ingredient (API)">Active Pharmaceutical Ingredient (API)</option>
-            <option value="Excipient">Excipient</option>
-            <option value="Solvent">Solvent</option>
-            <option value="Packaging Material">Packaging Material</option>
-            <option value="Printing Material">Printing Material</option>
-            <option value="Cleaning Material">Cleaning Material</option>
-            <option value="Laboratory Reagent">Laboratory Reagent</option>
-            <option value="Consumable">Consumable</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Unit</span>
-          <select value={form.unit} onChange={e => setForm({ ...form, unit: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Kg">Kg</option>
-            <option value="Gram (g)">Gram (g)</option>
-            <option value="mg">mg</option>
-            <option value="Litre">Litre</option>
-            <option value="mL">mL</option>
-            <option value="Nos">Nos</option>
-            <option value="Box">Box</option>
-            <option value="Roll">Roll</option>
-            <option value="Tube">Tube</option>
-            <option value="Bottle">Bottle</option>
-            <option value="Sachet">Sachet</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Active">Active</option>
-            <option value="Inactive">Inactive</option>
-          </select>
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.inputName.trim()}>
-          <Check size={16} /> Add Input
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function InputMaster() {
-  const [inputs, setInputs] = useState<InputRow[]>(initialInputs);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<InputRow | null>(null);
-
-  const [statusFilter, setStatusFilter] = useState<string>("All");
-  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
-  const [categoryFilter, setCategoryFilter] = useState<string>("All");
-  const [categoryFilterOpen, setCategoryFilterOpen] = useState(false);
-  const [unitFilter, setUnitFilter] = useState<string>("All");
-  const [unitFilterOpen, setUnitFilterOpen] = useState(false);
-
-  const filtered = inputs.filter(
-    (i) =>
-      (statusFilter === "All" ||
-        (statusFilter === "Active" && i.status === "Active") ||
-        (statusFilter === "Inactive" && i.status === "Inactive")) &&
-      (categoryFilter === "All" || i.category === categoryFilter) &&
-      (unitFilter === "All" || i.unit === unitFilter) &&
-      (i.inputName.toLowerCase().includes(search.toLowerCase()) ||
-        i.category.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: InputRow) {
-    if (view === "add") {
-      const newInput = {
-        ...form,
-        id: `INP${String(inputs.length + 1).padStart(3, "0")}`
-      };
-      setInputs([...inputs, newInput]);
-    } else {
-      setInputs(inputs.map(i => i.id === form.id ? { ...form } : i));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Master Setup"
+  title="Input Master"
+  description="Create and manage promotional inputs and gifts for the field force."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Input</button>
+    </>
   }
-
-  function handleDeactivate(id: string) {
-    setInputs(inputs.map(i => i.id === id ? { ...i, status: "Inactive" as const } : i));
-  }
-
-  if (view === "add") return <InputForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <InputForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Master Setup</p>
-          <h2>Input Master</h2>
-          <p>Create and manage promotional inputs and gifts for the field force.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Input</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input

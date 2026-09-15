@@ -77,6 +77,7 @@ const config: Config = {
         "text-secondary": "var(--text-secondary)",
         "status-success": "#059669",
         "surface-container-high": "#dce9ff",
+        "brand-primary": "#EA580C",
         "brand-primary-hover": "#C2410C",
         "brand-primary-subtle": "#FFF7ED",
       },

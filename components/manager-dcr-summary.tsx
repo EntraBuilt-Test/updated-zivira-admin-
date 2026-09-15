@@ -47,144 +47,16 @@ function SummaryForm({ row, onSave, onBack }: { row: any; onSave: (r: DcrSummary
 
   return (
     <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>{row.id ? "Edit DCR Summary" : "Add DCR Summary"}</h2>
-          <p>Create or update a summary of MR daily call activities.</p>
-        </div>
-        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
-      </div>
-      <div className="subdivision-form-card">
-        <label className="field">
-          <span>* Date</span>
-          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
-        </label>
-        <label className="field">
-          <span>* Employee Code</span>
-          <input value={form.employeeCode} onChange={e => setForm({ ...form, employeeCode: e.target.value })} placeholder="EMP-MR-0001" />
-        </label>
-        <label className="field">
-          <span>* Medical Representative</span>
-          <input value={form.medicalRepresentative} onChange={e => setForm({ ...form, medicalRepresentative: e.target.value })} placeholder="Rahul Sharma" />
-        </label>
-        <label className="field">
-          <span>Division</span>
-          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Zivira">Zivira</option>
-            <option value="Astra">Astra</option>
-            <option value="Aura">Aura</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
-            <option value="Chennai Central HQ">Chennai Central HQ</option>
-            <option value="Coimbatore HQ">Coimbatore HQ</option>
-            <option value="Madurai HQ">Madurai HQ</option>
-          </select>
-        </label>
-        <label className="field">
-          <span>Patch</span>
-          <input value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T-Nagar" />
-        </label>
-        <label className="field">
-          <span>Planned Calls</span>
-          <input type="number" value={form.plannedCalls || ""} onChange={e => setForm({ ...form, plannedCalls: parseInt(e.target.value) || 0 })} placeholder="12" />
-        </label>
-        <label className="field">
-          <span>Calls Completed</span>
-          <input type="number" value={form.callsCompleted || ""} onChange={e => setForm({ ...form, callsCompleted: parseInt(e.target.value) || 0 })} placeholder="10" />
-        </label>
-        <label className="field">
-          <span>Doctors Visited</span>
-          <input type="number" value={form.doctorsVisited || ""} onChange={e => setForm({ ...form, doctorsVisited: parseInt(e.target.value) || 0 })} placeholder="8" />
-        </label>
-        <label className="field">
-          <span>Chemists Visited</span>
-          <input type="number" value={form.chemistsVisited || ""} onChange={e => setForm({ ...form, chemistsVisited: parseInt(e.target.value) || 0 })} placeholder="2" />
-        </label>
-        <label className="field">
-          <span>Hospitals Visited</span>
-          <input type="number" value={form.hospitalsVisited || ""} onChange={e => setForm({ ...form, hospitalsVisited: parseInt(e.target.value) || 0 })} placeholder="1" />
-        </label>
-        <label className="field">
-          <span>Products Promoted</span>
-          <input value={form.productsPromoted} onChange={e => setForm({ ...form, productsPromoted: e.target.value })} placeholder="e.g. API Brands, Consumables" />
-        </label>
-        <label className="field">
-          <span>Samples Distributed</span>
-          <input value={form.samplesDistributed} onChange={e => setForm({ ...form, samplesDistributed: e.target.value })} placeholder="e.g. 5 boxes" />
-        </label>
-        <label className="field">
-          <span>Gifts Distributed</span>
-          <input value={form.giftsDistributed} onChange={e => setForm({ ...form, giftsDistributed: e.target.value })} placeholder="e.g. 3 diaries" />
-        </label>
-        <label className="field">
-          <span>Working Hours</span>
-          <input value={form.workingHours} onChange={e => setForm({ ...form, workingHours: e.target.value })} placeholder="e.g. 8.0 Hours" />
-        </label>
-        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employeeCode.trim() || !form.medicalRepresentative.trim()}>
-          <Check size={16} /> Save Summary
-        </button>
-      </div>
-    </section>
-  );
-}
-
-export function ManagerDcrSummary() {
-  const [list, setList] = useState<DcrSummaryRow[]>(initialSummaries);
-  const [search, setSearch] = useState("");
-  const [view, setView] = useState<"list" | "add" | "edit">("list");
-  const [editTarget, setEditTarget] = useState<DcrSummaryRow | null>(null);
-
-  const [divisionFilter, setDivisionFilter] = useState<string>("All");
-  const [divisionFilterOpen, setDivisionFilterOpen] = useState(false);
-  const [hqFilter, setHqFilter] = useState<string>("All");
-  const [hqFilterOpen, setHqFilterOpen] = useState(false);
-
-  const filtered = list.filter(
-    (item) =>
-      (divisionFilter === "All" || item.division === divisionFilter) &&
-      (hqFilter === "All" || item.hq === hqFilter) &&
-      (item.medicalRepresentative.toLowerCase().includes(search.toLowerCase()) ||
-        item.employeeCode.toLowerCase().includes(search.toLowerCase()) ||
-        item.patch.toLowerCase().includes(search.toLowerCase()))
-  );
-
-  function handleSave(form: DcrSummaryRow) {
-    if (view === "add") {
-      const newRow = {
-        ...form,
-        id: `SUMM${String(list.length + 1).padStart(3, "0")}`
-      };
-      setList([...list, newRow]);
-    } else {
-      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
-    }
-    setView("list");
+      <PageHeader
+  eyebrow="Manager Activity Report"
+  title="Daily Call Report Summary"
+  description="Review comprehensive Daily Call Report (DCR) statistics and metrics."
+  action={
+    <>
+<button className="button" onClick={() => setView("add")} type="button">Add Summary</button>
+    </>
   }
-
-  function handleDelete(id: string) {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  if (view === "add") return <SummaryForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
-  if (view === "edit" && editTarget) return <SummaryForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
-
-  return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Manager Activity Report</p>
-          <h2>Daily Call Report Summary</h2>
-          <p>Review comprehensive Daily Call Report (DCR) statistics and metrics.</p>
-        </div>
-        <div className="subdivision-actions">
-          
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Summary</button>
-        </div>
-      </div>
+/>
 
       <div style={{ marginBottom: "16px" }}>
         <input
