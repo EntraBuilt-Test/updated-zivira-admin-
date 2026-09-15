@@ -407,8 +407,7 @@ export function ProductDetailMaster() {
                   </div>
                 )}
               </th>
-              <th>Edit</th>
-              <th>Inactive</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

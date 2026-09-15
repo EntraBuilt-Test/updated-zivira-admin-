@@ -240,8 +240,7 @@ export function DoctorManager() {
                   </div>
                 )}
               </th>
-              <th>Edit</th>
-              <th>Inactive</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

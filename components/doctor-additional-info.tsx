@@ -244,8 +244,7 @@ export function DoctorAdditionalInfo() {
               <th>Map</th>
               <th>Latitude</th>
               <th>Longitude</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

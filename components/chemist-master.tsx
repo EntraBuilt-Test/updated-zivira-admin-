@@ -258,7 +258,9 @@ export function ChemistMaster() {
           <p>Maintain pharmacy networks and retail distributor mappings.</p>
         </div>
         <div className="subdivision-actions">
-          
+          <Link href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" className="button button-secondary">
+            ← Back
+          </Link>
           <button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
         </div>
       </div>
@@ -268,7 +270,7 @@ export function ChemistMaster() {
           <strong style={{ display: "block", fontSize: "28px", marginTop: "4px" }}>{filtered.length}</strong>
         </article>
         <Link className="card module-card" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" style={{ borderLeft: "4px solid var(--brand-strong)", width: "300px", textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 16px" }}>
-          <h3 className="section-title">Doctor</h3>
+          
         </Link>
       </div>
       <div style={{ marginBottom: "16px" }}>
@@ -480,7 +482,7 @@ export function ChemistMaster() {
                     </div>
                   </th>
                   <th style={{ minWidth: "130px" }}>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%" }}>
                       <span>Status</span>
                       <button
                         type="button"
@@ -565,8 +567,7 @@ export function ChemistMaster() {
                       </div>
                     )}
                   </th>
-                  <th>Edit</th>
-                  <th>Inactive</th>
+                  <th colSpan={2}>Actions</th>
                 </tr>
               </thead>
               <tbody>

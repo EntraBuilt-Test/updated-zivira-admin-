@@ -60,7 +60,7 @@ export function ColumnFilterDropdown({
         style={{
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
+          justifyContent: "center",
           background: "none",
           border: "none",
           color: "var(--muted)",

@@ -155,8 +155,7 @@ export function ProductivityDashboardMaster() {
               <th>Doctor Calls</th>
               <th>Tour Compliance</th>
               <th>Productivity Score</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

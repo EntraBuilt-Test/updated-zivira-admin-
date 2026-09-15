@@ -169,8 +169,7 @@ export function StockistContactMaster() {
                   </div>
                 )}
               </th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

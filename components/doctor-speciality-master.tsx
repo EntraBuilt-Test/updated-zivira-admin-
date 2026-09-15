@@ -151,8 +151,7 @@ export function DoctorSpecialityMaster() {
               <th>State</th>
               <th>Country</th>
               <th>PIN Code</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

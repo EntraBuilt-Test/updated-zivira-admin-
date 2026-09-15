@@ -264,8 +264,7 @@ export function ManagerDcrSummary() {
               <th>Samples Distributed</th>
               <th>Gifts Distributed</th>
               <th>Working Hours</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

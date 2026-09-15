@@ -408,8 +408,7 @@ export function ProductCategoryMaster() {
                 <th style={{ minWidth: "140px" }}>
                   <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                 </th>
-                <th>Edit</th>
-                <th>Inactive</th>
+                <th colSpan={2}>Actions</th>
               </tr>
             </thead>
             <tbody>

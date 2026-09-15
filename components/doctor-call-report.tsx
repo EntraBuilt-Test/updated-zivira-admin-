@@ -250,8 +250,7 @@ export function DoctorCallReport() {
               <th>Visit Time</th>
               <th>Remarks</th>
               <th>Next Visit Date</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

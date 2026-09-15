@@ -293,8 +293,7 @@ export function ManagerExpenseReport() {
                 )}
               </th>
               <th>Approved By</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

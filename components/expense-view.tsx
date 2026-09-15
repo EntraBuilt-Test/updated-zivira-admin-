@@ -216,8 +216,7 @@ export function ExpenseView() {
                 )}
               </th>
               <th>Remarks</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>

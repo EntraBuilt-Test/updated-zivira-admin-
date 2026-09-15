@@ -144,8 +144,7 @@ export function DoctorQualificationMaster() {
               <th>Stocklist</th>
               <th>Chemist</th>
               <th>Distributor</th>
-              <th>Edit</th>
-              <th>Delete</th>
+              <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>
