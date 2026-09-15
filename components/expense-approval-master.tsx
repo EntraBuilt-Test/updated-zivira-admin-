@@ -3,7 +3,6 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { BackButton } from "@/components/back-button";
-import { PageHeader } from "@/components/page-components";
 
 type ExpenseApprovalRow = {
   id: string;
@@ -28,18 +27,101 @@ function ExpenseApprovalForm({ row, onSave, onBack }: { row: any; onSave: (r: Ex
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Manager Expense"
-  title="Expense Approval"
-  description="Configure general profiles, mappings, and status settings."
-  action={
-    <>
-<BackButton />
-          
-          <button className="button" onClick={() => setView("add")} type="button">Add Expense Claim</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Manager Expense</p>
+          <h2>{isEdit ? "Edit Expense Claim" : "Add Expense Claim"}</h2>
+          <p>Configure general profiles, mappings, and status settings.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button">
+          <RotateCcw size={16} /> Back
+        </button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* Employee Name</span>
+          <input value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} placeholder="e.g. Rahul Sharma" />
+        </label>
+        <label className="field">
+          <span>* Claim ID</span>
+          <input value={form.claimId} onChange={e => setForm({ ...form, claimId: e.target.value })} placeholder="e.g. EXP10293" />
+        </label>
+        <label className="field">
+          <span>* Amount</span>
+          <input type="number" value={form.amount || ""} onChange={e => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })} placeholder="e.g. 2500" />
+        </label>
+        <label className="field">
+          <span>Status</span>
+          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </label>
+        <button
+          className="button"
+          style={{ marginTop: "12px" }}
+          onClick={() => onSave(form)}
+          type="button"
+          disabled={!form.employee.trim() || !form.claimId.trim() || form.amount <= 0}
+        >
+          <Check size={16} /> Save Claim
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function ExpenseApprovalMaster() {
+  const [list, setList] = useState<ExpenseApprovalRow[]>(initialExpenseApprovals);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<ExpenseApprovalRow | null>(null);
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (statusFilter === "All" || item.status === statusFilter) &&
+      (item.employee.toLowerCase().includes(search.toLowerCase()) ||
+        item.claimId.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: ExpenseApprovalRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `EXP${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <ExpenseApprovalForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <ExpenseApprovalForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Manager Expense</p>
+          <h2>Expense Approval</h2>
+          <p>Configure general profiles, mappings, and status settings.</p>
+        </div>
+        <div className="subdivision-actions">
+          <BackButton />
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Expense Claim</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

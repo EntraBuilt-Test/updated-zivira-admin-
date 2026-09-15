@@ -3,7 +3,6 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { BackButton } from "@/components/back-button";
-import { PageHeader } from "@/components/page-components";
 
 type StockistStatusRow = {
   id: string;
@@ -24,18 +23,91 @@ function StatusForm({ row, onSave, onBack }: { row: any; onSave: (r: StockistSta
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title="Status"
-  description="Configure general profiles, mappings, and status settings."
-  action={
-    <>
-<BackButton />
-          
-          <button className="button" onClick={() => setView("add")} type="button">Add Status</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>{isEdit ? "Edit Stockist Status" : "Add Stockist Status"}</h2>
+          <p>Maintain general registration and stockist activation profiles.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button">
+          <RotateCcw size={16} /> Back
+        </button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* Stockist Name</span>
+          <input value={form.stockistName} onChange={e => setForm({ ...form, stockistName: e.target.value })} placeholder="e.g. Bio-Pharma Distributors" />
+        </label>
+        <label className="field">
+          <span>Status</span>
+          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </label>
+        <button
+          className="button"
+          style={{ marginTop: "12px" }}
+          onClick={() => onSave(form)}
+          type="button"
+          disabled={!form.stockistName.trim()}
+        >
+          <Check size={16} /> Save Status
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function StockistStatusMaster() {
+  const [list, setList] = useState<StockistStatusRow[]>(initialStatuses);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<StockistStatusRow | null>(null);
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (statusFilter === "All" || item.status === statusFilter) &&
+      (item.stockistName.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: StockistStatusRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `STSTAT${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <StatusForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <StatusForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Status</h2>
+          <p>Configure general profiles, mappings, and status settings.</p>
+        </div>
+        <div className="subdivision-actions">
+          <BackButton />
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Status</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

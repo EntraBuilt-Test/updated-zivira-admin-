@@ -1,5 +1,4 @@
 "use client";
-import { PageHeader } from "@/components/page-components";
 import { useEffect, useState } from "react";
 import { Pencil, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban } from "lucide-react";
 import { apiClient, type ProductGroup, type ProductCategory } from "@/lib/api-client";
@@ -170,21 +169,21 @@ export function ProductGroupMaster() {
   }
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title="Molecule Master"
-  description="Manage and map molecules to corresponding therapy classifications."
-  action={
-    <>
-<button className="button button-secondary" type="button">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Molecule Master</h2>
+          <p>Manage and map molecules to corresponding therapy classifications.</p>
+        </div>
+        <div className="subdivision-actions">
+          <button className="button button-secondary" type="button">
             <SlidersHorizontal size={16} /> Filters
           </button>
           <button className="button" onClick={handleAdd} type="button">
              Add Molecule
           </button>
-    </>
-  }
-/>
+        </div>
+      </div>
       {error && <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
       <div style={{ marginBottom: "16px" }}>
         <input

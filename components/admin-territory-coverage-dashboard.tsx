@@ -59,7 +59,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
       {/* TITLE & CTA ROW */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-4 mb-1">
+          <div className="flex items-center gap-2 mb-1">
             <h1 className="text-2xl font-extrabold text-text-primary tracking-tight">Territory Coverage & Micro-Market Saturation</h1>
             <span className="bg-status-success-bg text-status-success border border-status-success-bg text-[11px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 91.4% Coverage Achieved
@@ -71,12 +71,12 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           <p className="text-xs text-text-secondary">Real-time territorial audit tracking doctor reach density, chemist stockist coverage, patch saturation, and white-space opportunity zones.</p>
         </div>
 
-        <div className="flex items-center gap-4.5 shrink-0">
-          <button className="flex items-center gap-4 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors">
+        <div className="flex items-center gap-2.5 shrink-0">
+          <button className="flex items-center gap-2 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors">
             <span className="material-symbols-outlined text-text-muted">{`file_download`}</span>
             <span>Export Territory Atlas (GIS)</span>
           </button>
-          <button className="flex items-center gap-4 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors">
+          <button className="flex items-center gap-2 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors">
             <span className="material-symbols-outlined">{`location_on`}</span>
             <span>Reallocate Territory Boundaries</span>
           </button>
@@ -95,7 +95,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <span>TERRITORY PENETRATION</span>
             <div className="w-7 h-7 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`show_chart`}</span></div>
           </div>
-          <div className="flex items-baseline gap-4">
+          <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">91.4%</span>
             <span className="text-[11px] font-bold text-emerald-600">+3.2% MoM</span>
           </div>
@@ -111,7 +111,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <span>HCP DENSITY / SQ KM</span>
             <div className="w-7 h-7 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`medical_services`}</span></div>
           </div>
-          <div className="flex items-baseline gap-4">
+          <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">34.6</span>
             <span className="text-[11px] font-bold text-text-secondary">Doctors/Beat</span>
           </div>
@@ -127,7 +127,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <span>WHITE SPACE OPPORTUNITY</span>
             <div className="w-7 h-7 rounded-lg bg-status-warning-bg text-amber-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`architecture`}</span></div>
           </div>
-          <div className="flex items-baseline gap-4">
+          <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">₹ 86.4 L</span>
             <span className="text-[11px] font-bold text-amber-600">Unrealized MRR</span>
           </div>
@@ -143,7 +143,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <span>CHEMIST RCPA OVERLAP</span>
             <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs"><span className="material-symbols-outlined">{`medication`}</span></div>
           </div>
-          <div className="flex items-baseline gap-4">
+          <div className="flex items-baseline gap-2">
             <span className="text-2xl font-extrabold text-text-primary tracking-tight">84.2%</span>
             <span className="text-[11px] font-bold text-purple-600">Stockist Tied</span>
           </div>
@@ -156,18 +156,18 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
 
       {/* SUB-NAVIGATION TABS */}
       <div className="border-b border-border-subtle flex items-center gap-6 text-xs font-semibold">
-        <button className="pb-2.5 border-b-2 border-terracotta text-terracotta flex items-center gap-4">
+        <button className="pb-2.5 border-b-2 border-terracotta text-terracotta flex items-center gap-2">
           <span>Territory & Beat Performance Roster</span>
           <span className="bg-terracotta/10 text-terracotta text-[10px] font-bold px-1.5 py-0.2 rounded-full">428 HQ Beats</span>
         </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
+        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
           <span>Micro-Market White Space Explorer</span>
           <span className="bg-surface-subtle text-text-secondary text-[10px] font-bold px-1.5 py-0.2 rounded-full">14 Zones</span>
         </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
+        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
           <span>Doctor Density & Tier Heatmap</span>
         </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-4">
+        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
           <span>Chemist Stockist Tagging Ledger</span>
         </button>
       </div>
@@ -178,14 +178,14 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
         <div className="lg:col-span-8 bg-surface-card border border-border-subtle rounded-xl shadow-2xs overflow-hidden flex flex-col">
           {/* Filter Controls */}
           <div className="p-4 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-surface-subtle/50">
-            <div className="flex items-center gap-4 flex-1 min-w-[240px]">
+            <div className="flex items-center gap-2 flex-1 min-w-[240px]">
               <div className="relative w-full">
                 <span className="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-xs">{`search`}</span>
                 <input type="text" placeholder="Search Territory, Beat Code, Assigned MR or ASM..." className="w-full bg-surface-card border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-secondary placeholder-slate-400 focus:outline-none focus:border-slate-400"/>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
                 <option>All Zones (East, West, North, South)</option>
                 <option>West Zone (Mumbai, Pune, Gujarat)</option>
@@ -207,7 +207,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
 
           {/* Table Header & Rows */}
           <div className="overflow-x-auto flex-1">
-            <table className="w-full text-center text-xs">
+            <table className="w-full text-left text-xs">
               <thead className="bg-surface-subtle text-text-muted text-[10px] font-bold uppercase tracking-wider border-b border-border-subtle">
                 <tr>
                   <th className="py-3 px-3.5 w-6"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
@@ -234,7 +234,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
                   <td className="py-3.5 px-3 font-semibold text-text-primary">148 Doctors</td>
                   <td className="py-3.5 px-3 text-status-success font-bold">142 Visited</td>
                   <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">95.9%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
@@ -258,7 +258,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
                   <td className="py-3.5 px-3 font-semibold text-text-primary">162 Doctors</td>
                   <td className="py-3.5 px-3 text-status-success font-bold">148 Visited</td>
                   <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">91.4%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
@@ -282,7 +282,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
                   <td className="py-3.5 px-3 font-semibold text-text-primary">135 Doctors</td>
                   <td className="py-3.5 px-3 text-status-success font-bold">126 Visited</td>
                   <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">93.3%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
@@ -306,7 +306,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
                   <td className="py-3.5 px-3 font-semibold text-text-primary">154 Doctors</td>
                   <td className="py-3.5 px-3 text-status-warning font-bold">108 Visited</td>
                   <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <span className="font-bold text-amber-600">70.1%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                     </div>
@@ -330,7 +330,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
                   <td className="py-3.5 px-3 font-semibold text-text-primary">142 Doctors</td>
                   <td className="py-3.5 px-3 text-status-success font-bold">136 Visited</td>
                   <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">95.7%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
@@ -437,11 +437,11 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
 
           {/* Immediate Actions */}
           <div className="pt-2 space-y-2">
-            <button className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-4">
+            <button className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-2">
               <span className="material-symbols-outlined">{`add_circle`}</span>
               <span>Assign White Space HCPs to MTP</span>
             </button>
-            <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-4">
+            <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
               <span className="material-symbols-outlined">{`route`}</span>
               <span>View Route & GPS Beat Optimization</span>
             </button>
@@ -460,7 +460,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <div className="text-[11px] text-text-secondary">Each medical representative beat must encompass between 135 to 160 core HCPs to maintain mandatory call frequency without exceeding statutory UCPMP visit caps.</div>
           </div>
         </div>
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button className="bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3 py-1.5 rounded-lg text-xs">Beat Rationalization SOP</button>
           <button className="bg-terracotta text-white font-semibold px-3 py-1.5 rounded-lg text-xs hover:bg-terracotta-hover">Simulate Reallocation</button>
         </div>

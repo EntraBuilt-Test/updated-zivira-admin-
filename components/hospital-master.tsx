@@ -4,7 +4,6 @@ import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
-import { PageHeader } from "@/components/page-components";
 type HospitalRow = {
   id: string;
   code: string;
@@ -232,7 +231,7 @@ export function HospitalMaster() {
             display: "flex", alignItems: "center", justifyContent: "center", zIndex: 70
           }}
         >
-          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
+          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <AlertTriangle size={18} color="#ef4444" />
@@ -249,28 +248,29 @@ export function HospitalMaster() {
           </div>
         </div>
       )}
-      <PageHeader
-  eyebrow="Field Force Entries"
-  title="Hospital Master"
-  description="Maintain hospital institutions and departments mapped under agent routes."
-  action={
-    <>
-<button className="button" onClick={handleAdd} type="button"> Add Hospital</button>
-    </>
-  }
-/>
-      <div className="flex items-center w-full max-w-sm mb-6">
-      <input
-        placeholder="Search by name, code or MR..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="button button-secondary"
-      />
-    </div>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Field Force Entries</p>
+          <h2>Hospital Master</h2>
+          <p>Maintain hospital institutions and departments mapped under agent routes.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={handleAdd} type="button"> Add Hospital</button>
+        </div>
+      </div>
+      <div style={{ marginBottom: "16px" }}>
+        <input
+          placeholder="Search by name, code or MR..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
+        />
+      </div>
       {view !== "list" ? (
         <div style={{ marginTop: "16px" }}>
           {/* Tabs row */}
-          <div className="modern-tabs">
+          <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "6px 0", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
             {[
               { id: 1, label: "Hospital Master" },
               { id: 2, label: "Address" },
@@ -283,7 +283,8 @@ export function HospitalMaster() {
               <button
                 key={t.id}
                 onClick={() => setActiveFormTab(t.id)}
-                className={`modern-tab-button ${activeFormTab === t.id ? "active" : "inactive"}`}
+                className={`button ${activeFormTab === t.id ? "" : "button-secondary"}`}
+                style={{ whiteSpace: "nowrap", padding: "6px 12px", fontSize: "12px" }}
                 type="button"
               >
                 {t.label}
@@ -303,7 +304,7 @@ export function HospitalMaster() {
                 </div>
                 <div className="field">
                   <label>Type</label>
-                  <select className="input" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                  <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
                     <option value="Multi-Specialty">Multi-Specialty</option>
                     <option value="Super-Specialty">Super-Specialty</option>
                     <option value="General Clinic">General Clinic</option>
@@ -319,7 +320,7 @@ export function HospitalMaster() {
                 </div>
                 <div className="field">
                   <label>Status</label>
-                  <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
@@ -350,7 +351,7 @@ export function HospitalMaster() {
               <>
                 <div className="field">
                   <label>Sales Territory (Patch)</label>
-                  <select className="input" value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
+                  <select value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
                     <option value="T. Nagar">T. Nagar</option>
                     <option value="Mylapore">Mylapore</option>
                     <option value="Adyar">Adyar</option>
@@ -429,11 +430,11 @@ export function HospitalMaster() {
             <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading hospitals...</div>
           ) : (
             <table className="subdivision-table">
-              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
-              <tr>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Hospital Code</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+              <thead>
+                <tr>
+                  <th>S.No</th>
+                  <th>Hospital Code</th>
+                  <th>
                     <div style={{ minWidth: "140px" }}>
                       <ColumnFilterDropdown 
                         title="Hospital Name" 
@@ -443,7 +444,7 @@ export function HospitalMaster() {
                       />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                  <th>
                     <div style={{ minWidth: "140px" }}>
                       <ColumnFilterDropdown 
                         title="Type" 
@@ -453,7 +454,7 @@ export function HospitalMaster() {
                       />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                  <th>
                     <div style={{ minWidth: "140px" }}>
                       <ColumnFilterDropdown 
                         title="City" 
@@ -463,26 +464,26 @@ export function HospitalMaster() {
                       />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                  <th>Medical Representative</th>
+                  <th>
                     <div style={{ minWidth: "140px" }}>
                       <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                     </div>
                   </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Inactive</th>
+                  <th>Edit</th>
+                  <th>Inactive</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody>
                 {filtered.map((row, idx) => (
-                  <tr key={row.id} className="hover:bg-surface-subtle/50 transition-colors group">
-                    <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap" style={{ fontWeight: 500 }}>{idx + 1}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.hospitalCode}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.hospitalName}</strong></td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.type}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.medicalRepresentative || "-"}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                  <tr key={row.id}>
+                    <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
+                    <td style={{ fontWeight: 600 }}>{row.hospitalCode}</td>
+                    <td><strong>{row.hospitalName}</strong></td>
+                    <td>{row.type}</td>
+                    <td>{row.city || "-"}</td>
+                    <td>{row.medicalRepresentative || "-"}</td>
+                    <td>
                       <span style={{
                         padding: "2px 8px",
                         borderRadius: "999px",
@@ -495,12 +496,12 @@ export function HospitalMaster() {
                         {row.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                    <td>
                       <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                    <td>
                       <button className="subdivision-danger-button" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                         <Ban size={15} />
                       </button>
@@ -509,7 +510,7 @@ export function HospitalMaster() {
                 ))}
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={16} className="px-4 py-8 text-center text-text-muted text-sm">
+                    <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                       No records found
                     </td>
                   </tr>

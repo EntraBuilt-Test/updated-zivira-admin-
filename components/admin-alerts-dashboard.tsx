@@ -1,6 +1,5 @@
 import React from "react";
 import { ZiviraTreeNode } from "@/packages/types/src/zivira-tree";
-import { PageHeader } from "@/components/page-components";
 
 export function AdminAlertsDashboard({
   node,
@@ -15,13 +14,22 @@ export function AdminAlertsDashboard({
       data-purpose="dashboard-main"
     >
       {/*  BEGIN: Section Header Title & Actions  */}
-      <PageHeader
-        eyebrow="ALERTS"
-        title="Alert & Notification Engine"
-        description="Automated alerts pulled live from compliance, coverage, payroll, and sample-stock signals across the platform."
-        action={
-          <>
-            <button
+      <section className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-brand-orange">
+            ALERTS
+          </span>
+          <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 tracking-tight">
+            Alert &amp; Notification Engine
+          </h2>
+          <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-3xl">
+            Automated alerts pulled live from compliance, coverage, payroll, and
+            sample-stock signals across the platform.
+          </p>
+        </div>
+        {/*  Header Action Buttons  */}
+        <div className="flex items-center gap-2.5 self-start">
+          <button
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg shadow-sm hover:bg-slate-50 dark:hover:bg-slate-750 transition"
             type="button"
           >
@@ -60,9 +68,8 @@ export function AdminAlertsDashboard({
             </svg>
             Refresh
           </button>
-          </>
-        }
-      />
+        </div>
+      </section>
       {/*  END: Section Header Title & Actions  */}
       {/*  BEGIN: Stat Cards Grid  */}
       <section
@@ -107,9 +114,9 @@ export function AdminAlertsDashboard({
       {/*  BEGIN: Filter Tabs & Search Bar  */}
       <section className="space-y-3" data-purpose="table-filters">
         {/*  Filter Tabs / Pills  */}
-        <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+        <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
           <button
-            className="filter-tab px-3.5 py-1.5 rounded-full bg-brand-primary text-white shadow-sm transition hover:opacity-90"
+            className="filter-tab px-3.5 py-1.5 rounded-full bg-brand-orange text-white shadow-sm transition hover:opacity-90"
             data-filter="all"
           >
             All (82)
@@ -160,7 +167,7 @@ export function AdminAlertsDashboard({
         {/*  Search Bar for quick filter  */}
         <div className="relative w-full max-w-sm pt-1">
           <input
-            className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 pl-8 pr-3 py-2 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-primary"
+            className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 pl-8 pr-3 py-2 placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-brand-orange"
             id="table-search"
             placeholder="Search alerts by employee, role or detail..."
             type="text"
@@ -189,7 +196,7 @@ export function AdminAlertsDashboard({
         data-purpose="alerts-table-container"
       >
         <div className="overflow-x-auto max-h-[580px] overflow-y-auto">
-          <table className="w-full text-center border-collapse" id="alerts-table">
+          <table className="w-full text-left border-collapse" id="alerts-table">
             <thead>
               <tr className="sticky top-0 z-10 bg-slate-50/95 dark:bg-slate-800/90 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <th className="py-3.5 px-5 w-36" scope="col">
@@ -246,7 +253,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -289,7 +296,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -298,7 +305,7 @@ export function AdminAlertsDashboard({
               </tr>
               {/*  Row 3: Highlighted slightly as seen in screenshot selection  */}
               <tr
-                className="alert-row bg-brand-primary-subtle/40 dark:bg-brand-primary/20 hover:bg-brand-primary-subtle/70 dark:hover:bg-brand-primary/30 transition group"
+                className="alert-row bg-orange-50/40 dark:bg-orange-950/20 hover:bg-orange-50/70 dark:hover:bg-orange-950/30 transition group"
                 data-type="SALARY HOLD"
               >
                 <td className="py-3.5 px-5 whitespace-nowrap">
@@ -332,7 +339,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -375,7 +382,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -418,7 +425,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -461,7 +468,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -504,7 +511,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -547,7 +554,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -589,7 +596,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -618,7 +625,7 @@ export function AdminAlertsDashboard({
                 </td>
                 <td className="py-3.5 px-4 text-right whitespace-nowrap">
                   <button
-                    className="text-xs font-semibold text-brand-primary hover:text-brand-primary-hover"
+                    className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                     type="button"
                   >
                     View
@@ -654,7 +661,7 @@ export function AdminAlertsDashboard({
             >
               Previous
             </button>
-            <button className="px-2.5 py-1 rounded bg-brand-primary text-white">
+            <button className="px-2.5 py-1 rounded bg-brand-orange text-white">
               1
             </button>
             <button className="px-2.5 py-1 rounded border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800">

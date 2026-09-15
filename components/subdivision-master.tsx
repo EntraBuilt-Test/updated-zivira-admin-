@@ -1,6 +1,5 @@
 "use client";
 
-import { PageHeader } from "@/components/page-components";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import type { Employee } from "@zivira/types";
 import { Check, ChevronRight, ChevronDown, Package, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, Users, X, Ban } from "lucide-react";
@@ -369,16 +368,13 @@ export function SubdivisionMaster() {
     <>
       {deleteTarget && <DeleteConfirmDialog name={deleteTarget.subdivisionName} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />}
       <section className="subdivision-console">
-        <PageHeader
-  eyebrow="Master Setup"
-  title="Division Master"
-  description="Create and manage business divisions."
-  action={
-    <>
-<button className="button" onClick={openAddForm} type="button"><Plus size={16} /> Add Division</button>
-    </>
-  }
-/>
+        <div className="subdivision-head">
+          <div><p className="subdivision-eyebrow">Master Setup</p><h2>Division Master</h2><p>Create and manage business divisions.</p></div>
+          <div className="subdivision-actions">
+            
+            <button className="button" onClick={openAddForm} type="button"><Plus size={16} /> Add Division</button>
+          </div>
+        </div>
         {error && <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
         <div className="subdivision-stats">
           <article><span>Total Divisions</span><strong>{rows.length}</strong></article>
@@ -710,11 +706,13 @@ export function SubdivisionProductwise() {
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Subdivision — Regional Zone Master"
-  title="Regional Zone Master"
-  description="Select a subdivision and click Go to view its regional zone configurations."
-/>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Subdivision — Regional Zone Master</p>
+          <h2>Regional Zone Master</h2>
+          <p>Select a subdivision and click Go to view its regional zone configurations.</p>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "20px" }}>
         <span style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px", color: "var(--ink)" }}>Sub Division Name</span>
@@ -888,11 +886,13 @@ export function SubdivisionFieldforcewise() {
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Subdivision — Territory / Headquarters Master"
-  title="Territory / Headquarters Master"
-  description="Select a subdivision and click Go to view its territory and HQ configurations."
-/>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Subdivision — Territory / Headquarters Master</p>
+          <h2>Territory / Headquarters Master</h2>
+          <p>Select a subdivision and click Go to view its territory and HQ configurations.</p>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "20px" }}>
         <span style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px", color: "var(--ink)" }}>Sub Division Name</span>

@@ -1,6 +1,5 @@
 "use client";
 
-import { PageHeader } from "@/components/page-components";
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -126,16 +125,17 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title={isSuperStockist ? "Super Stockist Details" : "Stockist Details"}
-  description="Configure general profiles, mappings, and status settings."
-  action={
-    <>
-<button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add {labelPrefix}</button>
-    </>
-  }
-/>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>{isSuperStockist ? "Super Stockist Details" : "Stockist Details"}</h2>
+          <p>Configure general profiles, mappings, and status settings.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add {labelPrefix}</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

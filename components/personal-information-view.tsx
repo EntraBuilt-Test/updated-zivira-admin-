@@ -1,7 +1,6 @@
 "use client";
 import { SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import { PageHeader } from "@/components/page-components";
 type PersonalViewRow = {
   id: string;
   code: string;
@@ -23,11 +22,13 @@ export function PersonalInformationView() {
   );
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title="Personal — View"
-  description="View consolidated personal verification details for employees."
-/>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Personal — View</h2>
+          <p>View consolidated personal verification details for employees.</p>
+        </div>
+      </div>
       <div style={{ marginBottom: "16px" }}>
         <input
           placeholder="Search by name or code..."

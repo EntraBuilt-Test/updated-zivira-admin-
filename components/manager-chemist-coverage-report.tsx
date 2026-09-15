@@ -2,7 +2,6 @@
 
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
-import { PageHeader } from "@/components/page-components";
 
 type ChemistCoverageReportRow = {
   id: string;
@@ -33,16 +32,114 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ChemistCove
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Manager Activity Report"
-  title="Chemist Coverage Report"
-  description="Review comprehensive retailer pharmacy coverage metrics, targets and visitation logs."
-  action={
-    <>
-<button className="button" onClick={() => setView("add")} type="button">Add Log</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Manager Activity Report</p>
+          <h2>{row.id ? "Edit Chemist Coverage Log" : "Add Chemist Coverage Log"}</h2>
+          <p>Record and update MR team visit coverage statistics for pharmacies.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* Chemist Name</span>
+          <input value={form.chemist} onChange={e => setForm({ ...form, chemist: e.target.value })} placeholder="e.g. Apollo Pharmacy" />
+        </label>
+        <label className="field">
+          <span>Type</span>
+          <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Core">Core</option>
+            <option value="Non Core">Non Core</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>* MR Name</span>
+          <input value={form.mr} onChange={e => setForm({ ...form, mr: e.target.value })} placeholder="Rahul Sharma" />
+        </label>
+        <label className="field">
+          <span>Planned Visits</span>
+          <input type="number" value={form.plannedVisits || ""} onChange={e => setForm({ ...form, plannedVisits: parseInt(e.target.value) || 0 })} placeholder="4" />
+        </label>
+        <label className="field">
+          <span>Actual Visits</span>
+          <input type="number" value={form.actualVisits || ""} onChange={e => setForm({ ...form, actualVisits: parseInt(e.target.value) || 0 })} placeholder="3" />
+        </label>
+        <label className="field">
+          <span>Missed Visits</span>
+          <input type="number" value={form.missedVisits || ""} onChange={e => setForm({ ...form, missedVisits: parseInt(e.target.value) || 0 })} placeholder="1" />
+        </label>
+        <label className="field">
+          <span>Coverage %</span>
+          <input type="number" value={form.coveragePercentage || ""} onChange={e => setForm({ ...form, coveragePercentage: parseFloat(e.target.value) || 0 })} placeholder="75" />
+        </label>
+        <label className="field">
+          <span>Status</span>
+          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Pending">Pending</option>
+            <option value="Visited">Visited</option>
+            <option value="Missed">Missed</option>
+          </select>
+        </label>
+        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.chemist.trim() || !form.mr.trim()}>
+          <Check size={16} /> Save Coverage Record
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function ManagerChemistCoverageReport() {
+  const [list, setList] = useState<ChemistCoverageReportRow[]>(initialReports);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<ChemistCoverageReportRow | null>(null);
+
+  const [typeFilter, setTypeFilter] = useState<string>("All");
+  const [typeFilterOpen, setTypeFilterOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<string>("All");
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (typeFilter === "All" || item.type === typeFilter) &&
+      (statusFilter === "All" || item.status === statusFilter) &&
+      (item.chemist.toLowerCase().includes(search.toLowerCase()) ||
+        item.mr.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: ChemistCoverageReportRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `COV${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <ReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <ReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Manager Activity Report</p>
+          <h2>Chemist Coverage Report</h2>
+          <p>Review comprehensive retailer pharmacy coverage metrics, targets and visitation logs.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Log</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

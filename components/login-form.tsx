@@ -31,7 +31,7 @@ export function LoginForm() {
       <div className="space-y-1.5">
         <label htmlFor="username" className="block text-xs font-bold text-[#31234c]">Username</label>
         <div className="relative">
-          <select className="input" 
+          <select 
             id="username" 
             value={username} 
             onChange={(event) => setUsername(event.target.value)}
@@ -66,7 +66,7 @@ export function LoginForm() {
       )}
       
       <button 
-        className="w-full h-10 mt-6 bg-[#f7931e] hover:bg-[#e68212] text-white rounded-lg font-bold text-sm flex items-center justify-center gap-4 transition-all shadow-md shadow-orange-500/20 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none" 
+        className="w-full h-10 mt-6 bg-[#f7931e] hover:bg-[#e68212] text-white rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-md shadow-orange-500/20 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none" 
         disabled={submitting} 
         type="submit"
       >

@@ -164,7 +164,7 @@ export function ManagerWorkTypeAllowance() {
     height: "26px",
     borderRadius: "4px",
     border: "1px solid var(--line)",
-    background: "var(--surface-card)",
+    background: "var(--panel)",
     color: "var(--ink)",
     fontSize: "12px",
     padding: "0 4px",
@@ -193,7 +193,7 @@ export function ManagerWorkTypeAllowance() {
       </div>
 
       {/* Main Settings Panel */}
-      <div className="card" style={{ padding: "28px", background: "var(--surface-card)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+      <div className="card" style={{ padding: "28px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
           {/* Label */}
           <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap" }}>
@@ -215,7 +215,7 @@ export function ManagerWorkTypeAllowance() {
               padding: "0 12px",
               borderRadius: "6px",
               border: "1px solid var(--line)",
-              background: "var(--surface-card)",
+              background: "var(--panel)",
               color: "var(--ink)",
               fontSize: "13px",
               outline: "none",
@@ -243,7 +243,7 @@ export function ManagerWorkTypeAllowance() {
               <ChevronDown size={15} style={{ color: "var(--muted)" }} />
             </button>
             {dropdownOpen && (
-              <div className="command-select-menu" >
+              <div className="command-select-menu" style={{ width: "260px", top: "calc(100% + 6px)", left: 0, right: "auto" }}>
                 {filteredLevels.map((opt) => (
                   <button
                     key={opt}
@@ -256,7 +256,7 @@ export function ManagerWorkTypeAllowance() {
                     type="button"
                   >
                     <span>{opt}</span>
-
+                    {selectedLevel === opt && <Check size={14} />}
                   </button>
                 ))}
               </div>
@@ -273,7 +273,7 @@ export function ManagerWorkTypeAllowance() {
               padding: "0 22px",
               borderRadius: "6px",
               border: "1px solid var(--brand)",
-              background: selectedLevel ? "var(--brand)" : "var(--surface-card)",
+              background: selectedLevel ? "var(--brand)" : "var(--panel)",
               color: selectedLevel ? "#fff" : "var(--muted)",
               fontSize: "13px",
               fontWeight: 600,
@@ -290,7 +290,7 @@ export function ManagerWorkTypeAllowance() {
           Type, Allowance and Fare Type, then Metro / Non Metro each split by
           Confirmed / Trainee / Probation, each split by HQ / EX / OS. */}
       {activeLevel && (
-        <div className="card" style={{ marginTop: "20px", padding: "24px", background: "var(--surface-card)", borderRadius: "12px", border: "1px solid var(--border)" }}>
+        <div className="card" style={{ marginTop: "20px", padding: "24px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "10px" }}>
             <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--ink)" }}>
               Work Type Wise Allowance - Fare Fixation — {activeLevel}
@@ -337,13 +337,13 @@ export function ManagerWorkTypeAllowance() {
 
           <div style={{ overflowX: "auto" }}>
             <table style={{ borderCollapse: "collapse", fontSize: "13px", minWidth: "1400px" }}>
-              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
-              <tr>
+              <thead>
+                <tr>
                   <th style={{ ...thStyle }} rowSpan={3}>S.No</th>
                   <th style={{ ...thStyle }} rowSpan={3}>Work Type</th>
                   <th style={{ ...thStyle }} rowSpan={3}>Allowance and Fare Type</th>
                   {ZONES.map((zone) => (
-                    <th key={zone} style={{ ...thStyle, background: "var(--surface-card)" }} colSpan={EMP_STATUSES.length * PAY_TYPES.length}>
+                    <th key={zone} style={{ ...thStyle, background: "var(--panel)" }} colSpan={EMP_STATUSES.length * PAY_TYPES.length}>
                       {zone}
                     </th>
                   ))}
@@ -369,13 +369,13 @@ export function ManagerWorkTypeAllowance() {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border-subtle">
+              <tbody>
                 {WORK_TYPES.map((wt, idx) => (
-                  <tr key={wt} className="hover:bg-surface-subtle/50 transition-colors group">
+                  <tr key={wt}>
                     <td style={{ padding: "6px 8px", color: "var(--ink)", border: "1px solid var(--border)", textAlign: "center" }}>{idx + 1}</td>
                     <td style={{ padding: "6px 8px", color: "var(--ink)", fontWeight: 600, whiteSpace: "nowrap", border: "1px solid var(--border)" }}>{wt}</td>
                     <td style={{ padding: "4px 6px", border: "1px solid var(--border)" }}>
-                      <select className="input"
+                      <select
                         value={grid[wt]?.allowanceFareType ?? "NA"}
                         onChange={(e) => updateAllowanceFareType(wt, e.target.value)}
                         style={{
@@ -383,7 +383,7 @@ export function ManagerWorkTypeAllowance() {
                           height: "28px",
                           borderRadius: "6px",
                           border: "1px solid var(--line)",
-                          background: "var(--surface-card)",
+                          background: "var(--panel)",
                           color: "var(--ink)",
                           fontSize: "12px",
                           padding: "0 6px"

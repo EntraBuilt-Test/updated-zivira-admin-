@@ -3,7 +3,6 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/lib/format-date";
-import { PageHeader } from "@/components/page-components";
 
 type ExpenseReportRow = {
   id: string;
@@ -40,16 +39,143 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Manager Activity Report"
-  title="Expense Report"
-  description="Review comprehensive field force daily travel and lodging expense claims."
-  action={
-    <>
-<button className="button" onClick={() => setView("add")} type="button">Add Claim</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Manager Activity Report</p>
+          <h2>{row.id ? "Edit Expense Record" : "Add Expense Record"}</h2>
+          <p>Record daily manager or MR business expense claims.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* Expense Date</span>
+          <input type="date" value={form.expenseDate} onChange={e => setForm({ ...form, expenseDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+        </label>
+        <label className="field">
+          <span>* Employee Code</span>
+          <input value={form.employeeCode} onChange={e => setForm({ ...form, employeeCode: e.target.value })} placeholder="EMP-MR-0001" />
+        </label>
+        <label className="field">
+          <span>* Employee Name</span>
+          <input value={form.employeeName} onChange={e => setForm({ ...form, employeeName: e.target.value })} placeholder="Rahul Sharma" />
+        </label>
+        <label className="field">
+          <span>Division</span>
+          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Zivira">Zivira</option>
+            <option value="Astra">Astra</option>
+            <option value="Aura">Aura</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>HQ</span>
+          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Chennai Central HQ">Chennai Central HQ</option>
+            <option value="Coimbatore HQ">Coimbatore HQ</option>
+            <option value="Madurai HQ">Madurai HQ</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>Expense Type</span>
+          <select value={form.expenseType} onChange={e => setForm({ ...form, expenseType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Travel">Travel</option>
+            <option value="Food">Food</option>
+            <option value="Lodging">Lodging</option>
+            <option value="Miscellaneous">Miscellaneous</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>Description</span>
+          <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Cab fare and toll gate fee" />
+        </label>
+        <label className="field">
+          <span>* Amount (INR)</span>
+          <input type="number" value={form.amount || ""} onChange={e => setForm({ ...form, amount: parseFloat(e.target.value) || 0 })} placeholder="750" />
+        </label>
+        <label className="field">
+          <span>Receipt Attached</span>
+          <input value={form.receiptAttached} onChange={e => setForm({ ...form, receiptAttached: e.target.value })} placeholder="e.g. receipt_2812.png" />
+        </label>
+        <label className="field">
+          <span>Approval Status</span>
+          <select value={form.approvalStatus} onChange={e => setForm({ ...form, approvalStatus: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Pending">Pending</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>Approved By</span>
+          <input value={form.approvedBy} onChange={e => setForm({ ...form, approvedBy: e.target.value })} placeholder="Priya Nair (Manager)" />
+        </label>
+        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employeeCode.trim() || !form.employeeName.trim() || form.amount <= 0}>
+          <Check size={16} /> Save Expense Claim
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function ManagerExpenseReport() {
+  const [list, setList] = useState<ExpenseReportRow[]>(initialReports);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<ExpenseReportRow | null>(null);
+
+  const [divisionFilter, setDivisionFilter] = useState<string>("All");
+  const [divisionFilterOpen, setDivisionFilterOpen] = useState(false);
+  const [hqFilter, setHqFilter] = useState<string>("All");
+  const [hqFilterOpen, setHqFilterOpen] = useState(false);
+  const [typeFilter, setTypeFilter] = useState<string>("All");
+  const [typeFilterOpen, setTypeFilterOpen] = useState(false);
+  const [approvalFilter, setApprovalFilter] = useState<string>("All");
+  const [approvalFilterOpen, setApprovalFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (divisionFilter === "All" || item.division === divisionFilter) &&
+      (hqFilter === "All" || item.hq === hqFilter) &&
+      (typeFilter === "All" || item.expenseType === typeFilter) &&
+      (approvalFilter === "All" || item.approvalStatus === approvalFilter) &&
+      (item.employeeName.toLowerCase().includes(search.toLowerCase()) ||
+        item.employeeCode.toLowerCase().includes(search.toLowerCase()) ||
+        item.description.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: ExpenseReportRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `REP${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <ReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <ReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Manager Activity Report</p>
+          <h2>Expense Report</h2>
+          <p>Review comprehensive field force daily travel and lodging expense claims.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Claim</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input
@@ -87,13 +213,13 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
                   </button>
                 </div>
                 {divisionFilterOpen && (
-                  <div className="command-select-menu" style={{ right: 0, left: "auto" }}>
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "120px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
                     {["Zivira", "Astra", "Aura"].map(div => (
-                      <button key={div} type="button" onClick={() => { setDivisionFilter(div); setDivisionFilterOpen(false); }} className={divisionFilter === div ? "command-select-option command-select-option-active" : "command-select-option"}>
+                      <button key={div} type="button" onClick={() => { setDivisionFilter(div); setDivisionFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: divisionFilter === div ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: divisionFilter === div ? 600 : 400 }}>
                         {div}
                       </button>
                     ))}
-                    <button className="command-select-option" type="button" onClick={() => { setDivisionFilter("All"); setDivisionFilterOpen(false); }}>Clear Filter</button>
+                    <button type="button" onClick={() => { setDivisionFilter("All"); setDivisionFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
                   </div>
                 )}
               </th>
@@ -109,13 +235,13 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
                   </button>
                 </div>
                 {hqFilterOpen && (
-                  <div className="command-select-menu" style={{ right: 0, left: "auto" }}>
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "160px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
                     {["Chennai Central HQ", "Coimbatore HQ", "Madurai HQ"].map(hq => (
-                      <button key={hq} type="button" onClick={() => { setHqFilter(hq); setHqFilterOpen(false); }} className={hqFilter === hq ? "command-select-option command-select-option-active" : "command-select-option"}>
+                      <button key={hq} type="button" onClick={() => { setHqFilter(hq); setHqFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: hqFilter === hq ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: hqFilter === hq ? 600 : 400 }}>
                         {hq}
                       </button>
                     ))}
-                    <button className="command-select-option" type="button" onClick={() => { setHqFilter("All"); setHqFilterOpen(false); }}>Clear Filter</button>
+                    <button type="button" onClick={() => { setHqFilter("All"); setHqFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
                   </div>
                 )}
               </th>
@@ -131,13 +257,13 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
                   </button>
                 </div>
                 {typeFilterOpen && (
-                  <div className="command-select-menu" style={{ right: 0, left: "auto" }}>
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "140px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
                     {["Travel", "Food", "Lodging", "Miscellaneous"].map(t => (
-                      <button key={t} type="button" onClick={() => { setTypeFilter(t); setTypeFilterOpen(false); }} className={typeFilter === t ? "command-select-option command-select-option-active" : "command-select-option"}>
+                      <button key={t} type="button" onClick={() => { setTypeFilter(t); setTypeFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: typeFilter === t ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: typeFilter === t ? 600 : 400 }}>
                         {t}
                       </button>
                     ))}
-                    <button className="command-select-option" type="button" onClick={() => { setTypeFilter("All"); setTypeFilterOpen(false); }}>Clear Filter</button>
+                    <button type="button" onClick={() => { setTypeFilter("All"); setTypeFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
                   </div>
                 )}
               </th>
@@ -156,13 +282,13 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
                   </button>
                 </div>
                 {approvalFilterOpen && (
-                  <div className="command-select-menu" style={{ right: 0, left: "auto" }}>
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "120px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
                     {["Pending", "Approved", "Rejected"].map(st => (
-                      <button key={st} type="button" onClick={() => { setApprovalFilter(st); setApprovalFilterOpen(false); }} className={approvalFilter === st ? "command-select-option command-select-option-active" : "command-select-option"}>
+                      <button key={st} type="button" onClick={() => { setApprovalFilter(st); setApprovalFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: approvalFilter === st ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: approvalFilter === st ? 600 : 400 }}>
                         {st}
                       </button>
                     ))}
-                    <button className="command-select-option" type="button" onClick={() => { setApprovalFilter("All"); setApprovalFilterOpen(false); }}>Clear Filter</button>
+                    <button type="button" onClick={() => { setApprovalFilter("All"); setApprovalFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
                   </div>
                 )}
               </th>

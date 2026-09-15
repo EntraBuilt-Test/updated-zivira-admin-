@@ -139,14 +139,14 @@ function AttendanceSplit({ value }: { value: number }) {
       </div>
       <div className="space-y-2 pt-2">
         <div className="flex items-center justify-between p-2 rounded-lg bg-surface-canvas">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-status-success"></span>
             <span className="font-body-sm text-body-sm text-text-secondary">Present (Active)</span>
           </div>
           <span className="font-label-md text-label-md text-text-primary font-semibold">{Math.round((value / 100) * 194)} Reps</span>
         </div>
         <div className="flex items-center justify-between p-2 rounded-lg bg-surface-canvas">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-status-warning"></span>
             <span className="font-body-sm text-body-sm text-text-secondary">On Leave / Rest</span>
           </div>
@@ -252,13 +252,13 @@ function PostNoticeModal({ onClose, onPosted }: { onClose: () => void; onPosted:
           </div>
         </div>
         <div className="p-4 border-t border-border-subtle flex justify-end gap-3 bg-surface-canvas">
-          <button onClick={onClose} className="button button-secondary">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg font-label-md text-label-md text-text-secondary hover:bg-border-subtle transition-colors">
             Cancel
           </button>
           <button 
             disabled={saving} 
             onClick={() => void handlePost()} 
-            className="button"
+            className="px-4 py-2 rounded-lg font-label-md text-label-md bg-primary text-on-primary hover:bg-brand-primary-hover transition-colors disabled:opacity-50"
           >
             {saving ? "Posting…" : "Post Notice"}
           </button>
@@ -404,7 +404,7 @@ export function AdminHomeDashboard() {
       {/* ── TOP COMMAND BAR & FILTERS ── */}
       <section className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 min-w-0">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span>
             <span className="text-text-muted text-body-sm font-body-sm">/</span>
             <span className="font-label-md text-label-md text-primary font-semibold">Command Center</span>
@@ -416,14 +416,14 @@ export function AdminHomeDashboard() {
               Live Sync Active
             </span>
           </div>
-          <p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-4">
+          <p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2">
             <span>Welcome, Corporate HQ - Zivira Labs Pvt Ltd</span>
             <span className="text-text-muted">•</span>
             <span className="text-text-muted">Last sync {loading ? "…" : "just now"}</span>
           </p>
         </div>
         
-        <div className="flex items-center flex-wrap gap-4.5">
+        <div className="flex items-center flex-wrap gap-2.5">
           <div className="relative min-w-[170px]">
             <select 
               className="w-full h-[38px] pl-3 pr-8 rounded-lg bg-surface-canvas text-text-primary font-body-md text-body-md appearance-none focus:outline-none focus:bg-surface-card shadow-sm cursor-pointer border border-transparent focus:border-border-strong"
@@ -498,7 +498,7 @@ export function AdminHomeDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Call Average</span>
-              <div className="flex items-baseline gap-4 mt-1">
+              <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">{callAverageValue}</span>
                 <span className="font-label-sm text-label-sm text-status-warning bg-status-warning-bg px-1.5 py-0.5 rounded font-semibold">-2.0 delta</span>
               </div>
@@ -522,7 +522,7 @@ export function AdminHomeDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Call Adherence</span>
-              <div className="flex items-baseline gap-4 mt-1">
+              <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">{adherenceValue}%</span>
                 <span className="font-label-sm text-label-sm text-status-danger bg-status-danger-bg px-1.5 py-0.5 rounded font-semibold">Low</span>
               </div>
@@ -546,7 +546,7 @@ export function AdminHomeDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Drs Detailed</span>
-              <div className="flex items-baseline gap-4 mt-1">
+              <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">{detailedDoctors.toLocaleString()}</span>
               </div>
             </div>
@@ -571,7 +571,7 @@ export function AdminHomeDashboard() {
           <div className="flex items-start justify-between">
             <div className="flex flex-col">
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Visit Calls (Team)</span>
-              <div className="flex items-baseline gap-4 mt-1">
+              <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">{totalVisits.toLocaleString()}</span>
               </div>
             </div>
@@ -628,7 +628,7 @@ export function AdminHomeDashboard() {
         
         <div className="lg:col-span-4 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between pb-2">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
               <h3 className="font-headline-sm text-headline-sm text-text-primary">Live Activity</h3>
               <span className="w-2 h-2 rounded-full bg-primary animate-ping"></span>
             </div>
@@ -666,7 +666,7 @@ export function AdminHomeDashboard() {
             <h2 className="font-headline-md text-headline-md text-text-primary">Field Force Status — Today ({todayLabel()})</h2>
             <p className="font-body-sm text-body-sm text-text-muted">Real-time daily reporting telemetry across active medical representatives</p>
           </div>
-          <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2 flex-wrap">
             <div className="relative min-w-[220px]">
               <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[17px]">search</span>
               <input 
@@ -688,7 +688,7 @@ export function AdminHomeDashboard() {
         </div>
         
         <div className="w-full overflow-x-auto rounded-lg border border-border-subtle">
-          <table className="w-full text-center border-collapse">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="h-table-header-height bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider border-b border-border-subtle">
                 <th className="px-4 py-2">Representative</th>
@@ -716,7 +716,7 @@ export function AdminHomeDashboard() {
                 return (
                   <tr key={row.employeeCode} className={`h-table-row-height hover:bg-surface-canvas/60 transition-colors ${isDelayed ? 'bg-status-danger-bg/20' : ''}`}>
                     <td className="px-4">
-                      <div className="flex items-center gap-4.5">
+                      <div className="flex items-center gap-2.5">
                         <div className={`w-8 h-8 rounded-full font-label-md text-label-md font-bold flex items-center justify-center ${
                           isSubmitted ? 'bg-brand-primary-subtle text-primary' : 
                           isDelayed ? 'bg-status-danger-bg text-status-danger' : 
@@ -783,7 +783,7 @@ export function AdminHomeDashboard() {
             </tbody>
           </table>
         </div>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1 font-body-sm text-body-sm text-text-secondary">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 font-body-sm text-body-sm text-text-secondary">
           <div>Showing <strong className="text-text-primary">{displayRows.length}</strong> of <strong className="text-text-primary">{fieldForceRows.length}</strong> Medical Representatives</div>
           <div className="flex items-center gap-1.5">
             <button className="px-2.5 py-1 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-muted font-label-md text-label-md disabled:opacity-40" disabled>Prev</button>
@@ -798,7 +798,7 @@ export function AdminHomeDashboard() {
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-grid-gutter">
         <div className="lg:col-span-7 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3">
-            <div className="flex items-center gap-4.5">
+            <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
                 <span className="material-symbols-outlined text-[19px]">campaign</span>
               </div>
@@ -846,7 +846,7 @@ export function AdminHomeDashboard() {
         
         <div className="lg:col-span-5 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3">
-            <div className="flex items-center gap-4.5">
+            <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-status-danger-bg text-status-danger flex items-center justify-center">
                 <span className="material-symbols-outlined text-[19px]">alarm_off</span>
               </div>
@@ -864,7 +864,7 @@ export function AdminHomeDashboard() {
                   <span className="font-label-md text-label-md text-text-primary truncate font-semibold">{row.name}</span>
                   <span className="font-label-sm text-label-sm text-text-muted truncate">{row.territory} • {row.callsToday} calls logged</span>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded bg-status-danger-bg text-status-danger font-label-sm text-label-sm font-bold">Delayed</span>
                   <button className="w-7 h-7 rounded border border-border-subtle bg-surface-card hover:bg-brand-primary-subtle hover:text-primary flex items-center justify-center text-text-muted shadow-sm transition-colors" title="Send WhatsApp/SMS Reminder">
                     <span className="material-symbols-outlined text-[16px]">notifications_active</span>

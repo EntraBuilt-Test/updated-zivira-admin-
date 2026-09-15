@@ -2,7 +2,6 @@
 
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
-import { PageHeader } from "@/components/page-components";
 
 type ClassRow = {
   id: string;
@@ -27,14 +26,14 @@ function ClassForm({ row, onSave, onBack }: { row: any; onSave: (r: ClassRow) =>
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-        eyebrow="Master Setup"
-        title={isEdit ? "Edit Classification" : "Add Classification"}
-        description="Configure doctor category, business potential, and visit frequency rules."
-        action={
-          <button className="button button-secondary" onClick={onBack} type="button">Back</button>
-        }
-      />
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>{isEdit ? "Edit Classification" : "Add Classification"}</h2>
+          <p>Configure doctor category, business potential, and visit frequency rules.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
+      </div>
       <div className="subdivision-form-card">
         <label className="field">
           <span>Doctor Category</span>
@@ -119,14 +118,17 @@ export function DoctorManager() {
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-        eyebrow="Master Setup"
-        title="Doctor Classification"
-        description="Create and manage doctor visit classifications based on sales potential."
-        action={
-          <button className="button" onClick={() => setView("add")} type="button">Add Classification</button>
-        }
-      />
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Doctor Classification</h2>
+          <p>Create and manage doctor visit classifications based on sales potential.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Classification</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

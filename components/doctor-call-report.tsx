@@ -3,7 +3,6 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { formatDate } from "@/lib/format-date";
-import { PageHeader } from "@/components/page-components";
 
 type CallReportRow = {
   id: string;
@@ -44,16 +43,136 @@ function CallReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CallRep
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Daily MR Work"
-  title="Daily Call Report"
-  description="Track doctor calls, chemist feedback, and product promotions."
-  action={
-    <>
-<button className="button" onClick={() => setView("add")} type="button">Add Report</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Daily MR Work</p>
+          <h2>{row.id ? "Edit Call Report" : "Add Call Report"}</h2>
+          <p>Create new daily MR activity call report logs.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* Date</span>
+          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+        </label>
+        <label className="field">
+          <span>* Employee Name</span>
+          <input value={form.employee} onChange={e => setForm({ ...form, employee: e.target.value })} placeholder="Rahul Sharma" />
+        </label>
+        <label className="field">
+          <span>HQ</span>
+          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Chennai Central HQ">Chennai Central HQ</option>
+            <option value="Coimbatore HQ">Coimbatore HQ</option>
+            <option value="Madurai HQ">Madurai HQ</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>Patch</span>
+          <input value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T-Nagar" />
+        </label>
+        <label className="field">
+          <span>Doctor</span>
+          <input value={form.doctor} onChange={e => setForm({ ...form, doctor: e.target.value })} placeholder="Dr. John Doe" />
+        </label>
+        <label className="field">
+          <span>Chemist</span>
+          <input value={form.chemist} onChange={e => setForm({ ...form, chemist: e.target.value })} placeholder="Apollo Pharmacy" />
+        </label>
+        <label className="field">
+          <span>Hospital</span>
+          <input value={form.hospital} onChange={e => setForm({ ...form, hospital: e.target.value })} placeholder="Apollo Hospital" />
+        </label>
+        <label className="field">
+          <span>Products Promoted</span>
+          <input value={form.productsPromoted} onChange={e => setForm({ ...form, productsPromoted: e.target.value })} placeholder="Paracetamol, Amoxicillin" />
+        </label>
+        <label className="field">
+          <span>Samples Issued</span>
+          <input value={form.samplesIssued} onChange={e => setForm({ ...form, samplesIssued: e.target.value })} placeholder="10 tabs, 5 bottles" />
+        </label>
+        <label className="field">
+          <span>Call Type</span>
+          <select value={form.callType} onChange={e => setForm({ ...form, callType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Physical Visit">Physical Visit</option>
+            <option value="Phone Call">Phone Call</option>
+            <option value="CME">CME</option>
+          </select>
+        </label>
+        <label className="field">
+          <span>Visit Time</span>
+          <input value={form.visitTime} onChange={e => setForm({ ...form, visitTime: e.target.value })} placeholder="10:30 AM" />
+        </label>
+        <label className="field">
+          <span>Remarks</span>
+          <input value={form.remarks} onChange={e => setForm({ ...form, remarks: e.target.value })} placeholder="Doctor detailed on API products" />
+        </label>
+        <label className="field">
+          <span>Next Visit Date</span>
+          <input type="date" value={form.nextVisitDate} onChange={e => setForm({ ...form, nextVisitDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+        </label>
+        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employee.trim()}>
+          <Check size={16} /> Save Call Report
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function DoctorCallReport() {
+  const [list, setList] = useState<CallReportRow[]>(initialCallReports);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<CallReportRow | null>(null);
+
+  const [hqFilter, setHqFilter] = useState<string>("All");
+  const [hqFilterOpen, setHqFilterOpen] = useState(false);
+  const [callTypeFilter, setCallTypeFilter] = useState<string>("All");
+  const [callTypeFilterOpen, setCallTypeFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (hqFilter === "All" || item.hq === hqFilter) &&
+      (callTypeFilter === "All" || item.callType === callTypeFilter) &&
+      (item.employee.toLowerCase().includes(search.toLowerCase()) ||
+        item.doctor.toLowerCase().includes(search.toLowerCase()) ||
+        item.hq.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: CallReportRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `REP${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <CallReportForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <CallReportForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Daily MR Work</p>
+          <h2>Daily Call Report</h2>
+          <p>Track doctor calls, chemist feedback, and product promotions.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Report</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

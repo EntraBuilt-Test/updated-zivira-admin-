@@ -3,7 +3,6 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { BackButton } from "@/components/back-button";
-import { PageHeader } from "@/components/page-components";
 
 type MappingRow = {
   id: string;
@@ -28,18 +27,101 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title="Divided Mapping"
-  description="Configure general profiles, mappings, and status settings."
-  action={
-    <>
-<BackButton />
-          
-          <button className="button" onClick={() => setView("add")} type="button">Add Mapping</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>{isEdit ? "Edit Account Mapping" : "Add Account Mapping"}</h2>
+          <p>Maintain bank registration and account profiles.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button">
+          <RotateCcw size={16} /> Back
+        </button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* Bank</span>
+          <input value={form.bank} onChange={e => setForm({ ...form, bank: e.target.value })} placeholder="e.g. HDFC Bank" />
+        </label>
+        <label className="field">
+          <span>* Account No</span>
+          <input value={form.accountNo} onChange={e => setForm({ ...form, accountNo: e.target.value })} placeholder="e.g. 50100234567890" />
+        </label>
+        <label className="field">
+          <span>* IFSC</span>
+          <input value={form.ifsc} onChange={e => setForm({ ...form, ifsc: e.target.value.toUpperCase() })} placeholder="e.g. HDFC0000123" />
+        </label>
+        <label className="field">
+          <span>Status</span>
+          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </label>
+        <button
+          className="button"
+          style={{ marginTop: "12px" }}
+          onClick={() => onSave(form)}
+          type="button"
+          disabled={!form.bank.trim() || !form.accountNo.trim() || !form.ifsc.trim()}
+        >
+          <Check size={16} /> Save Mapping
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function DividedMappingMaster() {
+  const [list, setList] = useState<MappingRow[]>(initialMappings);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<MappingRow | null>(null);
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (statusFilter === "All" || item.status === statusFilter) &&
+      (item.bank.toLowerCase().includes(search.toLowerCase()) ||
+        item.accountNo.toLowerCase().includes(search.toLowerCase()) ||
+        item.ifsc.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: MappingRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `MAP${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <MappingForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <MappingForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Divided Mapping</h2>
+          <p>Configure general profiles, mappings, and status settings.</p>
+        </div>
+        <div className="subdivision-actions">
+          <BackButton />
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Mapping</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

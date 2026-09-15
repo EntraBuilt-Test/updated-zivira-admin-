@@ -3,7 +3,6 @@
 import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Ban } from "lucide-react";
 import { useState } from "react";
 import { BackButton } from "@/components/back-button";
-import { PageHeader } from "@/components/page-components";
 
 type HeadquartersRow = {
   id: string;
@@ -26,18 +25,96 @@ function HeadquartersForm({ row, onSave, onBack }: { row: any; onSave: (r: Headq
 
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title="Headquarters"
-  description="Configure general profiles, mappings, and status settings."
-  action={
-    <>
-<BackButton />
-          
-          <button className="button" onClick={() => setView("add")} type="button">Add HQ</button>
-    </>
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>{isEdit ? "Edit Headquarters" : "Add Headquarters"}</h2>
+          <p>Maintain general registration and location profiles.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button">
+          <RotateCcw size={16} /> Back
+        </button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>* HQ</span>
+          <input value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} placeholder="e.g. South Chennai" />
+        </label>
+        <label className="field">
+          <span>* Territory</span>
+          <input value={form.territory} onChange={e => setForm({ ...form, territory: e.target.value })} placeholder="e.g. Chennai Zone A" />
+        </label>
+        <label className="field">
+          <span>Status</span>
+          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </label>
+        <button
+          className="button"
+          style={{ marginTop: "12px" }}
+          onClick={() => onSave(form)}
+          type="button"
+          disabled={!form.hq.trim() || !form.territory.trim()}
+        >
+          <Check size={16} /> Save Headquarters
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function HeadquartersMaster() {
+  const [list, setList] = useState<HeadquartersRow[]>(initialHqs);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<HeadquartersRow | null>(null);
+
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [statusFilterOpen, setStatusFilterOpen] = useState(false);
+
+  const filtered = list.filter(
+    (item) =>
+      (statusFilter === "All" || item.status === statusFilter) &&
+      (item.hq.toLowerCase().includes(search.toLowerCase()) ||
+        item.territory.toLowerCase().includes(search.toLowerCase()))
+  );
+
+  function handleSave(form: HeadquartersRow) {
+    if (view === "add") {
+      const newRow = {
+        ...form,
+        id: `HQ${String(list.length + 1).padStart(3, "0")}`
+      };
+      setList([...list, newRow]);
+    } else {
+      setList(list.map((item) => (item.id === form.id ? { ...form } : item)));
+    }
+    setView("list");
   }
-/>
+
+  function handleDelete(id: string) {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  if (view === "add") return <HeadquartersForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <HeadquartersForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Headquarters</h2>
+          <p>Configure general profiles, mappings, and status settings.</p>
+        </div>
+        <div className="subdivision-actions">
+          <BackButton />
+          
+          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add HQ</button>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "16px" }}>
         <input

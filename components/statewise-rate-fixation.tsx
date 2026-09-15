@@ -1,5 +1,4 @@
 "use client";
-import { PageHeader } from "@/components/page-components";
 import { Pencil, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
@@ -225,21 +224,21 @@ export function StatewiseRateFixation() {
   }
   return (
     <section className="subdivision-console">
-      <PageHeader
-  eyebrow="Master Setup"
-  title="Rate Master"
-  description="Configure product batch rates, PTR, PTS, and MRP."
-  action={
-    <>
-<button className="button button-secondary" type="button">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Rate Master</h2>
+          <p>Configure product batch rates, PTR, PTS, and MRP.</p>
+        </div>
+        <div className="subdivision-actions">
+          <button className="button button-secondary" type="button">
             <SlidersHorizontal size={16} /> Filters
           </button>
           <button className="button" onClick={handleAdd} type="button">
              Add Batch Rate
           </button>
-    </>
-  }
-/>
+        </div>
+      </div>
       <div style={{ marginBottom: "16px" }}>
         <input
           placeholder="Search by product or batch..."

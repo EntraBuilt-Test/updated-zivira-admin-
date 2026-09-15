@@ -119,12 +119,12 @@ export function TerritoryBulkDeactivation() {
   });
   if (view !== "list") {
     return (
-      <section className="flex flex-col gap-6 w-full">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Field Force Entries</p>
-          <h2 className="text-2xl font-bold text-text-primary">Add Bulk Deactivation</h2>
-          <p className="text-sm text-text-secondary mt-1">Deactivate doctor assignments across a whole patch in bulk.</p>
+      <section className="subdivision-console">
+        <div className="subdivision-head">
+          <div>
+            <p className="subdivision-eyebrow">Field Force Entries</p>
+            <h2>Add Bulk Deactivation</h2>
+            <p>Deactivate doctor assignments across a whole patch in bulk.</p>
           </div>
           <button className="button button-secondary" onClick={() => setView("list")} type="button">
             <RotateCcw size={16} /> Back
@@ -133,7 +133,7 @@ export function TerritoryBulkDeactivation() {
         <form onSubmit={handleSave} className="card form-grid" style={{ animation: "popIn 0.3s ease-out forwards" }}>
           <div className="field">
             <label>Select Division</label>
-            <select className="input" value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
+            <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
               <option value="Zivira">Zivira</option>
               <option value="Astra">Astra</option>
               <option value="Aura">Aura</option>
@@ -141,7 +141,7 @@ export function TerritoryBulkDeactivation() {
           </div>
           <div className="field">
             <label>Select Patch</label>
-            <select className="input" value={form.patch} onChange={e => handlePatchChange(e.target.value)}>
+            <select value={form.patch} onChange={e => handlePatchChange(e.target.value)}>
               {list.map(p => (
                 <option key={p.patch} value={p.patch}>{p.patch}</option>
               ))}
@@ -180,29 +180,30 @@ export function TerritoryBulkDeactivation() {
           <h2>Territory Bulk Deactivation</h2>
           <p>Disable entire patch sales mapping networks simultaneously.</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-4 shadow-sm" onClick={() => setView("add")} type="button"> Add Bulk Deactivation</button>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button"> Add Bulk Deactivation</button>
         </div>
       </div>
-      <div className="flex items-center w-full max-w-sm mb-6">
-      <input
-        placeholder="Search by patch or HQ..."
-        value={search}
-        onChange={e => setSearch(e.target.value)}
-        className="button button-secondary"
-      />
-    </div>
-      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 250px)", minHeight: "220px" }}>
+      <div style={{ marginBottom: "16px" }}>
+        <input
+          placeholder="Search by patch or HQ..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
+        />
+      </div>
+      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading mappings...</div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "40px", color: "red" }}>{error}</div>
         ) : (
           <table className="subdivision-table">
-            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <thead>
               <tr>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                <th>S.No</th>
+                <th>
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Division" 
@@ -212,7 +213,7 @@ export function TerritoryBulkDeactivation() {
                     />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                <th>
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="HQ" 
@@ -222,7 +223,7 @@ export function TerritoryBulkDeactivation() {
                     />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                <th>
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Patch" 
@@ -232,12 +233,12 @@ export function TerritoryBulkDeactivation() {
                     />
                   </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Doctors</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Active Doctor</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                <th>Total Doctors</th>
+                <th>Active Doctor</th>
+                <th>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "center" }}>
                     <span>Selected For Deactivation</span>
-                    <select className="input" 
+                    <select 
                       onChange={(e) => {
                         if (e.target.value === "Select All") {
                           setList(list.map(x => ({ ...x, selectedForDeactivation: true })));
@@ -254,23 +255,23 @@ export function TerritoryBulkDeactivation() {
                     </select>
                   </div>
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Effective Date</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                <th>Effective Date</th>
+                <th>
                   <div style={{ minWidth: "140px" }}>
                     <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                   </div>
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle">
+            <tbody>
               {filtered.map((row, idx) => (
-                <tr key={row.id} className="hover:bg-surface-subtle/50 transition-colors group">
-                  <td className="px-4 py-3 text-sm text-text-muted whitespace-nowrap" style={{ fontWeight: 500 }}>{idx + 1}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.division}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.patch}</strong></td>
-                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.totalDoctors}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.activeDoctors}</td>
+                <tr key={row.id}>
+                  <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
+                  <td>{row.division}</td>
+                  <td>{row.hq}</td>
+                  <td><strong>{row.patch}</strong></td>
+                  <td>{row.totalDoctors}</td>
+                  <td>{row.activeDoctors}</td>
                   <td style={{ textAlign: "center" }}>
                     <input
                       type="checkbox"
@@ -280,7 +281,7 @@ export function TerritoryBulkDeactivation() {
                     />
                   </td>
                   <td style={{ fontFamily: "monospace" }}>{row.effectiveDate}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                  <td>
                     <span style={{
                       padding: "2px 8px",
                       borderRadius: "999px",
@@ -297,7 +298,7 @@ export function TerritoryBulkDeactivation() {
               ))}
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={16} className="px-4 py-8 text-center text-text-muted text-sm">
+                  <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                     No records found
                   </td>
                 </tr>

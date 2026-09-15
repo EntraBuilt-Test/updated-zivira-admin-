@@ -9,7 +9,7 @@ export function AdminSampleDistributionDashboard({ node, path }: { node: ZiviraT
 {/* Top Header Navigation Bar */}
 <header className="sticky top-0 z-10 bg-surface-card/95 backdrop-blur-md border-b border-border-subtle px-6 py-2.5 flex items-center justify-between gap-4 flex-shrink-0">
 {/* Breadcrumbs */}
-<div className="flex items-center gap-4 text-xs text-text-secondary font-medium min-w-0 truncate"><span>Platform</span>
+<div className="flex items-center gap-2 text-xs text-text-secondary font-medium min-w-0 truncate"><span>Platform</span>
 <span className="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
 <span>Analytics Suite</span>
 <span className="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
@@ -32,7 +32,7 @@ export function AdminSampleDistributionDashboard({ node, path }: { node: ZiviraT
 <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#b43403] ring-2 ring-white"></span>
 </button>
 <div className="h-5 w-px bg-slate-200"></div>
-<div className="flex items-center gap-4 pl-1">
+<div className="flex items-center gap-2 pl-1">
 <div className="w-8 h-8 rounded-full bg-[#b43403] text-white flex items-center justify-center font-display font-bold text-xs shadow-xs">
               AZ
             </div>
@@ -51,7 +51,7 @@ export function AdminSampleDistributionDashboard({ node, path }: { node: ZiviraT
 <h1 className="text-xl lg:text-2xl font-display font-bold text-text-primary tracking-tight">
 Physician Sample Distribution &amp; Custody Ledger
 </h1>
-<div className="flex flex-wrap items-center gap-4">
+<div className="flex flex-wrap items-center gap-2">
 <span className="px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-xs font-semibold flex items-center gap-1.5">
 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
 UCPMP Compliant Batch Tracking
@@ -64,12 +64,12 @@ Form 13-A Filing: Up to Date
 </span>
 </div>
 </div>
-<div className="flex flex-wrap items-center gap-4.5">
-<button className="h-9 px-3.5 rounded-lg border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-secondary font-medium text-xs flex items-center gap-4 shadow-xs transition-colors" type="button">
+<div className="flex flex-wrap items-center gap-2.5">
+<button className="h-9 px-3.5 rounded-lg border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-secondary font-medium text-xs flex items-center gap-2 shadow-xs transition-colors" type="button">
 <span className="material-symbols-outlined text-[17px] text-text-secondary">file_download</span>
 <span>Export Form 13-A Ledger (CSV/PDF)</span>
 </button>
-<button className="h-9 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a2c02] text-white font-semibold text-xs flex items-center gap-4 shadow-sm shadow-orange-950/20 transition-all active:scale-[0.98]" type="button">
+<button className="h-9 px-4 rounded-lg bg-[#b43403] hover:bg-[#9a2c02] text-white font-semibold text-xs flex items-center gap-2 shadow-sm shadow-orange-950/20 transition-all active:scale-[0.98]" type="button">
 <span className="material-symbols-outlined text-[18px]">add_circle</span>
 <span>+ Allocate Sample Quota</span>
 </button>
@@ -89,7 +89,7 @@ Form 13-A Filing: Up to Date
 </div>
 </div>
 <div>
-<div className="flex items-baseline gap-4">
+<div className="flex items-baseline gap-2">
 <span className="font-display text-2xl font-bold text-text-primary">48,290 Pks</span>
 <span className="text-xs font-semibold text-emerald-600 flex items-center">
 <span className="material-symbols-outlined text-[14px]">arrow_upward</span> +6.4% MoM
@@ -113,7 +113,7 @@ Form 13-A Filing: Up to Date
 </div>
 </div>
 <div>
-<div className="flex items-baseline gap-4">
+<div className="flex items-baseline gap-2">
 <span className="font-display text-2xl font-bold text-text-primary">98.8%</span>
 <span className="text-xs font-semibold text-amber-600 flex items-center gap-0.5">
 <span className="material-symbols-outlined text-[14px]">schedule</span> 580 Pending
@@ -137,7 +137,7 @@ Form 13-A Filing: Up to Date
 </div>
 </div>
 <div>
-<div className="flex items-baseline gap-4">
+<div className="flex items-baseline gap-2">
 <span className="font-display text-2xl font-bold text-text-primary">142 Pks</span>
 <span className="text-xs font-semibold text-amber-600 flex items-center">
 &lt;60 Days Window
@@ -161,7 +161,7 @@ Form 13-A Filing: Up to Date
 </div>
 </div>
 <div>
-<div className="flex items-baseline gap-4">
+<div className="flex items-baseline gap-2">
 <span className="font-display text-2xl font-bold text-text-primary">99.9%</span>
 <span className="text-xs font-semibold text-emerald-600">
 ≤12 Pks/Dr/Yr
@@ -177,22 +177,22 @@ Form 13-A Filing: Up to Date
 </div>
 </div></div>
 {/* Sub-Navigation Pill Tabs */}
-<div className="bg-surface-card rounded-xl border border-border-subtle/80 px-4 py-1.5 shadow-sm flex items-center justify-between overflow-x-auto"><div className="flex items-center gap-4 shrink-0">
-<button className="relative py-2.5 px-3 text-xs font-bold text-[#b43403] flex items-center gap-4 border-b-2 border-[#b43403]" type="button">
+<div className="bg-surface-card rounded-xl border border-border-subtle/80 px-4 py-1.5 shadow-sm flex items-center justify-between overflow-x-auto"><div className="flex items-center gap-2 shrink-0">
+<button className="relative py-2.5 px-3 text-xs font-bold text-[#b43403] flex items-center gap-2 border-b-2 border-[#b43403]" type="button">
 <span className="material-symbols-outlined text-[17px]">medication</span>
 <span>Active Sample Roster &amp; Inventory</span>
 <span className="px-1.5 py-0.2 rounded-full bg-[#b43403] text-white text-[10px] font-semibold">16 SKUs</span>
 </button>
-<button className="py-2.5 px-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-lg flex items-center gap-4 transition-colors" type="button">
+<button className="py-2.5 px-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-lg flex items-center gap-2 transition-colors" type="button">
 <span className="material-symbols-outlined text-[17px] text-text-muted">receipt_long</span>
 <span>Physician Dispensation Receipts &amp; OTP Audit</span>
 <span className="px-1.5 py-0.2 rounded-full bg-surface-subtle text-text-secondary text-[10px] font-semibold">47.7k Validated</span>
 </button>
-<button className="py-2.5 px-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-lg flex items-center gap-4 transition-colors" type="button">
+<button className="py-2.5 px-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-lg flex items-center gap-2 transition-colors" type="button">
 <span className="material-symbols-outlined text-[17px] text-text-muted">backpack</span>
 <span>MR Bag Stock &amp; Depot Reconciliation</span>
 </button>
-<button className="py-2.5 px-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-lg flex items-center gap-4 transition-colors" type="button">
+<button className="py-2.5 px-3 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-lg flex items-center gap-2 transition-colors" type="button">
 <span className="material-symbols-outlined text-[17px] text-text-muted">assignment_return</span>
 <span>Batch Recall &amp; Damaged Goods Ledger</span>
 <span className="px-1.5 py-0.2 rounded-full bg-status-warning-bg text-status-warning border border-status-warning-bg text-[10px] font-bold">1 Pending</span>
@@ -207,11 +207,11 @@ Form 13-A Filing: Up to Date
 {/* LEFT COLUMN: Supervisory Roster Table (Col 8) */}
 <div className="lg:col-span-8 flex flex-col space-y-4">
 {/* Filters Strip */}
-<div className="bg-surface-card rounded-xl border border-border-subtle/80 p-3 shadow-sm flex flex-wrap items-center justify-between gap-3"><div className="flex-1 min-w-[220px] flex items-center gap-4 px-3 py-1.5 rounded-lg bg-surface-subtle border border-border-subtle text-text-muted focus-within:border-[#b43403] focus-within:ring-1 focus-within:ring-[#b43403]/20 transition-all">
+<div className="bg-surface-card rounded-xl border border-border-subtle/80 p-3 shadow-sm flex flex-wrap items-center justify-between gap-3"><div className="flex-1 min-w-[220px] flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-subtle border border-border-subtle text-text-muted focus-within:border-[#b43403] focus-within:ring-1 focus-within:ring-[#b43403]/20 transition-all">
 <span className="material-symbols-outlined text-[17px]">search</span>
 <input className="w-full text-xs bg-transparent text-text-secondary placeholder-slate-400 focus:outline-none border-none p-0" placeholder="Search SKU, Batch No, Molecule..." type="text"/>
 </div>
-<div className="flex items-center gap-4">
+<div className="flex items-center gap-2">
 <select className="h-8 px-3 rounded-lg bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary focus:outline-none focus:border-[#b43403] cursor-pointer">
 <option>All Therapeutic Categories</option>
 <option>Cardiology</option>
@@ -233,7 +233,7 @@ Form 13-A Filing: Up to Date
 {/* Table Card */}
 <div className="bg-surface-card rounded-xl border border-border-subtle/80 shadow-sm overflow-hidden flex flex-col">
 <div className="overflow-x-auto">
-<table className="w-full text-center text-xs text-text-secondary"><thead className="bg-surface-subtle/80 border-b border-border-subtle text-[11px] font-bold uppercase tracking-wider text-text-secondary">
+<table className="w-full text-left text-xs text-text-secondary"><thead className="bg-surface-subtle/80 border-b border-border-subtle text-[11px] font-bold uppercase tracking-wider text-text-secondary">
 <tr>
 <th className="py-3 px-3 w-8 text-center">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
@@ -255,7 +255,7 @@ Form 13-A Filing: Up to Date
 <input defaultChecked={true} className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
-<div className="flex items-center gap-4.5">
+<div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-[#b43403] text-white flex items-center justify-center font-display font-bold text-xs shrink-0 shadow-xs">
 CC
 </div>
@@ -302,7 +302,7 @@ Active
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
-<div className="flex items-center gap-4.5">
+<div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
 GZ
 </div>
@@ -346,7 +346,7 @@ Inspect
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
-<div className="flex items-center gap-4.5">
+<div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
 RC
 </div>
@@ -390,7 +390,7 @@ Inspect
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
-<div className="flex items-center gap-4.5">
+<div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
 ZC
 </div>
@@ -434,7 +434,7 @@ Inspect
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
 <td className="py-3 px-3">
-<div className="flex items-center gap-4.5">
+<div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-amber-100 text-status-warning flex items-center justify-center font-display font-bold text-xs shrink-0">
 GD
 </div>
@@ -546,21 +546,21 @@ CC
 </div>
 <div className="space-y-2 text-xs">
 <div className="p-2.5 rounded-lg bg-surface-subtle border border-border-subtle/60 flex items-center justify-between">
-<div className="flex items-center gap-4">
+<div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-[16px] text-text-secondary">warehouse</span>
 <span className="font-medium text-text-secondary">Central Depot Dispense</span>
 </div>
 <span className="font-bold text-text-primary">14,500 Pks</span>
 </div>
 <div className="p-2.5 rounded-lg bg-surface-subtle border border-border-subtle/60 flex items-center justify-between">
-<div className="flex items-center gap-4">
+<div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-[16px] text-text-secondary">local_shipping</span>
 <span className="font-medium text-text-secondary">Received by 428 Field MRs</span>
 </div>
 <span className="font-bold text-text-primary">14,500 Pks</span>
 </div>
 <div className="p-2.5 rounded-lg bg-surface-subtle border border-border-subtle/60 flex items-center justify-between">
-<div className="flex items-center gap-4">
+<div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-[16px] text-emerald-600">verified_user</span>
 <span className="font-medium text-text-secondary">HCP OTP / Signed Receipts</span>
 </div>
@@ -613,11 +613,11 @@ Strict limit of ≤12 packs/doctor/year enforced via 2D Barcode Scan &amp; OTP v
 </div>
 {/* Action CTAs */}
 <div className="flex flex-col space-y-2 pt-1">
-<button className="w-full h-9 rounded-lg bg-[#b43403] text-white text-xs font-semibold hover:bg-[#9a2c02] transition-colors flex items-center justify-center gap-4 shadow-xs" type="button">
+<button className="w-full h-9 rounded-lg bg-[#b43403] text-white text-xs font-semibold hover:bg-[#9a2c02] transition-colors flex items-center justify-center gap-2 shadow-xs" type="button">
 <span className="material-symbols-outlined text-[17px]">description</span>
 <span>Download Statutory Form 13-A</span>
 </button>
-<button className="w-full h-9 rounded-lg border border-border-subtle bg-surface-subtle text-text-secondary text-xs font-medium hover:bg-surface-subtle transition-colors flex items-center justify-center gap-4" type="button">
+<button className="w-full h-9 rounded-lg border border-border-subtle bg-surface-subtle text-text-secondary text-xs font-medium hover:bg-surface-subtle transition-colors flex items-center justify-center gap-2" type="button">
 <span className="material-symbols-outlined text-[17px] text-text-secondary">inventory</span>
 <span>Trigger Physical Stock Audit for MRs</span>
 </button>
