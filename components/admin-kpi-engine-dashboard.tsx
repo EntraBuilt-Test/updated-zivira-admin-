@@ -49,7 +49,7 @@ export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; 
         action={<BackButton />}
       />
       
-      <section className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+      <section className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-8">
         <div className="flex justify-end gap-2 mb-6">
           <button className="flex items-center gap-2 px-4 py-2 rounded-md bg-surface-subtle hover:bg-surface-card text-text-primary border border-border-subtle text-sm font-medium transition-colors" onClick={load} type="button">
             <RefreshCw size={15} className={loading ? "animate-spin" : ""} />
@@ -66,7 +66,7 @@ export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; 
       {error && <p className="p-4 bg-status-danger-bg text-status-danger rounded-md text-sm border border-status-danger-bg">{error}</p>}
 
       <h3 className="text-lg font-semibold text-text-primary" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><Gauge size={16} /> Manager KPIs</h3>
-      <div className="bg-surface-card border border-border-subtle rounded-xl overflow-hidden shadow-sm" style={{ marginBottom: 28 }}>
+      <div className="bg-surface-card border border-border-subtle rounded-xl overflow-x-auto shadow-sm" style={{ marginBottom: 28 }}>
         <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
           <thead className="bg-surface-subtle text-text-secondary border-b border-border-subtle">
             <tr><th className="px-6 py-3 font-medium">Manager</th><th className="px-6 py-3 font-medium">Team Size</th><th className="px-6 py-3 font-medium">Joint Call %</th><th className="px-6 py-3 font-medium">Team Compliance %</th><th className="px-6 py-3 font-medium">Doctor Coverage %</th><th className="px-6 py-3 font-medium">Effectiveness Score</th></tr>
@@ -90,7 +90,7 @@ export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; 
       </div>
 
       <h3 className="text-lg font-semibold text-text-primary" style={{ marginBottom: 10 }}>Representative KPIs</h3>
-      <div className="bg-surface-card border border-border-subtle rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-surface-card border border-border-subtle rounded-xl overflow-x-auto shadow-sm">
         <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
           <thead className="bg-surface-subtle text-text-secondary border-b border-border-subtle">
             <tr><th className="px-6 py-3 font-medium">Representative</th><th className="px-6 py-3 font-medium">Doctors Visited</th><th className="px-6 py-3 font-medium">DCR Submitted</th><th className="px-6 py-3 font-medium">Products Promoted</th><th className="px-6 py-3 font-medium">Samples Distributed</th><th className="px-6 py-3 font-medium">Conversion Rate</th><th className="px-6 py-3 font-medium">Compliance %</th></tr>

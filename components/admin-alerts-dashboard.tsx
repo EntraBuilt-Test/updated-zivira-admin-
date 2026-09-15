@@ -115,12 +115,7 @@ export function AdminAlertsDashboard({
       <section className="space-y-3" data-purpose="table-filters">
         {/*  Filter Tabs / Pills  */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-          <button
-            className="filter-tab px-3.5 py-1.5 rounded-full bg-brand-orange text-white shadow-sm transition hover:opacity-90"
-            data-filter="all"
-          >
-            All (82)
-          </button>
+
           <button
             className="filter-tab px-3.5 py-1.5 rounded-full bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
             data-filter="SALARY HOLD"
