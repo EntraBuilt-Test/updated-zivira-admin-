@@ -19,7 +19,7 @@ export default async function WorkspacePage({ params }: { params: Promise<{ path
         description="Modern working surface for this exact legacy tab. CRUD controls are present here and can be wired to the matching MongoDB collection."
         action={
           <div className="toolbar">
-            <button className="button">Add</button>
+            <button className="button"><Plus size={17} /> Add</button>
             <button className="button button-secondary"><Trash2 size={17} /> Delete</button>
           </div>
         }
