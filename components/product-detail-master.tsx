@@ -291,7 +291,7 @@ export function ProductDetailMaster() {
             <SlidersHorizontal size={16} /> Filters
           </button>
           <button className="button" onClick={() => setView("add")} type="button">
-            <Plus size={16} /> Add Product
+            Add Product
           </button>
         </div>
       </div>

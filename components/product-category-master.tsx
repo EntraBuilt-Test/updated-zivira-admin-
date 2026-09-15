@@ -387,7 +387,7 @@ export function ProductCategoryMaster() {
             <button className="button button-secondary" onClick={() => setView("reactivation")} type="button"><RefreshCw size={16} /> Reactivation</button>
             <button className="button button-secondary" onClick={() => setView("serialNo")} type="button"><SlidersHorizontal size={16} /> S.No Gen</button>
             <button className="button button-secondary" onClick={() => setView("bulkEdit")} type="button"><Pencil size={16} /> Bulk Edit</button>
-            <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add</button>
+            <button className="button" onClick={() => setView("add")} type="button">Add</button>
           </div>
         </div>
 

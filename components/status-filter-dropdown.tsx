@@ -50,7 +50,7 @@ export function StatusFilterDropdown({
   ];
 
   return (
-    <div ref={ref} style={{ position: "relative", display: "inline-block", fontWeight: "normal", textTransform: "none" }}>
+    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
       <button
         ref={buttonRef}
         type="button"
@@ -61,13 +61,13 @@ export function StatusFilterDropdown({
           justifyContent: "space-between",
           background: "none",
           border: "none",
-          color: "var(--muted)",
+          color: "inherit",
           cursor: "pointer",
           padding: "2px",
           fontFamily: "inherit",
         }}
       >
-        <span style={{ fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>STATUS</span>
+        <span>Status</span>
         <ChevronDown size={14} style={{ color: "var(--muted)", marginLeft: "4px" }} />
       </button>
 

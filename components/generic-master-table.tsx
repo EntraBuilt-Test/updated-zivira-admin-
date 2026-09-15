@@ -1210,7 +1210,6 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
           </div>
           <div className="flex items-center gap-3">
             <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm" onClick={openAddForm} type="button">
-              <Plus size={16} />
               <span>Add {schema.title}</span>
             </button>
           </div>

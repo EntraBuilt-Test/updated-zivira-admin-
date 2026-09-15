@@ -126,7 +126,7 @@ export function DoctorManager() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Classification</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Classification</button>
         </div>
       </div>
 

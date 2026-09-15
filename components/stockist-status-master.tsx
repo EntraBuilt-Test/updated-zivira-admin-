@@ -105,7 +105,7 @@ export function StockistStatusMaster() {
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Status</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Status</button>
         </div>
       </div>
 

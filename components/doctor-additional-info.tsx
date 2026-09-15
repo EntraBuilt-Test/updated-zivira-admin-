@@ -211,7 +211,7 @@ export function DoctorAdditionalInfo() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Information</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Information</button>
         </div>
       </div>
 

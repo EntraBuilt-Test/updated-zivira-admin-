@@ -82,9 +82,6 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
         </div>
       </div>
 
-      <div className="bg-surface-card rounded-xl shadow-sm p-4 space-y-4 mb-6">
-        <AdminTabGrid node={node} path={path} />
-      </div>
 
       {/* 4-COLUMN EXECUTIVE PULSE METRIC CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

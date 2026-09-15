@@ -228,7 +228,7 @@ export function ProductBrandMaster() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Brand</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Brand</button>
         </div>
       </div>
 

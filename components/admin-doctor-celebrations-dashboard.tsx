@@ -220,21 +220,21 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 {/* Interactive Navigation Tabs */}
 <div className="flex items-center gap-2 border-b-0 mb-4 bg-surface-card rounded-xl p-1.5 shadow-sm max-w-fit">
-<button className="px-4 py-2 rounded-lg bg-brand-primary-subtle text-primary font-label-md text-label-md flex items-center gap-2 shadow-xs transition-all" type="button">
+<button className="button" type="button">
 <span className="material-symbols-outlined text-[18px]">event_upcoming</span>
 <span className="">Upcoming Celebrations (Next 14 Days)</span>
 <span className="w-5 h-5 rounded-full bg-[#b43403] text-white text-[11px] font-bold flex items-center justify-center">24</span>
 </button>
-<button className="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-label-md text-label-md flex items-center gap-2 transition-all" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">done_all</span>
 <span className="">Completed &amp; Dispatched This Month</span>
 <span className="font-label-sm text-label-sm text-text-muted">(44)</span>
 </button>
-<button className="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-label-md text-label-md flex items-center gap-2 transition-all" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">drafts</span>
 <span className="">Automated Digital Greeting Templates</span>
 </button>
-<button className="px-4 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle hover:text-text-primary font-label-md text-label-md flex items-center gap-2 transition-all" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">military_tech</span>
 <span className="">Executive Gift &amp; CME Sponsorship Tracker</span>
 </button>

@@ -147,7 +147,7 @@ export function AttendanceView() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Attendance</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Attendance</button>
         </div>
       </div>
 

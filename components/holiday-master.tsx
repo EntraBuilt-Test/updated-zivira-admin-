@@ -316,7 +316,7 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Holiday</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Holiday</button>
         </div>
       </div>
 

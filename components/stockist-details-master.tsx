@@ -133,7 +133,7 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add {labelPrefix}</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add {labelPrefix}</button>
         </div>
       </div>
 

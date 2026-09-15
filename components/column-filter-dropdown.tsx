@@ -52,7 +52,7 @@ export function ColumnFilterDropdown({
   }, [open]);
 
   return (
-    <div ref={ref} style={{ position: "relative", display: "inline-block", fontWeight: "normal", textTransform: "none" }}>
+    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
       <button
         ref={buttonRef}
         type="button"
@@ -63,13 +63,13 @@ export function ColumnFilterDropdown({
           justifyContent: "center",
           background: "none",
           border: "none",
-          color: "var(--muted)",
+          color: "inherit",
           cursor: "pointer",
           padding: "2px",
           fontFamily: "inherit",
         }}
       >
-        <span style={{ fontWeight: 600, fontSize: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>{title}</span>
+        <span>{title}</span>
         <ChevronDown size={14} style={{ color: "var(--muted)", marginLeft: "4px" }} />
       </button>
 

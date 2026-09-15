@@ -117,7 +117,7 @@ export function LicenseDetailsMaster() {
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add License</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add License</button>
         </div>
       </div>
 

@@ -138,7 +138,7 @@ export function AddressMaster() {
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Address</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Address</button>
         </div>
       </div>
 

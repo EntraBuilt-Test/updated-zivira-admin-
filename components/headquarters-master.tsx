@@ -112,7 +112,7 @@ export function HeadquartersMaster() {
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add HQ</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add HQ</button>
         </div>
       </div>
 

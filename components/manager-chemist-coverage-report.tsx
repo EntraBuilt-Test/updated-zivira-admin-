@@ -137,7 +137,7 @@ export function ManagerChemistCoverageReport() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Log</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Log</button>
         </div>
       </div>
 

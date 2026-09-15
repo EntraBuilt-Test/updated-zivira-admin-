@@ -146,7 +146,7 @@ export function SampleDistributionAnalytics() {
             <input className="input" placeholder="50" type="number" min={1} value={form.qtyIssued} onChange={(e) => setForm({ ...form, qtyIssued: e.target.value })} />
           </label>
           <button className="button" onClick={issueStock} disabled={saving} type="button" style={{ whiteSpace: "nowrap" }}>
-            <Plus size={15} /> {saving ? "Saving…" : "Issue Stock"}
+            {saving ? "Saving…" : "Issue Stock"}
           </button>
         </div>
       </div>

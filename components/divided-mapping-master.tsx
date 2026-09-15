@@ -119,7 +119,7 @@ export function DividedMappingMaster() {
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Mapping</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Mapping</button>
         </div>
       </div>
 

@@ -252,13 +252,13 @@ function PostNoticeModal({ onClose, onPosted }: { onClose: () => void; onPosted:
           </div>
         </div>
         <div className="p-4 border-t border-border-subtle flex justify-end gap-3 bg-surface-canvas">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg font-label-md text-label-md text-text-secondary hover:bg-border-subtle transition-colors">
+          <button onClick={onClose} className="button button-secondary">
             Cancel
           </button>
           <button 
             disabled={saving} 
             onClick={() => void handlePost()} 
-            className="px-4 py-2 rounded-lg font-label-md text-label-md bg-primary text-on-primary hover:bg-brand-primary-hover transition-colors disabled:opacity-50"
+            className="button"
           >
             {saving ? "Posting…" : "Post Notice"}
           </button>

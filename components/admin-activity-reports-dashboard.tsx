@@ -991,15 +991,13 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </div>
 {/* Modal Footer */}
 <div className="p-card-padding-spacious bg-surface-subtle flex items-center justify-between">
-<button className="px-4 py-2 rounded-lg bg-status-danger-bg text-status-danger font-label-md text-label-md hover:bg-status-danger hover:text-on-primary transition-colors flex items-center gap-1.5" type="button">
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">flag</span>
 <span className="">Flag Inconsistency</span>
 </button>
 <div className="flex items-center gap-2">
-<button className="px-4 py-2 rounded-lg hover:bg-surface-card text-text-secondary font-label-md text-label-md transition-colors" type="button">
-            Cancel
-          </button>
-<button className="px-4 py-2 rounded-lg bg-status-success text-on-primary font-label-md text-label-md shadow-sm hover:opacity-90 transition-opacity flex items-center gap-1.5" type="button">
+<button className="button button-secondary" type="button">Cancel</button>
+<button className="button button-secondary" type="button">
 <span className="material-symbols-outlined text-[18px]">done_all</span>
 <span className="">Approve DCR Audit</span>
 </button>

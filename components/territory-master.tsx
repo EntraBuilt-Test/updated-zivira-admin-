@@ -248,7 +248,7 @@ export function TerritoryMaster() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={handleAdd} type="button"><Plus size={16} /> Add Patch</button>
+          <button className="button" onClick={handleAdd} type="button">Add Patch</button>
         </div>
       </div>
 

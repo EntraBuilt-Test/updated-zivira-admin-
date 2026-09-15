@@ -146,7 +146,7 @@ export function TourPlanView() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Tour Plan</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Tour Plan</button>
         </div>
       </div>
 

@@ -3,6 +3,7 @@ import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, Aler
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
+import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { apiClient } from "@/lib/api-client";
 type ChemistRow = {
   id: string;
@@ -258,9 +259,6 @@ export function ChemistMaster() {
           <p>Maintain pharmacy networks and retail distributor mappings.</p>
         </div>
         <div className="subdivision-actions">
-          <Link href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" className="button button-secondary">
-            ← Back
-          </Link>
           <button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
         </div>
       </div>
@@ -269,8 +267,8 @@ export function ChemistMaster() {
           <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)", textTransform: "uppercase" }}>Total Records</span>
           <strong style={{ display: "block", fontSize: "28px", marginTop: "4px" }}>{filtered.length}</strong>
         </article>
-        <Link className="card module-card" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" style={{ borderLeft: "4px solid var(--brand-strong)", width: "300px", textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "0 16px" }}>
-          
+        <Link className="button button-secondary" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" style={{ height: "fit-content", alignSelf: "center", textDecoration: "none" }}>
+          Doctor
         </Link>
       </div>
       <div style={{ marginBottom: "16px" }}>
@@ -443,20 +441,21 @@ export function ChemistMaster() {
           {loading ? (
             <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading chemists...</div>
           ) : (
-            <table className="subdivision-table">
-              <thead>
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
                 <tr>
-                  <th>S.No</th>
-                  <th>Chemist Code</th>
-                  <th>Chemist Name</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Code</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Name</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Type</th>
                   {[
-                    { key: "type", label: "Type" },
+                    
                     { key: "city", label: "City" },
                   ].map(f => {
                     const uniqueValues = Array.from(new Set(list.map(r => String((r as any)[f.key] || "")))).filter(Boolean).sort();
                     const options = uniqueValues.map(v => ({ label: v, value: v }));
                     return (
-                      <th key={f.key}>
+                      <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                         <div style={{ minWidth: "120px" }}>
                           <ColumnFilterDropdown 
                             title={f.label} 
@@ -468,121 +467,34 @@ export function ChemistMaster() {
                       </th>
                     );
                   })}
-                  <th>Medical Representative</th>
-                  <th>Pin Code</th>
-                  <th>Contact</th>
-                  <th key="area">
-                    <div style={{ minWidth: "120px" }}>
-                      <ColumnFilterDropdown 
-                        title="Area" 
-                        value={columnFilters["area"] || "All"} 
-                        options={Array.from(new Set(list.map(r => String((r as any)["area"] || "")))).filter(Boolean).sort().map(v => ({ label: v, value: v }))} 
-                        onChange={(val) => setColumnFilters(prev => ({ ...prev, area: val }))} 
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pin Code</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Contact</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Area</th>
+                  <th style={{ minWidth: "130px" }} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
+                      <StatusFilterDropdown 
+                        value={statusFilter} 
+                        onChange={(val) => setStatusFilter(val)} 
                       />
                     </div>
                   </th>
-                  <th style={{ minWidth: "130px" }}>
-                    <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px", width: "100%" }}>
-                      <span>Status</span>
-                      <button
-                        type="button"
-                        onClick={() => setStatusFilterOpen(!statusFilterOpen)}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          color: "var(--muted)",
-                          cursor: "pointer",
-                          padding: "2px",
-                          display: "flex",
-                          alignItems: "center"
-                        }}
-                      >
-                        <ChevronDown size={14} />
-                      </button>
-                    </div>
-                    {statusFilterOpen && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "100%",
-                          right: 0,
-                          background: "var(--panel)",
-                          border: "1px solid var(--border)",
-                          borderRadius: "6px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                          zIndex: 10,
-                          minWidth: "110px",
-                          display: "flex",
-                          flexDirection: "column",
-                          padding: "4px 0"
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => { setStatusFilter("Active"); setStatusFilterOpen(false); }}
-                          style={{
-                            padding: "6px 12px",
-                            textAlign: "left",
-                            background: statusFilter === "Active" ? "var(--line)" : "none",
-                            border: "none",
-                            color: "var(--ink)",
-                            fontSize: "12px",
-                            cursor: "pointer",
-                            fontWeight: statusFilter === "Active" ? 600 : 400
-                          }}
-                        >
-                          Active
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { setStatusFilter("Inactive"); setStatusFilterOpen(false); }}
-                          style={{
-                            padding: "6px 12px",
-                            textAlign: "left",
-                            background: statusFilter === "Inactive" ? "var(--line)" : "none",
-                            border: "none",
-                            color: "var(--ink)",
-                            fontSize: "12px",
-                            cursor: "pointer",
-                            fontWeight: statusFilter === "Inactive" ? 600 : 400
-                          }}
-                        >
-                          Inactive
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => { setStatusFilter("All"); setStatusFilterOpen(false); }}
-                          style={{
-                            padding: "6px 12px",
-                            textAlign: "left",
-                            borderTop: "1px solid var(--border)",
-                            background: "none",
-                            color: "var(--muted)",
-                            fontSize: "11px",
-                            cursor: "pointer"
-                          }}
-                        >
-                          Clear Filter
-                        </button>
-                      </div>
-                    )}
-                  </th>
-                  <th colSpan={2}>Actions</th>
+                  <th colSpan={2} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((row, idx) => (
-                  <tr key={row.id}>
-                    <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
-                    <td style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
-                    <td><strong>{row.dealerName}</strong></td>
-                    <td>{row.type || "Retailer"}</td>
-                    <td>{row.city || "-"}</td>
-                    <td>{row.employeeName || row.employeeCode || "-"}</td>
-                    <td>{row.pincode || "-"}</td>
-                    <td>{row.dealerPhone || "-"}</td>
-                    <td>{row.location || "-"}</td>
-                    <td>
+                  <tr key={row.id} className="hover:bg-surface-subtle/50 border-b border-border-subtle transition-colors">
+                    <td className="text-left px-4 py-3 text-sm whitespace-nowrap" style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
+                    <td className="text-left px-4 py-3 text-sm whitespace-nowrap" style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.dealerName}</strong></td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.type || "Retailer"}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.employeeName || row.employeeCode || "-"}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.pincode || "-"}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.dealerPhone || "-"}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.location || "-"}</td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{
                         padding: "2px 8px",
                         borderRadius: "999px",
@@ -595,12 +507,12 @@ export function ChemistMaster() {
                         {row.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td>
+                    <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-danger-button" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                         <Ban size={15} />
                       </button>

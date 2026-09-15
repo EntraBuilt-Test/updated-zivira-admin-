@@ -206,7 +206,7 @@ export function DoctorCategoryMaster() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Doctor</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Doctor</button>
         </div>
       </div>
 

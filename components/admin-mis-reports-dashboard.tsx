@@ -51,7 +51,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
             </a>
 </div>
 </div>
-<button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md transition-all shadow-sm" type="button">
+<button className="button" type="button">
 <span className="material-symbols-outlined text-[18px]">tune</span>
 <span className="">Build Custom Query</span>
 </button>
@@ -185,7 +185,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Navigation Sub-Tabs for MIS Multi-Perspective Analysis */}
 <div className="bg-surface-card rounded-xl p-1.5 shadow-sm flex flex-wrap items-center gap-1">
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-primary-subtle text-primary font-label-md text-label-md shadow-sm" type="button">
+<button className="button" type="button">
 <span className="material-symbols-outlined text-[18px]">hub</span>
 <span className="">Division &amp; Territory Sales Variance</span>
 </button>

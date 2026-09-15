@@ -372,7 +372,7 @@ export function SubdivisionMaster() {
           <div><p className="subdivision-eyebrow">Master Setup</p><h2>Division Master</h2><p>Create and manage business divisions.</p></div>
           <div className="subdivision-actions">
             
-            <button className="button" onClick={openAddForm} type="button"><Plus size={16} /> Add Division</button>
+            <button className="button" onClick={openAddForm} type="button">Add Division</button>
           </div>
         </div>
         {error && <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}

@@ -147,7 +147,7 @@ export function DoctorMapping() {
         </div>
         <div className="subdivision-actions">
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Mapping</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Mapping</button>
         </div>
       </div>
 

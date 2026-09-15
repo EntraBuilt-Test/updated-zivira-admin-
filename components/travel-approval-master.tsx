@@ -119,7 +119,7 @@ export function TravelApprovalMaster() {
         <div className="subdivision-actions">
           <BackButton />
           
-          <button className="button" onClick={() => setView("add")} type="button"><Plus size={16} /> Add Travel Claim</button>
+          <button className="button" onClick={() => setView("add")} type="button">Add Travel Claim</button>
         </div>
       </div>
 
