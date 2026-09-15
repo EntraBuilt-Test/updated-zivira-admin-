@@ -128,10 +128,10 @@
     @apply text-sm text-text-muted mt-1 leading-relaxed;
   }
   .subdivision-icon-button {
-    @apply p-1.5 rounded text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 transition-colors inline-flex items-center justify-center;
+    @apply p-1.5 rounded text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 transition-colors inline-flex items-center justify-center cursor-pointer;
   }
   .subdivision-danger-button {
-    @apply p-1.5 rounded text-text-muted transition-all inline-flex items-center justify-center;
+    @apply p-1.5 rounded text-text-muted transition-all inline-flex items-center justify-center cursor-pointer;
   }
   .subdivision-danger-button:hover {
     color: #dc2626 !important; /* text-red-600 */
