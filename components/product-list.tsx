@@ -1,9 +1,10 @@
 "use client";
 
 import type { Product } from "@zivira/types";
-import { RefreshCw } from "lucide-react";
+import { Download, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 import { StatusBadge } from "./page-components";
 
 export function ProductList() {
@@ -24,12 +25,30 @@ export function ProductList() {
     void loadProducts();
   }, []);
 
+  function handleExport() {
+    if (products.length === 0) return;
+    downloadCsv(
+      "product-list.csv",
+      products.map((product) => ({
+        "Name": product.name,
+        "Code": product.code,
+        "Category": product.category,
+        "Division": product.division,
+        "Status": product.status
+      }))
+    );
+  }
+
   return (
     <>
       <div className="toolbar">
         <button className="button button-secondary" onClick={loadProducts} type="button">
           <RefreshCw size={17} />
           Refresh
+        </button>
+        <button className="button button-secondary" onClick={handleExport} disabled={products.length === 0} type="button">
+          <Download size={17} />
+          Export
         </button>
       </div>
       {error ? <p className="form-error">{error}</p> : null}

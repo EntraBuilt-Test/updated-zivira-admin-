@@ -1,9 +1,10 @@
 "use client";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
-import { RotateCcw, SlidersHorizontal, Trash2, ChevronDown } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Trash2, ChevronDown, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 type DeactivationRow = {
   id: string;
   division: string;
@@ -117,6 +118,21 @@ export function TerritoryBulkDeactivation() {
 
     return isMatch;
   });
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "territory-bulk-deactivation.csv",
+      filtered.map((row) => ({
+        "Division": row.division,
+        "HQ": row.hq,
+        "Patch": row.patch,
+        "Total Doctors": row.totalDoctors,
+        "Active Doctors": row.activeDoctors,
+        "Effective Date": row.effectiveDate,
+        "Status": row.status
+      }))
+    );
+  }
   if (view !== "list") {
     return (
       <section className="subdivision-console">
@@ -181,7 +197,10 @@ export function TerritoryBulkDeactivation() {
           <p>Disable entire patch sales mapping networks simultaneously.</p>
         </div>
         <div className="subdivision-actions">
-          
+          <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+            <Download size={16} />
+            Export
+          </button>
           <button className="button" onClick={() => setView("add")} type="button"> Add Bulk Deactivation</button>
         </div>
       </div>

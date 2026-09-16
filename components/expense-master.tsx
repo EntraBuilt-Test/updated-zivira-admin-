@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { apiClient, type Expense, type Sfc } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
+import { Download } from "lucide-react";
 export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTab?: string; embed?: boolean }) {
   // Tabs state for the embedded view (tables mode)
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -40,6 +42,56 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
       setter(clickedVal);
     }
   };
+  function handleExportSfc() {
+    if (sfcRows.length === 0) return;
+    downloadCsv(
+      "expense-sfc-routes.csv",
+      sfcRows.map((row) => ({
+        "From": row.employeeName ?? "",
+        "To": row.patchName ?? "",
+        "Station": row.hq ?? "",
+        "Kilometer / Distance": row.oneWayKms ?? ""
+      }))
+    );
+  }
+  function handleExportAllowance() {
+    if (expenseRows.length === 0) return;
+    downloadCsv(
+      "expense-allowance-matrix.csv",
+      expenseRows.map((row) => ({
+        "Station": row.station ?? "",
+        "Metro Type": row.metroType ?? "",
+        "Amount": row.amountNC ?? ""
+      }))
+    );
+  }
+  function handleExportWorktype() {
+    if (sfcRows.length === 0) return;
+    downloadCsv(
+      "expense-worktype-allowance.csv",
+      sfcRows.map((row) => ({
+        "Attendance Status": row.employeeName ?? row.employeeCode ?? "",
+        "HQ Allowance Type": row.typeRaw === "Tour" ? `HQ · ${row.oneWayKms ?? "—"} km` : "—",
+        "EX Allowance Type": row.typeRaw === "Outstation Excursion" ? `EX · ${row.oneWayKms ?? "—"} km` : "—",
+        "OS Allowance Type": row.typeRaw === "Outstation Work" ? `OS · ${row.oneWayKms ?? "—"} km` : "—"
+      }))
+    );
+  }
+  function handleExportFixedVar() {
+    if (expenseRows.length === 0) return;
+    downloadCsv(
+      "expense-fixed-variable-parameters.csv",
+      expenseRows.map((row) => ({
+        "Role": row.role,
+        "List of Expense": row.listOfExpenseTypes ?? "",
+        "Daily/Work": row.dailyWork ?? "",
+        "Station Type": row.station ?? "",
+        "Metro Type": row.metroType ?? "",
+        "Amount (NC)": row.amountNC ?? "",
+        "Frequency": row.frequency ?? ""
+      }))
+    );
+  }
   // If embedded, render the original tabbed tables
   if (embed) {
     return (
@@ -79,7 +131,12 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>SFC Routes</h3>
-              <button className="button button-compact"> Add Route</button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button className="button button-compact button-secondary" onClick={handleExportSfc} disabled={sfcRows.length === 0} type="button">
+                  <Download size={14} /> Export
+                </button>
+                <button className="button button-compact"> Add Route</button>
+              </div>
             </div>
             <div className="subdivision-table-card">
               <table className="subdivision-table">
@@ -110,7 +167,12 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>Allowance Matrix</h3>
-              <button className="button button-compact"> Add Allowance</button>
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button className="button button-compact button-secondary" onClick={handleExportAllowance} disabled={expenseRows.length === 0} type="button">
+                  <Download size={14} /> Export
+                </button>
+                <button className="button button-compact"> Add Allowance</button>
+              </div>
             </div>
             <div className="subdivision-table-card">
               <table className="subdivision-table">
@@ -141,6 +203,9 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>Work Type Allowance Details (Attendance Basis)</h3>
+              <button className="button button-compact button-secondary" onClick={handleExportWorktype} disabled={!worktypeGenerated || sfcRows.length === 0} type="button">
+                <Download size={14} /> Export
+              </button>
             </div>
             {!worktypeGenerated ? (
               <div className="subdivision-table-card" style={{ padding: "32px", textAlign: "center", color: "var(--muted)" }}>
@@ -183,6 +248,9 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
           <div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>Fixed / Variable Parameters</h3>
+              <button className="button button-compact button-secondary" onClick={handleExportFixedVar} disabled={expenseRows.length === 0} type="button">
+                <Download size={14} /> Export
+              </button>
             </div>
             <div className="subdivision-table-card">
               <table className="subdivision-table">

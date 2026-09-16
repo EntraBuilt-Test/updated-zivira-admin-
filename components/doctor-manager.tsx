@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban } from "lucide-react";
+import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X, ChevronDown, Ban, Download } from "lucide-react";
 import { useState } from "react";
+import { downloadCsv } from "@/lib/download-csv";
 
 type ClassRow = {
   id: string;
@@ -113,6 +114,19 @@ export function DoctorManager() {
     setClassifications(classifications.map(c => c.id === id ? { ...c, status: "Inactive" as const } : c));
   }
 
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "doctor-classification.csv",
+      filtered.map((row) => ({
+        "Doctor Category": row.category,
+        "Potential": row.potential,
+        "Visit Frequency": row.frequency,
+        "Status": row.status
+      }))
+    );
+  }
+
   if (view === "add") return <ClassForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
   if (view === "edit" && editTarget) return <ClassForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
 
@@ -125,7 +139,10 @@ export function DoctorManager() {
           <p>Create and manage doctor visit classifications based on sales potential.</p>
         </div>
         <div className="subdivision-actions">
-          
+          <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+            <Download size={16} />
+            Export
+          </button>
           <button className="button" onClick={() => setView("add")} type="button">Add Classification</button>
         </div>
       </div>

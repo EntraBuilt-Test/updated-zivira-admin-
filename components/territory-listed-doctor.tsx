@@ -2,9 +2,10 @@
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 
-import { Check, Plus, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban } from "lucide-react";
+import { Check, Plus, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient, type PaginationInfo } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 import { PaginationControls } from "./pagination-controls";
 
 type MappedDoctorRow = {
@@ -201,6 +202,23 @@ export function TerritoryListedDoctor() {
     return isMatch;
   });
 
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "territory-listed-doctor.csv",
+      filtered.map((row) => ({
+        "Patch": row.territory || row.patch,
+        "Doctor Code": row.doctorCode || row.code,
+        "Doctor Name": row.name || row.doctorName,
+        "Specialty": row.specialty,
+        "Category": row.category,
+        "Medical Representative": row.mappedEmployeeCode || row.mr,
+        "HQ": row.hq || row.territory,
+        "Status": row.status
+      }))
+    );
+  }
+
   return (
     <>
       {view !== "list" && (
@@ -288,7 +306,10 @@ export function TerritoryListedDoctor() {
             <p>Map and manage doctors assigned under respective patch sales networks.</p>
           </div>
           <div className="subdivision-actions">
-            
+            <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+              <Download size={16} />
+              Export
+            </button>
             <button className="button" onClick={handleAdd} type="button"> Map Doctor</button>
           </div>
       </div>

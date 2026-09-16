@@ -1,8 +1,9 @@
 "use client";
 import { useState, useRef, useEffect, useMemo } from "react";
 import type { CSSProperties } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Download } from "lucide-react";
 import { apiClient, type Employee, type Sfc } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 
 // Role -> badge color, per the legacy sanpharma.info Fieldforce dropdown:
 // "for the BE person it should be in rose color, ABM in yellow, RBM in
@@ -189,6 +190,20 @@ export function ManagerSfcUpdation() {
     }
   }
 
+  function handleExport() {
+    if (rowsForActive.length === 0 || !activeEmployee) return;
+    downloadCsv(
+      "manager-sfc-updation.csv",
+      rowsForActive.map((row) => ({
+        "Employee Name": activeEmployee.name,
+        "Employee Code": activeEmployee.employeeCode,
+        "From Territory": row.hq ?? "",
+        "To Territory": row.patchName ?? "",
+        "Distance (KMs)": row.oneWayKms ?? ""
+      }))
+    );
+  }
+
   const inputBoxStyle: CSSProperties = {
     width: "220px",
     height: "30px",
@@ -358,6 +373,29 @@ export function ManagerSfcUpdation() {
             <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--ink)" }}>
               {activeEmployee.name} ({activeEmployee.employeeCode})
             </span>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={rowsForActive.length === 0}
+              style={{
+                marginLeft: "auto",
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "4px 12px",
+                borderRadius: "6px",
+                border: "1px solid var(--line)",
+                background: "var(--panel)",
+                color: "var(--ink)",
+                fontSize: "12px",
+                fontWeight: 600,
+                cursor: rowsForActive.length === 0 ? "not-allowed" : "pointer",
+                opacity: rowsForActive.length === 0 ? 0.6 : 1
+              }}
+            >
+              <Download size={14} />
+              Export
+            </button>
           </div>
 
           {actionError && <p style={{ marginBottom: "12px", fontSize: "13px", color: "#b91c1c" }}>{actionError}</p>}

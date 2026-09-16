@@ -1,9 +1,10 @@
 "use client";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
-import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, AlertTriangle } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, AlertTriangle, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 type HospitalRow = {
   id: string;
   code: string;
@@ -200,7 +201,7 @@ export function HospitalMaster() {
     const statusMatch = statusFilter === "All" ||
       (statusFilter === "Active" && isActive) ||
       (statusFilter === "Inactive" && !isActive);
-      
+
     if (!statusMatch) isMatch = false;
 
     // Search Box
@@ -222,6 +223,20 @@ export function HospitalMaster() {
 
     return isMatch;
   });
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "hospital-master.csv",
+      filtered.map((row) => ({
+        "Hospital Code": row.hospitalCode,
+        "Hospital Name": row.hospitalName,
+        "Type": row.type,
+        "City": row.city,
+        "Medical Representative": row.medicalRepresentative,
+        "Status": row.status
+      }))
+    );
+  }
   return (
     <section className="subdivision-console">
       {error && (
@@ -255,7 +270,10 @@ export function HospitalMaster() {
           <p>Maintain hospital institutions and departments mapped under agent routes.</p>
         </div>
         <div className="subdivision-actions">
-          
+          <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+            <Download size={16} />
+            Export
+          </button>
           <button className="button" onClick={handleAdd} type="button"> Add Hospital</button>
         </div>
       </div>
@@ -436,31 +454,31 @@ export function HospitalMaster() {
                   <th>Hospital Code</th>
                   <th>
                     <div style={{ minWidth: "140px" }}>
-                      <ColumnFilterDropdown 
-                        title="Hospital Name" 
-                        value={columnFilters['hospitalName'] || "All"} 
-                        options={Array.from(new Set(list.map(r => String(r.hospitalName || "")))).filter(Boolean).sort().map(v => ({label: v, value: v}))} 
-                        onChange={(val) => setColumnFilters(prev => ({ ...prev, hospitalName: val }))} 
+                      <ColumnFilterDropdown
+                        title="Hospital Name"
+                        value={columnFilters['hospitalName'] || "All"}
+                        options={Array.from(new Set(list.map(r => String(r.hospitalName || "")))).filter(Boolean).sort().map(v => ({label: v, value: v}))}
+                        onChange={(val) => setColumnFilters(prev => ({ ...prev, hospitalName: val }))}
                       />
                     </div>
                   </th>
                   <th>
                     <div style={{ minWidth: "140px" }}>
-                      <ColumnFilterDropdown 
-                        title="Type" 
-                        value={columnFilters['type'] || "All"} 
-                        options={Array.from(new Set(list.map(r => String(r.type || "")))).filter(Boolean).sort().map(v => ({label: v, value: v}))} 
-                        onChange={(val) => setColumnFilters(prev => ({ ...prev, type: val }))} 
+                      <ColumnFilterDropdown
+                        title="Type"
+                        value={columnFilters['type'] || "All"}
+                        options={Array.from(new Set(list.map(r => String(r.type || "")))).filter(Boolean).sort().map(v => ({label: v, value: v}))}
+                        onChange={(val) => setColumnFilters(prev => ({ ...prev, type: val }))}
                       />
                     </div>
                   </th>
                   <th>
                     <div style={{ minWidth: "140px" }}>
-                      <ColumnFilterDropdown 
-                        title="City" 
-                        value={columnFilters['city'] || "All"} 
-                        options={Array.from(new Set(list.map(r => String(r.city || "")))).filter(Boolean).sort().map(v => ({label: v, value: v}))} 
-                        onChange={(val) => setColumnFilters(prev => ({ ...prev, city: val }))} 
+                      <ColumnFilterDropdown
+                        title="City"
+                        value={columnFilters['city'] || "All"}
+                        options={Array.from(new Set(list.map(r => String(r.city || "")))).filter(Boolean).sort().map(v => ({label: v, value: v}))}
+                        onChange={(val) => setColumnFilters(prev => ({ ...prev, city: val }))}
                       />
                     </div>
                   </th>

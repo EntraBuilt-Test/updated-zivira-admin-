@@ -1,7 +1,8 @@
 "use client";
-import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 type UnlistedDoctorRow = {
   id: string;
   tempCode: string;
@@ -198,6 +199,20 @@ export function UnlistedDoctorMaster() {
     const mrStr = (x.mr || "").toLowerCase();
     return statusMatch && (nameStr.includes(s) || codeStr.includes(s) || mrStr.includes(s));
   });
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "unlisted-doctor-master.csv",
+      filtered.map((row) => ({
+        "Temporary Doctor Code": row.tempCode,
+        "Doctor Name": row.name,
+        "Specialty": row.specialty,
+        "City": row.city,
+        "Medical Representative": row.mr,
+        "Status": row.status
+      }))
+    );
+  }
   return (
     <section className="subdivision-console">
       <div className="subdivision-head">
@@ -207,7 +222,10 @@ export function UnlistedDoctorMaster() {
           <p>Verify temporary doctor profiles registered during field visits before official listing.</p>
         </div>
         <div className="subdivision-actions">
-          
+          <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+            <Download size={16} />
+            Export
+          </button>
           <button className="button" onClick={handleAdd} type="button"> Add Unlisted Doctor</button>
         </div>
       </div>

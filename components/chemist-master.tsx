@@ -1,10 +1,11 @@
 "use client";
-import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, AlertTriangle } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Trash2, Pencil, ChevronDown, Ban, X, AlertTriangle, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 type ChemistRow = {
   id: string;
   code: string;
@@ -226,6 +227,23 @@ export function ChemistMaster() {
     }
     return statusMatch && searchMatch && colMatch;
   });
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "chemist-master.csv",
+      filtered.map((row) => ({
+        "Chemist Code": formatChemistCode(row.sourceSNo),
+        "Chemist Name": row.dealerName,
+        "Type": row.type || "Retailer",
+        "City": row.city,
+        "Medical Representative": row.employeeName || row.employeeCode,
+        "Pin Code": row.pincode,
+        "Contact": row.dealerPhone,
+        "Area": row.location,
+        "Status": row.status
+      }))
+    );
+  }
   return (
     <section className="subdivision-console">
       {error && (
@@ -259,6 +277,10 @@ export function ChemistMaster() {
           <p>Maintain pharmacy networks and retail distributor mappings.</p>
         </div>
         <div className="subdivision-actions">
+          <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+            <Download size={16} />
+            Export
+          </button>
           <button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
         </div>
       </div>

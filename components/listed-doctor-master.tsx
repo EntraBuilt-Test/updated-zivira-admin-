@@ -1,9 +1,10 @@
 "use client";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
-import { RotateCcw, SlidersHorizontal, Trash2, Pencil, Ban, X, AlertTriangle } from "lucide-react";
+import { RotateCcw, SlidersHorizontal, Trash2, Pencil, Ban, X, AlertTriangle, Download } from "lucide-react";
 import { useState, useEffect } from "react";
 import { apiClient, type PaginationInfo } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 import { PaginationControls } from "./pagination-controls";
 type ListedDoctorRow = {
   id: string;
@@ -228,6 +229,22 @@ export function ListedDoctorMaster() {
     
     return isMatch;
   });
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "listed-doctor-master.csv",
+      filtered.map((row) => ({
+        "Doctor Code": row.doctorCode || row.code,
+        "Doctor Name": row.name,
+        "Specialty": row.specialty,
+        "Qualification": row.qualification,
+        "Category": row.category,
+        "Mobile": row.phone || row.mobile,
+        "City": row.city,
+        "Status": row.status
+      }))
+    );
+  }
   const errorModal = error ? (
     <div
       style={{
@@ -469,7 +486,10 @@ export function ListedDoctorMaster() {
           <p>Maintain general registries of approved practicing doctors.</p>
         </div>
         <div className="subdivision-actions">
-          
+          <button className="button button-secondary" onClick={handleExport} disabled={filtered.length === 0} type="button">
+            <Download size={16} />
+            Export
+          </button>
           <button className="button" onClick={handleAdd} type="button"> Add Listed Doctor</button>
         </div>
       </div>

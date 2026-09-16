@@ -1,7 +1,8 @@
 "use client";
 import { useState, useRef, useEffect, useMemo } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown, Check, Download } from "lucide-react";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 
 // Same Designation-Level list used everywhere else in the app (Add Employee,
 // Employee Manager) — the legacy sanpharma.info "Designation-Level" selector
@@ -159,6 +160,27 @@ export function ManagerWorkTypeAllowance() {
     }
   }
 
+  function handleExport() {
+    if (!activeLevel) return;
+    downloadCsv(
+      "manager-work-type-allowance.csv",
+      WORK_TYPES.map((wt) => {
+        const row: Record<string, unknown> = {
+          "Work Type": wt,
+          "Allowance and Fare Type": grid[wt]?.allowanceFareType ?? "NA"
+        };
+        for (const zone of ZONES) {
+          for (const emp of EMP_STATUSES) {
+            for (const pay of PAY_TYPES) {
+              row[`${zone} - ${emp} - ${pay}`] = grid[wt]?.cells[cellKey(zone, emp, pay)] ?? "";
+            }
+          }
+        }
+        return row;
+      })
+    );
+  }
+
   const cellInputStyle = {
     width: "56px",
     height: "26px",
@@ -295,6 +317,29 @@ export function ManagerWorkTypeAllowance() {
             <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--ink)" }}>
               Work Type Wise Allowance - Fare Fixation — {activeLevel}
             </span>
+            <div style={{ display: "flex", gap: "8px" }}>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={!activeLevel}
+              style={{
+                height: "32px",
+                padding: "0 16px",
+                borderRadius: "6px",
+                border: "1px solid var(--line)",
+                background: "var(--panel)",
+                color: "var(--ink)",
+                fontSize: "13px",
+                fontWeight: 600,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                cursor: "pointer"
+              }}
+            >
+              <Download size={14} />
+              Export
+            </button>
             <button
               type="button"
               onClick={handleSave}
@@ -314,6 +359,7 @@ export function ManagerWorkTypeAllowance() {
             >
               {saving ? "Saving..." : "Save"}
             </button>
+            </div>
           </div>
 
           {savedMessage && (

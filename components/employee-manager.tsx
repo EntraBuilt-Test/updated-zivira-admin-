@@ -1,11 +1,12 @@
 "use client";
 
 import type { Employee } from "@zivira/types";
-import { RefreshCw, X, AlertTriangle } from "lucide-react";
+import { RefreshCw, X, AlertTriangle, Download } from "lucide-react";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { downloadCsv } from "@/lib/download-csv";
 import { formatDate } from "@/lib/format-date";
 
 // The backend's employees.role is a fixed enum (NBH/BH/RBM/ZBM/ABM/SR_MR/MR/
@@ -136,6 +137,31 @@ export function EmployeeManager() {
     }
   }
 
+  function handleExport() {
+    if (filteredEmployees.length === 0) return;
+    downloadCsv(
+      "employee-manager.csv",
+      filteredEmployees.map((employee) => ({
+        "Employee Code": employee.employeeCode,
+        "Employee Name": employee.name,
+        "Gender": employee.gender,
+        "DOB": employee.dob,
+        "DOJ": employee.joinDate,
+        "Mobile": employee.phone,
+        "Email": employee.email,
+        "Department": employee.department,
+        "Designation": employee.designation,
+        "Division": employee.division,
+        "Reporting Manager": employee.reportingManager,
+        "Region": employee.region,
+        "HQ": employee.hq,
+        "Patch": employee.patch,
+        "Driving License": employee.drivingLicense,
+        "Status": employee.status === "ACTIVE" ? "Active" : "Inactive"
+      }))
+    );
+  }
+
   useEffect(() => {
     void loadEmployees();
   }, []);
@@ -146,6 +172,10 @@ export function EmployeeManager() {
         <button className="button button-secondary" onClick={loadEmployees} type="button">
           <RefreshCw size={17} />
           {loading ? "Refreshing" : "Refresh"}
+        </button>
+        <button className="button button-secondary" onClick={handleExport} disabled={filteredEmployees.length === 0} type="button">
+          <Download size={17} />
+          Export
         </button>
         <button className="button" onClick={() => setShowForm((value) => !value)} type="button">
           Add Employee
