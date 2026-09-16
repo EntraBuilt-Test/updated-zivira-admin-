@@ -661,9 +661,6 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
     </div>
 
-
-    </div>
-
     {/* Final Payroll Lock confirmation modal */}
     {showLockConfirm && (
       <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowLockConfirm(false)}>
