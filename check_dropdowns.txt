@@ -1,0 +1,164 @@
+
+--- components/manager-allowance-automatic.tsx ---
+
+Matches around line 64:
+          />
+          {/* Box 2: Dropdown box (without default text, showing selection) */}
+          <div className="command-select" style={{ position: "relative", width: "fit-content" }} ref={dropdownRef}>
+            <button
+              className="command-select-button"
+              style={{
+                width: "260px",
+                height: "30px",
+                minHeight: "30px",
+                paddingLeft: "16px",
+
+Matches around line 66:
+          <div className="command-select" style={{ position: "relative", width: "fit-content" }} ref={dropdownRef}>
+            <button
+              className="command-select-button"
+              style={{
+                width: "260px",
+                height: "30px",
+                minHeight: "30px",
+                paddingLeft: "16px",
+                position: "relative",
+                display: "flex",
+
+Matches around line 84:
+            </button>
+            {dropdownOpen && (
+              <div className="command-select-menu" style={{ width: "260px", top: "calc(100% + 6px)", left: 0, right: "auto" }}>
+                {dummyOptions.map((opt) => (
+                  <button
+                    key={opt}
+                    className={selectedDropdownVal === opt ? "command-select-option command-select-option-active" : "command-select-option"}
+                    onClick={() => {
+                      setSelectedDropdownVal(opt);
+                      setDropdownOpen(false);
+
+--- components/manager-sfc-updation.tsx ---
+
+Matches around line 226:
+
+          {/* Box 2: Color-coded fieldforce dropdown */}
+          <div className="command-select" style={{ position: "relative", width: "fit-content" }} ref={dropdownRef}>
+            <button
+              className="command-select-button"
+              style={{
+                width: "280px",
+                height: "30px",
+                minHeight: "30px",
+                paddingLeft: "16px",
+
+Matches around line 228:
+          <div className="command-select" style={{ position: "relative", width: "fit-content" }} ref={dropdownRef}>
+            <button
+              className="command-select-button"
+              style={{
+                width: "280px",
+                height: "30px",
+                minHeight: "30px",
+                paddingLeft: "16px",
+                position: "relative",
+                display: "flex",
+
+Matches around line 259:
+            </button>
+            {dropdownOpen && (
+              <div className="command-select-menu" style={{ width: "320px", top: "calc(100% + 6px)", left: 0, right: "auto", maxHeight: "320px", overflowY: "auto" }}>
+                {filteredEmployees.length === 0 && (
+                  <div style={{ padding: "10px 14px", fontSize: "13px", color: "var(--muted)" }}>No fieldforce found.</div>
+                )}
+                {filteredEmployees.map((emp) => {
+                  const c = roleColor(emp.role);
+                  const active = selectedEmployee?.employeeCode === emp.employeeCode;
+                  return (
+
+--- components/manager-work-type-allowance.tsx ---
+
+Matches around line 226:
+          />
+          {/* Box 2: Designation-Level dropdown */}
+          <div className="command-select" style={{ position: "relative", width: "fit-content" }} ref={dropdownRef}>
+            <button
+              className="command-select-button"
+              style={{
+                width: "260px",
+                height: "30px",
+                minHeight: "30px",
+                paddingLeft: "16px",
+
+Matches around line 228:
+          <div className="command-select" style={{ position: "relative", width: "fit-content" }} ref={dropdownRef}>
+            <button
+              className="command-select-button"
+              style={{
+                width: "260px",
+                height: "30px",
+                minHeight: "30px",
+                paddingLeft: "16px",
+                position: "relative",
+                display: "flex",
+
+Matches around line 246:
+            </button>
+            {dropdownOpen && (
+              <div className="command-select-menu" style={{ width: "260px", top: "calc(100% + 6px)", left: 0, right: "auto" }}>
+                {filteredLevels.map((opt) => (
+                  <button
+                    key={opt}
+                    className={selectedLevel === opt ? "command-select-option command-select-option-active" : "command-select-option"}
+                    onClick={() => {
+                      setSelectedLevel(opt);
+                      setInputText(opt);
+
+--- components/manager-expense-report.tsx ---
+
+Matches around line 216:
+                </div>
+                {divisionFilterOpen && (
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "120px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
+                    {["Zivira", "Astra", "Aura"].map(div => (
+                      <button key={div} type="button" onClick={() => { setDivisionFilter(div); setDivisionFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: divisionFilter === div ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: divisionFilter === div ? 600 : 400 }}>
+                        {div}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => { setDivisionFilter("All"); setDivisionFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
+                  </div>
+
+Matches around line 238:
+                </div>
+                {hqFilterOpen && (
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "160px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
+                    {["Chennai Central HQ", "Coimbatore HQ", "Madurai HQ"].map(hq => (
+                      <button key={hq} type="button" onClick={() => { setHqFilter(hq); setHqFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: hqFilter === hq ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: hqFilter === hq ? 600 : 400 }}>
+                        {hq}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => { setHqFilter("All"); setHqFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
+                  </div>
+
+Matches around line 260:
+                </div>
+                {typeFilterOpen && (
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "140px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
+                    {["Travel", "Food", "Lodging", "Miscellaneous"].map(t => (
+                      <button key={t} type="button" onClick={() => { setTypeFilter(t); setTypeFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: typeFilter === t ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: typeFilter === t ? 600 : 400 }}>
+                        {t}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => { setTypeFilter("All"); setTypeFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
+                  </div>
+
+Matches around line 285:
+                </div>
+                {approvalFilterOpen && (
+                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "120px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
+                    {["Pending", "Approved", "Rejected"].map(st => (
+                      <button key={st} type="button" onClick={() => { setApprovalFilter(st); setApprovalFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: approvalFilter === st ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: approvalFilter === st ? 600 : 400 }}>
+                        {st}
+                      </button>
+                    ))}
+                    <button type="button" onClick={() => { setApprovalFilter("All"); setApprovalFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
+                  </div>
