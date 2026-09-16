@@ -810,6 +810,13 @@ export const apiClient = {
   // Topic 15 — Alert & Notification Engine
   alertsEngine(month?: string) {
     return fetchRaw<{ data: AlertRow[]; month: string; summary: { high: number; medium: number; low: number } }>(`/company/analytics/alerts${month ? `?month=${month}` : ""}`);
+  },
+
+  // GET /company/activity — real create/update/deactivate audit trail across
+  // every master and module (already powers the admin bell's notifications
+  // in company-shell.tsx). `since` lets a caller poll for only what's new.
+  activityLog(since?: string) {
+    return request<ActivityLogEntry[]>(`/company/activity${since ? `?since=${encodeURIComponent(since)}` : ""}`);
   }
 };
 
@@ -883,6 +890,12 @@ export type ManagerKpi = {
 export type AlertRow = {
   type: "DCR_NOT_SUBMITTED" | "DOCTOR_NOT_VISITED_90_DAYS" | "PRODUCT_NOT_PROMOTED" | "LOW_COVERAGE" | "SAMPLE_STOCK_LOW" | "SALARY_HOLD" | "TERRITORY_INACTIVE";
   severity: "HIGH" | "MEDIUM" | "LOW"; message: string; subjectCode?: string; subjectLabel?: string;
+};
+// GET /company/activity row shape (src/routes/company.routes.ts humanizeAuditEntry) —
+// a humanized view of the backend's AuditLogModel, already consumed as-is by
+// company-shell.tsx's notification bell.
+export type ActivityLogEntry = {
+  id: string; title: string; message: string; type: "success" | "warning" | "info" | string; time: string;
 };
 
 async function fetchRaw<T>(path: string): Promise<T> {

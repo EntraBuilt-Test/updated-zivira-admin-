@@ -1,49 +1,37 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ZiviraTreeNode } from "@/packages/types/src/zivira-tree";
+import { apiClient, type AlertRow as ApiAlertRow } from "@/lib/api-client";
 
 // Item fix — this page used to be a fully static server component: Back,
 // Refresh, all 7 filter pills, the search box, every row's View button, and
-// the pagination controls did nothing when clicked. The 3 severity KPI
-// cards are left as-is (no backend alerts collection exists yet), but the
-// alert table itself is now real local state: the filter pills and search
-// actually filter it, View opens a real detail popup for that row, Refresh
-// resets the filters, and pagination reflects the real filtered count.
+// the pagination controls did nothing when clicked. A later pass made all of
+// that interactive, but against a local mock array. This pass replaces the
+// mock data with a real fetch to apiClient.alertsEngine(), which returns the
+// live rows (and the HIGH/MEDIUM/LOW severity counts used by the 3 stat
+// cards) computed by the backend's Alert & Notification Engine.
 
-type Severity = "HIGH" | "MED" | "LOW";
+type Severity = "HIGH" | "MEDIUM" | "LOW";
 
-type AlertRow = {
-  id: string;
-  severity: Severity;
-  type: string;
-  filterKey: string;
-  leadText: string;
-  name: string;
-  trailText: string;
+const ALERT_TYPE_LABEL: Record<ApiAlertRow["type"], string> = {
+  DCR_NOT_SUBMITTED: "DCR Not Submitted",
+  DOCTOR_NOT_VISITED_90_DAYS: "Doctor Not Visited 90+ Days",
+  PRODUCT_NOT_PROMOTED: "Product Not Promoted",
+  LOW_COVERAGE: "Low Coverage",
+  SAMPLE_STOCK_LOW: "Sample Stock Low",
+  SALARY_HOLD: "Salary Hold",
+  TERRITORY_INACTIVE: "Territory Inactive"
 };
 
-const initialAlerts: AlertRow[] = [
-  { id: "al1", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Vikram Shah", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al2", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Area Business Manager - Chennai", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al3", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Deepa Iyer", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al4", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Arvind Rao", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al5", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Sunita Kulkarni", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al6", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Anjali Menon", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al7", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Karthik Subramaniam", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al8", severity: "HIGH", type: "SALARY HOLD", filterKey: "SALARY HOLD", leadText: "Payroll on hold for", name: "Farhan Sheikh", trailText: "— Missed 25 working-day DCR(s) in the last 30 days — chronic defaulter threshold exceeded.." },
-  { id: "al9", severity: "MED", type: "DCR NOT SUBMITTED", filterKey: "DCR NOT SUBMITTED", leadText: "Daily Call Report overdue for", name: "Rohan Mehra", trailText: "(North Zone) — 5 consecutive days missing." },
-  { id: "al10", severity: "LOW", type: "TERRITORY INACTIVE", filterKey: "TERRITORY INACTIVE", leadText: "Territory", name: "Secunderabad Area B", trailText: "logged zero clinic visits past 14 days." }
-];
-
-const FILTER_TABS: { key: string; label: string }[] = [
-  { key: "SALARY HOLD", label: "Salary Hold (16)" },
-  { key: "DOCTOR VISIT", label: "Doctor Not Visited 90+ Days (12)" },
-  { key: "TERRITORY INACTIVE", label: "Territory Inactive (19)" },
-  { key: "LOW COVERAGE", label: "Low Coverage (6)" },
-  { key: "DCR NOT SUBMITTED", label: "DCR Not Submitted (20)" },
-  { key: "SAMPLE STOCK LOW", label: "Sample Stock Low (0)" },
-  { key: "PRODUCT NOT PROMOTED", label: "Product Not Promoted (9)" }
+const FILTER_TABS: { key: ApiAlertRow["type"]; label: string }[] = [
+  { key: "SALARY_HOLD", label: "Salary Hold" },
+  { key: "DOCTOR_NOT_VISITED_90_DAYS", label: "Doctor Not Visited 90+ Days" },
+  { key: "TERRITORY_INACTIVE", label: "Territory Inactive" },
+  { key: "LOW_COVERAGE", label: "Low Coverage" },
+  { key: "DCR_NOT_SUBMITTED", label: "DCR Not Submitted" },
+  { key: "SAMPLE_STOCK_LOW", label: "Sample Stock Low" },
+  { key: "PRODUCT_NOT_PROMOTED", label: "Product Not Promoted" }
 ];
 
 const PAGE_SIZE = 10;
@@ -55,23 +43,46 @@ export function AdminAlertsDashboard({
   node: ZiviraTreeNode;
   path: string[];
 }) {
-  const [alerts] = useState<AlertRow[]>(initialAlerts);
-  const [activeFilter, setActiveFilter] = useState<string | null>(null);
+  const [alerts, setAlerts] = useState<ApiAlertRow[]>([]);
+  const [summary, setSummary] = useState<{ high: number; medium: number; low: number }>({ high: 0, medium: 0, low: 0 });
+  const [month, setMonth] = useState<string>("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeFilter, setActiveFilter] = useState<ApiAlertRow["type"] | null>(null);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [refreshing, setRefreshing] = useState(false);
   const [detail, setDetail] = useState<{ title: string; body: string } | null>(null);
 
+  async function loadAlerts() {
+    setError("");
+    try {
+      const response = await apiClient.alertsEngine();
+      setAlerts(response.data);
+      setSummary(response.summary);
+      setMonth(response.month);
+    } catch (loadError) {
+      setError(loadError instanceof Error ? loadError.message : "Unable to load alerts");
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadAlerts();
+  }, []);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return alerts.filter((a) => {
-      if (activeFilter && a.filterKey !== activeFilter) return false;
+      if (activeFilter && a.type !== activeFilter) return false;
       if (!q) return true;
       return (
-        a.name.toLowerCase().includes(q) ||
-        a.type.toLowerCase().includes(q) ||
-        a.leadText.toLowerCase().includes(q) ||
-        a.trailText.toLowerCase().includes(q)
+        (a.subjectLabel ?? "").toLowerCase().includes(q) ||
+        (a.subjectCode ?? "").toLowerCase().includes(q) ||
+        ALERT_TYPE_LABEL[a.type].toLowerCase().includes(q) ||
+        a.message.toLowerCase().includes(q)
       );
     });
   }, [alerts, activeFilter, search]);
@@ -89,15 +100,14 @@ export function AdminAlertsDashboard({
     setActiveFilter(null);
     setSearch("");
     setPage(1);
-    setTimeout(() => setRefreshing(false), 500);
+    void loadAlerts();
   }
 
   const severityClass: Record<Severity, string> = {
     HIGH: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900/50",
-    MED: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50",
+    MEDIUM: "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border-amber-200 dark:border-amber-900/50",
     LOW: "text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
   };
-  const severityLabel: Record<Severity, string> = { HIGH: "HIGH", MED: "MED", LOW: "LOW" };
 
   return (
     <main
@@ -115,8 +125,11 @@ export function AdminAlertsDashboard({
           </h2>
           <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-3xl">
             Automated alerts pulled live from compliance, coverage, payroll, and
-            sample-stock signals across the platform.
+            sample-stock signals across the platform{month ? ` — ${month}` : ""}.
           </p>
+          {error && (
+            <p className="text-xs text-red-600 dark:text-red-400 mt-1">{error}</p>
+          )}
         </div>
         {/*  Header Action Buttons  */}
         <div className="flex items-center gap-2.5 self-start">
@@ -146,7 +159,7 @@ export function AdminAlertsDashboard({
             onClick={handleRefresh}
           >
             <svg
-              className={`w-3.5 h-3.5 transition-transform ${refreshing ? "animate-spin" : ""}`}
+              className={`w-3.5 h-3.5 transition-transform ${refreshing || loading ? "animate-spin" : ""}`}
               fill="none"
               id="refresh-icon"
               stroke="currentColor"
@@ -164,7 +177,7 @@ export function AdminAlertsDashboard({
         </div>
       </section>
       {/*  END: Section Header Title & Actions  */}
-      {/*  BEGIN: Stat Cards Grid — untouched KPI display  */}
+      {/*  BEGIN: Stat Cards Grid — now wired to the alertsEngine summary  */}
       <section
         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
         data-purpose="stat-summary-cards"
@@ -176,7 +189,7 @@ export function AdminAlertsDashboard({
           </p>
           <div className="mt-3 flex items-baseline">
             <span className="text-4xl font-extrabold text-[#d92d20] tracking-tight">
-              53
+              {loading ? "…" : summary.high}
             </span>
           </div>
         </div>
@@ -187,7 +200,7 @@ export function AdminAlertsDashboard({
           </p>
           <div className="mt-3 flex items-baseline">
             <span className="text-4xl font-extrabold text-[#b5651d] dark:text-amber-500 tracking-tight">
-              20
+              {loading ? "…" : summary.medium}
             </span>
           </div>
         </div>
@@ -198,7 +211,7 @@ export function AdminAlertsDashboard({
           </p>
           <div className="mt-3 flex items-baseline">
             <span className="text-4xl font-extrabold text-slate-600 dark:text-slate-400 tracking-tight">
-              9
+              {loading ? "…" : summary.low}
             </span>
           </div>
         </div>
@@ -206,10 +219,11 @@ export function AdminAlertsDashboard({
       {/*  END: Stat Cards Grid  */}
       {/*  BEGIN: Filter Tabs & Search Bar  */}
       <section className="space-y-3" data-purpose="table-filters">
-        {/*  Filter Tabs / Pills  */}
+        {/*  Filter Tabs / Pills — now the 7 real backend alert types  */}
         <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
           {FILTER_TABS.map((f) => {
             const active = activeFilter === f.key;
+            const count = alerts.filter((a) => a.type === f.key).length;
             return (
               <button
                 key={f.key}
@@ -218,7 +232,7 @@ export function AdminAlertsDashboard({
                 type="button"
                 onClick={() => { setActiveFilter((prev) => (prev === f.key ? null : f.key)); setPage(1); }}
               >
-                {f.label}
+                {f.label} ({count})
               </button>
             );
           })}
@@ -287,7 +301,14 @@ export function AdminAlertsDashboard({
               className="divide-y divide-slate-100 dark:divide-slate-800 text-xs"
               id="alerts-body"
             >
-              {pageRows.length === 0 && (
+              {loading && (
+                <tr>
+                  <td colSpan={4} className="py-10 px-5 text-center text-slate-500 dark:text-slate-400 text-xs">
+                    Loading alerts…
+                  </td>
+                </tr>
+              )}
+              {!loading && pageRows.length === 0 && (
                 <tr>
                   <td colSpan={4} className="py-10 px-5 text-center text-slate-500 dark:text-slate-400 text-xs">
                     No matching alert notifications found.
@@ -296,8 +317,8 @@ export function AdminAlertsDashboard({
               )}
               {pageRows.map((a, i) => (
                 <tr
-                  key={a.id}
-                  className={`alert-row hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition group ${i === 2 && !activeFilter && !search ? "bg-orange-50/40 dark:bg-orange-950/20 hover:bg-orange-50/70 dark:hover:bg-orange-950/30" : ""}`}
+                  key={`${a.type}-${a.subjectCode ?? a.subjectLabel ?? i}-${i}`}
+                  className="alert-row hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition group"
                   data-type={a.type}
                 >
                   <td className="py-3.5 px-5 whitespace-nowrap">
@@ -307,29 +328,28 @@ export function AdminAlertsDashboard({
                           <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                         </svg>
                       )}
-                      {a.severity === "MED" && (
+                      {a.severity === "MEDIUM" && (
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                         </svg>
                       )}
-                      {severityLabel[a.severity]}
+                      {a.severity}
                     </span>
                   </td>
                   <td className="py-3.5 px-5 whitespace-nowrap font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wide text-[11px]">
-                    {a.type}
+                    {ALERT_TYPE_LABEL[a.type]}
                   </td>
                   <td className="py-3.5 px-5 text-slate-700 dark:text-slate-300 leading-relaxed alert-text">
-                    {a.leadText}{" "}
-                    <strong className="text-slate-900 dark:text-white font-semibold">
-                      {a.name}
-                    </strong>{" "}
-                    {a.trailText}
+                    {a.subjectLabel && (
+                      <strong className="text-slate-900 dark:text-white font-semibold">{a.subjectLabel}</strong>
+                    )}{" "}
+                    {a.message}
                   </td>
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
                     <button
                       className="text-xs font-semibold text-brand-orange hover:text-brand-orangeHover"
                       type="button"
-                      onClick={() => setDetail({ title: `${a.type} — ${a.name}`, body: `${severityLabel[a.severity]} severity. ${a.leadText} ${a.name} ${a.trailText}` })}
+                      onClick={() => setDetail({ title: `${ALERT_TYPE_LABEL[a.type]}${a.subjectLabel ? ` — ${a.subjectLabel}` : ""}`, body: `${a.severity} severity. ${a.message}${a.subjectCode ? ` (Code: ${a.subjectCode})` : ""}` })}
                     >
                       View
                     </button>

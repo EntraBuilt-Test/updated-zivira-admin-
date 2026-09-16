@@ -1,21 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { downloadCsv } from "@/lib/download-csv";
+import { apiClient, type ActivityLogEntry } from "@/lib/api-client";
 
 // Fix — the module cards' "Configure / Manage / …" links already navigated
 // to real routes and were left untouched. Everything else on this page was
 // static: the header search box, Bulk Export, Quick Add Master Record, the
 // 4 category tabs, the "More actions" per-card menu, the audit-log filter
 // box, All Modules dropdown, Export Audit Log, and the audit table's
-// pagination did nothing when clicked. The KPI summary cards at top are
-// left as-is (no backend collection exists yet), but the module directory
-// now filters by category/search, Quick Add appends a real (session-only)
-// module card, More actions opens a real detail popup, and the audit trail
-// table now filters by search/module and paginates over its real rows;
-// Export Audit Log and Bulk Export Master Data download exactly what's on
-// screen as CSV.
+// pagination did nothing when clicked. A later pass made the module
+// directory and audit trail table interactive against local mock data. The
+// KPI summary cards at top are still left as-is (no matching backend
+// collection exists for those specific rollup numbers), but the "Recent
+// Master Modifications & Audit Trail" table below IS now real: the backend
+// exposes GET /company/activity (src/routes/company.routes.ts), which reads
+// the same AuditLogModel collection every masters write already calls
+// audit(...) against — it's the same feed that already powers the admin
+// bell's notifications in company-shell.tsx. apiClient.activityLog() wires
+// that in here, and the search/module filter/pagination/export/View-Diff
+// popup all keep working against the real rows.
 
 type Category = "All" | "Territory & Field" | "Commercial & Products" | "Financial & Compliance";
 
@@ -63,7 +68,9 @@ type AuditRow = {
   timestamp: string;
 };
 
-const initialAuditRows: AuditRow[] = [
+// Fallback rows shown only if the live GET /company/activity call fails or
+// returns nothing (e.g. a brand-new tenant with no changes logged yet).
+const fallbackAuditRows: AuditRow[] = [
   { id: "a1", module: "Doctor", dotColor: "bg-status-info", entityName: "Dr. Rajeshwar Sharma", entityNote: "MCL Core List • Max Healthcare Saket", changeType: "Created", updatedBy: "Anand Verma", updatedByNote: "North Ops Lead", timestamp: "14 min ago (10 Sep 2026, 14:48)" },
   { id: "a2", module: "Product", dotColor: "bg-primary", entityName: "ZiviCal D3 60k IU Softgels", entityNote: "SKU-8820 • Revised MRP & PTR Slabs", changeType: "Modified", updatedBy: "Pricing Committee", updatedByNote: "Corporate HQ", timestamp: "42 min ago (10 Sep 2026, 14:20)" },
   { id: "a3", module: "Territory Bulk", dotColor: "bg-secondary", entityName: "Andheri West Patch B", entityNote: "Realigned to Mumbai Metro Zone 2", changeType: "Realigned", updatedBy: "Admin Zivira", updatedByNote: "HQ Operations", timestamp: "1 hr ago (10 Sep 2026, 13:58)" },
@@ -86,6 +93,39 @@ const changeTypeIcon: Record<AuditRow["changeType"], string> = {
   Suspended: "pause_circle"
 };
 
+// GET /company/activity (src/routes/company.routes.ts) returns humanized
+// entries like { title: "Doctor added", message: "A doctor record was
+// added.", type: "success" | "warning" | "info", time }. It reads the same
+// AuditLogModel collection every masters write already calls audit(...)
+// against, but the schema never actually records *who* made the change
+// (actorUserId is declared but never populated by any call site), so
+// "Updated By" is honestly labeled rather than showing an invented name.
+function mapActivityToAuditRow(entry: ActivityLogEntry): AuditRow {
+  const match = entry.title.match(/^(.*)\s+(added|updated|deactivated|reactivated)$/i);
+  const module = match ? match[1] : entry.title;
+  const verb = match ? match[2].toLowerCase() : "";
+  const changeType: AuditRow["changeType"] =
+    verb === "added" ? "Created" : verb === "deactivated" ? "Suspended" : "Modified";
+  const dotColor = entry.type === "success" ? "bg-status-success" : entry.type === "warning" ? "bg-status-warning" : "bg-status-info";
+  let timestamp = entry.time;
+  try {
+    timestamp = new Date(entry.time).toLocaleString();
+  } catch {
+    // keep raw value
+  }
+  return {
+    id: entry.id,
+    module,
+    dotColor,
+    entityName: entry.title,
+    entityNote: entry.message,
+    changeType,
+    updatedBy: "Not tracked",
+    updatedByNote: "Actor identity isn't recorded by the audit log yet",
+    timestamp
+  };
+}
+
 export function AdminMastersDashboard() {
   const [modules] = useState<MasterModule[]>(initialModules);
   const [headerSearch, setHeaderSearch] = useState("");
@@ -95,10 +135,38 @@ export function AdminMastersDashboard() {
   const [newModule, setNewModule] = useState({ title: "", description: "", href: "", category: "Territory & Field" as Exclude<Category, "All"> });
   const [customModules, setCustomModules] = useState<MasterModule[]>([]);
 
-  const [auditRows] = useState<AuditRow[]>(initialAuditRows);
+  const [auditRows, setAuditRows] = useState<AuditRow[]>([]);
+  const [auditLoading, setAuditLoading] = useState(true);
+  const [auditError, setAuditError] = useState("");
+  const [auditIsLive, setAuditIsLive] = useState(false);
   const [auditSearch, setAuditSearch] = useState("");
   const [auditModuleFilter, setAuditModuleFilter] = useState<string>("All Modules");
   const [auditPage, setAuditPage] = useState(1);
+
+  async function loadAuditLog() {
+    setAuditLoading(true);
+    setAuditError("");
+    try {
+      const response = await apiClient.activityLog();
+      if (response.data.length > 0) {
+        setAuditRows(response.data.map(mapActivityToAuditRow));
+        setAuditIsLive(true);
+      } else {
+        setAuditRows(fallbackAuditRows);
+        setAuditIsLive(false);
+      }
+    } catch (loadError) {
+      setAuditError(loadError instanceof Error ? loadError.message : "Unable to load audit log");
+      setAuditRows(fallbackAuditRows);
+      setAuditIsLive(false);
+    } finally {
+      setAuditLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadAuditLog();
+  }, []);
 
   const allModules = useMemo(() => [...modules, ...customModules], [modules, customModules]);
 
@@ -394,6 +462,15 @@ export function AdminMastersDashboard() {
           <div>
             <h2 className="font-headline-md text-headline-md text-text-primary">Recent Master Modifications &amp; Audit Trail</h2>
             <p className="font-body-sm text-body-sm text-text-muted">Real-time changelog of data definitions, doctor registries, pricing and territory alignments</p>
+            {auditLoading && <p className="font-body-sm text-body-sm text-text-muted mt-1">Loading live audit log…</p>}
+            {!auditLoading && auditIsLive && (
+              <p className="font-label-sm text-label-sm text-status-success mt-1">Live — from GET /company/activity</p>
+            )}
+            {!auditLoading && !auditIsLive && (
+              <p className="font-label-sm text-label-sm text-text-muted mt-1">
+                {auditError ? `Preview data — could not reach the audit log (${auditError}).` : "Preview data — no changes logged yet for this tenant."}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <div className="relative min-w-[200px]">

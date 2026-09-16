@@ -1,19 +1,33 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 import { downloadCsv } from "@/lib/download-csv";
+import { apiClient, type ProductExposureRow, type AlertRow } from "@/lib/api-client";
 
 // This page used to be a fully static server component: every number was
 // hand-typed JSX and none of its buttons/selects/inputs had a real
-// onClick/onChange handler. The KPI cards at the top are left as-is (no
-// backend collection exists yet for MIS metrics), but the Territory/HQ
-// table is now real local state: search, the zone pills, the performance
-// tier select, sort, and pagination actually filter/sort it, Export MIS
-// downloads exactly what's on screen as CSV, the timeline/sub-tab pills
-// switch real local state, and every row/alert action opens a real detail
-// popup built from that row's own data instead of doing nothing.
+// onClick/onChange handler. A later pass made the Territory/HQ table's
+// search/filters/sort/pagination/export interactive against local mock rows.
+//
+// This pass investigated every apiClient.* candidate and wired in the ones
+// that genuinely match this page's sections:
+//   - "HCP List Coverage" KPI card    -> apiClient.territoryDoctorCounts()
+//     (real active/total doctor counts, aggregated into a coverage %)
+//   - "Brand Basket Revenue Contribution" panel -> apiClient.productExposure()
+//     (real per-product doctor reach / samples / visits — no revenue figures
+//     exist on the backend, so the "amount"/MoM trend columns are replaced
+//     with the real exposure metrics instead of keeping fake currency)
+//   - "Executive Exception Alerts" panel -> apiClient.alertsEngine()
+//     (the 3 alert cards now show real HIGH/MEDIUM-severity alerts)
+// The "Division & Territory Sales Variance" table (target/achieved revenue
+// per HQ) and the "Secondary Sales", "Field Rep Productivity", and "Sample
+// Conversion ROI" KPI cards have no matching backend endpoint (there is no
+// sales/target/POB collection yet), so they keep their original interactive
+// mock data with an explicit "Preview data — not yet backend-wired" note
+// instead of silently presenting invented numbers as real. Every existing
+// button, filter, search, export, sort, pagination, and modal keeps working.
 
 type TerritoryRow = {
   id: string;
@@ -165,6 +179,61 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
   const [queryForm, setQueryForm] = useState({ metric: "Secondary Sales", dimension: "Zone" });
   const [actionedAlerts, setActionedAlerts] = useState<Set<string>>(new Set());
 
+  // ── Real backend data: territory doctor coverage, product exposure, and
+  // live alerts. Loaded once on mount; Refresh (Custom timeline button area
+  // has no explicit refresh, so this simply loads on mount) re-fetches via
+  // loadRealData below if ever wired to a button in the future.
+  const [territoryCounts, setTerritoryCounts] = useState<{ patch: string; hq: string; division: string; totalDoctors: number; activeDoctors: number }[]>([]);
+  const [productExposure, setProductExposure] = useState<ProductExposureRow[]>([]);
+  const [liveAlerts, setLiveAlerts] = useState<AlertRow[]>([]);
+  const [realDataLoading, setRealDataLoading] = useState(true);
+  const [realDataError, setRealDataError] = useState("");
+
+  async function loadRealData() {
+    setRealDataLoading(true);
+    setRealDataError("");
+    try {
+      const [territoryRes, exposureRes, alertsRes] = await Promise.all([
+        apiClient.territoryDoctorCounts(),
+        apiClient.productExposure(),
+        apiClient.alertsEngine()
+      ]);
+      setTerritoryCounts(territoryRes.data);
+      setProductExposure(exposureRes.data);
+      setLiveAlerts(alertsRes.data);
+    } catch (loadError) {
+      setRealDataError(loadError instanceof Error ? loadError.message : "Unable to load live MIS data");
+    } finally {
+      setRealDataLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void loadRealData();
+  }, []);
+
+  const doctorCoveragePct = useMemo(() => {
+    const totals = territoryCounts.reduce(
+      (acc, t) => ({ total: acc.total + t.totalDoctors, active: acc.active + t.activeDoctors }),
+      { total: 0, active: 0 }
+    );
+    return totals.total > 0 ? (totals.active / totals.total) * 100 : null;
+  }, [territoryCounts]);
+
+  const topExposureProducts = useMemo(
+    () => [...productExposure].sort((a, b) => b.distinctDoctors - a.distinctDoctors).slice(0, 5),
+    [productExposure]
+  );
+  const totalExposureDoctors = useMemo(
+    () => topExposureProducts.reduce((sum, p) => sum + p.distinctDoctors, 0),
+    [topExposureProducts]
+  );
+
+  const topLiveAlerts = useMemo(() => {
+    const order: Record<AlertRow["severity"], number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+    return [...liveAlerts].sort((a, b) => order[a.severity] - order[b.severity]).slice(0, 3);
+  }, [liveAlerts]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     let list = rows.filter((r) => {
@@ -224,6 +293,22 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
   }
 
   function handleExportBrandDossier() {
+    if (topExposureProducts.length > 0) {
+      downloadCsv(
+        "brand-basket-dossier.csv",
+        topExposureProducts.map((p) => ({
+          "Product": p.productName,
+          "Distinct Doctors Reached": p.distinctDoctors,
+          "Distinct Reps": p.distinctReps,
+          "Samples Given": p.totalSamplesGiven,
+          "Visits Promoted": p.visitsPromoted,
+          "Visual Aid Used": p.visualAidUsedCount,
+          "Top Rep": p.topRepName ?? p.topRepCode ?? "—",
+          "Top Territory": p.topTerritory ?? "—"
+        }))
+      );
+      return;
+    }
     downloadCsv(
       "brand-basket-dossier.csv",
       brandRows.map((b) => ({
@@ -348,13 +433,11 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Executive KPI Metric Cards (4-Column Bento Row) */}
 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-grid-gutter">
-{/* Card 1: Net Secondary Sales Achievement */}
+{/* Card 1: Net Secondary Sales Achievement — no sales/target endpoint exists yet */}
 <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-center justify-between">
 <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Secondary Sales (MTD)</span>
-<div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">currency_rupee</span>
-</div>
+<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-subtle text-text-muted" title="No sales/target endpoint exists on the backend yet">Preview data</span>
 </div>
 <div className="mt-3">
 <div className="flex items-baseline gap-2">
@@ -373,13 +456,11 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="text-text-muted">Gap: <strong className="text-status-warning font-semibold">₹24.0 Lakh</strong></span>
 </div>
 </div>
-{/* Card 2: Field Productivity Ratio */}
+{/* Card 2: Field Productivity Ratio — no calls/POB aggregate endpoint exists yet */}
 <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-center justify-between">
 <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Field Rep Productivity</span>
-<div className="w-8 h-8 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">speed</span>
-</div>
+<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-subtle text-text-muted" title="No calls/POB-per-rep endpoint exists on the backend yet">Preview data</span>
 </div>
 <div className="mt-3">
 <div className="flex items-baseline gap-2">
@@ -398,7 +479,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
           </span>
 </div>
 </div>
-{/* Card 3: Doctor Coverage & Frequency Adherence */}
+{/* Card 3: Doctor Coverage & Frequency Adherence — real, from apiClient.territoryDoctorCounts() */}
 <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-center justify-between">
 <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">HCP List Coverage</span>
@@ -408,25 +489,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 <div className="mt-3">
 <div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">92.4%</span>
-<span className="font-label-md text-label-md text-status-success font-semibold">Tier-1 Optimal</span>
+<span className="font-metric-value text-metric-value text-text-primary">{realDataLoading ? "…" : doctorCoveragePct !== null ? `${doctorCoveragePct.toFixed(1)}%` : "—"}</span>
+<span className="font-label-md text-label-md text-status-success font-semibold">Active / Mapped Doctors</span>
 </div>
 <div className="w-full bg-surface-subtle h-2 rounded-full mt-2.5 overflow-hidden">
-<div className="bg-status-success h-full rounded-full transition-all duration-500" style={{ "width": "92.4%" }}></div>
+<div className="bg-status-success h-full rounded-full transition-all duration-500" style={{ "width": `${doctorCoveragePct ?? 0}%` }}></div>
 </div>
 </div>
 <div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
-<span className="text-text-muted">A+ Tier Coverage: <strong>97.1%</strong></span>
-<span className="text-text-muted">Repeat Adh: <strong className="text-text-primary">88.6%</strong></span>
+<span className="text-text-muted">Territory Nodes: <strong>{territoryCounts.length}</strong></span>
+<span className="text-text-muted">Active Doctors: <strong className="text-text-primary">{territoryCounts.reduce((s, t) => s + t.activeDoctors, 0)}</strong></span>
 </div>
 </div>
-{/* Card 4: Sample & Detailing Yield */}
+{/* Card 4: Sample & Detailing Yield — no sample ROI/revenue endpoint exists yet */}
 <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-center justify-between">
 <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Sample Conversion ROI</span>
-<div className="w-8 h-8 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">vaccines</span>
-</div>
+<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-subtle text-text-muted" title="No sample-to-revenue ROI endpoint exists on the backend yet">Preview data</span>
 </div>
 <div className="mt-3">
 <div className="flex items-baseline gap-2">
@@ -457,7 +536,21 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
       type="button"
       onClick={() => {
         setActiveSubTab(tab);
-        if (tab !== SUB_TABS[0]) {
+        if (tab === "HQ Productivity Matrix") {
+          setDetail({
+            title: tab,
+            body: doctorCoveragePct !== null
+              ? `Live from apiClient.territoryDoctorCounts(): ${territoryCounts.length} territory/HQ nodes, ${territoryCounts.reduce((s, t) => s + t.activeDoctors, 0)} of ${territoryCounts.reduce((s, t) => s + t.totalDoctors, 0)} mapped doctors active (${doctorCoveragePct.toFixed(1)}% coverage). A dedicated productivity table view isn't built yet — showing Division & Territory Sales Variance data below in the meantime.`
+              : "Loading live territory doctor-coverage data — showing Division & Territory Sales Variance data below in the meantime."
+          });
+        } else if (tab === "Doctor Detailing Yield & ROI") {
+          setDetail({
+            title: tab,
+            body: topExposureProducts.length > 0
+              ? `Live from apiClient.productExposure(): top product ${topExposureProducts[0].productName} reached ${topExposureProducts[0].distinctDoctors} doctors via ${topExposureProducts[0].distinctReps} reps, ${topExposureProducts[0].totalSamplesGiven} samples given. See the Brand Basket panel below for the full real breakdown. A dedicated yield/ROI table view isn't built yet.`
+              : "Loading live product exposure data — see the Brand Basket panel below in the meantime."
+          });
+        } else if (tab !== SUB_TABS[0]) {
           setDetail({ title: tab, body: "This report view is not built out yet — showing Division & Territory Sales Variance data below in the meantime." });
         }
       }}
@@ -470,6 +563,15 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Main Data Table Container with Filters & Controls */}
 <div className="bg-surface-card rounded-xl shadow-sm overflow-hidden flex flex-col">
+{/* Honest data-source note — no sales-target/achievement endpoint exists on
+    the backend yet, so this table stays on its original interactive mock
+    rows rather than presenting invented revenue figures as real. */}
+<div className="px-card-padding-standard pt-3 -mb-1">
+<span className="inline-flex items-center gap-1.5 text-label-sm font-label-sm px-2 py-1 rounded bg-surface-subtle text-text-muted">
+<span className="material-symbols-outlined text-[14px]">info</span>
+Preview data — territory secondary-sales targets/achievement are not yet exposed by the backend. Search, filters, sort, export and row actions below are fully interactive against this preview dataset.
+</span>
+</div>
 {/* Filter Bar & Search Sub-Header */}
 <div className="p-card-padding-standard flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 border-b border-surface-subtle">
 {/* Search bar */}
@@ -618,115 +720,75 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Secondary Analytical Panels: 2-Column Split */}
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-grid-gutter">
-{/* Panel 1: Brand Basket Contribution vs Growth Matrix (7 cols) */}
+{/* Panel 1: Brand Basket Contribution vs Growth Matrix (7 cols) — real,
+    from apiClient.productExposure(). No revenue/amount data exists on the
+    backend for products, so doctor reach / samples / visits are shown
+    instead of invented currency figures. */}
 <div className="lg:col-span-7 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
 <div>
 <div className="flex items-center justify-between mb-1">
-<h2 className="font-headline-sm text-headline-sm text-text-primary">Brand Basket Revenue Contribution</h2>
-<span className="font-label-sm text-label-sm px-2.5 py-0.5 rounded bg-brand-primary-subtle text-primary font-semibold">MTD Analysis</span>
+<h2 className="font-headline-sm text-headline-sm text-text-primary">Brand Basket Doctor Reach</h2>
+<span className="font-label-sm text-label-sm px-2.5 py-0.5 rounded bg-brand-primary-subtle text-primary font-semibold">Live — Product Exposure</span>
 </div>
 <p className="font-body-sm text-body-sm text-text-secondary mb-5">
-            Key pharma formulation secondary sales yield, primary prescription volume, and month-over-month trajectory.
+            Distinct doctors reached, samples given, and promotional visits per product — no basket revenue endpoint exists yet, so this reflects real doctor/sample reach instead of invented sales amounts.
           </p>
-{/* Contribution Stacked Visual Bar */}
+{realDataError && <p className="text-status-danger font-body-sm text-body-sm mb-3">{realDataError}</p>}
+{realDataLoading && <p className="font-body-sm text-body-sm text-text-muted mb-3">Loading live product exposure…</p>}
+{!realDataLoading && topExposureProducts.length === 0 && (
+  <p className="font-body-sm text-body-sm text-text-muted mb-3">No product exposure data available for the current period.</p>
+)}
+{topExposureProducts.length > 0 && (
+<>
+{/* Contribution Stacked Visual Bar — share of doctor reach among top 5 */}
 <div className="w-full h-4 rounded-lg flex overflow-hidden shadow-inner mb-4">
-<div className="bg-primary hover:opacity-90 transition-opacity" style={{ "width": "34.6%" }} title="CardioCare 20 (34.6%)"></div>
-<div className="bg-primary-container hover:opacity-90 transition-opacity" style={{ "width": "25.1%" }} title="ZiviCal D3 Forte (25.1%)"></div>
-<div className="bg-tertiary hover:opacity-90 transition-opacity" style={{ "width": "20.2%" }} title="GlycoZiv XR (20.2%)"></div>
-<div className="bg-status-info hover:opacity-90 transition-opacity" style={{ "width": "11.9%" }} title="Resp-Clear Dry (11.9%)"></div>
-<div className="bg-secondary-fixed-dim hover:opacity-90 transition-opacity" style={{ "width": "8.2%" }} title="Others (8.2%)"></div>
+{["bg-primary", "bg-primary-container", "bg-tertiary", "bg-status-info", "bg-secondary-fixed-dim"].map((cls, i) => {
+  const p = topExposureProducts[i];
+  if (!p) return null;
+  const pct = totalExposureDoctors > 0 ? (p.distinctDoctors / totalExposureDoctors) * 100 : 0;
+  return <div key={p.productCode} className={`${cls} hover:opacity-90 transition-opacity`} style={{ width: `${pct}%` }} title={`${p.productName} (${pct.toFixed(1)}%)`}></div>;
+})}
 </div>
 {/* Product Detailed Breakdown Rows */}
 <div className="space-y-3">
-{/* Brand 1 */}
-<div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-subtle transition-colors">
-<div className="flex items-center gap-3">
-<span className="w-3 h-3 rounded-full bg-primary flex-shrink-0"></span>
-<div>
-<div className="font-label-md text-label-md text-text-primary">CardioCare 20 (Atorvastatin 20mg)</div>
-<div className="font-body-sm text-body-sm text-text-muted">Prescriptions: 24,100 Rx • 34.6% Basket</div>
+{["bg-primary", "bg-primary-container", "bg-tertiary", "bg-status-info", "bg-secondary-fixed-dim"].map((cls, i) => {
+  const p = topExposureProducts[i];
+  if (!p) return null;
+  const sharePct = totalExposureDoctors > 0 ? (p.distinctDoctors / totalExposureDoctors) * 100 : 0;
+  return (
+    <div key={p.productCode} className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-subtle transition-colors">
+      <div className="flex items-center gap-3">
+        <span className={`w-3 h-3 rounded-full ${cls} flex-shrink-0`}></span>
+        <div>
+          <div className="font-label-md text-label-md text-text-primary">{p.productName}</div>
+          <div className="font-body-sm text-body-sm text-text-muted">{p.distinctReps} reps • {sharePct.toFixed(1)}% of top-5 doctor reach</div>
+        </div>
+      </div>
+      <div className="text-right">
+        <div className="font-headline-sm text-headline-sm text-text-primary">{p.distinctDoctors} Doctors</div>
+        <div className="font-label-sm text-label-sm text-status-success font-semibold flex items-center justify-end gap-0.5">
+          {p.totalSamplesGiven} samples • {p.visitsPromoted} visits
+        </div>
+      </div>
+    </div>
+  );
+})}
 </div>
-</div>
-<div className="text-right">
-<div className="font-headline-sm text-headline-sm text-text-primary">₹1.68 Cr</div>
-<div className="font-label-sm text-label-sm text-status-success font-semibold flex items-center justify-end gap-0.5">
-<span className="material-symbols-outlined text-[13px]">arrow_upward</span> +18.4% MoM
-                </div>
-</div>
-</div>
-{/* Brand 2 */}
-<div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-subtle transition-colors">
-<div className="flex items-center gap-3">
-<span className="w-3 h-3 rounded-full bg-primary-container flex-shrink-0"></span>
-<div>
-<div className="font-label-md text-label-md text-text-primary">ZiviCal D3 Forte (Nano Drops 60K)</div>
-<div className="font-body-sm text-body-sm text-text-muted">Prescriptions: 19,450 Rx • 25.1% Basket</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-headline-sm text-headline-sm text-text-primary">₹1.22 Cr</div>
-<div className="font-label-sm text-label-sm text-status-success font-semibold flex items-center justify-end gap-0.5">
-<span className="material-symbols-outlined text-[13px]">arrow_upward</span> +9.2% MoM
-                </div>
-</div>
-</div>
-{/* Brand 3 */}
-<div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-subtle transition-colors">
-<div className="flex items-center gap-3">
-<span className="w-3 h-3 rounded-full bg-tertiary flex-shrink-0"></span>
-<div>
-<div className="font-label-md text-label-md text-text-primary">GlycoZiv XR (Metformin 1000mg ER)</div>
-<div className="font-body-sm text-body-sm text-text-muted">Prescriptions: 16,300 Rx • 20.2% Basket</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-headline-sm text-headline-sm text-text-primary">₹0.98 Cr</div>
-<div className="font-label-sm text-label-sm text-status-success font-semibold flex items-center justify-end gap-0.5">
-<span className="material-symbols-outlined text-[13px]">arrow_upward</span> +5.1% MoM
-                </div>
-</div>
-</div>
-{/* Brand 4 */}
-<div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-subtle transition-colors">
-<div className="flex items-center gap-3">
-<span className="w-3 h-3 rounded-full bg-status-info flex-shrink-0"></span>
-<div>
-<div className="font-label-md text-label-md text-text-primary">Resp-Clear Dry (Montelukast Levo)</div>
-<div className="font-body-sm text-body-sm text-text-muted">Prescriptions: 9,800 Rx • 11.9% Basket</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-headline-sm text-headline-sm text-text-primary">₹0.58 Cr</div>
-<div className="font-label-sm text-label-sm text-status-warning font-semibold flex items-center justify-end gap-0.5">
-<span className="material-symbols-outlined text-[13px]">horizontal_rule</span> Flat (Season lag)
-                </div>
-</div>
-</div>
-{/* Others */}
-<div className="flex items-center justify-between p-2.5 rounded-lg hover:bg-surface-subtle transition-colors">
-<div className="flex items-center gap-3">
-<span className="w-3 h-3 rounded-full bg-secondary-fixed-dim flex-shrink-0"></span>
-<div>
-<div className="font-label-md text-label-md text-text-primary">Institutional &amp; All Other SKUs</div>
-<div className="font-body-sm text-body-sm text-text-muted">Multiple low-volume batches • 8.2% Basket</div>
-</div>
-</div>
-<div className="text-right">
-<div className="font-headline-sm text-headline-sm text-text-primary">₹0.40 Cr</div>
-<div className="font-label-sm text-label-sm text-text-muted font-semibold">Target Aligned</div>
-</div>
-</div>
-</div>
+</>
+)}
 </div>
 <div className="mt-4 pt-3 border-t border-surface-subtle flex items-center justify-between font-label-md text-label-md">
-<span className="text-text-muted">Portfolio Gross Margin Yield: <strong className="text-text-primary">68.4%</strong></span>
+<span className="text-text-muted">Products Tracked: <strong className="text-text-primary">{productExposure.length}</strong></span>
 <a className="text-primary hover:underline flex items-center gap-1 font-semibold cursor-pointer" onClick={handleExportBrandDossier}>
 <span className="">Download Brand Basket Dossier</span>
 <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
 </a>
 </div>
 </div>
-{/* Panel 2: Executive Exception Alerts & Action Triggers (5 cols) */}
+{/* Panel 2: Executive Exception Alerts & Action Triggers (5 cols) — real,
+    from apiClient.alertsEngine(). The action buttons still only mark the
+    alert as actioned for this session, since no backend endpoint exists to
+    actually trigger a review meeting / supply notice / escalation yet. */}
 <div className="lg:col-span-5 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
 <div>
 <div className="flex items-center justify-between mb-1">
@@ -737,71 +799,44 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="w-2.5 h-2.5 rounded-full bg-status-danger animate-ping"></span>
 </div>
 <p className="font-body-sm text-body-sm text-text-secondary mb-4">
-            Automated threshold anomalies requiring headquarters operational decisions or RSM escalations.
+            Live from apiClient.alertsEngine() — automated threshold anomalies requiring headquarters operational decisions or RSM escalations.
           </p>
 <div className="space-y-3.5">
-{/* Alert Item 1 */}
-<div className="p-3.5 rounded-xl bg-status-danger-bg/40 border border-status-danger-border flex flex-col gap-2.5">
-<div className="flex items-start justify-between gap-2">
-<div className="flex items-center gap-2 text-status-danger font-label-md text-label-md">
-<span className="material-symbols-outlined text-[18px]">trending_down</span>
-<span className="">East Central Cluster Deficit</span>
-</div>
-<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-danger-bg text-status-danger font-semibold">CRITICAL</span>
-</div>
-<p className="font-body-sm text-body-sm text-text-secondary">
-<strong>7 Territories</strong> lagging &gt;20% target in East Central with only <strong>4 working days remaining</strong> in cycle. Immediate intervention needed.
-              </p>
-<div className="flex items-center justify-between pt-1">
-<span className="font-label-sm text-label-sm text-text-muted">RSM: S. Chatterjee</span>
-<button className="px-2.5 py-1 rounded bg-status-danger text-on-error font-label-sm text-label-sm font-semibold hover:bg-error transition-colors shadow-sm disabled:opacity-50" type="button" disabled={actionedAlerts.has("alert-1")} onClick={() => markAlertActioned("alert-1", "Trigger Review Meeting")}>
-                  {actionedAlerts.has("alert-1") ? "Meeting Requested" : "Trigger Review Meeting"}
-                </button>
-</div>
-</div>
-{/* Alert Item 2 */}
-<div className="p-3.5 rounded-xl bg-status-warning-bg/40 border border-status-warning-border flex flex-col gap-2.5">
-<div className="flex items-start justify-between gap-2">
-<div className="flex items-center gap-2 text-status-warning font-label-md text-label-md">
-<span className="material-symbols-outlined text-[18px]">inventory</span>
-<span className="">C&amp;F Stock-Out Hazard</span>
-</div>
-<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-warning-bg text-status-warning font-semibold">LOGISTICS</span>
-</div>
-<p className="font-body-sm text-body-sm text-text-secondary">
-<strong>CardioCare 20</strong> stock level dropped below 4 days buffer at <strong>3 C&amp;F distributors</strong> across Bengaluru &amp; Mysore hubs.
-              </p>
-<div className="flex items-center justify-between pt-1">
-<span className="font-label-sm text-label-sm text-text-muted">Dispatch Depot: Hosur</span>
-<button className="px-2.5 py-1 rounded bg-status-warning text-text-primary font-label-sm text-label-sm font-semibold hover:bg-amber-600 hover:text-on-primary transition-colors shadow-sm disabled:opacity-50" type="button" disabled={actionedAlerts.has("alert-2")} onClick={() => markAlertActioned("alert-2", "Notify Supply Chain")}>
-                  {actionedAlerts.has("alert-2") ? "Supply Chain Notified" : "Notify Supply Chain"}
-                </button>
-</div>
-</div>
-{/* Alert Item 3 */}
-<div className="p-3.5 rounded-xl bg-surface-subtle border border-border-subtle flex flex-col gap-2.5">
-<div className="flex items-start justify-between gap-2">
-<div className="flex items-center gap-2 text-text-primary font-label-md text-label-md">
-<span className="material-symbols-outlined text-[18px] text-primary">policy</span>
-<span className="">Field Adherence Deviation</span>
-</div>
-<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-card text-text-secondary font-semibold">COMPLIANCE</span>
-</div>
-<p className="font-body-sm text-body-sm text-text-secondary">
-<strong>12 MRs</strong> logged fewer than 8 daily calls minimum across Delhi North for 3 consecutive days.
-              </p>
-<div className="flex items-center justify-between pt-1">
-<span className="font-label-sm text-label-sm text-text-muted">ABM: Tarun Mehra</span>
-<button className="px-2.5 py-1 rounded bg-surface-card text-text-primary border border-border-subtle font-label-sm text-label-sm font-semibold hover:bg-surface-subtle transition-colors shadow-sm disabled:opacity-50" type="button" disabled={actionedAlerts.has("alert-3")} onClick={() => markAlertActioned("alert-3", "Send ABM Escalation")}>
-                  {actionedAlerts.has("alert-3") ? "Escalation Sent" : "Send ABM Escalation"}
-                </button>
-</div>
-</div>
+{realDataLoading && <p className="font-body-sm text-body-sm text-text-muted">Loading live alerts…</p>}
+{!realDataLoading && topLiveAlerts.length === 0 && (
+  <p className="font-body-sm text-body-sm text-text-muted">No exception alerts currently flagged.</p>
+)}
+{topLiveAlerts.map((a, i) => {
+  const key = `live-alert-${i}`;
+  const style = a.severity === "HIGH"
+    ? { wrap: "bg-status-danger-bg/40 border border-status-danger-border", label: "bg-status-danger-bg text-status-danger", text: "text-status-danger", btn: "bg-status-danger text-on-error hover:bg-error" }
+    : a.severity === "MEDIUM"
+    ? { wrap: "bg-status-warning-bg/40 border border-status-warning-border", label: "bg-status-warning-bg text-status-warning", text: "text-status-warning", btn: "bg-status-warning text-text-primary hover:bg-amber-600 hover:text-on-primary" }
+    : { wrap: "bg-surface-subtle border border-border-subtle", label: "bg-surface-card text-text-secondary", text: "text-text-primary", btn: "bg-surface-card text-text-primary border border-border-subtle hover:bg-surface-subtle" };
+  return (
+    <div key={key} className={`p-3.5 rounded-xl flex flex-col gap-2.5 ${style.wrap}`}>
+      <div className="flex items-start justify-between gap-2">
+        <div className={`flex items-center gap-2 font-label-md text-label-md ${style.text}`}>
+          <span className="material-symbols-outlined text-[18px]">warning</span>
+          <span>{a.type.replace(/_/g, " ")}</span>
+        </div>
+        <span className={`font-label-sm text-label-sm px-1.5 py-0.5 rounded font-semibold ${style.label}`}>{a.severity}</span>
+      </div>
+      <p className="font-body-sm text-body-sm text-text-secondary">{a.message}</p>
+      <div className="flex items-center justify-between pt-1">
+        <span className="font-label-sm text-label-sm text-text-muted">{a.subjectLabel ?? a.subjectCode ?? "—"}</span>
+        <button className={`px-2.5 py-1 rounded font-label-sm text-label-sm font-semibold transition-colors shadow-sm disabled:opacity-50 ${style.btn}`} type="button" disabled={actionedAlerts.has(key)} onClick={() => markAlertActioned(key, "Acknowledge & Escalate")}>
+          {actionedAlerts.has(key) ? "Escalation Sent" : "Acknowledge & Escalate"}
+        </button>
+      </div>
+    </div>
+  );
+})}
 </div>
 </div>
 <div className="mt-4 pt-3 border-t border-surface-subtle flex items-center justify-between font-label-md text-label-md">
-<span className="text-text-muted">Pending Audits: <strong>3 Flags</strong></span>
-<a className="text-primary hover:underline font-semibold cursor-pointer" onClick={() => setDetail({ title: "Alert Thresholds", body: "Current thresholds: Territory deficit >20% vs target triggers CRITICAL, C&F buffer <4 days triggers LOGISTICS, <8 daily calls for 3+ days triggers COMPLIANCE. Editing thresholds isn't wired to a backend yet." })}>Configure Alert Thresholds →</a>
+<span className="text-text-muted">Total Live Alerts: <strong>{liveAlerts.length}</strong></span>
+<a className="text-primary hover:underline font-semibold cursor-pointer" onClick={() => setDetail({ title: "Alert Thresholds", body: "Alert thresholds (DCR_NOT_SUBMITTED, DOCTOR_NOT_VISITED_90_DAYS, PRODUCT_NOT_PROMOTED, LOW_COVERAGE, SAMPLE_STOCK_LOW, SALARY_HOLD, TERRITORY_INACTIVE) are computed by the backend's Alert & Notification Engine. Editing thresholds from this UI isn't wired to a backend endpoint yet." })}>Configure Alert Thresholds →</a>
 </div>
 </div>
 </div>
