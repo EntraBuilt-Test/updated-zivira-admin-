@@ -142,13 +142,13 @@ export function EmployeeManager() {
 
   return (
     <>
-      <div className="toolbar">
+      <div className="flex items-center gap-3 mb-4">
+        <button className="button" onClick={() => setShowForm((value) => !value)} type="button">
+          Add Employee
+        </button>
         <button className="button button-secondary" onClick={loadEmployees} type="button">
           <RefreshCw size={17} />
           {loading ? "Refreshing" : "Refresh"}
-        </button>
-        <button className="button" onClick={() => setShowForm((value) => !value)} type="button">
-          Add Employee
         </button>
       </div>
       {error && (
