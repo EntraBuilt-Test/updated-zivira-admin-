@@ -39,47 +39,47 @@ function CelebTable({ rows, type }: { rows: DobRow[]; type: TabKey }) {
         </div>
         <span style={{ fontSize:12, color:"var(--muted)", marginLeft:"auto" }}>{filtered.length} record{filtered.length !== 1 ? "s" : ""}</span>
       </div>
-      <div className="subdivision-table-card" style={{ overflowX:"auto" }}>
-        <table className="subdivision-table" style={{ minWidth: type === "both" ? 1100 : 980 }}>
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>FieldForce Name</th>
-              <th>Desig.</th>
-              <th>HQ</th>
-              <th>Line Manager 1</th>
-              <th>Line Manager 2</th>
-              <th>Listed Doctor Name</th>
-              <th>Address</th>
-              <th>Territory</th>
-              {(type === "dob" || type === "both") && <th style={{ color:"#be185d" }}>DOB</th>}
-              {(type === "dow" || type === "both") && <th style={{ color:"#7c3aed" }}>DOW</th>}
-              <th>Phone</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">FieldForce Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Desig.</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Line Manager 1</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Line Manager 2</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Listed Doctor Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Address</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Territory</th>
+              {(type === "dob" || type === "both") && <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ color:"#be185d" }}>DOB</th>}
+              {(type === "dow" || type === "both") && <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ color:"#7c3aed" }}>DOW</th>}
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Phone</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row, i) => (
-              <tr key={i}>
-                <td style={{ color:"var(--muted)", fontWeight:500 }}>{row.sno}</td>
-                <td><strong style={{ color:"var(--ink)", fontSize:12 }}>{row.fieldForceName}</strong></td>
-                <td><span style={{ background:"#eff6ff", borderRadius:6, padding:"2px 6px", fontSize:11, fontWeight:700, color:"#2563eb" }}>{row.designation}</span></td>
-                <td style={{ fontSize:12, color:"var(--muted)", whiteSpace:"nowrap" }}>{row.hq}</td>
-                <td style={{ fontSize:11, color:"var(--muted)" }}>{row.lineManager1}</td>
-                <td style={{ fontSize:11, color:"var(--muted)" }}>{row.lineManager2}</td>
-                <td><strong style={{ color:"var(--brand)", fontSize:12 }}>{row.doctorName}</strong></td>
-                <td style={{ fontSize:11, color:"var(--muted)", maxWidth:200, whiteSpace:"normal", lineHeight:1.4 }}>{row.address}</td>
-                <td style={{ fontSize:12, whiteSpace:"nowrap" }}><span style={{ background:"var(--panel-strong)", borderRadius:6, padding:"2px 8px", fontSize:11, fontWeight:600, color:"var(--ink)" }}>{row.territory}</span></td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={i}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)", fontWeight:500 }}>{row.sno}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color:"var(--ink)", fontSize:12 }}>{row.fieldForceName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ background:"#eff6ff", borderRadius:6, padding:"2px 6px", fontSize:11, fontWeight:700, color:"#2563eb" }}>{row.designation}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, color:"var(--muted)", whiteSpace:"nowrap" }}>{row.hq}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:11, color:"var(--muted)" }}>{row.lineManager1}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:11, color:"var(--muted)" }}>{row.lineManager2}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color:"var(--brand)", fontSize:12 }}>{row.doctorName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:11, color:"var(--muted)", maxWidth:200, whiteSpace:"normal", lineHeight:1.4 }}>{row.address}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, whiteSpace:"nowrap" }}><span style={{ background:"var(--panel-strong)", borderRadius:6, padding:"2px 8px", fontSize:11, fontWeight:600, color:"var(--ink)" }}>{row.territory}</span></td>
                 {(type === "dob" || type === "both") && (
-                  <td><span style={{ background:"#fdf2f8", border:"1px solid #fbcfe8", borderRadius:6, padding:"3px 10px", fontSize:12, fontWeight:700, color:"#be185d", whiteSpace:"nowrap" }}>{row.dob}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ background:"#fdf2f8", border:"1px solid #fbcfe8", borderRadius:6, padding:"3px 10px", fontSize:12, fontWeight:700, color:"#be185d", whiteSpace:"nowrap" }}>{row.dob}</span></td>
                 )}
                 {(type === "dow" || type === "both") && (
-                  <td><span style={{ background:"#f5f3ff", border:"1px solid #ddd6fe", borderRadius:6, padding:"3px 10px", fontSize:12, fontWeight:700, color:"#7c3aed", whiteSpace:"nowrap" }}>{row.dow}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ background:"#f5f3ff", border:"1px solid #ddd6fe", borderRadius:6, padding:"3px 10px", fontSize:12, fontWeight:700, color:"#7c3aed", whiteSpace:"nowrap" }}>{row.dow}</span></td>
                 )}
-                <td style={{ fontSize:12, fontFamily:"monospace", color: row.phone ? "var(--brand)" : "var(--muted)" }}>{row.phone || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, fontFamily:"monospace", color: row.phone ? "var(--brand)" : "var(--muted)" }}>{row.phone || "—"}</td>
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={12} style={{ textAlign:"center", color:"var(--muted)", padding:40 }}>No records match your search</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={12} style={{ textAlign:"center", color:"var(--muted)", padding:40 }}>No records match your search</td></tr>
             )}
           </tbody>
         </table>

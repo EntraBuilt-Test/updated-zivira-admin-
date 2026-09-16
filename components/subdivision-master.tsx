@@ -83,22 +83,22 @@ function FieldForceView({ subdivisionName, onBack }: { subdivisionName: string; 
           style={{ width:"100%", maxWidth:"360px", padding:"8px 14px", borderRadius:"8px", border:"1px solid #e5e7eb", fontSize:"14px", outline:"none" }}
         />
       </div>
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr><th>S.No</th><th>FieldForce Name</th><th>Designation</th><th>HQ</th><th>Reporting To</th></tr>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">FieldForce Name</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Designation</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reporting To</th></tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((r, index) => (
-              <tr key={r.id}>
-                <td style={{ color:"var(--muted)", fontWeight:500 }}>{index + 1}</td>
-                <td><strong style={{ color:"var(--ink)" }}>{r.name}</strong></td>
-                <td><DesignationBadge designation={r.designation} /></td>
-                <td><span style={{ display:"inline-block", padding:"2px 8px", borderRadius:"6px", background:"var(--line)", fontSize:"12px", fontWeight:600, color:"var(--ink)" }}>{r.territory ?? "—"}</span></td>
-                <td style={{ fontSize:"13px", color:"var(--muted)" }}>{r.reportingManager ?? "—"}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)", fontWeight:500 }}>{index + 1}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color:"var(--ink)" }}>{r.name}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><DesignationBadge designation={r.designation} /></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ display:"inline-block", padding:"2px 8px", borderRadius:"6px", background:"var(--line)", fontSize:"12px", fontWeight:600, color:"var(--ink)" }}>{r.territory ?? "—"}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:"13px", color:"var(--muted)" }}>{r.reportingManager ?? "—"}</td>
               </tr>
             ))}
-            {filtered.length === 0 && <tr><td colSpan={5} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No results found</td></tr>}
+            {filtered.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={5} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No results found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -134,21 +134,21 @@ function ProductwiseView({ subdivisionName, onBack }: { subdivisionName: string;
       <div style={{ display:"flex", flexWrap:"wrap", gap:"8px", marginBottom:"16px" }}>
         {categories.map(cat => <CategoryBadge key={cat} category={cat} />)}
       </div>
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead><tr><th>S.No</th><th>Product Name</th><th>Description</th><th>Sale Unit</th><th>Category</th><th>Group</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product Name</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Description</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Sale Unit</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Category</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Group</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {products.map((p, index) => (
-              <tr key={p.id}>
-                <td style={{ color:"var(--muted)", fontWeight:500 }}>{index + 1}</td>
-                <td><strong style={{ color:"var(--ink)" }}>{p.productName}</strong></td>
-                <td style={{ color:"var(--muted)", fontSize:"13px" }}>{p.molecule ?? "—"}</td>
-                <td><span style={{ display:"inline-block", padding:"2px 8px", borderRadius:"6px", background:"var(--line)", fontSize:"12px", fontWeight:600, color:"var(--ink)" }}>{p.saleUnit ?? "—"}</span></td>
-                <td>{p.therapy ? <CategoryBadge category={p.therapy} /> : "—"}</td>
-                <td>—</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={p.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)", fontWeight:500 }}>{index + 1}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color:"var(--ink)" }}>{p.productName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)", fontSize:"13px" }}>{p.molecule ?? "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ display:"inline-block", padding:"2px 8px", borderRadius:"6px", background:"var(--line)", fontSize:"12px", fontWeight:600, color:"var(--ink)" }}>{p.saleUnit ?? "—"}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{p.therapy ? <CategoryBadge category={p.therapy} /> : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">—</td>
               </tr>
             ))}
-            {products.length === 0 && <tr><td colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No products found</td></tr>}
+            {products.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No products found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -379,12 +379,12 @@ export function SubdivisionMaster() {
         <div className="subdivision-stats">
           <article><span>Total Divisions</span><strong>{rows.length}</strong></article>
         </div>
-        <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-          <table className="subdivision-table">
-            <thead>
-              <tr>
-                <th>Division Code</th>
-                <th style={{ minWidth: "160px", position: "relative" }}>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Division Code</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                     <span>Division Name</span>
                     <button
@@ -457,7 +457,7 @@ export function SubdivisionMaster() {
                     </div>
                   )}
                 </th>
-                <th style={{ minWidth: "180px", position: "relative" }}>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "180px", position: "relative" }}>
                   <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                     <span>Division Short Name</span>
                     <button
@@ -530,20 +530,20 @@ export function SubdivisionMaster() {
                     </div>
                   )}
                 </th>
-                <th style={{ minWidth: "140px" }}>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px" }}>
                   <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                 </th>
-                <th colSpan={2}>Actions</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {loading && <tr><td colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>Loading...</td></tr>}
+            <tbody className="divide-y divide-border-subtle">
+              {loading && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>Loading...</td></tr>}
               {!loading && displayedRows.map((row, index) => {
                 const editing = inlineEditId === row.id && draftRow;
                 return (
-                  <tr key={row.id}>
-                    <td style={{ fontWeight: 600 }}>DOC{String(index + 1).padStart(4, "0")}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>DOC{String(index + 1).padStart(4, "0")}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
                         <select 
                           value={draftRow.division} 
@@ -557,7 +557,7 @@ export function SubdivisionMaster() {
                         </select>
                       ) : row.division}
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
                         <select
                           value={draftRow.subdivisionName}
@@ -571,7 +571,7 @@ export function SubdivisionMaster() {
                         </select>
                       ) : row.subdivisionName}
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
                         <select 
                           value={draftRow.status} 
@@ -596,7 +596,7 @@ export function SubdivisionMaster() {
                         </span>
                       )}
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
                         <span className="subdivision-inline-actions">
                            <button aria-label="Update" onClick={updateInlineEdit} title="Update" type="button" disabled={saving}><Check size={15} /></button>
@@ -606,11 +606,11 @@ export function SubdivisionMaster() {
                         <button className="subdivision-icon-button" onClick={() => openEditForm(row)} title="Edit" type="button"><Pencil size={15} /></button>
                       )}
                     </td>
-                    <td><button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => setDeleteTarget(row)} title="Deactivate" type="button"><Ban size={15} /></button></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => setDeleteTarget(row)} title="Deactivate" type="button"><Ban size={15} /></button></td>
                   </tr>
                 );
               })}
-              {!loading && rows.length === 0 && <tr><td colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No divisions found</td></tr>}
+              {!loading && rows.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No divisions found</td></tr>}
             </tbody>
           </table>
         </div>
@@ -770,30 +770,30 @@ export function SubdivisionProductwise() {
         <article><span>Sub-Division</span><strong>{selected || "—"}</strong></article>
       </div>
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>S.No</th>
-              <th>Zone Name</th>
-              <th>Region Name</th>
-              <th>Region Code</th>
-              <th>State</th>
-              <th>Manager</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Zone Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Region Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Region Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">State</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Manager</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {regions.map((r, index) => (
-              <tr key={index}>
-                <td style={{ color: "#9ca3af", fontWeight: 500 }}>{index + 1}</td>
-                <td><strong style={{ color: "#111827" }}>{r.zoneName}</strong></td>
-                <td>{r.regionName}</td>
-                <td><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{r.regionCode}</span></td>
-                <td>{r.state}</td>
-                <td>{r.manager}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={index}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "#9ca3af", fontWeight: 500 }}>{index + 1}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "#111827" }}>{r.zoneName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.regionName}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{r.regionCode}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.state}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.manager}</td>
               </tr>
             ))}
-            {regions.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", color: "#9ca3af", padding: "32px" }}>No regions found</td></tr>}
+            {regions.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign: "center", color: "#9ca3af", padding: "32px" }}>No regions found</td></tr>}
           </tbody>
         </table>
       </div>
@@ -950,28 +950,28 @@ export function SubdivisionFieldforcewise() {
         <article><span>Sub-Division</span><strong>{selected || "—"}</strong></article>
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>HQ Code</th>
-              <th>Headquarters Name</th>
-              <th>State</th>
-              <th>City</th>
-              <th>Metro / Non-Metro</th>
-              <th>Zone</th>
-              <th>Region</th>
-              <th>Patch Name</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Headquarters Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">State</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">City</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Metro / Non-Metro</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Zone</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Region</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Patch Name</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {hqs.map((h, index) => (
-              <tr key={index}>
-                <td style={{ fontWeight: 600 }}>{h.hqCode}</td>
-                <td><strong style={{ color: "#111827" }}>{h.hqName}</strong></td>
-                <td>{h.state}</td>
-                <td>{h.city}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={index}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{h.hqCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "#111827" }}>{h.hqName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{h.state}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{h.city}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
                     borderRadius: "6px", 
@@ -983,12 +983,12 @@ export function SubdivisionFieldforcewise() {
                     {h.metroType}
                   </span>
                 </td>
-                <td>{h.zone}</td>
-                <td>{h.region}</td>
-                <td><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{h.patchName}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{h.zone}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{h.region}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{h.patchName}</span></td>
               </tr>
             ))}
-            {hqs.length === 0 && <tr><td colSpan={8} style={{ textAlign: "center", color: "#9ca3af", padding: "32px" }}>No territories found</td></tr>}
+            {hqs.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={8} style={{ textAlign: "center", color: "#9ca3af", padding: "32px" }}>No territories found</td></tr>}
           </tbody>
         </table>
       </div>

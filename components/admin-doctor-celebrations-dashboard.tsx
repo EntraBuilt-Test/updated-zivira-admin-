@@ -263,26 +263,26 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Table */}
 <div className="overflow-x-auto">
 <table className="w-full text-left font-table-cell text-table-cell">
-<thead>
-<tr className="bg-surface-canvas text-text-secondary font-label-sm text-label-sm uppercase tracking-wider h-10">
-<th className="pl-card-padding-spacious pr-3 py-2 w-10">
+<thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="bg-surface-canvas text-text-secondary font-label-sm text-label-sm uppercase tracking-wider h-10 hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </th>
-<th className="px-4 py-2 font-semibold">Doctor Profile</th>
-<th className="px-4 py-2 font-semibold">Celebration &amp; Date</th>
-<th className="px-4 py-2 font-semibold">Assigned Field Rep &amp; Territory</th>
-<th className="px-4 py-2 font-semibold">Greeting Workflow</th>
-<th className="px-4 py-2 font-semibold">Assigned Gesture / Gift</th>
-<th className="pr-card-padding-spacious pl-4 py-2 font-semibold text-right">Actions</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Profile</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Celebration &amp; Date</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Assigned Field Rep &amp; Territory</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Greeting Workflow</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Assigned Gesture / Gift</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
 </tr>
 </thead>
-<tbody className="divide-y-0">
+<tbody className="divide-y divide-border-subtle">
 {/* Row 1: Urgent (Needs Approval / In 2 Days) */}
-<tr className="hover:bg-brand-primary-subtle/30 transition-colors">
-<td className="pl-card-padding-spacious pr-3 py-3.5">
+<tr className="hover:bg-brand-primary-subtle/30 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="pl-card-padding-spacious pr-3 py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
 <img className="w-full h-full object-cover" data-alt="Senior Indian physician portrait wearing white medical coat with stethoscope in a clean modern clinic setting, warm ambient lighting, authoritative healthcare professional" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYjR09nS0O_vm4OElLqgo03aN8H7ynVb7j3xIjpDKwihSdMrkPhXYjWgpmQ3iHIXX31XzWzANsvAEUlILjryUso7XlZgPBQGxcC6PJWQmCwVbhP33sK0rw5hbtYWN3ivf3Ycj3gu9CsbEiTB8jxhHMbIZQDfHV1pkpKw97-mmqbHi8Z9bCzr0n56QYNXgxrtVBa3WyUgXE1VyyEmzci9cHqeF-hzehfjG7ru38Lufr5hW3wddNV2fQ"/>
@@ -296,7 +296,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">cake</span>
@@ -309,7 +309,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">RS</div>
 <div>
@@ -318,13 +318,13 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <span className="px-2.5 py-1 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm flex items-center gap-1.5 w-fit">
 <span className="w-1.5 h-1.5 rounded-full bg-status-warning animate-ping"></span>
                 Needs Approval
               </span>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-primary text-[18px]">military_tech</span>
 <div>
@@ -333,7 +333,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap">
+<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap px-4 text-sm text-text-primary">
 <div className="flex items-center justify-end gap-1.5">
 <button className="px-2.5 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary hover:text-text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
 <span className="material-symbols-outlined text-[15px]">visibility</span>
@@ -351,10 +351,10 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </tr>
 {/* Row 2: Clinic Anniversary (Dispatched) */}
 <tr className="hover:bg-surface-subtle/50 transition-colors">
-<td className="pl-card-padding-spacious pr-3 py-3.5">
+<td className="pl-card-padding-spacious pr-3 py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
 <img className="w-full h-full object-cover" data-alt="Confident female Indian endocrinologist in smart medical attire sitting in consultation room with modern clinic diplomas on wall, natural soft lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZa-pQfl4mt58c5fijVWqarKXo2nXxjbJyEimIXfoZV33l5kzNvH91zPx5nYhtGGHyHdoZcNwFW6FdYUDyvby2jmJ9ISlu8o7aqSfWsJA8zhvk1AXntmklO4zpH3NslKk8CNV7DEsi1X9AFBAiqLRvxvXu7O5YXfOXUzsZ_Zlo05sT2rjen7UPNBZ_FYqeflE1kcscWTNBuMNckSfQ-5I4Cj9Ol9QZEAyJhqN5NhvCkWaGsGDcq0Pi"/>
@@ -368,7 +368,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-8 h-8 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">domain_verification</span>
@@ -381,7 +381,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">VK</div>
 <div>
@@ -390,13 +390,13 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <span className="px-2.5 py-1 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm flex items-center gap-1.5 w-fit">
 <span className="material-symbols-outlined text-[14px]">local_shipping</span>
                 Dispatched via BlueDart
               </span>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-status-info text-[18px]">featured_seasonal_and_gifts</span>
 <div>
@@ -405,7 +405,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap">
+<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap px-4 text-sm text-text-primary">
 <div className="flex items-center justify-end gap-1.5">
 <button className="px-2.5 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary hover:text-text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
 <span className="material-symbols-outlined text-[15px]">visibility</span>
@@ -423,10 +423,10 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </tr>
 {/* Row 3: Scheduled automated wishes */}
 <tr className="hover:bg-surface-subtle/50 transition-colors">
-<td className="pl-card-padding-spacious pr-3 py-3.5">
+<td className="pl-card-padding-spacious pr-3 py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
 <img className="w-full h-full object-cover" data-alt="Distinguished senior male physician with spectacles and stethoscope in consultation chambers, warm interior lighting with medical references" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD7dMrfp_ttzq8xYcasOudNMSaQC-k6SzoT68HbBMH2481OuEALjCXf8g1XGWOx6AwoIGiFG1JJHYq92ovhNfKQbL7-jGzTBc4CG_wQ6WQKNRIcbAwO90DINNd7IqVXNs5f8sIn5Hr-m9vidDJJObyj854-x6n1fRhz357gEkOn_r-U7n1KuRX0kT30wFOJH2miJyBiD2Nb6HfbXIxrxR0SEn1Dfdh65vJz9BbgKhi4BKR3ZNh2p7Rp"/>
@@ -440,7 +440,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">cake</span>
@@ -453,7 +453,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">AD</div>
 <div>
@@ -462,13 +462,13 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <span className="px-2.5 py-1 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm flex items-center gap-1.5 w-fit">
 <span className="material-symbols-outlined text-[14px]">schedule_send</span>
                 Scheduled (Auto-WA 08:00)
               </span>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-primary text-[18px]">local_florist</span>
 <div>
@@ -477,7 +477,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap">
+<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap px-4 text-sm text-text-primary">
 <div className="flex items-center justify-end gap-1.5">
 <button className="px-2.5 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary hover:text-text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
 <span className="material-symbols-outlined text-[15px]">visibility</span>
@@ -495,10 +495,10 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </tr>
 {/* Row 4: Medical Accolade (Delivered) */}
 <tr className="hover:bg-surface-subtle/50 transition-colors">
-<td className="pl-card-padding-spacious pr-3 py-3.5">
+<td className="pl-card-padding-spacious pr-3 py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
 <img className="w-full h-full object-cover" data-alt="Middle-aged female physician specialist smiling gracefully in clean executive clinical office with medical books and research awards in background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe4FJaFViveQgXkbCT_8eooSxhoaV4PeJYYfHh7uZupTLN3VpUcttnM7o2sU3PWBkmzQ2QNWuMOqaom93_cGjX7Y1mVWIF4IJCWfE23VJY79SkQTnYoce3T2_TdwSRql4pDDPIXr4Od0wW-GRs6Csbl7yLFAGaN5msSqnaOehQZBfNoYjU_nNrtQjvcjtfz1bi75Bhzj1poQqkW8bJX2dolIhIssPm5_yvRZtsBH3MM7y3_w2HBDRK"/>
@@ -512,7 +512,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-8 h-8 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">workspace_premium</span>
@@ -525,7 +525,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">KN</div>
 <div>
@@ -534,13 +534,13 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <span className="px-2.5 py-1 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm flex items-center gap-1.5 w-fit">
 <span className="material-symbols-outlined text-[14px]">check_circle</span>
                 Delivered &amp; Logged
               </span>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-primary text-[18px]">verified</span>
 <div>
@@ -549,7 +549,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap">
+<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap px-4 text-sm text-text-primary">
 <div className="flex items-center justify-end gap-1.5">
 <button className="px-2.5 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary hover:text-text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
 <span className="material-symbols-outlined text-[15px]">history</span>
@@ -563,10 +563,10 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </tr>
 {/* Row 5: Clinic Foundation Day (Scheduled) */}
 <tr className="hover:bg-surface-subtle/50 transition-colors">
-<td className="pl-card-padding-spacious pr-3 py-3.5">
+<td className="pl-card-padding-spacious pr-3 py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
 <img className="w-full h-full object-cover" data-alt="Energetic senior male pediatrician in modern pediatric clinic office with warm colorful healthcare equipment and awards on shelf" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw4Hlp0flClxxHU-SfOq4khWtTt0WbvyGu0B492Pz_LXhWs0rElspBzguSh4cF_VwnMKKlsGUgEG-5IXOFeYgnLC6gB6CBUo0dTPDdHItCCpW__TEx84ffWM5d1UBhZTlNkJX3_y0aq1HkgqXXGe4bm-O1B5cQWwSlOqF2HCLictrk0tVKqzysmsWXHlKCqFSlf3TbW5gfvPIU_mGb-CS7mlzcToysvOvaOh8a3WCkuuFUEm_Yq_FB"/>
@@ -580,7 +580,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-8 h-8 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[18px]">foundation</span>
@@ -593,7 +593,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <div className="flex items-center gap-2">
 <div className="w-7 h-7 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-bold text-[11px]">SM</div>
 <div>
@@ -602,13 +602,13 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="px-4 py-3.5 whitespace-nowrap">
+<td className="px-4 py-3.5 whitespace-nowrap text-sm text-text-primary">
 <span className="px-2.5 py-1 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm flex items-center gap-1.5 w-fit">
 <span className="material-symbols-outlined text-[14px]">timer</span>
                 Dispatch In Prep
               </span>
 </td>
-<td className="px-4 py-3.5">
+<td className="px-4 py-3.5 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-primary text-[18px]">cake</span>
 <div>
@@ -617,7 +617,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </td>
-<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap">
+<td className="pr-card-padding-spacious pl-4 py-3.5 text-right whitespace-nowrap px-4 text-sm text-text-primary">
 <div className="flex items-center justify-end gap-1.5">
 <button className="px-2.5 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-secondary hover:text-text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors" type="button">
 <span className="material-symbols-outlined text-[15px]">visibility</span>

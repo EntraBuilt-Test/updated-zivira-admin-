@@ -217,16 +217,16 @@ export function DoctorCategoryMaster() {
         <article><span>Active Doctors</span><strong>{rows.filter(r => r.status === "ACTIVE").length}</strong></article>
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Doctor Code</th>
-              <th>Doctor Name</th>
-              <th>Qualification</th>
-              <th>Specialty</th>
-              <th>Registration Number</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Qualification</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Specialty</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Registration Number</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -312,42 +312,42 @@ export function DoctorCategoryMaster() {
                   </div>
                 )}
               </th>
-              <th>Inline Edit</th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Inline Edit</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {loading && <tr><td colSpan={9} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>Loading...</td></tr>}
+          <tbody className="divide-y divide-border-subtle">
+            {loading && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>Loading...</td></tr>}
             {!loading && rows.map((row, i) => {
               const editing = inlineEditId === row.id && draftRow;
               return (
-                <tr key={row.id}>
-                  <td style={{ fontWeight: 600 }}>DOC{String(i + 1).padStart(4, "0")}</td>
-                  <td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>DOC{String(i + 1).padStart(4, "0")}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {editing
                       ? <input className="subdivision-inline-input" value={draftRow.doctorName} onChange={e => setDraftRow({ ...draftRow, doctorName: e.target.value })} />
                       : <strong style={{ color:"var(--ink)" }}>{row.categoryName}</strong>
                     }
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {editing
                       ? <input className="subdivision-inline-input" value={draftRow.qualification} onChange={e => setDraftRow({ ...draftRow, qualification: e.target.value })} />
                       : (row.qualification || "—")
                     }
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {editing
                       ? <input className="subdivision-inline-input" value={draftRow.specialty} onChange={e => setDraftRow({ ...draftRow, specialty: e.target.value })} />
                       : (row.specialty || "—")
                     }
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {editing
                       ? <input className="subdivision-inline-input" value={draftRow.registrationNumber} onChange={e => setDraftRow({ ...draftRow, registrationNumber: e.target.value })} />
                       : (row.registrationNumber || "—")
                     }
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <span style={{ 
                       padding: "2px 8px", 
                       borderRadius: "999px", 
@@ -360,7 +360,7 @@ export function DoctorCategoryMaster() {
                       {row.status === "ACTIVE" ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {editing ? (
                       <span className="subdivision-inline-actions">
                         <button aria-label="Update" onClick={saveInline} title="Update" type="button" disabled={saving}><Check size={15} /></button>
@@ -370,16 +370,16 @@ export function DoctorCategoryMaster() {
                       <button className="subdivision-icon-button" onClick={() => beginInline(row)} title="Inline Edit" type="button"><Pencil size={15} /></button>
                     )}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} title="Edit" type="button"><Pencil size={15} /></button>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} title="Deactivate" type="button"><Ban size={15} /></button>
                   </td>
                 </tr>
               );
             })}
-            {!loading && rows.length === 0 && <tr><td colSpan={9} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No doctors yet</td></tr>}
+            {!loading && rows.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No doctors yet</td></tr>}
           </tbody>
         </table>
       </div>

@@ -233,28 +233,28 @@ Form 13-A Filing: Up to Date
 {/* Table Card */}
 <div className="bg-surface-card rounded-xl border border-border-subtle/80 shadow-sm overflow-hidden flex flex-col">
 <div className="overflow-x-auto">
-<table className="w-full text-left text-xs text-text-secondary"><thead className="bg-surface-subtle/80 border-b border-border-subtle text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-<tr>
-<th className="py-3 px-3 w-8 text-center">
+<table className="w-full text-left text-xs text-text-secondary"><thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </th>
-<th className="py-3 px-3">SKU &amp; Molecule</th>
-<th className="py-3 px-3">Therapeutic Class</th>
-<th className="py-3 px-3">Batch No &amp; Expiry</th>
-<th className="py-3 px-3">Depot Quota</th>
-<th className="py-3 px-3">Dispensed to HCPs</th>
-<th className="py-3 px-3">MR Bag Stock</th>
-<th className="py-3 px-3">Custody Status</th>
-<th className="py-3 px-3 text-right">Action</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">SKU &amp; Molecule</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Therapeutic Class</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Batch No &amp; Expiry</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Depot Quota</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Dispensed to HCPs</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MR Bag Stock</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Custody Status</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-slate-100">
+<tbody className="divide-y divide-border-subtle">
 {/* Row 1: CardioCare 20mg (Active selected) */}
-<tr className="bg-orange-50/60 hover:bg-orange-50/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="bg-orange-50/60 hover:bg-orange-50/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input defaultChecked={true} className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-[#b43403] text-white flex items-center justify-center font-display font-bold text-xs shrink-0 shadow-xs">
 CC
@@ -268,40 +268,40 @@ CC
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-md bg-status-info-bg text-blue-600 font-medium text-[11px]">Cardiology</span>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-bold text-text-primary">#CC-902</span>
 <span className="text-[10px] text-text-muted">Exp: May 2028</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">14,500 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">14,500 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">13,820</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">95.3%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-medium text-text-secondary">680 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-medium text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">680 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
 Compliant
 </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-[#b43403] text-white font-semibold text-xs hover:bg-[#9a2c02] transition-colors shadow-xs" type="button">
 Active
 </button>
 </td>
 </tr>
 {/* Row 2: GlycoZiv XR 500 */}
-<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
 GZ
@@ -312,40 +312,40 @@ GZ
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-md bg-status-success-bg text-status-success font-medium text-[11px]">Diabetology</span>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-bold text-text-primary">#GZ-418</span>
 <span className="text-[10px] text-text-muted">Exp: Aug 2027</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">12,000 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">12,000 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">11,640</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">97.0%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-medium text-text-secondary">360 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-medium text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">360 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
 Compliant
 </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-surface-subtle text-text-secondary font-medium text-xs hover:bg-slate-200 transition-colors" type="button">
 Inspect
 </button>
 </td>
 </tr>
 {/* Row 3: Resp-Clear Inhaler 200mcg */}
-<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
 RC
@@ -356,40 +356,40 @@ RC
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-md bg-cyan-50 text-cyan-700 font-medium text-[11px]">Pulmonology</span>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-bold text-text-primary">#RC-104</span>
 <span className="text-[10px] text-text-muted">Exp: Jan 2028</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">8,200 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">8,200 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">7,850</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">95.7%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-medium text-text-secondary">350 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-medium text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">350 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
 Compliant
 </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-surface-subtle text-text-secondary font-medium text-xs hover:bg-slate-200 transition-colors" type="button">
 Inspect
 </button>
 </td>
 </tr>
 {/* Row 4: ZiviCal D3 Forte */}
-<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
 ZC
@@ -400,40 +400,40 @@ ZC
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-md bg-status-warning-bg text-status-warning font-medium text-[11px]">Orthopedics</span>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-bold text-text-primary">#ZC-332</span>
 <span className="text-[10px] text-text-muted">Exp: Oct 2027</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">7,500 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">7,500 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">7,120</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">94.9%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-medium text-text-secondary">380 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-medium text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">380 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
 Compliant
 </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-surface-subtle text-text-secondary font-medium text-xs hover:bg-slate-200 transition-colors" type="button">
 Inspect
 </button>
 </td>
 </tr>
 {/* Row 5: GastroZiv DSR (Near Expiry Alert) */}
-<tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-amber-100 text-status-warning flex items-center justify-center font-display font-bold text-xs shrink-0">
 GD
@@ -447,29 +447,29 @@ GD
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 font-medium text-[11px]">Gastroenterology</span>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-bold text-text-primary">#GD-619</span>
 <span className="text-[10px] text-status-warning font-semibold">Exp: Nov 2026 (&lt;60d)</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">6,090 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">6,090 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">5,860</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-warning-bg text-status-warning text-[10px] font-bold">96.2%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-medium text-status-warning font-bold">230 Pks</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-medium text-status-warning font-bold px-4 text-sm text-text-primary whitespace-nowrap">230 Pks</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning border border-status-warning-bg text-[10px] font-bold">
 Near Expiry
 </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-amber-100 text-status-warning font-semibold text-xs hover:bg-amber-200 transition-colors" type="button">
 Recall / Audit
 </button>

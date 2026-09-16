@@ -269,26 +269,26 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 {/* Table */}
 <div className="overflow-x-auto flex-1">
 <table className="w-full text-left border-collapse text-xs">
-<thead>
-<tr className="bg-surface-subtle/75 border-b border-border-subtle text-text-secondary font-bold uppercase tracking-wider text-[10px]">
-<th className="p-3.5 w-10 text-center">
+<thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="bg-surface-subtle/75 border-b border-border-subtle text-text-secondary font-bold uppercase tracking-wider text-[10px] hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </th>
-<th className="p-3.5">MR Profile &amp; Territory</th>
-<th className="p-3.5">Station Mix</th>
-<th className="p-3.5 text-center">Work Plan &amp; Calls</th>
-<th className="p-3.5">Joint Work ASM</th>
-<th className="p-3.5 text-center">MTP Status</th>
-<th className="p-3.5 text-right">Actions</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MR Profile &amp; Territory</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Station Mix</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Work Plan &amp; Calls</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Work ASM</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MTP Status</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-slate-100 text-text-secondary">
+<tbody className="divide-y divide-border-subtle">
 {/* ROW 1 (Selected Row for Side Inspection) */}
-<tr className="hover:bg-orange-50/40 bg-orange-50/20 transition-colors">
-<td className="p-3.5 text-center">
+<tr className="hover:bg-orange-50/40 bg-orange-50/20 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <input defaultChecked={true} className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle border border-border-subtle flex items-center justify-center text-xs font-bold text-text-secondary">
                         RS
@@ -302,38 +302,38 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="text-xs font-medium text-text-primary">HQ Local (16d)</div>
 <div className="text-[10px] text-text-muted">Ex-Station: 6d (Thane/Vashi)</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="font-bold text-text-primary">22 Days • 240 Calls</div>
 <div className="text-[10px] text-emerald-600 font-semibold">88 Core A+ HCPs</div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1 text-text-primary font-medium">
 <svg className="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       4 Days
                     </div>
 <div className="text-[10px] text-text-muted">ASM Rajesh Sharma</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Approved
                     </span>
 </td>
-<td className="p-3.5 text-right">
+<td className="p-3.5 text-right px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <button className="p-1 text-text-muted hover:text-[#ea580c] transition-colors" title="View Itinerary">
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
 </button>
 </td>
 </tr>
 {/* ROW 2 */}
-<tr className="hover:bg-surface-subtle transition-colors">
-<td className="p-3.5 text-center">
+<tr className="hover:bg-surface-subtle transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle border border-border-subtle flex items-center justify-center text-xs font-bold text-text-secondary">
                         AD
@@ -344,38 +344,38 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="text-xs font-medium text-text-primary">HQ Local (14d)</div>
 <div className="text-[10px] text-text-muted">Out-Station: 7d (Gurugram)</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="font-bold text-text-primary">21 Days • 215 Calls</div>
 <div className="text-[10px] text-emerald-600 font-semibold">74 Core A+ HCPs</div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1 text-text-primary font-medium">
 <svg className="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       3 Days
                     </div>
 <div className="text-[10px] text-text-muted">ASM Vikrant Verma</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-status-warning-bg">
                       Pending Review
                     </span>
 </td>
-<td className="p-3.5 text-right">
+<td className="p-3.5 text-right px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <button className="p-1 text-text-muted hover:text-[#ea580c] transition-colors" title="View Itinerary">
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
 </button>
 </td>
 </tr>
 {/* ROW 3 */}
-<tr className="hover:bg-surface-subtle transition-colors">
-<td className="p-3.5 text-center">
+<tr className="hover:bg-surface-subtle transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle border border-border-subtle flex items-center justify-center text-xs font-bold text-text-secondary">
                         SM
@@ -386,38 +386,38 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="text-xs font-medium text-text-primary">HQ Local (18d)</div>
 <div className="text-[10px] text-text-muted">Ex-Station: 5d (Howrah/Saltlake)</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="font-bold text-text-primary">23 Days • 250 Calls</div>
 <div className="text-[10px] text-emerald-600 font-semibold">92 Core A+ HCPs</div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1 text-text-primary font-medium">
 <svg className="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       5 Days
                     </div>
 <div className="text-[10px] text-text-muted">ASM Debopriya Das</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Approved
                     </span>
 </td>
-<td className="p-3.5 text-right">
+<td className="p-3.5 text-right px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <button className="p-1 text-text-muted hover:text-[#ea580c] transition-colors" title="View Itinerary">
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
 </button>
 </td>
 </tr>
 {/* ROW 4 */}
-<tr className="hover:bg-surface-subtle transition-colors">
-<td className="p-3.5 text-center">
+<tr className="hover:bg-surface-subtle transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle border border-border-subtle flex items-center justify-center text-xs font-bold text-text-secondary">
                         SK
@@ -428,38 +428,38 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="text-xs font-medium text-text-primary">HQ Local (12d)</div>
 <div className="text-[10px] text-rose-500 font-semibold">OS: 8d (Mysuru/Mandya)</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="font-bold text-text-primary">20 Days • 210 Calls</div>
 <div className="text-[10px] text-amber-600 font-semibold">65 Core A+ (Below Target)</div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1 text-text-primary font-medium">
 <svg className="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       2 Days
                     </div>
 <div className="text-[10px] text-text-muted">ASM Srinivas Murthy</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200">
                       Revision Needed
                     </span>
 </td>
-<td className="p-3.5 text-right">
+<td className="p-3.5 text-right px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <button className="p-1 text-text-muted hover:text-[#ea580c] transition-colors" title="View Itinerary">
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
 </button>
 </td>
 </tr>
 {/* ROW 5 */}
-<tr className="hover:bg-surface-subtle transition-colors">
-<td className="p-3.5 text-center">
+<tr className="hover:bg-surface-subtle transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-orange-600 focus:ring-orange-500" type="checkbox"/>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle border border-border-subtle flex items-center justify-center text-xs font-bold text-text-secondary">
                         KN
@@ -470,27 +470,27 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="text-xs font-medium text-text-primary">HQ Local (17d)</div>
 <div className="text-[10px] text-text-muted">Ex-Station: 5d (Tambaram)</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="font-bold text-text-primary">22 Days • 235 Calls</div>
 <div className="text-[10px] text-emerald-600 font-semibold">85 Core A+ HCPs</div>
 </td>
-<td className="p-3.5">
+<td className="p-3.5 px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1 text-text-primary font-medium">
 <svg className="w-3 h-3 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                       4 Days
                     </div>
 <div className="text-[10px] text-text-muted">ASM Balasubramanian</div>
 </td>
-<td className="p-3.5 text-center">
+<td className="p-3.5 text-center px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Approved
                     </span>
 </td>
-<td className="p-3.5 text-right">
+<td className="p-3.5 text-right px-4 py-3 text-sm text-text-primary whitespace-nowrap">
 <button className="p-1 text-text-muted hover:text-[#ea580c] transition-colors" title="View Itinerary">
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
 </button>

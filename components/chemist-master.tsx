@@ -437,17 +437,17 @@ export function ChemistMaster() {
           </form>
         </div>
       ) : (
-        <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
           {loading ? (
             <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading chemists...</div>
           ) : (
             <table className="w-full text-left border-collapse">
               <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
-                <tr>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Code</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Name</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Type</th>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Chemist Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Type</th>
                   {[
                     
                     { key: "city", label: "City" },
@@ -455,7 +455,7 @@ export function ChemistMaster() {
                     const uniqueValues = Array.from(new Set(list.map(r => String((r as any)[f.key] || "")))).filter(Boolean).sort();
                     const options = uniqueValues.map(v => ({ label: v, value: v }));
                     return (
-                      <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                      <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" key={f.key}>
                         <div style={{ minWidth: "120px" }}>
                           <ColumnFilterDropdown 
                             title={f.label} 
@@ -467,11 +467,11 @@ export function ChemistMaster() {
                       </th>
                     );
                   })}
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pin Code</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Contact</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Area</th>
-                  <th style={{ minWidth: "130px" }} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pin Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Contact</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Area</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "100%" }}>
                       <StatusFilterDropdown 
                         value={statusFilter} 
@@ -479,14 +479,14 @@ export function ChemistMaster() {
                       />
                     </div>
                   </th>
-                  <th colSpan={2} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((row, idx) => (
                   <tr key={row.id} className="hover:bg-surface-subtle/50 border-b border-border-subtle transition-colors">
-                    <td className="text-left px-4 py-3 text-sm whitespace-nowrap" style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
-                    <td className="text-left px-4 py-3 text-sm whitespace-nowrap" style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
+                    <td className="text-left px-4 py-3 text-sm whitespace-nowrap text-text-primary" style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
+                    <td className="text-left px-4 py-3 text-sm whitespace-nowrap text-text-primary" style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
                     <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.dealerName}</strong></td>
                     <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.type || "Retailer"}</td>
                     <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
@@ -520,8 +520,8 @@ export function ChemistMaster() {
                   </tr>
                 ))}
                 {filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                       No records found
                     </td>
                   </tr>

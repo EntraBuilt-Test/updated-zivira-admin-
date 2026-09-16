@@ -206,27 +206,27 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <section className="bg-surface-card border border-border-subtle rounded-xl overflow-hidden shadow-sm" data-purpose="roster-table">
 <div className="overflow-x-auto">
 <table className="w-full text-left border-collapse text-xs">
-<thead>
-<tr className="bg-surface-subtle border-b border-border-subtle text-text-secondary font-semibold uppercase tracking-wider text-[10px]">
-<th className="py-3 px-4 w-10 text-center">
+<thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="bg-surface-subtle border-b border-border-subtle text-text-secondary font-semibold uppercase tracking-wider text-[10px] hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded border-border-subtle text-brand-corporate focus:ring-brand-corporate" type="checkbox"/>
 </th>
-<th className="py-3 px-4">Doctor Profile &amp; Specialty</th>
-<th className="py-3 px-4">Tier &amp; Classification</th>
-<th className="py-3 px-4">Assigned Field Rep &amp; Zone</th>
-<th className="py-3 px-4">Planned vs Actual Visits</th>
-<th className="py-3 px-4">Last Visit &amp; DCR ID</th>
-<th className="py-3 px-4">Detailed Products</th>
-<th className="py-3 px-4 text-right">Coverage Status &amp; Actions</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Profile &amp; Specialty</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Tier &amp; Classification</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Assigned Field Rep &amp; Zone</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Planned vs Actual Visits</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Last Visit &amp; DCR ID</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Detailed Products</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Coverage Status &amp; Actions</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-slate-200 font-normal text-text-secondary">
+<tbody className="divide-y divide-border-subtle">
 {/* Row 1: Target Met */}
-<tr className="hover:bg-surface-subtle/80 transition-colors">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-brand-corporate focus:ring-brand-corporate" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-8 h-8 rounded-full bg-slate-200 border border-border-subtle flex items-center justify-center font-bold text-text-secondary text-xs flex-shrink-0">
                       AM
@@ -237,12 +237,12 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-orange-100 text-brand-corporate border border-orange-200">
                     Tier A+ (4/mo)
                   </span>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">SM</span>
 <div>
@@ -251,7 +251,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="w-36">
 <div className="flex justify-between text-[11px] font-semibold mb-1">
 <span className="text-emerald-600">4 / 4 visits</span>
@@ -262,17 +262,17 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="font-medium text-text-primary">08 Sep 2026</div>
 <div className="text-[10px] text-text-muted">DCR #84920 (Verified)</div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1 max-w-[170px]">
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">CardioCare 20</span>
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">ZiviCal D3</span>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right">
+<td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-2">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Target Met
@@ -284,11 +284,11 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </td>
 </tr>
 {/* Row 2: On Track */}
-<tr className="hover:bg-surface-subtle/80 transition-colors">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-brand-corporate focus:ring-brand-corporate" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-8 h-8 rounded-full bg-slate-200 border border-border-subtle flex items-center justify-center font-bold text-text-secondary text-xs flex-shrink-0">
                       VM
@@ -299,12 +299,12 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-orange-100 text-brand-corporate border border-orange-200">
                     Tier A+ (4/mo)
                   </span>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">AD</span>
 <div>
@@ -313,7 +313,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="w-36">
 <div className="flex justify-between text-[11px] font-semibold mb-1">
 <span className="text-blue-600">3 / 4 visits</span>
@@ -324,17 +324,17 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="font-medium text-text-primary">11 Sep 2026</div>
 <div className="text-[10px] text-text-muted">DCR #85102 (GPS Tagged)</div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1 max-w-[170px]">
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">Glucoflow M</span>
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">InsuliMax</span>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right">
+<td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-2">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-status-info-bg">
                       On Track
@@ -346,11 +346,11 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </td>
 </tr>
 {/* Row 3: Under-visited */}
-<tr className="hover:bg-surface-subtle/80 transition-colors">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-brand-corporate focus:ring-brand-corporate" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-8 h-8 rounded-full bg-slate-200 border border-border-subtle flex items-center justify-center font-bold text-text-secondary text-xs flex-shrink-0">
                       AR
@@ -361,12 +361,12 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-blue-100 text-blue-800 border border-status-info-bg">
                     Tier A (2/mo)
                   </span>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">VK</span>
 <div>
@@ -375,7 +375,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="w-36">
 <div className="flex justify-between text-[11px] font-semibold mb-1">
 <span className="text-amber-600">1 / 2 visits</span>
@@ -386,17 +386,17 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="font-medium text-text-primary">02 Sep 2026</div>
 <div className="text-[10px] text-amber-600 font-semibold">12 days since visit</div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1 max-w-[170px]">
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">Pediabest Drops</span>
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">Fe-Syrup</span>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right">
+<td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-2">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-status-warning-bg">
                       Under-visited
@@ -408,11 +408,11 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </td>
 </tr>
 {/* Row 4: Zero-Visit Gap (CRITICAL) */}
-<tr className="hover:bg-rose-50/50 bg-rose-50/20 transition-colors">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-rose-50/50 bg-rose-50/20 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-brand-corporate focus:ring-brand-corporate" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-8 h-8 rounded-full bg-rose-100 border border-rose-200 flex items-center justify-center font-bold text-rose-700 text-xs flex-shrink-0">
                       SK
@@ -423,12 +423,12 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-orange-100 text-brand-corporate border border-orange-200">
                     Tier A+ (4/mo)
                   </span>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="w-6 h-6 rounded-full bg-rose-100 text-rose-800 text-[10px] font-bold flex items-center justify-center">RS</span>
 <div>
@@ -437,7 +437,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="w-36">
 <div className="flex justify-between text-[11px] font-semibold mb-1">
 <span className="text-rose-600 font-bold">0 / 4 visits</span>
@@ -448,14 +448,14 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="font-bold text-rose-700">No visits in 32 days</div>
 <div className="text-[10px] text-rose-500">Exceeded 14d SLA gap</div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="text-[11px] text-text-muted italic">No samples delivered</div>
 </td>
-<td className="py-3.5 px-4 text-right">
+<td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-2">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-700 border border-rose-300 animate-pulse">
                       Zero-Visit Gap
@@ -467,11 +467,11 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </td>
 </tr>
 {/* Row 5: Tier B Target Met */}
-<tr className="hover:bg-surface-subtle/80 transition-colors">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-brand-corporate focus:ring-brand-corporate" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-8 h-8 rounded-full bg-slate-200 border border-border-subtle flex items-center justify-center font-bold text-text-secondary text-xs flex-shrink-0">
                       RN
@@ -482,12 +482,12 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-surface-subtle text-text-secondary border border-border-subtle">
                     Tier B (1/mo)
                   </span>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2">
 <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-800 text-[10px] font-bold flex items-center justify-center">KN</span>
 <div>
@@ -496,7 +496,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="w-36">
 <div className="flex justify-between text-[11px] font-semibold mb-1">
 <span className="text-emerald-600">1 / 1 visit</span>
@@ -507,16 +507,16 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="font-medium text-text-primary">07 Sep 2026</div>
 <div className="text-[10px] text-text-muted">DCR #84811 (Verified)</div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1 max-w-[170px]">
 <span className="px-1.5 py-0.5 bg-surface-subtle text-text-secondary rounded text-[10px]">NeuroZiv Plus</span>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right">
+<td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-2">
 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg">
                       Target Met

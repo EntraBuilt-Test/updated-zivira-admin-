@@ -255,28 +255,28 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 <div className="bg-surface-card rounded-xl border border-border-subtle/80 shadow-sm overflow-hidden flex flex-col">
 <div className="overflow-x-auto">
 <table className="w-full text-left text-xs text-text-secondary">
-<thead className="bg-surface-subtle/80 border-b border-border-subtle text-[11px] font-bold uppercase tracking-wider text-text-secondary">
-<tr>
-<th className="py-3 px-3 w-8 text-center">
+<thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </th>
-<th className="py-3 px-3">ASM / Supervisor &amp; Territory</th>
-<th className="py-3 px-3">HQ &amp; Assigned MRs</th>
-<th className="py-3 px-3">Joint Days (Act/Tgt)</th>
-<th className="py-3 px-3">Joint Calls</th>
-<th className="py-3 px-3">Call Conv %</th>
-<th className="py-3 px-3">Coaching Index</th>
-<th className="py-3 px-3">Audit Status</th>
-<th className="py-3 px-3 text-right">Action</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">ASM / Supervisor &amp; Territory</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ &amp; Assigned MRs</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Days (Act/Tgt)</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Calls</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Call Conv %</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Coaching Index</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Audit Status</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-slate-100">
+<tbody className="divide-y divide-border-subtle">
 {/* Row 1: Active / Inspected (Rajesh Sharma) */}
-<tr className="bg-orange-50/60 hover:bg-orange-50/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="bg-orange-50/60 hover:bg-orange-50/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input defaultChecked={true} className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-[#b43403] text-white flex items-center justify-center font-display font-bold text-xs shrink-0 shadow-xs">
                             RS
@@ -290,43 +290,43 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-medium text-text-primary">12 Reps Covered</span>
 <span className="text-[10px] text-text-muted">Thane, Dadar, Bandra</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">14 / 12</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">116%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">142 Calls</td>
-<td className="py-3 px-3 font-semibold text-text-primary">78.4%</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">142 Calls</td>
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">78.4%</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1">
 <span className="font-bold text-[#b43403]">8.9</span>
 <span className="text-[10px] text-text-muted">/10</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
                           Compliant
                         </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-[#b43403] text-white font-semibold text-xs hover:bg-[#9a2c02] transition-colors shadow-xs" type="button">
                           Active
                         </button>
 </td>
 </tr>
 {/* Row 2: Vikrant Verma */}
-<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
                             VV
@@ -337,43 +337,43 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-medium text-text-primary">10 Reps Covered</span>
 <span className="text-[10px] text-text-muted">Rohini, Connaught, Noida</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">11 / 12</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-warning-bg text-status-warning text-[10px] font-bold">92%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">118 Calls</td>
-<td className="py-3 px-3 font-semibold text-text-primary">71.2%</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">118 Calls</td>
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">71.2%</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1">
 <span className="font-bold text-text-secondary">8.1</span>
 <span className="text-[10px] text-text-muted">/10</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning border border-status-warning-bg text-[10px] font-bold">
                           Pending 1d
                         </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-surface-subtle text-text-secondary font-medium text-xs hover:bg-slate-200 transition-colors" type="button">
                           Inspect
                         </button>
 </td>
 </tr>
 {/* Row 3: Debopriya Das */}
-<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
                             DD
@@ -384,43 +384,43 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-medium text-text-primary">11 Reps Covered</span>
 <span className="text-[10px] text-text-muted">Howrah, Salt Lake, Alipore</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">13 / 12</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">108%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">135 Calls</td>
-<td className="py-3 px-3 font-semibold text-text-primary">74.0%</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">135 Calls</td>
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">74.0%</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1">
 <span className="font-bold text-text-secondary">8.5</span>
 <span className="text-[10px] text-text-muted">/10</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
                           Compliant
                         </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-surface-subtle text-text-secondary font-medium text-xs hover:bg-slate-200 transition-colors" type="button">
                           Inspect
                         </button>
 </td>
 </tr>
 {/* Row 4: Srinivas Murthy (Flagged Deficit) */}
-<tr className="bg-rose-50/40 hover:bg-rose-50/70 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="bg-rose-50/40 hover:bg-rose-50/70 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-display font-bold text-xs shrink-0">
                             SM
@@ -434,43 +434,43 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-medium text-text-primary">9 Reps Covered</span>
 <span className="text-[10px] text-text-muted">Indiranagar, Whitefield</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-rose-600">8 / 12</span>
 <span className="px-1.5 py-0.5 rounded-full bg-rose-100 text-rose-700 text-[10px] font-bold">67% Lag</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">82 Calls</td>
-<td className="py-3 px-3 font-semibold text-rose-600">62.1%</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">82 Calls</td>
+<td className="py-3 px-3 font-semibold text-rose-600 px-4 text-sm text-text-primary whitespace-nowrap">62.1%</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1">
 <span className="font-bold text-rose-600">6.8</span>
 <span className="text-[10px] text-text-muted">/10</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 border border-rose-200 text-[10px] font-bold">
                           Lagging
                         </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-rose-100 text-rose-700 font-semibold text-xs hover:bg-rose-200 transition-colors" type="button">
                           Flagged
                         </button>
 </td>
 </tr>
 {/* Row 5: Balasubramanian */}
-<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer">
-<td className="py-3 px-3 text-center">
+<tr className="hover:bg-surface-subtle/80 transition-colors cursor-pointer hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3 px-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded border-border-subtle text-[#b43403] focus:ring-[#b43403]" type="checkbox"/>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-full bg-surface-subtle text-text-secondary flex items-center justify-center font-display font-bold text-xs shrink-0">
                             BS
@@ -481,32 +481,32 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 </div>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-medium text-text-primary">10 Reps Covered</span>
 <span className="text-[10px] text-text-muted">T. Nagar, Anna Nagar, Adyar</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1.5">
 <span className="font-bold text-text-primary">12 / 12</span>
 <span className="px-1.5 py-0.5 rounded-full bg-status-success-bg text-status-success text-[10px] font-bold">100%</span>
 </div>
 </td>
-<td className="py-3 px-3 font-semibold text-text-primary">126 Calls</td>
-<td className="py-3 px-3 font-semibold text-text-primary">75.8%</td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">126 Calls</td>
+<td className="py-3 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">75.8%</td>
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-1">
 <span className="font-bold text-text-secondary">8.3</span>
 <span className="text-[10px] text-text-muted">/10</span>
 </div>
 </td>
-<td className="py-3 px-3">
+<td className="py-3 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold">
                           Compliant
                         </span>
 </td>
-<td className="py-3 px-3 text-right">
+<td className="py-3 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
 <button className="px-2.5 py-1 rounded-md bg-surface-subtle text-text-secondary font-medium text-xs hover:bg-slate-200 transition-colors" type="button">
                           Inspect
                         </button>

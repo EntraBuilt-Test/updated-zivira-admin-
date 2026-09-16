@@ -228,28 +228,28 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* Responsive Scrollable Data Grid */}
 <div className="w-full overflow-x-auto">
 <table className="w-full text-left font-table-cell text-table-cell text-text-primary min-w-[1240px]">
-<thead>
-<tr className="bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider h-table-header-height">
-<th className="w-10 px-4 text-center">
+<thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider h-table-header-height hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </th>
-<th className="px-3 py-2">Medical Rep (MR)</th>
-<th className="px-3 py-2">Doctor / Contact Info</th>
-<th className="px-3 py-2">Activity Type</th>
-<th className="px-3 py-2">Timestamp &amp; Geofence</th>
-<th className="px-3 py-2">Products Detailed</th>
-<th className="px-3 py-2">Promo / Samples Handover</th>
-<th className="px-3 py-2 text-center">Verification Status</th>
-<th className="px-4 py-2 text-right">Actions</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Rep (MR)</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor / Contact Info</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Activity Type</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Timestamp &amp; Geofence</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Products Detailed</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Promo / Samples Handover</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Verification Status</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
 </tr>
 </thead>
-<tbody className="divide-y-0">
+<tbody className="divide-y divide-border-subtle">
 {/* ROW 1: Rahul Sharma (Mumbai - Doctor Detail) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card">
-<td className="w-10 px-4 text-center">
+<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card hover:bg-surface-subtle/50 transition-colors group">
+<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-9 h-9 rounded-full bg-brand-primary-subtle text-primary font-headline-sm flex items-center justify-center flex-shrink-0">
                   RS
@@ -260,18 +260,18 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-label-md text-label-md text-text-primary">Dr. Ananya Iyer, MD</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Cardiologist · Lilavati Hospital</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm">
 <span className="material-symbols-outlined text-[13px]">person_check</span> Doctor Detail
               </span>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
 <span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
@@ -282,21 +282,21 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
                 </span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1">
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">ZiviCal D3 (5m)</span>
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">CardioCare 20 (3m)</span>
 </div>
 </td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary">
+<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
               2x ZiviCal D3 Samples, 1x Desk Pen
             </td>
-<td className="px-3 py-3 text-center">
+<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
 <span className="w-1.5 h-1.5 rounded-full bg-status-success"></span> Approved
               </span>
 </td>
-<td className="px-4 py-3 text-right">
+<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-1.5">
 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -308,11 +308,11 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* ROW 2: Priya Mehta (Pune - Chemist POB) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-canvas/30">
-<td className="w-10 px-4 text-center">
+<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-canvas/30 hover:bg-surface-subtle/50 transition-colors group">
+<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant font-headline-sm flex items-center justify-center flex-shrink-0">
                   PM
@@ -323,18 +323,18 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-label-md text-label-md text-text-primary">Apollo Medicos #442</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Lead Chemist: Harish Patel</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-subtle text-secondary font-label-sm text-label-sm">
 <span className="material-symbols-outlined text-[13px]">local_pharmacy</span> Chemist POB
               </span>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
 <span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
@@ -343,20 +343,20 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="font-body-sm text-body-sm text-status-success">POB Booked: ₹42,500</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1">
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">GlycoZiv 500 (100 Strips)</span>
 </div>
 </td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary">
+<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
               Product Monograph &amp; LBL Kit
             </td>
-<td className="px-3 py-3 text-center">
+<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
 <span className="w-1.5 h-1.5 rounded-full bg-status-success"></span> Approved
               </span>
 </td>
-<td className="px-4 py-3 text-right">
+<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-1.5">
 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
 <span className="material-symbols-outlined text-[18px]">receipt</span>
@@ -368,11 +368,11 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* ROW 3: Rajesh Kumar (Delhi - GPS Alert Flagged) */}
-<tr className="hover:bg-status-danger-bg/20 transition-colors h-table-row-height bg-status-danger-bg/10">
-<td className="w-10 px-4 text-center">
+<tr className="hover:bg-status-danger-bg/20 transition-colors h-table-row-height bg-status-danger-bg/10 hover:bg-surface-subtle/50 transition-colors group">
+<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
 <input defaultChecked={true} className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-9 h-9 rounded-full bg-status-danger-bg text-status-danger font-headline-sm flex items-center justify-center flex-shrink-0">
                   RK
@@ -383,18 +383,18 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-label-md text-label-md text-text-primary">Dr. Sanjay Grover, MBBS</span>
 <span className="font-body-sm text-body-sm text-text-secondary">General Physician · Max Care Clinic</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm">
 <span className="material-symbols-outlined text-[13px]">person_check</span> Doctor Detail
               </span>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <div className="flex items-center gap-1.5 font-label-md text-label-md text-status-danger">
 <span className="material-symbols-outlined text-[16px]">location_off</span>
@@ -405,20 +405,20 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
                 </span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1">
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Metfor-Z (2m)</span>
 </div>
 </td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary">
+<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
               None logged
             </td>
-<td className="px-3 py-3 text-center">
+<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-danger-bg text-status-danger font-label-sm text-label-sm">
 <span className="w-1.5 h-1.5 rounded-full bg-status-danger"></span> GPS Alert Flagged
               </span>
 </td>
-<td className="px-4 py-3 text-right">
+<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-1.5">
 <button className="px-2 py-1 rounded bg-status-danger-bg hover:bg-status-danger hover:text-on-primary text-status-danger font-label-sm text-label-sm transition-colors" type="button">
                   Audit Flag
@@ -427,11 +427,11 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* ROW 4: Vikram Joshi (Ahmedabad - Joint Field Work with ABM) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card">
-<td className="w-10 px-4 text-center">
+<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card hover:bg-surface-subtle/50 transition-colors group">
+<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-9 h-9 rounded-full bg-status-info-bg text-status-info font-headline-sm flex items-center justify-center flex-shrink-0">
                   VJ
@@ -442,18 +442,18 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-label-md text-label-md text-text-primary">Dr. Meera Desai, DM</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Endocrinologist · Sterling Hospital</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm">
 <span className="material-symbols-outlined text-[13px]">groups</span> Joint Work w/ ABM
               </span>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
 <span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
@@ -464,21 +464,21 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
                 </span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1">
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">GlycoZiv XR (7m)</span>
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Thyro-Ziv 50 (4m)</span>
 </div>
 </td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary">
+<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
               4x GlycoZiv Samples, 2x Patient Diaries
             </td>
-<td className="px-3 py-3 text-center">
+<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm">
 <span className="w-1.5 h-1.5 rounded-full bg-status-warning"></span> Under Review
               </span>
 </td>
-<td className="px-4 py-3 text-right">
+<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-1.5">
 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -490,11 +490,11 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* ROW 5: Sneha Roy (Kolkata - Doctor Detail) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-canvas/30">
-<td className="w-10 px-4 text-center">
+<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-canvas/30 hover:bg-surface-subtle/50 transition-colors group">
+<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-9 h-9 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed font-headline-sm flex items-center justify-center flex-shrink-0">
                   SR
@@ -505,18 +505,18 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-label-md text-label-md text-text-primary">Dr. Subhash Bose, MD</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Chest Physician · Woodlands Heart Centre</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm">
 <span className="material-symbols-outlined text-[13px]">person_check</span> Doctor Detail
               </span>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
 <span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
@@ -527,20 +527,20 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
                 </span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1">
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Resp-Clear Inhaler (6m)</span>
 </div>
 </td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary">
+<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
               1x Demo Inhaler Unit, 3x Patient Guides
             </td>
-<td className="px-3 py-3 text-center">
+<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
 <span className="w-1.5 h-1.5 rounded-full bg-status-success"></span> Approved
               </span>
 </td>
-<td className="px-4 py-3 text-right">
+<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-1.5">
 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -552,11 +552,11 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* ROW 6: Amit Verma (Lucknow - Stockist Follow-up) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card">
-<td className="w-10 px-4 text-center">
+<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card hover:bg-surface-subtle/50 transition-colors group">
+<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
 <input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-3">
 <div className="w-9 h-9 rounded-full bg-secondary-fixed text-on-secondary-fixed font-headline-sm flex items-center justify-center flex-shrink-0">
                   AV
@@ -567,18 +567,18 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <span className="font-label-md text-label-md text-text-primary">Awadh Pharma Distributors</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Distributor: Manoj Tandon</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-subtle text-secondary font-label-sm text-label-sm">
 <span className="material-symbols-outlined text-[13px]">store</span> Stockist Follow-up
               </span>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-col">
 <div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
 <span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
@@ -587,20 +587,20 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="font-body-sm text-body-sm text-text-secondary">Payment Realization &amp; Stock Audit</span>
 </div>
 </td>
-<td className="px-3 py-3">
+<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1">
 <span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Batch Reconciliation #ZIV-990</span>
 </div>
 </td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary">
+<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
               Scheme Circular Q3 Handover
             </td>
-<td className="px-3 py-3 text-center">
+<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm">
                 Draft / In-Transit
               </span>
 </td>
-<td className="px-4 py-3 text-right">
+<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-end gap-1.5">
 <button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
 <span className="material-symbols-outlined text-[18px]">more_vert</span>

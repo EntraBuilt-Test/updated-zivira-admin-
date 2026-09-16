@@ -63,20 +63,20 @@ export function ProductsDiscussedReport() {
       </div>
       {error && <p className="form-error">{error}</p>}
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead><tr><th>Product</th><th>Times Discussed</th><th>Distinct Doctors</th><th>Distinct Reps</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Times Discussed</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Distinct Doctors</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Distinct Reps</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {rows.map((r) => (
-              <tr key={r.product}>
-                <td><strong style={{ color: "var(--ink)" }}>{r.product}</strong></td>
-                <td>{r.mentions}</td>
-                <td>{r.doctors.size}</td>
-                <td>{r.reps.size}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.product}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.product}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.mentions}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.doctors.size}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.reps.size}</td>
               </tr>
             ))}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
                 <PackageSearch size={28} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 No DCR records with product details yet.
               </td></tr>

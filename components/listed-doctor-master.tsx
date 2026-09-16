@@ -481,19 +481,19 @@ export function ListedDoctorMaster() {
           style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
-      <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading doctors...</div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "40px", color: "red" }}>{error}</div>
         ) : (
-          <table className="subdivision-table">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>Doctor Code</th>
-                <th>Doctor Name</th>
-                <th>
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Code</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Specialty" 
@@ -503,7 +503,7 @@ export function ListedDoctorMaster() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Qualification" 
@@ -513,7 +513,7 @@ export function ListedDoctorMaster() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Category" 
@@ -523,8 +523,8 @@ export function ListedDoctorMaster() {
                     />
                   </div>
                 </th>
-                <th>Mobile</th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Mobile</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="City" 
@@ -534,26 +534,26 @@ export function ListedDoctorMaster() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                   </div>
                 </th>
-                <th colSpan={2}>Actions</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border-subtle">
               {filtered.map((row, idx) => (
-                <tr key={row.id}>
-                  <td style={{ color: "var(--muted)", fontWeight: 500 }}>{(pagination.page - 1) * pagination.limit + idx + 1}</td>
-                  <td style={{ fontWeight: 600 }}>{row.doctorCode || row.code || "-"}</td>
-                  <td><strong>{row.name}</strong></td>
-                  <td>{row.specialty || "-"}</td>
-                  <td>{row.qualification || "-"}</td>
-                  <td>{row.category || "-"}</td>
-                  <td>{row.phone || row.mobile || "-"}</td>
-                  <td>{row.city || "-"}</td>
-                  <td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--muted)", fontWeight: 500 }}>{(pagination.page - 1) * pagination.limit + idx + 1}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.doctorCode || row.code || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.specialty || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.qualification || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.category || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.phone || row.mobile || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <span style={{
                       padding: "2px 8px",
                       borderRadius: "999px",
@@ -566,12 +566,12 @@ export function ListedDoctorMaster() {
                       {row.status}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                       <Pencil size={15} />
                     </button>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                       <Ban size={15} />
                     </button>
@@ -579,8 +579,8 @@ export function ListedDoctorMaster() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                     No records found
                   </td>
                 </tr>

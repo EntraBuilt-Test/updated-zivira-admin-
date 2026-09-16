@@ -45,29 +45,29 @@ export function PersonalInformationView() {
           }}
         />
       </div>
-      <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Employee Code</th>
-              <th>Employee Name</th>
-              <th>Contact No</th>
-              <th>Personal Email</th>
-              <th>PAN No</th>
-              <th>Aadhar No</th>
-              <th>Status</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Contact No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Personal Email</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">PAN No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Aadhar No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td style={{ fontWeight: 600 }}>{row.code}</td>
-                <td><strong>{row.name}</strong></td>
-                <td>{row.contactNo}</td>
-                <td>{row.email}</td>
-                <td style={{ fontFamily: "monospace", fontSize: "12px" }}>{row.panNo}</td>
-                <td style={{ fontFamily: "monospace", fontSize: "12px" }}>{row.aadharNo}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.code}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.contactNo}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.email}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontFamily: "monospace", fontSize: "12px" }}>{row.panNo}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontFamily: "monospace", fontSize: "12px" }}>{row.aadharNo}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
                     borderRadius: "999px", 
@@ -83,8 +83,8 @@ export function PersonalInformationView() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No records found
                 </td>
               </tr>

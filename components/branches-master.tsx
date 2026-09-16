@@ -102,29 +102,29 @@ export function BranchesMaster() {
           </div>
         </form>
       ) : (
-        <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
           {loading ? (
             <div style={{ textAlign: "center", padding: 40, color: "var(--muted)" }}>Loading branches...</div>
           ) : (
-            <table className="subdivision-table">
-              <thead>
-                <tr><th>Branch</th><th>GST Number</th><th>City</th><th>State</th><th>Pincode</th><th>HQ</th><th>Status</th><th>Edit</th></tr>
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Branch</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">GST Number</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">City</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">State</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pincode</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th></tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {branches.map(b => (
-                  <tr key={b.id}>
-                    <td><strong>{b.branchName}</strong></td>
-                    <td style={{ fontFamily: "monospace" }}>{b.gstNumber}</td>
-                    <td>{b.city}</td>
-                    <td>{b.state}</td>
-                    <td>{b.pincode}</td>
-                    <td>{b.isHeadquarters ? <Star size={15} color="#f59e0b" fill="#f59e0b" /> : "—"}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={b.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{b.branchName}</strong></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontFamily: "monospace" }}>{b.gstNumber}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{b.city}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{b.state}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{b.pincode}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{b.isHeadquarters ? <Star size={15} color="#f59e0b" fill="#f59e0b" /> : "—"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{ padding: "2px 8px", borderRadius: 999, fontSize: 11, fontWeight: 600, background: b.status === "ACTIVE" ? "#10b98115" : "#ef444415", color: b.status === "ACTIVE" ? "#10b981" : "#ef4444" }}>
                         {b.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => openEdit(b)} title="Edit" type="button">
                         <Pencil size={15} />
                       </button>
@@ -132,7 +132,7 @@ export function BranchesMaster() {
                   </tr>
                 ))}
                 {branches.length === 0 && (
-                  <tr><td colSpan={8} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>No branches yet</td></tr>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={8} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>No branches yet</td></tr>
                 )}
               </tbody>
             </table>

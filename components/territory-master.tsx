@@ -261,13 +261,13 @@ export function TerritoryMaster() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Patch Code</th>
-              <th>Patch Name</th>
-              <th style={{ minWidth: "160px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Patch Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Patch Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>HQ</span>
                   <button
@@ -289,7 +289,7 @@ export function TerritoryMaster() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "140px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Region</span>
                   <button
@@ -311,7 +311,7 @@ export function TerritoryMaster() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "120px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "120px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Division</span>
                   <button
@@ -333,7 +333,7 @@ export function TerritoryMaster() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "180px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "180px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Medical Representative</span>
                   <button
@@ -355,7 +355,7 @@ export function TerritoryMaster() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "160px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Area Manager</span>
                   <button
@@ -377,8 +377,8 @@ export function TerritoryMaster() {
                   </div>
                 )}
               </th>
-              <th>No of Doctors</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">No of Doctors</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -464,25 +464,25 @@ export function TerritoryMaster() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map(row => (
-              <tr key={row.id}>
-                <td style={{ fontWeight: 600 }}>{row.code}</td>
-                <td><strong>{row.name}</strong></td>
-                <td>{row.hq}</td>
-                <td>{row.region}</td>
-                <td>{row.division}</td>
-                <td>{row.mr}</td>
-                <td>{row.am}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.code}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.region}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.division}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.mr}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.am}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ padding: "2px 8px", background: "#f3f4f6", borderRadius: "6px", fontSize: "12px", fontWeight: 700 }}>
                     {row.noOfDoctors}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     padding: "2px 8px",
                     borderRadius: "999px",
@@ -495,12 +495,12 @@ export function TerritoryMaster() {
                     {row.status}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} title="Deactivate" type="button">
                     <Ban size={15} />
                   </button>
@@ -508,8 +508,8 @@ export function TerritoryMaster() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No records found
                 </td>
               </tr>

@@ -339,11 +339,11 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
             />
           </div>
 
-          <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-            <table className="subdivision-table">
-              <thead>
-                <tr>
-                  <th style={{ minWidth: "150px", position: "relative" }}>
+          <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>State</span>
                       <button
@@ -365,9 +365,9 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th>Holiday Name</th>
-                  <th>Holiday Date</th>
-                  <th style={{ minWidth: "160px", position: "relative" }}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Holiday Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Holiday Date</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Holiday Type</span>
                       <button
@@ -389,7 +389,7 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th style={{ minWidth: "140px", position: "relative" }}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Status</span>
                       <button
@@ -411,17 +411,17 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th colSpan={2}>Actions</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {filteredStateHolidays.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.state}</td>
-                    <td><strong style={{ color: "var(--ink)" }}>{row.holidayName}</strong></td>
-                    <td>{formatDate(row.holidayDate)}</td>
-                    <td>{row.holidayType}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.state}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.holidayName}</strong></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.holidayDate)}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.holidayType}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{
                         display: "inline-block",
                         padding: "2px 8px",
@@ -434,12 +434,12 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                         {row.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => { setEditStateTarget(row); setView("edit"); }} type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleStateDelete(row.id)} type="button">
                         <Ban size={15} />
                       </button>
@@ -447,8 +447,8 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                   </tr>
                 ))}
                 {filteredStateHolidays.length === 0 && (
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                       No holiday fixations configured
                     </td>
                   </tr>
@@ -476,11 +476,11 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
             />
           </div>
 
-          <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-            <table className="subdivision-table">
-              <thead>
-                <tr>
-                  <th style={{ minWidth: "120px", position: "relative" }}>
+          <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "120px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Year</span>
                       <button
@@ -502,7 +502,7 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th style={{ minWidth: "150px", position: "relative" }}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>State</span>
                       <button
@@ -524,9 +524,9 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th>Holiday</th>
-                  <th>Holiday Date</th>
-                  <th style={{ minWidth: "160px", position: "relative" }}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Holiday</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Holiday Date</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Holiday Type</span>
                       <button
@@ -548,7 +548,7 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th style={{ minWidth: "140px", position: "relative" }}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Status</span>
                       <button
@@ -570,18 +570,18 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                       </div>
                     )}
                   </th>
-                  <th colSpan={2}>Actions</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {filteredCalHolidays.map((row) => (
-                  <tr key={row.id}>
-                    <td>{row.year}</td>
-                    <td>{row.state}</td>
-                    <td><strong style={{ color: "var(--ink)" }}>{row.holiday}</strong></td>
-                    <td>{formatDate(row.holidayDate)}</td>
-                    <td>{row.holidayType}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.year}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.state}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.holiday}</strong></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.holidayDate)}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.holidayType}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{
                         display: "inline-block",
                         padding: "2px 8px",
@@ -594,12 +594,12 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                         {row.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => { setEditCalTarget(row); setView("edit"); }} type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleCalDelete(row.id)} type="button">
                         <Ban size={15} />
                       </button>
@@ -607,8 +607,8 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
                   </tr>
                 ))}
                 {filteredCalHolidays.length === 0 && (
-                  <tr>
-                    <td colSpan={8} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={8} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                       No calendar holidays configured
                     </td>
                   </tr>

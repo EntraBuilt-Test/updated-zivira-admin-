@@ -154,15 +154,15 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>{labelPrefix} Code</th>
-              <th>{labelPrefix} Name</th>
-              <th>GST No</th>
-              <th>License No</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">{labelPrefix} Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">{labelPrefix} Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">GST No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">License No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -248,18 +248,18 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {loading && <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>Loading...</td></tr>}
+          <tbody className="divide-y divide-border-subtle">
+            {loading && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>Loading...</td></tr>}
             {!loading && filtered.map((row) => (
-              <tr key={row.id}>
-                <td style={{ fontWeight: 600 }}>{row.code}</td>
-                <td><strong>{row.name}</strong></td>
-                <td>{row.gstNo || "-"}</td>
-                <td>{row.licenseNo || "-"}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.code}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.gstNo || "-"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.licenseNo || "-"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
                     borderRadius: "999px", 
@@ -272,12 +272,12 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
                     {row.status}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} type="button" disabled={row.status === "Inactive"}>
                     <Ban size={15} />
                   </button>
@@ -285,8 +285,8 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
               </tr>
             ))}
             {!loading && filtered.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No stockists found
                 </td>
               </tr>

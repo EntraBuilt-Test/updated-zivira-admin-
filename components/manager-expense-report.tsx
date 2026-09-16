@@ -194,14 +194,14 @@ export function ManagerExpenseReport() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Expense Date</th>
-              <th>Employee Code</th>
-              <th>Employee Name</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Expense Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Division</span>
                   <button
@@ -223,7 +223,7 @@ export function ManagerExpenseReport() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "160px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>HQ</span>
                   <button
@@ -245,7 +245,7 @@ export function ManagerExpenseReport() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "150px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Expense Type</span>
                   <button
@@ -267,10 +267,10 @@ export function ManagerExpenseReport() {
                   </div>
                 )}
               </th>
-              <th>Description</th>
-              <th>Amount</th>
-              <th>Receipt Attached</th>
-              <th style={{ minWidth: "140px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Description</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Amount</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Receipt Attached</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Approval Status</span>
                   <button
@@ -292,23 +292,23 @@ export function ManagerExpenseReport() {
                   </div>
                 )}
               </th>
-              <th>Approved By</th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Approved By</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td>{formatDate(row.expenseDate)}</td>
-                <td>{row.employeeCode}</td>
-                <td><strong style={{ color: "var(--ink)" }}>{row.employeeName}</strong></td>
-                <td>{row.division}</td>
-                <td>{row.hq}</td>
-                <td>{row.expenseType}</td>
-                <td>{row.description}</td>
-                <td style={{ fontWeight: 600 }}>₹{row.amount.toFixed(2)}</td>
-                <td style={{ color: "var(--ink)", textDecoration: "underline", fontSize: "13px" }}>{row.receiptAttached}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.expenseDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.employeeCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.employeeName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.division}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.expenseType}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.description}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>₹{row.amount.toFixed(2)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--ink)", textDecoration: "underline", fontSize: "13px" }}>{row.receiptAttached}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -321,13 +321,13 @@ export function ManagerExpenseReport() {
                     {row.approvalStatus}
                   </span>
                 </td>
-                <td>{row.approvedBy}</td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.approvedBy}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -335,8 +335,8 @@ export function ManagerExpenseReport() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={13} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={13} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No expense reports found
                 </td>
               </tr>

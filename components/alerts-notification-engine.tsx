@@ -114,22 +114,22 @@ export function AlertsNotificationEngine() {
         })}
       </div>
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead><tr><th>Severity</th><th>Type</th><th>Alert</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Severity</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Type</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Alert</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {visibleAlerts.map((a, i) => {
               const sc = SEVERITY_STYLE[a.severity] ?? SEVERITY_STYLE.LOW;
               return (
-                <tr key={`${a.type}-${a.subjectCode ?? i}`}>
-                  <td><span style={{ background: sc.bg, color: sc.color, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}><Bell size={11} /> {a.severity}</span></td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>{a.type.replace(/_/g, " ")}</td>
-                  <td>{a.message}</td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={`${a.type}-${a.subjectCode ?? i}`}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ background: sc.bg, color: sc.color, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700, display: "inline-flex", alignItems: "center", gap: 4 }}><Bell size={11} /> {a.severity}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{a.type.replace(/_/g, " ")}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{a.message}</td>
                 </tr>
               );
             })}
             {!loading && visibleAlerts.length === 0 && (
-              <tr><td colSpan={3} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={3} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
                 <AlertTriangle size={28} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 {alerts.length === 0 ? "No active alerts — everything looks healthy." : "No alerts match this filter."}
               </td></tr>

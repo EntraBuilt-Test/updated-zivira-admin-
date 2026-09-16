@@ -573,139 +573,139 @@ export function AdminMastersDashboard() {
         </div>
         <div className="w-full overflow-x-auto rounded-lg border border-border-subtle">
           <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="h-table-header-height bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider border-b border-border-subtle">
-                <th className="px-4">Module</th>
-                <th className="px-4">Entity Name</th>
-                <th className="px-4">Change Type</th>
-                <th className="px-4">Updated By</th>
-                <th className="px-4">Timestamp</th>
-                <th className="px-4 text-right">Actions</th>
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="h-table-header-height bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider border-b border-border-subtle hover:bg-surface-subtle/50 transition-colors group">
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Module</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Entity Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Change Type</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Updated By</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Timestamp</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle font-body-sm text-body-sm text-text-primary">
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
-                <td className="px-4">
+            <tbody className="divide-y divide-border-subtle">
+              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-status-info"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Doctor</span>
                   </div>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="font-medium text-text-primary">Dr. Rajeshwar Sharma</span>
                   <span className="block font-label-sm text-text-muted">MCL Core List • Max Healthcare Saket</span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm font-semibold">
                     <span className="material-symbols-outlined text-[13px]">add_circle</span>Created
                   </span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="text-text-primary font-medium">Anand Verma</span>
                   <span className="block font-label-sm text-text-muted">North Ops Lead</span>
                 </td>
-                <td className="px-4 text-text-muted font-body-sm">14 min ago (10 Sep 2026, 14:48)</td>
-                <td className="px-4 text-right">
+                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">14 min ago (10 Sep 2026, 14:48)</td>
+                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
                 </td>
               </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
-                <td className="px-4">
+              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-primary"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Product</span>
                   </div>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="font-medium text-text-primary">ZiviCal D3 60k IU Softgels</span>
                   <span className="block font-label-sm text-text-muted">SKU-8820 • Revised MRP &amp; PTR Slabs</span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm font-semibold">
                     <span className="material-symbols-outlined text-[13px]">edit_note</span>Modified
                   </span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="text-text-primary font-medium">Pricing Committee</span>
                   <span className="block font-label-sm text-text-muted">Corporate HQ</span>
                 </td>
-                <td className="px-4 text-text-muted font-body-sm">42 min ago (10 Sep 2026, 14:20)</td>
-                <td className="px-4 text-right">
+                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">42 min ago (10 Sep 2026, 14:20)</td>
+                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
                 </td>
               </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
-                <td className="px-4">
+              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-secondary"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Territory Bulk</span>
                   </div>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="font-medium text-text-primary">Andheri West Patch B</span>
                   <span className="block font-label-sm text-text-muted">Realigned to Mumbai Metro Zone 2</span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm font-semibold">
                     <span className="material-symbols-outlined text-[13px]">sync_alt</span>Realigned
                   </span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="text-text-primary font-medium">Admin Zivira</span>
                   <span className="block font-label-sm text-text-muted">HQ Operations</span>
                 </td>
-                <td className="px-4 text-text-muted font-body-sm">1 hr ago (10 Sep 2026, 13:58)</td>
-                <td className="px-4 text-right">
+                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">1 hr ago (10 Sep 2026, 13:58)</td>
+                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
                 </td>
               </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
-                <td className="px-4">
+              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-status-warning"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Expense Setup</span>
                   </div>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="font-medium text-text-primary">Metro Ex-HQ Daily Allowance</span>
                   <span className="block font-label-sm text-text-muted">Updated from ₹480 to ₹520/day</span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm font-semibold">
                     <span className="material-symbols-outlined text-[13px]">edit_note</span>Modified
                   </span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="text-text-primary font-medium">Finance Team</span>
                   <span className="block font-label-sm text-text-muted">Admin Zivira</span>
                 </td>
-                <td className="px-4 text-text-muted font-body-sm">2 hrs ago (10 Sep 2026, 12:45)</td>
-                <td className="px-4 text-right">
+                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">2 hrs ago (10 Sep 2026, 12:45)</td>
+                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
                 </td>
               </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors">
-                <td className="px-4">
+              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-status-danger"></span>
                     <span className="font-label-md text-label-md text-text-primary font-semibold">Stockist Details</span>
                   </div>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="font-medium text-text-primary">Apex Medico Agencies</span>
                   <span className="block font-label-sm text-text-muted">DL Renewal Pending (Kolkata Hub)</span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm font-semibold">
                     <span className="material-symbols-outlined text-[13px]">pause_circle</span>Suspended
                   </span>
                 </td>
-                <td className="px-4">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span className="text-text-primary font-medium">Compliance Cell</span>
                   <span className="block font-label-sm text-text-muted">Legal Dept</span>
                 </td>
-                <td className="px-4 text-text-muted font-body-sm">3 hrs ago (10 Sep 2026, 11:30)</td>
-                <td className="px-4 text-right">
+                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">3 hrs ago (10 Sep 2026, 11:30)</td>
+                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
                 </td>
               </tr>

@@ -363,22 +363,22 @@ export function ManagerSfcUpdation() {
           {actionError && <p style={{ marginBottom: "12px", fontSize: "13px", color: "#b91c1c" }}>{actionError}</p>}
 
           <div style={{ overflowX: "auto" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
-              <thead>
-                <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                  <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>From Territory</th>
-                  <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>To Territory</th>
-                  <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Distance (KMs)</th>
-                  <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Add/Del</th>
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" style={{ borderBottom: "1px solid var(--border)" }}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>From Territory</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>To Territory</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Distance (KMs)</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ textAlign: "left", padding: "8px 10px", color: "var(--muted)", fontWeight: 600 }}>Add/Del</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {rowsForActive.map((row) => (
-                  <tr key={row.id} style={{ borderBottom: "1px solid var(--line)" }}>
-                    <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.hq ?? "—"}</td>
-                    <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.patchName ?? "—"}</td>
-                    <td style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.oneWayKms ?? "—"}</td>
-                    <td style={{ padding: "8px 10px" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id} style={{ borderBottom: "1px solid var(--line)" }}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.hq ?? "—"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.patchName ?? "—"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px", color: "var(--ink)" }}>{row.oneWayKms ?? "—"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px" }}>
                       <button
                         type="button"
                         onClick={() => handleDeleteRoute(row)}
@@ -401,9 +401,9 @@ export function ManagerSfcUpdation() {
                 ))}
 
                 {/* Add-new-route row */}
-                <tr>
-                  <td style={{ padding: "8px 10px", color: "var(--muted)" }}>{activeEmployee.territory ?? "—"}</td>
-                  <td style={{ padding: "8px 10px" }}>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px", color: "var(--muted)" }}>{activeEmployee.territory ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px" }}>
                     <select
                       value={newToTerritory}
                       onChange={(e) => setNewToTerritory(e.target.value)}
@@ -424,7 +424,7 @@ export function ManagerSfcUpdation() {
                       ))}
                     </select>
                   </td>
-                  <td style={{ padding: "8px 10px" }}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px" }}>
                     <input
                       type="number"
                       value={newDistance}
@@ -443,7 +443,7 @@ export function ManagerSfcUpdation() {
                       }}
                     />
                   </td>
-                  <td style={{ padding: "8px 10px" }}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px" }}>
                     <div style={{ display: "flex", gap: "6px" }}>
                       <button
                         type="button"
@@ -487,8 +487,8 @@ export function ManagerSfcUpdation() {
                 </tr>
 
                 {rowsForActive.length === 0 && (
-                  <tr>
-                    <td colSpan={4} style={{ padding: "14px 10px", color: "var(--muted)", fontSize: "13px" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ padding: "14px 10px", color: "var(--muted)", fontSize: "13px" }}>
                       No routes recorded yet for this fieldforce person — use the row above to add one.
                     </td>
                   </tr>

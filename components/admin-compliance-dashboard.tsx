@@ -283,48 +283,48 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
           {/* Table */}
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left text-xs">
-              <thead className="bg-surface-subtle border-b border-border-subtle text-[11px] font-bold text-text-secondary uppercase tracking-wider">
-                <tr>
-                  <th className="py-3 px-4 w-8"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></th>
-                  <th className="py-3 px-4">Doctor &amp; Specialization</th>
-                  <th className="py-3 px-4">Field Rep &amp; Territory</th>
-                  <th className="py-3 px-4">Clause / Violation</th>
-                  <th className="py-3 px-4">Frequency</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor &amp; Specialization</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Field Rep &amp; Territory</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Clause / Violation</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Frequency</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-text-secondary">
+              <tbody className="divide-y divide-border-subtle">
                 
                 {/* Row 1 (Selected) */}
-                <tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" defaultChecked className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" defaultChecked className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Dr. Rajesh V. Merchant</div>
                     <div className="text-[11px] text-text-secondary">Cardiology &bull; Breach Candy Hospital, MH</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Tier A+ HCP</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-medium text-text-primary">Rahul Sharma</div>
                     <div className="text-[11px] text-text-secondary">MR-1049 &bull; Mumbai Metro</div>
                     <div className="text-[10px] text-text-muted">ASM: Rajesh Sharma</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-rose-700">Call Cap Exceeded</div>
                     <div className="text-[11px] text-text-secondary">UCPMP Cl. 7.2 (Max 2/mo)</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700">
                       3 Visits
                     </span>
                     <div className="text-[10px] text-text-muted mt-0.5">Sep Target: 2</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-100 text-amber-800">
                       Pending ASM Note
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1">
                       <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
@@ -332,34 +332,34 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                 </tr>
 
                 {/* Row 2 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Dr. Arvind Sen</div>
                     <div className="text-[11px] text-text-secondary">Pulmonology &bull; Fortis Escorts, Delhi</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Tier A HCP</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-medium text-text-primary">Amit Duggal</div>
                     <div className="text-[11px] text-text-secondary">MR-0842 &bull; Delhi South</div>
                     <div className="text-[10px] text-text-muted">ASM: Vikrant Verma</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-status-warning">Missing Sample Acknowledgement</div>
                     <div className="text-[11px] text-text-secondary">Resp-Clear Inhaler (2 Pks)</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-subtle text-text-secondary">
                       2 Visits
                     </span>
                     <div className="text-[10px] text-text-muted mt-0.5">Within Limit</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
                       OTP Pending
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
@@ -367,34 +367,34 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                 </tr>
 
                 {/* Row 3 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Dr. Sunita K. Nambiar</div>
                     <div className="text-[11px] text-text-secondary">Endocrinology &bull; Apex Diabetes, BLR</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Tier A+ HCP</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-medium text-text-primary">Sunita Kulkarni</div>
                     <div className="text-[11px] text-text-secondary">MR-0994 &bull; Bengaluru Central</div>
                     <div className="text-[10px] text-text-muted">ASM: Srinivas Murthy</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-rose-700">MTP Route Deviation</div>
                     <div className="text-[11px] text-text-secondary">Unapproved Visit in DCR</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-rose-100 text-rose-700">
                       3 Visits
                     </span>
                     <div className="text-[10px] text-text-muted mt-0.5">Off-Beat Call</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800">
                       Escalated ZSM
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
@@ -402,34 +402,34 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                 </tr>
 
                 {/* Row 4 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Dr. Pradip Roy</div>
                     <div className="text-[11px] text-text-secondary">Pediatrics &bull; Shishu Seva Sadan, Kolkata</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Tier A HCP</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-medium text-text-primary">Subhashish Mitra</div>
                     <div className="text-[11px] text-text-secondary">MR-1120 &bull; Kolkata Central</div>
                     <div className="text-[10px] text-text-muted">ASM: Debopriya Das</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-text-secondary">CME Sponsorship Log</div>
                     <div className="text-[11px] text-text-secondary">Academic Registration Fee</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-subtle text-text-secondary">
                       1 Visit
                     </span>
                     <div className="text-[10px] text-text-muted mt-0.5">Compliant</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                       Verified Approved
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>
@@ -437,34 +437,34 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
                 </tr>
 
                 {/* Row 5 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Dr. Meenakshi Sundaram</div>
                     <div className="text-[11px] text-text-secondary">Neurology &bull; Apollo Specialty, Chennai</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Tier A+ HCP</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-medium text-text-primary">Karthik Nathan</div>
                     <div className="text-[11px] text-text-secondary">MR-1205 &bull; Chennai Central</div>
                     <div className="text-[10px] text-text-muted">ASM: Balasubramanian</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-status-warning">Batch Expiry Log Warning</div>
                     <div className="text-[11px] text-text-secondary">CardioCare 20 Batch #CC-902</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-surface-subtle text-text-secondary">
                       2 Visits
                     </span>
                     <div className="text-[10px] text-text-muted mt-0.5">Within Limit</div>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-surface-subtle text-text-secondary">
                       Batch Quarantined
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Audit</span> <span className="material-symbols-outlined text-[14px]">chevron_right</span>
                     </button>

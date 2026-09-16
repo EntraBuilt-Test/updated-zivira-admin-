@@ -390,22 +390,22 @@ export function UnlistedDoctorMaster() {
           </div>
         </div>
       )}
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
           {loading ? (
             <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading doctors...</div>
           ) : error ? (
             <div style={{ textAlign: "center", padding: "40px", color: "red" }}>{error}</div>
           ) : (
-            <table className="subdivision-table">
-              <thead>
-                <tr>
-                  <th>S.No</th>
-                  <th>Temporary Doctor Code</th>
-                  <th>Doctor Name</th>
-                  <th>Specialty</th>
-                  <th>City</th>
-                  <th>Medical Representative</th>
-                  <th style={{ minWidth: "130px", position: "relative" }}>
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Temporary Doctor Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Specialty</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">City</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Representative</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                     <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                       <span>Status</span>
                       <button
@@ -507,20 +507,20 @@ export function UnlistedDoctorMaster() {
                       </div>
                     )}
                   </th>
-                  <th>Edit</th>
-                  <th>Reject</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reject</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {filtered.map((row, idx) => (
-                  <tr key={row.id}>
-                    <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
-                    <td style={{ fontWeight: 600 }}>{row.tempCode}</td>
-                    <td><strong>{row.name}</strong></td>
-                    <td>{row.specialty || "-"}</td>
-                    <td>{row.city || "-"}</td>
-                    <td>{row.mr || "-"}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.tempCode}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.specialty || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.mr || "-"}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span style={{
                         padding: "2px 8px",
                         borderRadius: "999px",
@@ -533,12 +533,12 @@ export function UnlistedDoctorMaster() {
                         {row.status}
                       </span>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                         <Pencil size={15} />
                       </button>
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} title="Reject" type="button">
                         <Ban size={15} />
                       </button>
@@ -546,8 +546,8 @@ export function UnlistedDoctorMaster() {
                   </tr>
                 ))}
                 {filtered.length === 0 && (
-                  <tr>
-                    <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                       No records found
                     </td>
                   </tr>

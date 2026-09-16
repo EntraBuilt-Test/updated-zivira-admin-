@@ -109,31 +109,31 @@ export function TerritoryCoverageAnalytics() {
         </select>
       </div>
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Doctor</th><th>Assigned MR</th><th>Last Visit</th><th>Days Since</th>
-              <th>Alert</th><th>Exception Reason</th><th>Notes</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Assigned MR</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Last Visit</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Days Since</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Alert</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Exception Reason</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Notes</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {visible.map((r) => {
               const tone = r.alertBucket ? BUCKET_TONE[r.alertBucket] : BUCKET_TONE["30"];
               return (
-                <tr key={r.doctorId}>
-                  <td><strong style={{ color: "var(--ink)" }}>{r.doctorName}</strong></td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.assignedMRName ?? r.assignedMR ?? "—"}</td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.lastVisitDateEver ? new Date(r.lastVisitDateEver).toLocaleDateString("en-IN") : "—"}</td>
-                  <td>{r.daysSinceLastVisit ?? "—"}</td>
-                  <td><span style={{ background: tone.bg, color: tone.color, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{r.alertBucket ? BUCKET_LABEL[r.alertBucket] : "—"}</span></td>
-                  <td style={{ fontSize: 12 }}>{r.exceptionReason ?? <span style={{ color: "#b91c1c" }}>No reason logged</span>}</td>
-                  <td style={{ fontSize: 12, color: "var(--muted)", maxWidth: 160 }}>{r.exceptionNotes ?? "—"}</td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.doctorId}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.doctorName}</strong></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.assignedMRName ?? r.assignedMR ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.lastVisitDateEver ? new Date(r.lastVisitDateEver).toLocaleDateString("en-IN") : "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.daysSinceLastVisit ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ background: tone.bg, color: tone.color, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{r.alertBucket ? BUCKET_LABEL[r.alertBucket] : "—"}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12 }}>{r.exceptionReason ?? <span style={{ color: "#b91c1c" }}>No reason logged</span>}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)", maxWidth: 160 }}>{r.exceptionNotes ?? "—"}</td>
                 </tr>
               );
             })}
             {!loading && visible.length === 0 && (
-              <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
                 <AlertOctagon size={28} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 No doctors currently fall into this coverage-gap bucket.
               </td></tr>

@@ -39,32 +39,32 @@ export function AdminDcrView() {
         <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
       </div>
       {error && <p className="form-error">{error}</p>}
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>S.No</th><th>Employee</th><th>Visit Date</th><th>Session</th><th>Time</th>
-              <th>Products</th><th>Samples</th><th>Inputs</th><th>Joint Work</th>
-              <th>Manager Approved By</th><th>Status</th><th>Action</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Visit Date</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Session</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Time</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Products</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Samples</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Inputs</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Work</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Manager Approved By</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {dcrs.map((dcr, i) => {
               const sc = STATUS_COLORS[dcr.status] ?? STATUS_COLORS["DRAFT"];
               return (
-                <tr key={dcr.id}>
-                  <td style={{ color:"var(--muted)" }}>{i+1}</td>
-                  <td><strong style={{ color:"var(--ink)" }}>{dcr.employeeCode}</strong></td>
-                  <td style={{ fontSize:12, color:"var(--muted)" }}>{new Date(dcr.visitDate).toLocaleDateString("en-IN")}</td>
-                  <td style={{ fontSize:11, fontWeight:600, color:"var(--muted)" }}>{dcr.callSession ?? "—"}</td>
-                  <td style={{ fontSize:12, color:"var(--muted)" }}>{dcr.callTime ?? "—"}</td>
-                  <td style={{ fontSize:12, color:"var(--muted)", maxWidth:130 }}>{dcr.productsDetailed?.join(", ") || "—"}</td>
-                  <td style={{ fontSize:12 }}>{dcr.samplesGiven?.length ? dcr.samplesGiven.map(s => `${s.productName}×${s.qty}`).join(", ") : "—"}</td>
-                  <td style={{ fontSize:12 }}>{dcr.inputsGiven?.length ? dcr.inputsGiven.map(s => `${s.inputName}×${s.qty}`).join(", ") : "—"}</td>
-                  <td style={{ fontSize:12 }}>{dcr.jointWork?.accompanyingManager ? `${dcr.jointWork.accompanyingManager} · ${dcr.jointWork.jointWorkType?.replace(/_/g," ")}` : "—"}</td>
-                  <td style={{ fontSize:12, color:"var(--muted)" }}>{dcr.managerApprovedBy ?? "—"}</td>
-                  <td><span style={{ ...sc, borderRadius:6, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{dcr.status.replace(/_/g," ")}</span></td>
-                  <td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={dcr.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)" }}>{i+1}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color:"var(--ink)" }}>{dcr.employeeCode}</strong></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, color:"var(--muted)" }}>{new Date(dcr.visitDate).toLocaleDateString("en-IN")}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:11, fontWeight:600, color:"var(--muted)" }}>{dcr.callSession ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, color:"var(--muted)" }}>{dcr.callTime ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, color:"var(--muted)", maxWidth:130 }}>{dcr.productsDetailed?.join(", ") || "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12 }}>{dcr.samplesGiven?.length ? dcr.samplesGiven.map(s => `${s.productName}×${s.qty}`).join(", ") : "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12 }}>{dcr.inputsGiven?.length ? dcr.inputsGiven.map(s => `${s.inputName}×${s.qty}`).join(", ") : "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12 }}>{dcr.jointWork?.accompanyingManager ? `${dcr.jointWork.accompanyingManager} · ${dcr.jointWork.jointWorkType?.replace(/_/g," ")}` : "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize:12, color:"var(--muted)" }}>{dcr.managerApprovedBy ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ ...sc, borderRadius:6, padding:"2px 8px", fontSize:11, fontWeight:700 }}>{dcr.status.replace(/_/g," ")}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {dcr.status === "MANAGER_APPROVED" ? (
                       <button onClick={() => approve(dcr.id)} type="button" className="button" style={{ padding:"5px 12px", fontSize:12 }}>Approve</button>
                     ) : <span style={{ color:"var(--muted)", fontSize:12 }}>—</span>}
@@ -73,7 +73,7 @@ export function AdminDcrView() {
               );
             })}
             {!loading && dcrs.length === 0 && (
-              <tr><td colSpan={12} style={{ textAlign:"center", color:"var(--muted)", padding:40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={12} style={{ textAlign:"center", color:"var(--muted)", padding:40 }}>
                 <Clock size={28} style={{ margin:"0 auto 8px", display:"block", opacity:0.3 }} />
                 No DCRs visible yet — entries appear after 24 hours from submission.
               </td></tr>

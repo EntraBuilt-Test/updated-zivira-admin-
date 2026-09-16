@@ -140,14 +140,14 @@ export function DividedMappingMaster() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Bank</th>
-              <th>Account No</th>
-              <th>IFSC</th>
-              <th style={{ minWidth: "140px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Bank</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Account No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">IFSC</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -169,16 +169,16 @@ export function DividedMappingMaster() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td><strong style={{ color: "var(--ink)" }}>{row.bank}</strong></td>
-                <td>{row.accountNo}</td>
-                <td>{row.ifsc}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.bank}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.accountNo}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.ifsc}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -191,12 +191,12 @@ export function DividedMappingMaster() {
                     {row.status}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -204,8 +204,8 @@ export function DividedMappingMaster() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={6} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No mappings configured
                 </td>
               </tr>

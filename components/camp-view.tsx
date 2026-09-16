@@ -165,20 +165,20 @@ export function CampView() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Camp Code</th>
-              <th>Camp Name</th>
-              <th>Camp Date</th>
-              <th>Hospital</th>
-              <th>Doctor</th>
-              <th>Organizer</th>
-              <th>No. of Patients</th>
-              <th>Products Displayed</th>
-              <th>Remarks</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Camp Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Camp Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Camp Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Hospital</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Organizer</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">No. of Patients</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Products Displayed</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remarks</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -200,22 +200,22 @@ export function CampView() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td>{row.campCode}</td>
-                <td><strong style={{ color: "var(--ink)" }}>{row.campName}</strong></td>
-                <td>{formatDate(row.campDate)}</td>
-                <td>{row.hospital}</td>
-                <td>{row.doctor}</td>
-                <td>{row.organizer}</td>
-                <td style={{ fontWeight: 600 }}>{row.noOfPatients}</td>
-                <td>{row.productsDisplayed}</td>
-                <td>{row.remarks}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.campCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.campName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.campDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hospital}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.doctor}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.organizer}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.noOfPatients}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.productsDisplayed}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.remarks}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -228,12 +228,12 @@ export function CampView() {
                     {row.status}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -241,8 +241,8 @@ export function CampView() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No medical camp records found
                 </td>
               </tr>

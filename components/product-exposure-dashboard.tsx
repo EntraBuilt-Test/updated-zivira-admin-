@@ -85,29 +85,29 @@ export function ProductExposureDashboard() {
         </div>
       )}
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Product</th><th>Samples Given</th><th>Visits</th><th>Doctors</th><th>Reps</th>
-              <th>Visual Aid</th>
-              <th>Top Rep</th><th>Top Territory</th><th>Top Manager</th>
-              <th>Prescription Interest (H/M/L/None)</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Samples Given</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Visits</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctors</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reps</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Visual Aid</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Top Rep</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Top Territory</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Top Manager</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Prescription Interest (H/M/L/None)</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {sorted.map((r) => (
-              <tr key={r.productCode}>
-                <td><strong style={{ color: "var(--ink)" }}>{r.productName}</strong></td>
-                <td>{r.totalSamplesGiven}</td>
-                <td>{r.visitsPromoted}</td>
-                <td>{r.distinctDoctors}</td>
-                <td>{r.distinctReps}</td>
-                <td>{r.visualAidUsedCount}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.topRepName ? `${r.topRepName} (${r.topRepQty})` : "—"}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.topTerritory ? `${r.topTerritory} (${r.topTerritoryQty})` : "—"}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.topManagerName ? `${r.topManagerName} (${r.topManagerQty})` : "—"}</td>
-                <td style={{ fontSize: 12 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.productCode}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.productName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalSamplesGiven}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.visitsPromoted}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.distinctDoctors}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.distinctReps}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.visualAidUsedCount}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.topRepName ? `${r.topRepName} (${r.topRepQty})` : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.topTerritory ? `${r.topTerritory} (${r.topTerritoryQty})` : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.topManagerName ? `${r.topManagerName} (${r.topManagerQty})` : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12 }}>
                   <span style={{ color: "#15803d" }}>{r.prescriptionInterestHigh}</span>
                   {" / "}<span style={{ color: "#a16207" }}>{r.prescriptionInterestMedium}</span>
                   {" / "}<span style={{ color: "#b91c1c" }}>{r.prescriptionInterestLow}</span>
@@ -116,7 +116,7 @@ export function ProductExposureDashboard() {
               </tr>
             ))}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={10} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={10} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
                 <PackageSearch size={28} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 No product exposure data yet.
               </td></tr>

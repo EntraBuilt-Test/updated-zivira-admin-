@@ -689,23 +689,23 @@ export function AdminHomeDashboard() {
         
         <div className="w-full overflow-x-auto rounded-lg border border-border-subtle">
           <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="h-table-header-height bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider border-b border-border-subtle">
-                <th className="px-4 py-2">Representative</th>
-                <th className="px-4 py-2">HQ & Territory</th>
-                <th className="px-4 py-2">DCR Status</th>
-                <th className="px-4 py-2">Attendance</th>
-                <th className="px-4 py-2 text-center">Calls (Actual/Target)</th>
-                <th className="px-4 py-2">Last Activity</th>
-                <th className="px-4 py-2 text-right">Actions</th>
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="h-table-header-height bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider border-b border-border-subtle hover:bg-surface-subtle/50 transition-colors group">
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Representative</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ & Territory</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">DCR Status</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Attendance</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Calls (Actual/Target)</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Last Activity</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle font-body-sm text-body-sm text-text-primary bg-surface-card">
+            <tbody className="divide-y divide-border-subtle">
               {loading && displayRows.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-text-muted">Loading field force data...</td></tr>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group"><td colSpan={7} className="px-4 py-8 text-center text-text-muted py-3 text-sm text-text-primary whitespace-nowrap">Loading field force data...</td></tr>
               )}
               {!loading && displayRows.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-8 text-center text-text-muted">No representatives found matching "{searchQuery}"</td></tr>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group"><td colSpan={7} className="px-4 py-8 text-center text-text-muted py-3 text-sm text-text-primary whitespace-nowrap">No representatives found matching "{searchQuery}"</td></tr>
               )}
               {displayRows.map(row => {
                 const isSubmitted = row.dcrStatus === "SUBMITTED" || row.dcrStatus === "APPROVED" || row.dcrStatus === "MANAGER_APPROVED";
@@ -715,7 +715,7 @@ export function AdminHomeDashboard() {
                 
                 return (
                   <tr key={row.employeeCode} className={`h-table-row-height hover:bg-surface-canvas/60 transition-colors ${isDelayed ? 'bg-status-danger-bg/20' : ''}`}>
-                    <td className="px-4">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <div className="flex items-center gap-2.5">
                         <div className={`w-8 h-8 rounded-full font-label-md text-label-md font-bold flex items-center justify-center ${
                           isSubmitted ? 'bg-brand-primary-subtle text-primary' : 
@@ -730,11 +730,11 @@ export function AdminHomeDashboard() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span className="text-text-primary font-medium">{row.territory}</span>
                       <span className="block font-label-sm text-label-sm text-text-muted">Zone West</span>
                     </td>
-                    <td className="px-4">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm font-semibold ${
                         isSubmitted ? 'bg-status-success-bg text-status-success' :
                         isDelayed ? 'bg-status-danger-bg text-status-danger' :
@@ -746,7 +746,7 @@ export function AdminHomeDashboard() {
                         {row.dcrStatus.replace('_', ' ')}
                       </span>
                     </td>
-                    <td className="px-4">
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <span className={`inline-flex items-center gap-1.5 font-label-md text-label-md ${
                         isPresent ? 'text-text-primary' : 'text-status-warning'
                       }`}>
@@ -754,7 +754,7 @@ export function AdminHomeDashboard() {
                         {isPresent ? 'Present (Field)' : row.attendanceStatus}
                       </span>
                     </td>
-                    <td className="px-4 text-center">
+                    <td className="px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
                       <span className={`font-label-md text-label-md font-bold ${
                         isDelayed ? 'text-status-danger' : isSubmitted ? 'text-status-success' : 'text-text-primary'
                       }`}>{row.callsToday}</span>
@@ -763,7 +763,7 @@ export function AdminHomeDashboard() {
                     <td className={`px-4 font-body-sm text-body-sm ${isDelayed ? 'text-status-danger font-medium' : 'text-text-muted'}`}>
                       {formatTime(row.lastSeenAt)}
                     </td>
-                    <td className="px-4 text-right">
+                    <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                       {isDelayed ? (
                         <button className="px-2.5 py-1 rounded bg-status-danger text-on-primary font-label-sm text-label-sm hover:bg-error transition-colors shadow-sm">
                           Ping MR

@@ -72,16 +72,16 @@ function BulkEditView({ rows, onSave, onBack, saving }: { rows: ProductCategory[
         </div>
         <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
       </div>
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr><th>S.No</th><th>Category Name</th></tr>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Category Name</th></tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {draft.map((row, i) => (
-              <tr key={row.id}>
-                <td style={{ color:"var(--muted)", fontWeight:500 }}>{i + 1}</td>
-                <td><input className="subdivision-inline-input" style={{ width:"100%" }} value={row.categoryName} onChange={e => update(row.id, "categoryName", e.target.value)} /></td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)", fontWeight:500 }}>{i + 1}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><input className="subdivision-inline-input" style={{ width:"100%" }} value={row.categoryName} onChange={e => update(row.id, "categoryName", e.target.value)} /></td>
               </tr>
             ))}
           </tbody>
@@ -123,17 +123,17 @@ function SerialNoGenView({ rows, onSave, onBack, saving }: { rows: ProductCatego
         </div>
         <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
       </div>
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr><th>Category Name</th><th>Existing S.No</th><th>New S.No</th></tr>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Category Name</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Existing S.No</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">New S.No</th></tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {rows.map((row, i) => (
-              <tr key={row.id}>
-                <td style={{ fontWeight:600, color:"var(--ink)" }}>{row.categoryName}</td>
-                <td style={{ color:"var(--muted)" }}>{i + 1}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight:600, color:"var(--ink)" }}>{row.categoryName}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)" }}>{i + 1}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <input
                     className="subdivision-inline-input"
                     style={{ width:"64px" }}
@@ -170,23 +170,23 @@ function ReactivationView({ inactive, onReactivate, onBack }: { inactive: Produc
         <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
       </div>
       {inactive.length === 0 ? (
-        <div className="subdivision-table-card" style={{ textAlign:"center", padding:"48px", color:"var(--muted)" }}>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
           <Package size={32} style={{ margin:"0 auto 12px", opacity:0.4 }} />
           <p style={{ margin:0, fontWeight:600 }}>No Records Found</p>
           <p style={{ margin:"4px 0 0", fontSize:"13px" }}>All product categories are currently active.</p>
         </div>
       ) : (
-        <div className="subdivision-table-card">
-          <table className="subdivision-table">
-            <thead>
-              <tr><th>S.No</th><th>Category Name</th><th>Reactivate</th></tr>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Category Name</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reactivate</th></tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border-subtle">
               {inactive.map((row, i) => (
-                <tr key={row.id}>
-                  <td style={{ color:"var(--muted)" }}>{i + 1}</td>
-                  <td style={{ color:"var(--muted)" }}>{row.categoryName}</td>
-                  <td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)" }}>{i + 1}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)" }}>{row.categoryName}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="button" onClick={() => onReactivate(row.id)} type="button" style={{ padding:"5px 14px", fontSize:"12px" }}>
                       <RefreshCw size={13} /> Reactivate
                     </button>
@@ -398,40 +398,40 @@ export function ProductCategoryMaster() {
           <article><span>Inactive</span><strong>{inactive.length}</strong></article>
         </div>
 
-        <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-          <table className="subdivision-table">
-            <thead>
-              <tr>
-                <th>Therapy Code</th>
-                <th>Therapy Name</th>
-                <th>Description</th>
-                <th style={{ minWidth: "140px" }}>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Therapy Code</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Therapy Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Description</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px" }}>
                   <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                 </th>
-                <th colSpan={2}>Actions</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {loading && <tr><td colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>Loading...</td></tr>}
+            <tbody className="divide-y divide-border-subtle">
+              {loading && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>Loading...</td></tr>}
               {!loading && rows.map((row, i) => {
                 const editing = inlineEditId === row.id && draftRow;
                 const displayCategory = row.categoryName;
                 return (
-                  <tr key={row.id}>
-                    <td style={{ fontWeight: 600 }}>TH{String(i + 1).padStart(3, "0")}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>TH{String(i + 1).padStart(3, "0")}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing
                         ? <input className="subdivision-inline-input" value={draftRow.categoryName} onChange={e => setDraftRow({ ...draftRow, categoryName: e.target.value })} />
                         : <strong style={{ color:"var(--ink)" }}>{displayCategory}</strong>
                       }
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing
                         ? <input className="subdivision-inline-input" value={draftRow.description} onChange={e => setDraftRow({ ...draftRow, description: e.target.value })} />
                         : (row.description || "—")
                       }
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
                         <select 
                           value={draftRow.status} 
@@ -456,7 +456,7 @@ export function ProductCategoryMaster() {
                         </span>
                       )}
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
                         <span className="subdivision-inline-actions">
                           <button aria-label="Update" onClick={saveInline} title="Update" type="button" disabled={saving}><Check size={15} /></button>
@@ -466,13 +466,13 @@ export function ProductCategoryMaster() {
                         <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} title="Edit" type="button"><Pencil size={15} /></button>
                       )}
                     </td>
-                    <td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => setDeactivateTarget(row)} title="Deactivate" type="button"><Ban size={15} /></button>
                     </td>
                   </tr>
                 );
               })}
-              {!loading && rows.length === 0 && <tr><td colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No product therapies yet</td></tr>}
+              {!loading && rows.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign:"center", color:"var(--muted)", padding:"32px" }}>No product therapies yet</td></tr>}
             </tbody>
           </table>
         </div>

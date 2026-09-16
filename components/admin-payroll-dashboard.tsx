@@ -281,47 +281,47 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           {/* Table */}
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left text-xs">
-              <thead className="bg-surface-subtle border-b border-border-subtle text-[11px] font-bold text-text-secondary uppercase tracking-wider">
-                <tr>
-                  <th className="py-3 px-4 w-8"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></th>
-                  <th className="py-3 px-4">Field Employee &amp; HQ</th>
-                  <th className="py-3 px-4">Work Days / DCRs</th>
-                  <th className="py-3 px-4">Base Salary</th>
-                  <th className="py-3 px-4">TA/DA Claimed</th>
-                  <th className="py-3 px-4">Net Payout</th>
-                  <th className="py-3 px-4">Status</th>
-                  <th className="py-3 px-4 text-right">Actions</th>
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Field Employee &amp; HQ</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Work Days / DCRs</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Base Salary</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">TA/DA Claimed</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Net Payout</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-text-secondary">
+              <tbody className="divide-y divide-border-subtle">
                 
                 {/* Row 1 (Selected) */}
-                <tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" defaultChecked className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" defaultChecked className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Rahul Sharma</div>
                     <div className="text-[11px] text-text-secondary">EMP-1049 &bull; Mumbai Metro (HQ)</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Senior MR</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">22 / 22 Days</div>
                     <div className="text-[11px] text-emerald-600 font-medium">100% DCR Logged</div>
                     <div className="text-[10px] text-text-muted">16 HQ &bull; 6 Ex-Stn</div>
                   </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹36,000</td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹36,000</td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">₹14,850</div>
                     <div className="text-[10px] text-text-muted">GPS: 1,420 km</div>
                   </td>
-                  <td className="py-3.5 px-4 font-extrabold text-[#b43403] text-sm">
+                  <td className="py-3.5 px-4 font-extrabold text-[#b43403] text-sm text-text-primary whitespace-nowrap">
                     ₹50,850
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                       Approved
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1">
                       <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
@@ -329,32 +329,32 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                 </tr>
 
                 {/* Row 2 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Amit Duggal</div>
                     <div className="text-[11px] text-text-secondary">EMP-0842 &bull; Delhi South</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">MR</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">21 / 22 Days</div>
                     <div className="text-[11px] text-text-secondary">1 Day Leave Approved</div>
                     <div className="text-[10px] text-text-muted">14 HQ &bull; 7 Outstation</div>
                   </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹32,500</td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹32,500</td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">₹18,200</div>
                     <div className="text-[10px] text-text-muted">Night Halt: 2 Days</div>
                   </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
+                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm whitespace-nowrap">
                     ₹50,700
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
                       ASM Verified
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
@@ -362,32 +362,32 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                 </tr>
 
                 {/* Row 3 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Subhashish Mitra</div>
                     <div className="text-[11px] text-text-secondary">EMP-1120 &bull; Kolkata Central</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Executive MR</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">23 / 22 Days</div>
                     <div className="text-[11px] text-indigo-600 font-medium">+1 Sun Camp Day</div>
                     <div className="text-[10px] text-text-muted">18 HQ &bull; 5 Ex-Stn</div>
                   </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹38,000</td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹38,000</td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">₹16,400</div>
                     <div className="text-[10px] text-text-muted">Fare: ₹8,200</div>
                   </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
+                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm whitespace-nowrap">
                     ₹54,400
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                       Approved
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
@@ -395,32 +395,32 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                 </tr>
 
                 {/* Row 4 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Sunita Kulkarni</div>
                     <div className="text-[11px] text-text-secondary">EMP-0994 &bull; Bengaluru Central</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">MR</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">20 / 22 Days</div>
                     <div className="text-[11px] text-amber-600 font-medium">2 Days Late DCR</div>
                     <div className="text-[10px] text-text-muted">12 HQ &bull; 8 Outstation</div>
                   </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹31,000</td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹31,000</td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-rose-600">₹19,800</div>
                     <div className="text-[10px] text-rose-500">Odometer Mismatch</div>
                   </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
+                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm whitespace-nowrap">
                     ₹50,800
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800">
                       Claim on Hold
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Audit</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>
@@ -428,32 +428,32 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                 </tr>
 
                 {/* Row 5 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
+                <tr className="hover:bg-surface-subtle/80 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Karthik Nathan</div>
                     <div className="text-[11px] text-text-secondary">EMP-1205 &bull; Chennai Central</div>
                     <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">MR</span>
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">22 / 22 Days</div>
                     <div className="text-[11px] text-emerald-600 font-medium">Full Attendance</div>
                     <div className="text-[10px] text-text-muted">17 HQ &bull; 5 Ex-Stn</div>
                   </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹34,000</td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹34,000</td>
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">₹15,200</div>
                     <div className="text-[10px] text-text-muted">GPS: 1,380 km</div>
                   </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
+                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm whitespace-nowrap">
                     ₹49,200
                   </td>
-                  <td className="py-3.5 px-4">
+                  <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
                       Approved
                     </span>
                   </td>
-                  <td className="py-3.5 px-4 text-right">
+                  <td className="py-3.5 px-4 text-right text-sm text-text-primary whitespace-nowrap">
                     <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
                       <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                     </button>

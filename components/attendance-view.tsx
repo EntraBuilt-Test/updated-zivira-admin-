@@ -168,14 +168,14 @@ export function AttendanceView() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Employee</th>
-              <th>Employee Code</th>
-              <th style={{ minWidth: "160px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>HQ</span>
                   <button
@@ -197,7 +197,7 @@ export function AttendanceView() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "150px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Attendance Type</span>
                   <button
@@ -219,21 +219,21 @@ export function AttendanceView() {
                   </div>
                 )}
               </th>
-              <th>Check In</th>
-              <th>Check Out</th>
-              <th>GPS</th>
-              <th>Remarks</th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Check In</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Check Out</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">GPS</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remarks</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td>{formatDate(row.date)}</td>
-                <td><strong style={{ color: "var(--ink)" }}>{row.employee}</strong></td>
-                <td>{row.employeeCode}</td>
-                <td>{row.hq}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.date)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.employee}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.employeeCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -246,16 +246,16 @@ export function AttendanceView() {
                     {row.attendanceType}
                   </span>
                 </td>
-                <td style={{ color: "#15803d", fontWeight: 600 }}>{row.checkIn}</td>
-                <td style={{ color: "#b91c1c", fontWeight: 600 }}>{row.checkOut}</td>
-                <td style={{ fontFamily: "monospace", fontSize: "12px" }}>{row.gps}</td>
-                <td>{row.remarks}</td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "#15803d", fontWeight: 600 }}>{row.checkIn}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "#b91c1c", fontWeight: 600 }}>{row.checkOut}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontFamily: "monospace", fontSize: "12px" }}>{row.gps}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.remarks}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -263,8 +263,8 @@ export function AttendanceView() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No attendance records found
                 </td>
               </tr>

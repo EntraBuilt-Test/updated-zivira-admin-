@@ -152,20 +152,20 @@ export function SampleDistributionAnalytics() {
       </div>
 
       <h3 className="section-title" style={{ marginBottom: 10 }}>Product-wise Distribution</h3>
-      <div className="subdivision-table-card" style={{ marginBottom: 28 }}>
-        <table className="subdivision-table">
-          <thead><tr><th>Product</th><th>Issued</th><th>Distributed</th><th>Remaining</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Issued</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Distributed</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remaining</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {byProduct.map((d) => (
-              <tr key={d.productCode}>
-                <td><strong style={{ color: "var(--ink)" }}>{d.productName}</strong></td>
-                <td>{d.totalIssued}</td>
-                <td>{d.totalDistributed}</td>
-                <td style={{ fontWeight: 700, color: d.totalRemaining < 0 ? "#b91c1c" : "var(--ink)" }}>{d.totalRemaining}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={d.productCode}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{d.productName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{d.totalIssued}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{d.totalDistributed}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 700, color: d.totalRemaining < 0 ? "#b91c1c" : "var(--ink)" }}>{d.totalRemaining}</td>
               </tr>
             ))}
             {!loading && byProduct.length === 0 && (
-              <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>
                 <PackageCheck size={26} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 No sample distribution data yet.
               </td></tr>
@@ -175,60 +175,60 @@ export function SampleDistributionAnalytics() {
       </div>
 
       <h3 className="section-title" style={{ marginBottom: 10 }}>Rep-wise Balance</h3>
-      <div className="subdivision-table-card" style={{ marginBottom: 28 }}>
-        <table className="subdivision-table">
-          <thead><tr><th>Representative</th><th>Issued</th><th>Distributed</th><th>Remaining</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Representative</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Issued</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Distributed</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remaining</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {byRep.map((r) => (
-              <tr key={r.employeeCode}>
-                <td><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong></td>
-                <td>{r.totalIssued}</td>
-                <td>{r.totalDistributed}</td>
-                <td style={{ fontWeight: 700, color: r.totalRemaining < 0 ? "#b91c1c" : "var(--ink)" }}>{r.totalRemaining}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.employeeCode}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalIssued}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalDistributed}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 700, color: r.totalRemaining < 0 ? "#b91c1c" : "var(--ink)" }}>{r.totalRemaining}</td>
               </tr>
             ))}
             {!loading && byRep.length === 0 && (
-              <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>No rep sample balances yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>No rep sample balances yet.</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       <h3 className="section-title" style={{ marginBottom: 10 }}>Doctor-wise Samples Received</h3>
-      <div className="subdivision-table-card" style={{ marginBottom: 28 }}>
-        <table className="subdivision-table">
-          <thead><tr><th>Doctor</th><th>Total Samples Received</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Samples Received</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {byDoctor.map((d) => (
-              <tr key={d.doctorId}>
-                <td><strong style={{ color: "var(--ink)" }}>{d.doctorName}</strong></td>
-                <td>{d.totalSamplesReceived}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={d.doctorId}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{d.doctorName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{d.totalSamplesReceived}</td>
               </tr>
             ))}
             {!loading && byDoctor.length === 0 && (
-              <tr><td colSpan={2} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>No doctor-wise sample data yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={2} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>No doctor-wise sample data yet.</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       <h3 className="section-title" style={{ marginBottom: 10 }}>Stock Issue Ledger</h3>
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead><tr><th>Allocation ID</th><th>Employee</th><th>Product</th><th>Batch</th><th>Qty Issued</th><th>Month</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Allocation ID</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Batch</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Qty Issued</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Month</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {allocations.map((a) => (
-              <tr key={a.id}>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{a.allocationId}</td>
-                <td>{a.employeeName ?? a.employeeCode}</td>
-                <td>{a.productName}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{a.batchNumber ?? "—"}</td>
-                <td>{a.qtyIssued}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{a.month}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={a.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{a.allocationId}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{a.employeeName ?? a.employeeCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{a.productName}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{a.batchNumber ?? "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{a.qtyIssued}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{a.month}</td>
               </tr>
             ))}
             {!loading && allocations.length === 0 && (
-              <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>No stock issued yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign: "center", color: "var(--muted)", padding: 24 }}>No stock issued yet.</td></tr>
             )}
           </tbody>
         </table>

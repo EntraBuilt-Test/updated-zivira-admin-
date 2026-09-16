@@ -56,23 +56,23 @@ export function CompanyDashboardPanel() {
       <section className="grid grid-2" style={{ marginTop: 16 }}>
         <article className="card">
           <h3 className="section-title">Recent Employees</h3>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Code</th>
-                  <th>Role</th>
-                  <th>Status</th>
+          <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Code</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Role</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {(dashboard?.recentEmployees ?? []).map((employee) => (
-                  <tr key={employee.id}>
-                    <td>{employee.name}</td>
-                    <td>{employee.employeeCode}</td>
-                    <td>{employee.role}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={employee.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.name}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.employeeCode}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.role}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <StatusBadge status={employee.status} />
                     </td>
                   </tr>
@@ -83,25 +83,25 @@ export function CompanyDashboardPanel() {
         </article>
         <article className="card">
           <h3 className="section-title">Recent Doctors</h3>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Specialty</th>
-                  <th>Category</th>
-                  <th>Territory</th>
+          <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Specialty</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Category</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Territory</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {(dashboard?.recentDoctors ?? []).map((doctor) => (
-                  <tr key={doctor.id}>
-                    <td>{doctor.name}</td>
-                    <td>{doctor.specialty}</td>
-                    <td>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={doctor.id}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{doctor.name}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{doctor.specialty}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       <StatusBadge status={doctor.category} />
                     </td>
-                    <td>{doctor.territory}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{doctor.territory}</td>
                   </tr>
                 ))}
               </tbody>

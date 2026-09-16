@@ -244,31 +244,31 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 {/* Master MIS Sales & Productivity Matrix Table */}
 <div className="overflow-x-auto w-full">
 <table className="w-full text-left border-collapse">
-<thead>
-<tr className="bg-surface-subtle text-text-secondary font-label-sm text-label-sm uppercase tracking-wider">
-<th className="py-3 px-4 w-12 text-center">
+<thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+<tr className="bg-surface-subtle text-text-secondary font-label-sm text-label-sm uppercase tracking-wider hover:bg-surface-subtle/50 transition-colors group">
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </th>
-<th className="py-3 px-4">Territory / HQ Node</th>
-<th className="py-3 px-4">Division</th>
-<th className="py-3 px-4 text-right">Target (₹)</th>
-<th className="py-3 px-4 text-right">MTD Achieved</th>
-<th className="py-3 px-4 text-center">Progress %</th>
-<th className="py-3 px-4 text-right">Variance</th>
-<th className="py-3 px-4 text-center">Daily Calls</th>
-<th className="py-3 px-4 text-center">Core Coverage</th>
-<th className="py-3 px-4 text-right">POB Booked</th>
-<th className="py-3 px-4 text-center">Operational Flag</th>
-<th className="py-3 px-4 text-center w-28">Action</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Territory / HQ Node</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Division</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Target (₹)</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MTD Achieved</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Progress %</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Variance</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Daily Calls</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Core Coverage</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">POB Booked</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Operational Flag</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
 </tr>
 </thead>
-<tbody className="divide-y divide-surface-subtle text-table-cell font-table-cell text-text-primary">
+<tbody className="divide-y divide-border-subtle">
 {/* Row 1: Top Performer */}
-<tr className="hover:bg-surface-subtle/60 transition-colors group">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/60 transition-colors group hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-success" title="Healthy Execution"></div>
 <div>
@@ -277,12 +277,12 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-status-info-bg text-status-info font-medium">Cardio-Diabetic</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹52,00,000</td>
-<td className="py-3.5 px-4 text-right font-bold text-text-primary">₹56,42,000</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹52,00,000</td>
+<td className="py-3.5 px-4 text-right font-bold text-text-primary text-sm whitespace-nowrap">₹56,42,000</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-2">
 <span className="font-bold text-status-success font-label-md text-label-md">108.5%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
@@ -290,23 +290,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right font-semibold text-status-success">
+<td className="py-3.5 px-4 text-right font-semibold text-status-success text-sm text-text-primary whitespace-nowrap">
                 +₹4,42,000
               </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="font-semibold text-text-primary">12.4</span>
 <span className="text-text-muted text-[11px]">/ 10.0</span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-status-success-bg text-status-success font-semibold">96.8%</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹14.8 L</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹14.8 L</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-status-success-bg text-status-success border border-status-success-border font-semibold">
 <span className="material-symbols-outlined text-[13px]">stars</span> Top Performer
                 </span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-1">
 <button className="p-1 rounded text-text-secondary hover:text-primary hover:bg-surface-subtle transition-colors" title="Detailed Breakdown">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -321,11 +321,11 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* Row 2: Balanced / On Track */}
-<tr className="hover:bg-surface-subtle/60 transition-colors group">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/60 transition-colors group hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-info" title="Balanced Velocity"></div>
 <div>
@@ -334,12 +334,12 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-purple-50 text-purple-700 font-medium">Neuro-Ziv</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹68,00,000</td>
-<td className="py-3.5 px-4 text-right font-bold text-text-primary">₹65,28,000</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹68,00,000</td>
+<td className="py-3.5 px-4 text-right font-bold text-text-primary text-sm whitespace-nowrap">₹65,28,000</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-2">
 <span className="font-bold text-text-primary font-label-md text-label-md">96.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
@@ -347,23 +347,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right font-semibold text-status-warning">
+<td className="py-3.5 px-4 text-right font-semibold text-status-warning text-sm text-text-primary whitespace-nowrap">
                 -₹2,72,000
               </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="font-semibold text-text-primary">11.1</span>
 <span className="text-text-muted text-[11px]">/ 10.0</span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-status-info-bg text-status-info font-semibold">92.1%</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹18.4 L</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹18.4 L</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-surface-subtle text-text-secondary border border-border-subtle font-semibold">
 <span className="material-symbols-outlined text-[13px]">check_circle</span> Balanced
                 </span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-1">
 <button className="p-1 rounded text-text-secondary hover:text-primary hover:bg-surface-subtle transition-colors" title="Detailed Breakdown">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -378,11 +378,11 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* Row 3: Call Deficit Flag */}
-<tr className="hover:bg-surface-subtle/60 transition-colors group">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/60 transition-colors group hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-warning" title="Field Effort Lagging"></div>
 <div>
@@ -391,12 +391,12 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-status-warning-bg text-status-warning font-medium">Resp-Care</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹44,00,000</td>
-<td className="py-3.5 px-4 text-right font-bold text-text-primary">₹39,16,000</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹44,00,000</td>
+<td className="py-3.5 px-4 text-right font-bold text-text-primary text-sm whitespace-nowrap">₹39,16,000</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-2">
 <span className="font-bold text-status-warning font-label-md text-label-md">89.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
@@ -404,23 +404,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right font-semibold text-status-danger">
+<td className="py-3.5 px-4 text-right font-semibold text-status-danger text-sm text-text-primary whitespace-nowrap">
                 -₹4,84,000
               </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="font-semibold text-status-danger">8.4</span>
 <span className="text-text-muted text-[11px]">/ 10.0</span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-status-warning-bg text-status-warning font-semibold">81.4%</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹9.2 L</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹9.2 L</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-status-warning-bg text-status-warning border border-status-warning-border font-semibold">
 <span className="material-symbols-outlined text-[13px]">phone_missed</span> Call Deficit
                 </span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-1">
 <button className="p-1 rounded text-text-secondary hover:text-primary hover:bg-surface-subtle transition-colors" title="Detailed Breakdown">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -435,11 +435,11 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* Row 4: Critical Deficit */}
-<tr className="hover:bg-surface-subtle/60 transition-colors group bg-status-danger-bg/20">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/60 transition-colors group bg-status-danger-bg/20 hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-danger" title="Critical Run-rate Risk"></div>
 <div>
@@ -448,12 +448,12 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-status-info-bg text-status-info font-medium">Cardio-Diabetic</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹58,00,000</td>
-<td className="py-3.5 px-4 text-right font-bold text-status-danger">₹44,08,000</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹58,00,000</td>
+<td className="py-3.5 px-4 text-right font-bold text-status-danger text-sm text-text-primary whitespace-nowrap">₹44,08,000</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-2">
 <span className="font-bold text-status-danger font-label-md text-label-md">76.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
@@ -461,23 +461,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right font-semibold text-status-danger">
+<td className="py-3.5 px-4 text-right font-semibold text-status-danger text-sm text-text-primary whitespace-nowrap">
                 -₹13,92,000
               </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="font-semibold text-status-danger">7.8</span>
 <span className="text-text-muted text-[11px]">/ 10.0</span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-status-danger-bg text-status-danger font-semibold">73.5%</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹8.1 L</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹8.1 L</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-status-danger-bg text-status-danger border border-status-danger-border font-semibold">
 <span className="material-symbols-outlined text-[13px]">crisis_alert</span> Target At Risk
                 </span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-1">
 <button className="p-1 rounded text-text-secondary hover:text-primary hover:bg-surface-subtle transition-colors" title="Detailed Breakdown">
 <span className="material-symbols-outlined text-[18px]">visibility</span>
@@ -492,11 +492,11 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </td>
 </tr>
 {/* Row 5: High Value Performer */}
-<tr className="hover:bg-surface-subtle/60 transition-colors group">
-<td className="py-3.5 px-4 text-center">
+<tr className="hover:bg-surface-subtle/60 transition-colors group hover:bg-surface-subtle/50 transition-colors group">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <input className="rounded text-primary focus:ring-primary h-4 w-4 cursor-pointer" type="checkbox"/>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center gap-2.5">
 <div className="w-2.5 h-2.5 rounded-full bg-status-success" title="High Run-rate"></div>
 <div>
@@ -505,12 +505,12 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4">
+<td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center px-2 py-0.5 rounded text-label-sm font-label-sm bg-teal-50 text-teal-700 font-medium">Derma-Care</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹62,00,000</td>
-<td className="py-3.5 px-4 text-right font-bold text-text-primary">₹64,48,000</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹62,00,000</td>
+<td className="py-3.5 px-4 text-right font-bold text-text-primary text-sm whitespace-nowrap">₹64,48,000</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-2">
 <span className="font-bold text-status-success font-label-md text-label-md">104.0%</span>
 <div className="w-14 bg-surface-subtle h-1.5 rounded-full overflow-hidden">
@@ -518,23 +518,23 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </td>
-<td className="py-3.5 px-4 text-right font-semibold text-status-success">
+<td className="py-3.5 px-4 text-right font-semibold text-status-success text-sm text-text-primary whitespace-nowrap">
                 +₹2,48,000
               </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="font-semibold text-text-primary">11.8</span>
 <span className="text-text-muted text-[11px]">/ 10.0</span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex px-1.5 py-0.5 rounded font-label-sm text-label-sm bg-status-success-bg text-status-success font-semibold">94.2%</span>
 </td>
-<td className="py-3.5 px-4 text-right font-medium">₹21.6 L</td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-right font-medium text-sm text-text-primary whitespace-nowrap">₹21.6 L</td>
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-status-success-bg text-status-success border border-status-success-border font-semibold">
 <span className="material-symbols-outlined text-[13px]">verified</span> Strong Pace
                 </span>
 </td>
-<td className="py-3.5 px-4 text-center">
+<td className="py-3.5 px-4 text-center text-sm text-text-primary whitespace-nowrap">
 <div className="flex items-center justify-center gap-1">
 <button className="p-1 rounded text-text-secondary hover:text-primary hover:bg-surface-subtle transition-colors" title="Detailed Breakdown">
 <span className="material-symbols-outlined text-[18px]">visibility</span>

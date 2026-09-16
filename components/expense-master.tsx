@@ -81,26 +81,26 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>SFC Routes</h3>
               <button className="button button-compact"> Add Route</button>
             </div>
-            <div className="subdivision-table-card">
-              <table className="subdivision-table">
-                <thead>
-                  <tr>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Station</th>
-                    <th>Kilometer / Distance</th>
+            <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">From</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">To</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Station</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Kilometer / Distance</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border-subtle">
                   {sfcRows.map(row => (
-                    <tr key={row.id}>
-                      <td>{row.employeeName ?? "—"}</td>
-                      <td>{row.patchName ?? "—"}</td>
-                      <td>{row.hq ?? "—"}</td>
-                      <td>{row.oneWayKms ?? "—"}</td>
+                    <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.employeeName ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.patchName ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.oneWayKms ?? "—"}</td>
                     </tr>
                   ))}
-                  {sfcRows.length === 0 && <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No SFC records found</td></tr>}
+                  {sfcRows.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No SFC records found</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -112,26 +112,26 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>Allowance Matrix</h3>
               <button className="button button-compact"> Add Allowance</button>
             </div>
-            <div className="subdivision-table-card">
-              <table className="subdivision-table">
-                <thead>
-                  <tr>
-                    <th>Headquarter</th>
-                    <th>Station</th>
-                    <th>Metro Type</th>
-                    <th>Amount</th>
+            <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Headquarter</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Station</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Metro Type</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Amount</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border-subtle">
                   {expenseRows.map(row => (
-                    <tr key={row.id}>
-                      <td>—</td>
-                      <td>{row.station ?? "—"}</td>
-                      <td>{row.metroType ?? "—"}</td>
-                      <td>{row.amountNC ?? "—"}</td>
+                    <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">—</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.station ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.metroType ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.amountNC ?? "—"}</td>
                     </tr>
                   ))}
-                  {expenseRows.length === 0 && <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No expense records found</td></tr>}
+                  {expenseRows.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No expense records found</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -143,35 +143,35 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>Work Type Allowance Details (Attendance Basis)</h3>
             </div>
             {!worktypeGenerated ? (
-              <div className="subdivision-table-card" style={{ padding: "32px", textAlign: "center", color: "var(--muted)" }}>
+              <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
                 Click <strong>Go</strong> above to generate this table from the current SFC routes.
               </div>
             ) : (
-              <div className="subdivision-table-card">
-                <table className="subdivision-table">
-                  <thead>
-                    <tr>
-                      <th>Attendance Status</th>
-                      <th>HQ Allowance Type</th>
-                      <th>EX Allowance Type</th>
-                      <th>OS Allowance Type</th>
+              <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+                <table className="w-full text-left border-collapse">
+                  <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                    <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                      <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Attendance Status</th>
+                      <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HQ Allowance Type</th>
+                      <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">EX Allowance Type</th>
+                      <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">OS Allowance Type</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-border-subtle">
                     {/* Built from real SFC routes — typeRaw ("Tour", "Outstation Work",
                         "Outstation Excursion", "Admin") is the closest real field to an
                         attendance-work-type split, so each route becomes one row instead
                         of fabricating figures with no backing data. */}
                     {sfcRows.map((row) => (
-                      <tr key={row.id}>
-                        <td>{row.employeeName ?? row.employeeCode ?? "—"}</td>
-                        <td>{row.typeRaw === "Tour" ? `HQ · ${row.oneWayKms ?? "—"} km` : "—"}</td>
-                        <td>{row.typeRaw === "Outstation Excursion" ? `EX · ${row.oneWayKms ?? "—"} km` : "—"}</td>
-                        <td>{row.typeRaw === "Outstation Work" ? `OS · ${row.oneWayKms ?? "—"} km` : "—"}</td>
+                      <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                        <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.employeeName ?? row.employeeCode ?? "—"}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.typeRaw === "Tour" ? `HQ · ${row.oneWayKms ?? "—"} km` : "—"}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.typeRaw === "Outstation Excursion" ? `EX · ${row.oneWayKms ?? "—"} km` : "—"}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.typeRaw === "Outstation Work" ? `OS · ${row.oneWayKms ?? "—"} km` : "—"}</td>
                       </tr>
                     ))}
                     {sfcRows.length === 0 && (
-                      <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No SFC records found</td></tr>
+                      <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No SFC records found</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -184,32 +184,32 @@ export function ExpenseMaster({ defaultTab = "sfc", embed = false }: { defaultTa
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
               <h3 style={{ fontSize: "15px", fontWeight: 700 }}>Fixed / Variable Parameters</h3>
             </div>
-            <div className="subdivision-table-card">
-              <table className="subdivision-table">
-                <thead>
-                  <tr>
-                    <th>Role</th>
-                    <th>List of Expense</th>
-                    <th>Daily/Work</th>
-                    <th>Station Type</th>
-                    <th>Metro Type</th>
-                    <th>Amount (NC)</th>
-                    <th>Frequency</th>
+            <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Role</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">List of Expense</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Daily/Work</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Station Type</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Metro Type</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Amount (NC)</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Frequency</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border-subtle">
                   {expenseRows.map(row => (
-                    <tr key={row.id}>
-                      <td>{row.role}</td>
-                      <td>{row.listOfExpenseTypes ?? "—"}</td>
-                      <td>{row.dailyWork ?? "—"}</td>
-                      <td>{row.station ?? "—"}</td>
-                      <td>{row.metroType ?? "—"}</td>
-                      <td>{row.amountNC ?? "—"}</td>
-                      <td>{row.frequency ?? "—"}</td>
+                    <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.role}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.listOfExpenseTypes ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.dailyWork ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.station ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.metroType ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.amountNC ?? "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.frequency ?? "—"}</td>
                     </tr>
                   ))}
-                  {expenseRows.length === 0 && <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No expense records found</td></tr>}
+                  {expenseRows.length === 0 && <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "24px" }}>No expense records found</td></tr>}
                 </tbody>
               </table>
             </div>

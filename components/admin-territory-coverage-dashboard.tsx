@@ -208,134 +208,134 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           {/* Table Header & Rows */}
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left text-xs">
-              <thead className="bg-surface-subtle text-text-muted text-[10px] font-bold uppercase tracking-wider border-b border-border-subtle">
-                <tr>
-                  <th className="py-3 px-3.5 w-6"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
-                  <th className="py-3 px-3">TERRITORY & BEAT CODE</th>
-                  <th className="py-3 px-3">SUPERVISING ASM / MR</th>
-                  <th className="py-3 px-3">HCP UNIVERSE</th>
-                  <th className="py-3 px-3">REACHED (SEP)</th>
-                  <th className="py-3 px-3">COVERAGE %</th>
-                  <th className="py-3 px-3 text-right">ACTION</th>
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">TERRITORY & BEAT CODE</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">SUPERVISING ASM / MR</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">HCP UNIVERSE</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">REACHED (SEP)</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">COVERAGE %</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">ACTION</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-text-secondary">
+              <tbody className="divide-y divide-border-subtle">
                 {/* Row 1 (Selected) */}
-                <tr className="bg-orange-50/40 hover:bg-orange-50/60 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" defaultChecked className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="bg-orange-50/40 hover:bg-orange-50/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" defaultChecked className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Mumbai Central — Dadar Hub</div>
                     <div className="text-[11px] text-text-muted font-mono">BEAT-MH-MUM-01 • Metro Core</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-text-primary">Rahul Sharma (Sr MR)</div>
                     <div className="text-[11px] text-text-secondary">ASM: Rajesh Sharma</div>
                   </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">148 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">142 Visited</td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">148 Doctors</td>
+                  <td className="py-3.5 px-3 text-status-success font-bold px-4 text-sm text-text-primary whitespace-nowrap">142 Visited</td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">95.9%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-terracotta font-semibold text-[11px] cursor-pointer hover:underline">Active Slate</span>
                   </td>
                 </tr>
 
                 {/* Row 2 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Delhi South — Connaught & AIIMS</div>
                     <div className="text-[11px] text-text-muted font-mono">BEAT-DL-STH-04 • Institutional</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-text-primary">Amit Duggal (MR)</div>
                     <div className="text-[11px] text-text-secondary">ASM: Vikrant Verma</div>
                   </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">162 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">148 Visited</td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">162 Doctors</td>
+                  <td className="py-3.5 px-3 text-status-success font-bold px-4 text-sm text-text-primary whitespace-nowrap">148 Visited</td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">91.4%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>
 
                 {/* Row 3 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Kolkata Central — Salt Lake & Medical</div>
                     <div className="text-[11px] text-text-muted font-mono">BEAT-WB-KOL-02 • Urban Cluster</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-text-primary">Subhashish Mitra (MR)</div>
                     <div className="text-[11px] text-text-secondary">ASM: Debopriya Das</div>
                   </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">135 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">126 Visited</td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">135 Doctors</td>
+                  <td className="py-3.5 px-3 text-status-success font-bold px-4 text-sm text-text-primary whitespace-nowrap">126 Visited</td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">93.3%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>
 
                 {/* Row 4 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Bengaluru South — Whitefield IT Belt</div>
                     <div className="text-[11px] text-text-muted font-mono">BEAT-KA-BLR-06 • Expanding Zone</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-text-primary">Sunita Kulkarni (MR)</div>
                     <div className="text-[11px] text-text-secondary">ASM: Srinivas Murthy</div>
                   </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">154 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-warning font-bold">108 Visited</td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">154 Doctors</td>
+                  <td className="py-3.5 px-3 text-status-warning font-bold px-4 text-sm text-text-primary whitespace-nowrap">108 Visited</td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-amber-600">70.1%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-rose-600 font-semibold text-[11px] cursor-pointer hover:underline">Lag Alert</span>
                   </td>
                 </tr>
 
                 {/* Row 5 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Chennai Central — T. Nagar Specialist Ring</div>
                     <div className="text-[11px] text-text-muted font-mono">BEAT-TN-CHE-03 • Super-Specialty</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-semibold text-text-primary">Karthik Nathan (MR)</div>
                     <div className="text-[11px] text-text-secondary">ASM: Balasubramanian</div>
                   </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">142 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">136 Visited</td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 font-semibold text-text-primary px-4 text-sm whitespace-nowrap">142 Doctors</td>
+                  <td className="py-3.5 px-3 text-status-success font-bold px-4 text-sm text-text-primary whitespace-nowrap">136 Visited</td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-status-success">95.7%</span>
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                     </div>
                   </td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>

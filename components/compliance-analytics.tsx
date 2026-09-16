@@ -85,26 +85,26 @@ export function ComplianceAnalytics() {
         </div>
       )}
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Employee</th><th>Role</th><th>Today</th>
-              <th>Missed Wk</th><th>Missed Mo</th>
-              <th>Compliance %</th><th>Missed (30D)</th><th>Warning</th><th>Salary Hold</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Role</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Today</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Missed Wk</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Missed Mo</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Compliance %</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Missed (30D)</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Warning</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Salary Hold</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {rows.map((r) => (
-              <tr key={r.employeeCode} style={r.chronicDefaulter ? { background: "#fef2f2" } : undefined}>
-                <td><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong> <span style={{ color: "var(--muted)", fontSize: 11 }}>({r.employeeCode})</span></td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.role ?? "—"}</td>
-                <td>{r.pendingDCR ? <span style={{ color: "#a16207", fontWeight: 700 }}>Pending</span> : r.submittedToday ? <span style={{ color: "#15803d", fontWeight: 700 }}>Submitted</span> : <span style={{ color: "var(--muted)" }}>—</span>}</td>
-                <td>{r.missedThisWeek}</td>
-                <td>{r.missedThisMonth}</td>
-                <td style={{ fontWeight: 700, color: r.compliancePercent < 70 ? "#b91c1c" : r.compliancePercent < 90 ? "#a16207" : "#15803d" }}>{r.compliancePercent}%</td>
-                <td>{r.missedLast30Days}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.employeeCode} style={r.chronicDefaulter ? { background: "#fef2f2" } : undefined}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong> <span style={{ color: "var(--muted)", fontSize: 11 }}>({r.employeeCode})</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.role ?? "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.pendingDCR ? <span style={{ color: "#a16207", fontWeight: 700 }}>Pending</span> : r.submittedToday ? <span style={{ color: "#15803d", fontWeight: 700 }}>Submitted</span> : <span style={{ color: "var(--muted)" }}>—</span>}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.missedThisWeek}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.missedThisMonth}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 700, color: r.compliancePercent < 70 ? "#b91c1c" : r.compliancePercent < 90 ? "#a16207" : "#15803d" }}>{r.compliancePercent}%</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.missedLast30Days}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   {r.warningLevel === "NONE" ? (
                     <span style={{ color: "var(--muted)", fontSize: 12 }}>—</span>
                   ) : (
@@ -113,11 +113,11 @@ export function ComplianceAnalytics() {
                     </span>
                   )}
                 </td>
-                <td>{r.salaryHold ? <span style={{ background: "#fee2e2", color: "#b91c1c", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>Hold</span> : <span style={{ color: "var(--muted)", fontSize: 12 }}>—</span>}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.salaryHold ? <span style={{ background: "#fee2e2", color: "#b91c1c", borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>Hold</span> : <span style={{ color: "var(--muted)", fontSize: 12 }}>—</span>}</td>
               </tr>
             ))}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
                 <AlertTriangle size={28} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 No active employees found for this tenant.
               </td></tr>

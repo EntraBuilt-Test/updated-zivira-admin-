@@ -162,12 +162,12 @@ export function LeavesView() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Employee</th>
-              <th style={{ minWidth: "150px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Leave Type</span>
                   <button
@@ -189,12 +189,12 @@ export function LeavesView() {
                   </div>
                 )}
               </th>
-              <th>From Date</th>
-              <th>To Date</th>
-              <th>Total Days</th>
-              <th>Reason</th>
-              <th>Approved By</th>
-              <th style={{ minWidth: "140px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">From Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">To Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Days</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reason</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Approved By</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -216,20 +216,20 @@ export function LeavesView() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td><strong style={{ color: "var(--ink)" }}>{row.employee}</strong></td>
-                <td>{row.leaveType}</td>
-                <td>{formatDate(row.fromDate)}</td>
-                <td>{formatDate(row.toDate)}</td>
-                <td style={{ fontWeight: 600 }}>{row.totalDays}</td>
-                <td>{row.reason}</td>
-                <td>{row.approvedBy}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.employee}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.leaveType}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.fromDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.toDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.totalDays}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.reason}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.approvedBy}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -242,12 +242,12 @@ export function LeavesView() {
                     {row.status}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -255,8 +255,8 @@ export function LeavesView() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={10} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={10} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No leave applications found
                 </td>
               </tr>

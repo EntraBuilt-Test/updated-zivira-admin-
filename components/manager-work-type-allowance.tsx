@@ -336,32 +336,32 @@ export function ManagerWorkTypeAllowance() {
           {loadingGrid && <p style={{ marginBottom: "14px", fontSize: "13px", color: "var(--muted)" }}>Loading saved grid...</p>}
 
           <div style={{ overflowX: "auto" }}>
-            <table style={{ borderCollapse: "collapse", fontSize: "13px", minWidth: "1400px" }}>
-              <thead>
-                <tr>
-                  <th style={{ ...thStyle }} rowSpan={3}>S.No</th>
-                  <th style={{ ...thStyle }} rowSpan={3}>Work Type</th>
-                  <th style={{ ...thStyle }} rowSpan={3}>Allowance and Fare Type</th>
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ ...thStyle }} rowSpan={3}>S.No</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ ...thStyle }} rowSpan={3}>Work Type</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ ...thStyle }} rowSpan={3}>Allowance and Fare Type</th>
                   {ZONES.map((zone) => (
-                    <th key={zone} style={{ ...thStyle, background: "var(--panel)" }} colSpan={EMP_STATUSES.length * PAY_TYPES.length}>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" key={zone} style={{ ...thStyle, background: "var(--panel)" }} colSpan={EMP_STATUSES.length * PAY_TYPES.length}>
                       {zone}
                     </th>
                   ))}
                 </tr>
-                <tr>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
                   {ZONES.map((zone) =>
                     EMP_STATUSES.map((emp) => (
-                      <th key={`${zone}-${emp}`} style={thStyle} colSpan={PAY_TYPES.length}>
+                      <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" key={`${zone}-${emp}`} style={thStyle} colSpan={PAY_TYPES.length}>
                         {emp}
                       </th>
                     ))
                   )}
                 </tr>
-                <tr>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
                   {ZONES.map((zone) =>
                     EMP_STATUSES.map((emp) =>
                       PAY_TYPES.map((pay) => (
-                        <th key={`${zone}-${emp}-${pay}`} style={thStyle}>
+                        <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" key={`${zone}-${emp}-${pay}`} style={thStyle}>
                           {pay}
                         </th>
                       ))
@@ -369,12 +369,12 @@ export function ManagerWorkTypeAllowance() {
                   )}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {WORK_TYPES.map((wt, idx) => (
-                  <tr key={wt}>
-                    <td style={{ padding: "6px 8px", color: "var(--ink)", border: "1px solid var(--border)", textAlign: "center" }}>{idx + 1}</td>
-                    <td style={{ padding: "6px 8px", color: "var(--ink)", fontWeight: 600, whiteSpace: "nowrap", border: "1px solid var(--border)" }}>{wt}</td>
-                    <td style={{ padding: "4px 6px", border: "1px solid var(--border)" }}>
+                  <tr className="hover:bg-surface-subtle/50 transition-colors group" key={wt}>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "6px 8px", color: "var(--ink)", border: "1px solid var(--border)", textAlign: "center" }}>{idx + 1}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "6px 8px", color: "var(--ink)", fontWeight: 600, whiteSpace: "nowrap", border: "1px solid var(--border)" }}>{wt}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "4px 6px", border: "1px solid var(--border)" }}>
                       <select
                         value={grid[wt]?.allowanceFareType ?? "NA"}
                         onChange={(e) => updateAllowanceFareType(wt, e.target.value)}
@@ -397,7 +397,7 @@ export function ManagerWorkTypeAllowance() {
                     {ZONES.map((zone) =>
                       EMP_STATUSES.map((emp) =>
                         PAY_TYPES.map((pay) => (
-                          <td key={`${zone}-${emp}-${pay}`} style={{ padding: "4px", border: "1px solid var(--border)" }}>
+                          <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" key={`${zone}-${emp}-${pay}`} style={{ padding: "4px", border: "1px solid var(--border)" }}>
                             <input
                               type="number"
                               value={grid[wt]?.cells[cellKey(zone, emp, pay)] ?? ""}

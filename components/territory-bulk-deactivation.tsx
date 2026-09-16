@@ -193,17 +193,17 @@ export function TerritoryBulkDeactivation() {
           style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading mappings...</div>
         ) : error ? (
           <div style={{ textAlign: "center", padding: "40px", color: "red" }}>{error}</div>
         ) : (
-          <table className="subdivision-table">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Division" 
@@ -213,7 +213,7 @@ export function TerritoryBulkDeactivation() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="HQ" 
@@ -223,7 +223,7 @@ export function TerritoryBulkDeactivation() {
                     />
                   </div>
                 </th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <ColumnFilterDropdown 
                       title="Patch" 
@@ -233,9 +233,9 @@ export function TerritoryBulkDeactivation() {
                     />
                   </div>
                 </th>
-                <th>Total Doctors</th>
-                <th>Active Doctor</th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Doctors</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Active Doctor</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "center" }}>
                     <span>Selected For Deactivation</span>
                     <select 
@@ -255,24 +255,24 @@ export function TerritoryBulkDeactivation() {
                     </select>
                   </div>
                 </th>
-                <th>Effective Date</th>
-                <th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Effective Date</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                   <div style={{ minWidth: "140px" }}>
                     <StatusFilterDropdown value={statusFilter} onChange={setStatusFilter} />
                   </div>
                 </th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-border-subtle">
               {filtered.map((row, idx) => (
-                <tr key={row.id}>
-                  <td style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
-                  <td>{row.division}</td>
-                  <td>{row.hq}</td>
-                  <td><strong>{row.patch}</strong></td>
-                  <td>{row.totalDoctors}</td>
-                  <td>{row.activeDoctors}</td>
-                  <td style={{ textAlign: "center" }}>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.division}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.patch}</strong></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.totalDoctors}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.activeDoctors}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ textAlign: "center" }}>
                     <input
                       type="checkbox"
                       checked={row.selectedForDeactivation}
@@ -280,8 +280,8 @@ export function TerritoryBulkDeactivation() {
                       style={{ width: "16px", height: "16px", cursor: "pointer" }}
                     />
                   </td>
-                  <td style={{ fontFamily: "monospace" }}>{row.effectiveDate}</td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontFamily: "monospace" }}>{row.effectiveDate}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <span style={{
                       padding: "2px 8px",
                       borderRadius: "999px",
@@ -297,8 +297,8 @@ export function TerritoryBulkDeactivation() {
                 </tr>
               ))}
               {filtered.length === 0 && (
-                <tr>
-                  <td colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                     No records found
                   </td>
                 </tr>

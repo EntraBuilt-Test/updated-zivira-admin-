@@ -232,44 +232,44 @@ export function DoctorAdditionalInfo() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Doctor Name</th>
-              <th>DOB</th>
-              <th>Anniversary Date</th>
-              <th>Remarks</th>
-              <th>Address</th>
-              <th>Map</th>
-              <th>Latitude</th>
-              <th>Longitude</th>
-              <th colSpan={2}>Actions</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">DOB</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Anniversary Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remarks</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Address</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Map</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Latitude</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Longitude</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                 <td><strong style={{ color: "var(--ink)" }}>{row.doctorName}</strong></td>
-                 <td>{formatDate(row.dob)}</td>
-                 <td>{formatDate(row.anniversaryDate)}</td>
-                 <td>{row.remarks}</td>
-                 <td>{row.address}</td>
-                 <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.doctorName}</strong></td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.dob)}</td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.anniversaryDate)}</td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.remarks}</td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.address}</td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                    {row.mapImage ? (
                      <img src={row.mapImage} alt={`Map for ${row.doctorName}`} style={{ width: "72px", height: "48px", objectFit: "cover", borderRadius: "4px", border: "1px solid #e5e7eb" }} />
                    ) : (
                      <span style={{ color: "var(--muted)" }}>—</span>
                    )}
                  </td>
-                 <td>{row.latitude}</td>
-                 <td>{row.longitude}</td>
-                <td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.latitude}</td>
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.longitude}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -277,8 +277,8 @@ export function DoctorAdditionalInfo() {
               </tr>
             ))}
              {filtered.length === 0 && (
-               <tr>
-                 <td colSpan={10} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+               <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={10} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                    No records found
                  </td>
                </tr>

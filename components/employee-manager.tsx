@@ -294,12 +294,12 @@ export function EmployeeManager() {
         </div>
       ) : null}
 
-      <div className="table-wrap" style={{ overflowX: "auto", overflowY: "auto", maxHeight: "calc(100vh - 240px)" }}>
-        <table className="subdivision-table" style={{ minWidth: "1600px" }}>
-          <thead>
-            <tr>
-              <th>Employee Code</th>
-              <th>Employee Name</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Name</th>
               {[
                 { key: "gender", label: "Gender" },
                 { key: "dob", label: "DOB" },
@@ -323,7 +323,7 @@ export function EmployeeManager() {
                 }
                 
                 return (
-                  <th key={f.key}>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" key={f.key}>
                     {isFiltered ? (
                       <div style={{ minWidth: "140px" }}>
                         <ColumnFilterDropdown 
@@ -339,28 +339,28 @@ export function EmployeeManager() {
                   </th>
                 );
               })}
-              <th>Employee Status</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Status</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filteredEmployees.map((employee, i) => (
-              <tr key={employee.id || i}>
-                <td style={{ fontWeight: 600 }}>{employee.employeeCode}</td>
-                <td><strong>{employee.name}</strong></td>
-                <td>{employee.gender}</td>
-                <td>{formatDate(employee.dob)}</td>
-                <td>{formatDate(employee.joinDate)}</td>
-                <td>{employee.phone || "—"}</td>
-                <td>{employee.email || "—"}</td>
-                <td>{employee.department}</td>
-                <td>{employee.designation}</td>
-                <td>{employee.division}</td>
-                <td>{employee.reportingManager || "—"}</td>
-                <td>{employee.region}</td>
-                <td>{employee.hq || "—"}</td>
-                <td>{employee.patch || "—"}</td>
-                <td>{(employee as any).drivingLicense || "—"}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={employee.id || i}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{employee.employeeCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{employee.name}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.gender}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.dob)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.joinDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.phone || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.email || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.department}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.designation}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.division}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.reportingManager || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.region}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.hq || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.patch || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{(employee as any).drivingLicense || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
                     borderRadius: "999px", 
@@ -376,8 +376,8 @@ export function EmployeeManager() {
               </tr>
             ))}
             {employees.length === 0 && (
-              <tr>
-                <td colSpan={16} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={16} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No field force found
                 </td>
               </tr>

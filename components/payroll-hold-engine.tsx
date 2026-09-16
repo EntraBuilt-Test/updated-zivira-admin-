@@ -90,26 +90,26 @@ export function PayrollHoldEngine() {
         </div>
       )}
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Employee</th><th>Role</th><th>Hold Reason</th>
-              <th>Employee Explanation</th><th>Manager Approved By</th><th>Status</th><th>Action</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Role</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Hold Reason</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Explanation</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Manager Approved By</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {rows.map((r) => {
               const sc = STATUS_STYLE[r.status] ?? STATUS_STYLE.RELEASED;
               return (
-                <tr key={r.id}>
-                  <td><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong> <span style={{ color: "var(--muted)", fontSize: 11 }}>({r.employeeCode})</span></td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.role ?? "—"}</td>
-                  <td style={{ fontSize: 12, color: "var(--muted)", maxWidth: 220 }}>{r.holdReason ?? "—"}</td>
-                  <td style={{ fontSize: 12, color: "var(--muted)", maxWidth: 160 }}>{r.employeeExplanation ?? "—"}</td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.managerApprovedByName ?? "—"}</td>
-                  <td><span style={{ background: sc.bg, color: sc.color, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{sc.label}</span></td>
-                  <td>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong> <span style={{ color: "var(--muted)", fontSize: 11 }}>({r.employeeCode})</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.role ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)", maxWidth: 220 }}>{r.holdReason ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)", maxWidth: 160 }}>{r.employeeExplanation ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.managerApprovedByName ?? "—"}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ background: sc.bg, color: sc.color, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{sc.label}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {r.status !== "RELEASED" ? (
                       <button className="button" style={{ padding: "5px 12px", fontSize: 12, display: "inline-flex", alignItems: "center", gap: 4 }} onClick={() => release(r.id)} disabled={busyId === r.id} type="button">
                         <Unlock size={13} /> {busyId === r.id ? "Releasing…" : "Force Release"}
@@ -122,7 +122,7 @@ export function PayrollHoldEngine() {
               );
             })}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>No payroll status records for this month yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>No payroll status records for this month yet.</td></tr>
             )}
           </tbody>
         </table>

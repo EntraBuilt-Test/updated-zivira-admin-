@@ -261,20 +261,20 @@ export function StatewiseRateFixation() {
           <strong>{rates.length}</strong>
         </article>
       </div>
-      <div className="subdivision-table-card" style={{ overflowX: "auto", minHeight: "280px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Rate Code</th>
-              <th>Product</th>
-              <th>Batch No</th>
-              <th>Mfg Date</th>
-              <th>Expiry Date</th>
-              <th>Pack</th>
-              <th>PTR (₹)</th>
-              <th>PTS (₹)</th>
-              <th>MRP (₹)</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Rate Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Batch No</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Mfg Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Expiry Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pack</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">PTR (₹)</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">PTS (₹)</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MRP (₹)</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "space-between" }}>
                   <span>Currency</span>
                   <button
@@ -360,8 +360,8 @@ export function StatewiseRateFixation() {
                   </div>
                 )}
               </th>
-              <th>Effective Date</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Effective Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "space-between" }}>
                   <span>Status</span>
                   <button
@@ -447,24 +447,24 @@ export function StatewiseRateFixation() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td style={{ fontWeight: 600 }}>{row.id}</td>
-                <td><strong style={{ color: "var(--ink)" }}>{row.productName}</strong></td>
-                <td><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{row.batchNo}</span></td>
-                <td>{row.mfgDate}</td>
-                <td>{row.expDate}</td>
-                <td>{row.pack}</td>
-                <td>{row.ptr}</td>
-                <td>{row.pts}</td>
-                <td style={{ fontWeight: 600, color: "var(--brand)" }}>{row.mrp}</td>
-                <td>{row.currency || "INR"}</td>
-                <td>{row.effectiveDate}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.id}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.productName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{row.batchNo}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.mfgDate}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.expDate}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.pack}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.ptr}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.pts}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600, color: "var(--brand)" }}>{row.mrp}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.currency || "INR"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.effectiveDate}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     padding: "2px 8px",
                     borderRadius: "999px",
@@ -477,12 +477,12 @@ export function StatewiseRateFixation() {
                     {row.status || "Active"}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} title="Delete" type="button">
                     <Ban size={15} />
                   </button>
@@ -490,8 +490,8 @@ export function StatewiseRateFixation() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={14} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={14} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No rates found
                 </td>
               </tr>

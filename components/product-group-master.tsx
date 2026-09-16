@@ -211,15 +211,15 @@ export function ProductGroupMaster() {
           <strong>{filtered.length}</strong>
         </article>
       </div>
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Molecule Code</th>
-              <th>Molecule Name</th>
-              <th>Therapy</th>
-              <th>Description</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Molecule Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Molecule Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Therapy</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Description</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -305,30 +305,30 @@ export function ProductGroupMaster() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {loading && (
-              <tr>
-                <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   Loading...
                 </td>
               </tr>
             )}
             {!loading && filtered.map((row, i) => (
-              <tr key={row.id}>
-                <td style={{ fontWeight: 600 }}>MOL{String(i + 1).padStart(3, "0")}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>MOL{String(i + 1).padStart(3, "0")}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <strong style={{ color: "var(--ink)" }}>{row.moleculeName}</strong>
                 </td>
-                <td style={{ color: "var(--ink)", fontSize: "13px" }}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--ink)", fontSize: "13px" }}>
                   {row.therapyName ?? "—"}
                 </td>
-                <td style={{ color: "var(--muted)", fontSize: "13px" }}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--muted)", fontSize: "13px" }}>
                   {row.description ?? "—"}
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
                     borderRadius: "999px", 
@@ -341,12 +341,12 @@ export function ProductGroupMaster() {
                     {row.status === "ACTIVE" ? "Active" : "Inactive"}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => handleEdit(row)} title="Edit" type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} title="Deactivate" type="button" disabled={row.status === "INACTIVE"}>
                     <Ban size={15} />
                   </button>
@@ -354,8 +354,8 @@ export function ProductGroupMaster() {
               </tr>
             ))}
             {!loading && filtered.length === 0 && (
-              <tr>
-                <td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No product molecules found
                 </td>
               </tr>

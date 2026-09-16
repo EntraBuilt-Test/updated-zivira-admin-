@@ -61,20 +61,20 @@ export function VisitFrequencyReport() {
       </div>
       {error && <p className="form-error">{error}</p>}
 
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead><tr><th>Doctor</th><th>Total Visits</th><th>Distinct Reps</th><th>Last Visit</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Visits</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Distinct Reps</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Last Visit</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {rows.map((r) => (
-              <tr key={r.doctor}>
-                <td><strong style={{ color: "var(--ink)" }}>{r.doctor}</strong></td>
-                <td>{r.visits}</td>
-                <td>{r.reps.size}</td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{new Date(r.lastVisit).toLocaleDateString("en-IN")}</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.doctor}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.doctor}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.visits}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.reps.size}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{new Date(r.lastVisit).toLocaleDateString("en-IN")}</td>
               </tr>
             ))}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={4} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>
                 <MapPin size={28} style={{ margin: "0 auto 8px", display: "block", opacity: 0.3 }} />
                 No DCR visit records yet.
               </td></tr>

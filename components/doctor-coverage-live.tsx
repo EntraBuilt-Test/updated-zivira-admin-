@@ -42,32 +42,32 @@ export function DoctorCoverageLive() {
         </div>
       </div>
       {error && <p className="form-error">{error}</p>}
-      <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Doctor Name</th><th>Specialty</th><th>Assigned MR</th><th>Total Visits</th>
-              <th>Total Samples (units)</th><th>Total Gifts (units)</th><th>Gift Value (₹)</th><th>Last Visit Date</th>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Name</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Specialty</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Assigned MR</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Visits</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Samples (units)</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Gifts (units)</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Gift Value (₹)</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Last Visit Date</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {rows.map(r => (
-              <tr key={r.doctorId} style={r.overGiftThreshold ? { background: "#fff8e8" } : undefined}>
-                <td><strong>{r.doctorName}</strong></td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.specialty ?? "—"}</td>
-                <td>{r.assignedMR ?? "—"}</td>
-                <td>{r.totalVisits}</td>
-                <td>{r.totalSamples}</td>
-                <td>{r.totalGifts}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.doctorId} style={r.overGiftThreshold ? { background: "#fff8e8" } : undefined}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{r.doctorName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.specialty ?? "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.assignedMR ?? "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalVisits}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalSamples}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalGifts}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   {r.overGiftThreshold && <AlertTriangle size={13} color="#b45309" style={{ marginRight: 4, verticalAlign: "middle" }} />}
                   ₹{r.totalGiftValueRs}
                 </td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.lastVisitDate ? formatDate(r.lastVisitDate) : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.lastVisitDate ? formatDate(r.lastVisitDate) : "—"}</td>
               </tr>
             ))}
             {!loading && rows.length === 0 && (
-              <tr><td colSpan={8} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>No doctors found</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={8} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>No doctors found</td></tr>
             )}
           </tbody>
         </table>

@@ -203,120 +203,120 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
           {/* Table Header & Rows */}
           <div className="overflow-x-auto flex-1">
             <table className="w-full text-left text-xs">
-              <thead className="bg-surface-subtle text-text-muted text-[10px] font-bold uppercase tracking-wider border-b border-border-subtle">
-                <tr>
-                  <th className="py-3 px-3.5 w-6"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
-                  <th className="py-3 px-3">BRAND & MOLECULE</th>
-                  <th className="py-3 px-3">THERAPEUTIC CLASS</th>
-                  <th className="py-3 px-3">PRIORITY</th>
-                  <th className="py-3 px-3">EXPOSURE CALLS</th>
-                  <th className="py-3 px-3">AVG TIME</th>
-                  <th className="py-3 px-3">RX LIFT</th>
-                  <th className="py-3 px-3 text-right">ACTION</th>
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">BRAND & MOLECULE</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">THERAPEUTIC CLASS</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">PRIORITY</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">EXPOSURE CALLS</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">AVG TIME</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">RX LIFT</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">ACTION</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-text-secondary">
+              <tbody className="divide-y divide-border-subtle">
                 {/* Row 1 (Selected) */}
-                <tr className="bg-orange-50/40 hover:bg-orange-50/60 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" defaultChecked className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="bg-orange-50/40 hover:bg-orange-50/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" defaultChecked className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">CardioCare 20mg</div>
                     <div className="text-[11px] text-text-muted font-mono">Atorvastatin + Aspirin • Tab</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded">Cardiology</span>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-terracotta text-white font-bold text-[10px] px-2 py-0.5 rounded shadow-2xs">P1 Core</span>
                   </td>
-                  <td className="py-3.5 px-3 font-bold text-text-primary">3,420 Calls</td>
-                  <td className="py-3.5 px-3 font-semibold text-text-secondary">1m 18s</td>
-                  <td className="py-3.5 px-3 font-bold text-emerald-600">+28.4%</td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 font-bold text-text-primary px-4 text-sm whitespace-nowrap">3,420 Calls</td>
+                  <td className="py-3.5 px-3 font-semibold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">1m 18s</td>
+                  <td className="py-3.5 px-3 font-bold text-emerald-600 px-4 text-sm text-text-primary whitespace-nowrap">+28.4%</td>
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-terracotta font-semibold text-[11px] cursor-pointer hover:underline">Active Dossier</span>
                   </td>
                 </tr>
 
                 {/* Row 2 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">GlycoZiv XR 500</div>
                     <div className="text-[11px] text-text-muted font-mono">Metformin SR + Dapagliflozin</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-status-info-bg text-status-info border border-status-info-bg text-[10px] font-bold px-2 py-0.5 rounded">Diabetology</span>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-terracotta text-white font-bold text-[10px] px-2 py-0.5 rounded shadow-2xs">P1 Core</span>
                   </td>
-                  <td className="py-3.5 px-3 font-bold text-text-primary">2,890 Calls</td>
-                  <td className="py-3.5 px-3 font-semibold text-text-secondary">1m 04s</td>
-                  <td className="py-3.5 px-3 font-bold text-emerald-600">+22.1%</td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 font-bold text-text-primary px-4 text-sm whitespace-nowrap">2,890 Calls</td>
+                  <td className="py-3.5 px-3 font-semibold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">1m 04s</td>
+                  <td className="py-3.5 px-3 font-bold text-emerald-600 px-4 text-sm text-text-primary whitespace-nowrap">+22.1%</td>
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>
 
                 {/* Row 3 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">Resp-Clear Inhaler 200mcg</div>
                     <div className="text-[11px] text-text-muted font-mono">Budesonide + Formoterol DPI</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-status-success-bg text-status-success border border-status-success-bg text-[10px] font-bold px-2 py-0.5 rounded">Pulmonology</span>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-surface-subtle text-text-secondary font-bold text-[10px] px-2 py-0.5 rounded">P2 Focus</span>
                   </td>
-                  <td className="py-3.5 px-3 font-bold text-text-primary">2,140 Calls</td>
-                  <td className="py-3.5 px-3 font-semibold text-text-secondary">48s</td>
-                  <td className="py-3.5 px-3 font-bold text-emerald-600">+16.5%</td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 font-bold text-text-primary px-4 text-sm whitespace-nowrap">2,140 Calls</td>
+                  <td className="py-3.5 px-3 font-semibold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">48s</td>
+                  <td className="py-3.5 px-3 font-bold text-emerald-600 px-4 text-sm text-text-primary whitespace-nowrap">+16.5%</td>
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>
 
                 {/* Row 4 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">ZiviCal D3 Forte</div>
                     <div className="text-[11px] text-text-muted font-mono">Cholecalciferol 60,000 IU Softgel</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-status-warning-bg text-status-warning border border-status-warning-bg text-[10px] font-bold px-2 py-0.5 rounded">Orthopedics</span>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-surface-subtle text-text-secondary font-bold text-[10px] px-2 py-0.5 rounded">P2 Focus</span>
                   </td>
-                  <td className="py-3.5 px-3 font-bold text-text-primary">1,980 Calls</td>
-                  <td className="py-3.5 px-3 font-semibold text-text-secondary">42s</td>
-                  <td className="py-3.5 px-3 font-bold text-text-secondary">+8.2%</td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 font-bold text-text-primary px-4 text-sm whitespace-nowrap">1,980 Calls</td>
+                  <td className="py-3.5 px-3 font-semibold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">42s</td>
+                  <td className="py-3.5 px-3 font-bold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">+8.2%</td>
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>
 
                 {/* Row 5 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
+                <tr className="hover:bg-surface-subtle/70 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="py-3.5 px-3.5 px-4 text-sm text-text-primary whitespace-nowrap"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">GastroZiv DSR</div>
                     <div className="text-[11px] text-text-muted font-mono">Rabeprazole 20mg + Domperidone 30mg</div>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] font-bold px-2 py-0.5 rounded">Gastroenterology</span>
                   </td>
-                  <td className="py-3.5 px-3">
+                  <td className="py-3.5 px-3 px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="bg-surface-subtle text-text-secondary font-bold text-[10px] px-2 py-0.5 rounded border border-border-subtle">P3 Routine</span>
                   </td>
-                  <td className="py-3.5 px-3 font-bold text-text-primary">1,240 Calls</td>
-                  <td className="py-3.5 px-3 font-semibold text-text-secondary">32s</td>
-                  <td className="py-3.5 px-3 font-bold text-text-secondary">+4.1%</td>
-                  <td className="py-3.5 px-3 text-right">
+                  <td className="py-3.5 px-3 font-bold text-text-primary px-4 text-sm whitespace-nowrap">1,240 Calls</td>
+                  <td className="py-3.5 px-3 font-semibold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">32s</td>
+                  <td className="py-3.5 px-3 font-bold text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">+4.1%</td>
+                  <td className="py-3.5 px-3 text-right px-4 text-sm text-text-primary whitespace-nowrap">
                     <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
                   </td>
                 </tr>

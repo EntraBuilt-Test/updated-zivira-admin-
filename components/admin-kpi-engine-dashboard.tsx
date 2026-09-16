@@ -68,22 +68,22 @@ export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; 
       <h3 className="text-lg font-semibold text-text-primary" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><Gauge size={16} /> Manager KPIs</h3>
       <div className="bg-surface-card border border-border-subtle rounded-xl overflow-x-auto shadow-sm" style={{ marginBottom: 28 }}>
         <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
-          <thead className="bg-surface-subtle text-text-secondary border-b border-border-subtle">
-            <tr><th className="px-6 py-3 font-medium">Manager</th><th className="px-6 py-3 font-medium">Team Size</th><th className="px-6 py-3 font-medium">Joint Call %</th><th className="px-6 py-3 font-medium">Team Compliance %</th><th className="px-6 py-3 font-medium">Doctor Coverage %</th><th className="px-6 py-3 font-medium">Effectiveness Score</th></tr>
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Manager</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Team Size</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Call %</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Team Compliance %</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor Coverage %</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Effectiveness Score</th></tr>
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {managers.map((m) => (
               <tr className="hover:bg-surface-subtle/50 transition-colors" key={m.managerCode}>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary"><strong className="text-text-primary">{m.managerName ?? m.managerCode}</strong></td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{m.teamSize}</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{m.jointCallPercent}%</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{m.teamCompliancePercent}%</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{m.doctorCoveragePercent}%</td>
-                <td className="font-bold text-text-primary px-6 py-4 border-b border-border-subtle">{m.managerEffectivenessScore}</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap"><strong className="text-text-primary">{m.managerName ?? m.managerCode}</strong></td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{m.teamSize}</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{m.jointCallPercent}%</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{m.teamCompliancePercent}%</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{m.doctorCoveragePercent}%</td>
+                <td className="font-bold text-text-primary px-6 py-4 border-b border-border-subtle px-4 py-3 text-sm whitespace-nowrap">{m.managerEffectivenessScore}</td>
               </tr>
             ))}
             {!loading && managers.length === 0 && (
-              <tr><td colSpan={6} className="px-6 py-8 text-center text-text-muted">No manager KPI data yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td colSpan={6} className="px-6 py-8 text-center text-text-muted px-4 py-3 text-sm text-text-primary whitespace-nowrap">No manager KPI data yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -92,23 +92,23 @@ export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; 
       <h3 className="text-lg font-semibold text-text-primary" style={{ marginBottom: 10 }}>Representative KPIs</h3>
       <div className="bg-surface-card border border-border-subtle rounded-xl overflow-x-auto shadow-sm">
         <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
-          <thead className="bg-surface-subtle text-text-secondary border-b border-border-subtle">
-            <tr><th className="px-6 py-3 font-medium">Representative</th><th className="px-6 py-3 font-medium">Doctors Visited</th><th className="px-6 py-3 font-medium">DCR Submitted</th><th className="px-6 py-3 font-medium">Products Promoted</th><th className="px-6 py-3 font-medium">Samples Distributed</th><th className="px-6 py-3 font-medium">Conversion Rate</th><th className="px-6 py-3 font-medium">Compliance %</th></tr>
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Representative</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctors Visited</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">DCR Submitted</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Products Promoted</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Samples Distributed</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Conversion Rate</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Compliance %</th></tr>
           </thead>
           <tbody className="divide-y divide-border-subtle">
             {reps.map((r) => (
               <tr className="hover:bg-surface-subtle/50 transition-colors" key={r.employeeCode}>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary"><strong className="text-text-primary">{r.employeeName ?? r.employeeCode}</strong></td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{r.doctorsVisited}</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{r.dcrSubmitted}</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{r.productsPromoted}</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{r.samplesDistributed}</td>
-                <td className="px-6 py-4 border-b border-border-subtle text-text-primary">{r.conversionRatePercent}%</td>
-                <td style={{ fontWeight: 700, color: r.compliancePercent < 70 ? "#b91c1c" : r.compliancePercent < 90 ? "#a16207" : "#15803d" }}>{r.compliancePercent}%</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap"><strong className="text-text-primary">{r.employeeName ?? r.employeeCode}</strong></td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{r.doctorsVisited}</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{r.dcrSubmitted}</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{r.productsPromoted}</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{r.samplesDistributed}</td>
+                <td className="px-6 py-4 border-b border-border-subtle text-text-primary px-4 py-3 text-sm whitespace-nowrap">{r.conversionRatePercent}%</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 700, color: r.compliancePercent < 70 ? "#b91c1c" : r.compliancePercent < 90 ? "#a16207" : "#15803d" }}>{r.compliancePercent}%</td>
               </tr>
             ))}
             {!loading && reps.length === 0 && (
-              <tr><td colSpan={7} className="px-6 py-8 text-center text-text-muted">No representative KPI data yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td colSpan={7} className="px-6 py-8 text-center text-text-muted px-4 py-3 text-sm text-text-primary whitespace-nowrap">No representative KPI data yet.</td></tr>
             )}
           </tbody>
         </table>

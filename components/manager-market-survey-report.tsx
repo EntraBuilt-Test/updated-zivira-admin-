@@ -187,13 +187,13 @@ export function ManagerMarketSurveyReport() {
         />
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "180px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Survey Date</th>
-              <th>MR</th>
-              <th style={{ minWidth: "160px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Survey Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MR</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>HQ</span>
                   <button
@@ -215,11 +215,11 @@ export function ManagerMarketSurveyReport() {
                   </div>
                 )}
               </th>
-              <th>Competitor Company</th>
-              <th>Competitor Brand</th>
-              <th>Competitor Product</th>
-              <th>MRP</th>
-              <th style={{ minWidth: "150px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Competitor Company</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Competitor Brand</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Competitor Product</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MRP</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Availability</span>
                   <button
@@ -241,7 +241,7 @@ export function ManagerMarketSurveyReport() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "150px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "150px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Market Demand</span>
                   <button
@@ -263,7 +263,7 @@ export function ManagerMarketSurveyReport() {
                   </div>
                 )}
               </th>
-              <th style={{ minWidth: "140px", position: "relative" }}>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "140px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Approval</span>
                   <button
@@ -285,20 +285,20 @@ export function ManagerMarketSurveyReport() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {filtered.map((row) => (
-              <tr key={row.id}>
-                <td>{formatDate(row.surveyDate)}</td>
-                <td><strong style={{ color: "var(--ink)" }}>{row.mr}</strong></td>
-                <td>{row.hq}</td>
-                <td>{row.competitorCompany}</td>
-                <td>{row.competitorBrand}</td>
-                <td>{row.competitorProduct}</td>
-                <td style={{ fontWeight: 600 }}>₹{row.mrp.toFixed(2)}</td>
-                <td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(row.surveyDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.mr}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.competitorCompany}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.competitorBrand}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.competitorProduct}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>₹{row.mrp.toFixed(2)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -311,7 +311,7 @@ export function ManagerMarketSurveyReport() {
                     {row.availability}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -324,7 +324,7 @@ export function ManagerMarketSurveyReport() {
                     {row.marketDemand}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{
                     display: "inline-block",
                     padding: "2px 8px",
@@ -337,12 +337,12 @@ export function ManagerMarketSurveyReport() {
                     {row.approval}
                   </span>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
                     <Pencil size={15} />
                   </button>
                 </td>
-                <td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDelete(row.id)} type="button">
                     <Ban size={15} />
                   </button>
@@ -350,8 +350,8 @@ export function ManagerMarketSurveyReport() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr>
-                <td colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No survey reports found
                 </td>
               </tr>

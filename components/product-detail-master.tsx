@@ -309,19 +309,19 @@ export function ProductDetailMaster() {
         </article>
       </div>
 
-      <div className="subdivision-table-card" style={{ overflowX: "auto", paddingBottom: "120px" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr>
-              <th>Product Code</th>
-              <th>Product Name</th>
-              <th>Brand</th>
-              <th>Strength</th>
-              <th>Pack</th>
-              <th>SKU</th>
-              <th>Division</th>
-              <th>UOM</th>
-              <th style={{ minWidth: "130px", position: "relative" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Product Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Brand</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Strength</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Pack</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">SKU</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Division</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">UOM</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
                   <span>Status</span>
                   <button
@@ -407,45 +407,45 @@ export function ProductDetailMaster() {
                   </div>
                 )}
               </th>
-              <th colSpan={2}>Actions</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {loading && (
-              <tr>
-                <td colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   Loading...
                 </td>
               </tr>
             )}
             {!loading && rows.map((row) => {
               return (
-                <tr key={row.id}>
-                  <td style={{ fontWeight: 600 }}>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>
                     {row.productCode}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <strong style={{ color: "var(--ink)" }}>{row.productName}</strong>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {row.brandName || "—"}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {row.strength || "—"}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {row.pack || "—"}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {row.sku || "—"}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {row.division || "—"}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     {row.uom || "—"}
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <span style={{ 
                       padding: "2px 8px", 
                       borderRadius: "999px", 
@@ -458,12 +458,12 @@ export function ProductDetailMaster() {
                       {row.status === "ACTIVE" ? "Active" : "Inactive"}
                     </span>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} title="Edit" type="button">
                       <Pencil size={15} />
                     </button>
                   </td>
-                  <td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                     <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} title="Deactivate" type="button" disabled={row.status === "INACTIVE"}>
                       <Ban size={15} />
                     </button>
@@ -472,8 +472,8 @@ export function ProductDetailMaster() {
               );
             })}
             {!loading && rows.length === 0 && (
-              <tr>
-                <td colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={12} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No products found
                 </td>
               </tr>

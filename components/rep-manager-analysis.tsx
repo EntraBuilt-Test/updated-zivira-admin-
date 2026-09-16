@@ -65,45 +65,45 @@ export function RepManagerAnalysis() {
       {error && <p className="form-error">{error}</p>}
 
       <h3 className="section-title" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><Users size={16} /> Representatives</h3>
-      <div className="subdivision-table-card" style={{ marginBottom: 28 }}>
-        <table className="subdivision-table">
-          <thead><tr><th>Representative</th><th>Reporting Manager</th><th>Doctors Visited</th><th>Total Visits</th><th>Joint Visits</th><th>Joint Visit %</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Representative</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Reporting Manager</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctors Visited</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Visits</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Visits</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Visit %</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {reps.map((r) => (
-              <tr key={r.employeeCode}>
-                <td><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong> <span style={{ color: "var(--muted)", fontSize: 11 }}>({r.employeeCode})</span></td>
-                <td style={{ fontSize: 12, color: "var(--muted)" }}>{r.reportingManagerName ?? r.reportingManager ?? "—"}</td>
-                <td>{r.doctorsVisited}</td>
-                <td>{r.totalVisits}</td>
-                <td>{r.jointVisits}</td>
-                <td style={{ fontWeight: 700, color: tone(r.jointVisitPercent) }}>{r.jointVisitPercent}%</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={r.employeeCode}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{r.employeeName ?? r.employeeCode}</strong> <span style={{ color: "var(--muted)", fontSize: 11 }}>({r.employeeCode})</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{r.reportingManagerName ?? r.reportingManager ?? "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.doctorsVisited}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.totalVisits}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{r.jointVisits}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 700, color: tone(r.jointVisitPercent) }}>{r.jointVisitPercent}%</td>
               </tr>
             ))}
             {!loading && reps.length === 0 && (
-              <tr><td colSpan={6} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>No representative data for this month yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={6} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>No representative data for this month yet.</td></tr>
             )}
           </tbody>
         </table>
       </div>
 
       <h3 className="section-title" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><Trophy size={16} /> Manager Joint-Work Ranking</h3>
-      <div className="subdivision-table-card">
-        <table className="subdivision-table">
-          <thead><tr><th>Rank</th><th>Manager</th><th>Team Size</th><th>Team Visits</th><th>Total Joint Calls</th><th>Avg Joint Calls / Rep</th><th>Joint Call %</th></tr></thead>
-          <tbody>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm"><tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Rank</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Manager</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Team Size</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Team Visits</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Joint Calls</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Avg Joint Calls / Rep</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Joint Call %</th></tr></thead>
+          <tbody className="divide-y divide-border-subtle">
             {managers.map((m) => (
-              <tr key={m.managerCode}>
-                <td style={{ color: "var(--muted)" }}>{m.rank}</td>
-                <td><strong style={{ color: "var(--ink)" }}>{m.managerName ?? m.managerCode}</strong></td>
-                <td>{m.teamSize}</td>
-                <td>{m.totalTeamVisits}</td>
-                <td>{m.totalJointCalls}</td>
-                <td>{m.avgJointCallsPerRep}</td>
-                <td style={{ fontWeight: 700, color: tone(m.jointCallPercent) }}>{m.jointCallPercent}%</td>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={m.managerCode}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--muted)" }}>{m.rank}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{m.managerName ?? m.managerCode}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{m.teamSize}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{m.totalTeamVisits}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{m.totalJointCalls}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{m.avgJointCallsPerRep}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 700, color: tone(m.jointCallPercent) }}>{m.jointCallPercent}%</td>
               </tr>
             ))}
             {!loading && managers.length === 0 && (
-              <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>No manager joint-work data for this month yet.</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 32 }}>No manager joint-work data for this month yet.</td></tr>
             )}
           </tbody>
         </table>

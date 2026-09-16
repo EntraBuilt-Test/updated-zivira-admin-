@@ -43,23 +43,23 @@ export function AdminTourPlans() {
         </div>
       </div>
       {error && <p className="form-error">{error}</p>}
-      <div className="subdivision-table-card" style={{ overflowX: "auto" }}>
-        <table className="subdivision-table">
-          <thead>
-            <tr><th>TP ID</th><th>MR</th><th>Month</th><th>Assigned Manager</th><th>Primary Manager</th><th>Status</th><th>History</th></tr>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group"><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">TP ID</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MR</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Month</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Assigned Manager</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Primary Manager</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th><th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">History</th></tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-border-subtle">
             {tps.map(tp => {
               const sc = STATUS_COLORS[tp.status] ?? STATUS_COLORS.DRAFT;
               return (
-                <tr key={tp.id}>
-                  <td><strong>{tp.tpId}</strong></td>
-                  <td>{tp.employeeName ?? tp.employeeCode}</td>
-                  <td>{tp.month}</td>
-                  <td>{tp.assignedManager}</td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>{tp.primaryManager}</td>
-                  <td><span style={{ ...sc, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{tp.status}</span></td>
-                  <td style={{ fontSize: 12, color: "var(--muted)" }}>
+                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={tp.id}>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{tp.tpId}</strong></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{tp.employeeName ?? tp.employeeCode}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{tp.month}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{tp.assignedManager}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>{tp.primaryManager}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ ...sc, borderRadius: 6, padding: "2px 8px", fontSize: 11, fontWeight: 700 }}>{tp.status}</span></td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontSize: 12, color: "var(--muted)" }}>
                     {tp.status === "VOIDED" && `Voided by ${tp.voidedBy}: ${tp.voidReason}${tp.reassignedToTpId ? ` → ${tp.reassignedToTpId}` : ""}`}
                     {tp.parentTpId && `Reassigned from ${tp.parentTpId}`}
                   </td>
@@ -67,7 +67,7 @@ export function AdminTourPlans() {
               );
             })}
             {!loading && tps.length === 0 && (
-              <tr><td colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>No Tour Plans yet</td></tr>
+              <tr className="hover:bg-surface-subtle/50 transition-colors group"><td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={7} style={{ textAlign: "center", color: "var(--muted)", padding: 40 }}>No Tour Plans yet</td></tr>
             )}
           </tbody>
         </table>
