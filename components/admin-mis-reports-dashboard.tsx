@@ -842,7 +842,6 @@ Preview data — territory secondary-sales targets/achievement are not yet expos
 </div>
 </div>
 </div>
-    </div>
 
     {/* Schedule Dispatch modal */}
     {showSchedule && (
