@@ -1,8 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import type { TourPlan } from "@zivira/types";
+import { apiClient } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
 
 // Fix — this page used to be a fully static server component: none of its
@@ -10,14 +12,19 @@ import { downloadCsv } from "@/lib/download-csv";
 // sync/notification icons, Export MTP, Bulk Approve & Lock Plans, sub-nav
 // tabs, the filter bar, per-row checkboxes/View Itinerary, Bulk Revise
 // Dates / Fast Approve, or the inspector card's Lock Route Schedule / Print
-// buttons did anything). The demo KPI numbers on the 4 pulse cards and the
-// fixed beat-rotation schedule are left untouched (no backend collection
-// exists yet for MTP cycles), but the MR roster table itself is now real
-// local state: search + both filters + Reset actually filter it, Export
-// downloads exactly what's on screen as CSV, pagination reflects the real
-// filtered count, row selection drives the "N MR Selected" footer and the
-// side inspector, and every action button opens a real read-only popup or
-// does a real, session-only state update instead of doing nothing.
+// buttons did anything). A later pass wired all of that up against a local
+// mock MR array. This pass replaces that mock array with a real fetch from
+// GET /company/tour-plans (apiClient.adminTourPlans), keeping every
+// existing filter/search/pagination/export/detail-popup working against
+// the real TourPlan rows. TourPlan has no "zone"/"station mix"/"core HCPs"
+// concept in the backend, so those UI groupings are now derived from real
+// fields instead (assignedManager for the manager/zone grouping, the real
+// `locations[]` array for station mix / itinerary / joint-work detection).
+// The 4 demo KPI pulse cards and the fixed "Oct Week 1" beat-rotation
+// schedule remain untouched (no backend collection exists for MTP cycle
+// aggregates or day-by-day beat schedules yet).
+
+type TourPlanStatus = TourPlan["status"];
 
 type Rep = {
   id: string;
@@ -32,66 +39,143 @@ type Rep = {
   coreHcps: string;
   jointDays: string;
   asm: string;
-  status: "Approved" | "Pending Review" | "Revision Needed";
+  status: TourPlanStatus;
+  raw: TourPlan;
 };
 
-const initialReps: Rep[] = [
-  { id: "r1", initials: "RS", name: "Rahul Sharma", code: "MR-1049", territory: "Mumbai Metro (West)", zone: "West Zone (Mumbai, Gujarat)", stationMix: "HQ Local (16d)", exStation: "Ex-Station: 6d (Thane/Vashi)", workPlan: "22 Days • 240 Calls", coreHcps: "88 Core A+ HCPs", jointDays: "4 Days", asm: "ASM Rajesh Sharma", status: "Approved" },
-  { id: "r2", initials: "AD", name: "Amit Duggal", code: "MR-0842", territory: "Delhi South (North)", zone: "North Zone (Delhi NCR, Punjab)", stationMix: "HQ Local (14d)", exStation: "Out-Station: 7d (Gurugram)", workPlan: "21 Days • 215 Calls", coreHcps: "74 Core A+ HCPs", jointDays: "3 Days", asm: "ASM Vikrant Verma", status: "Pending Review" },
-  { id: "r3", initials: "SM", name: "Subhashish Mitra", code: "MR-1120", territory: "Kolkata Central (East)", zone: "East Zone (Kolkata, Odisha)", stationMix: "HQ Local (18d)", exStation: "Ex-Station: 5d (Howrah/Saltlake)", workPlan: "23 Days • 250 Calls", coreHcps: "92 Core A+ HCPs", jointDays: "5 Days", asm: "ASM Debopriya Das", status: "Approved" },
-  { id: "r4", initials: "SK", name: "Sunita Kulkarni", code: "MR-0994", territory: "Bengaluru Central (South)", zone: "South Zone (Bengaluru, Chennai)", stationMix: "HQ Local (12d)", exStation: "OS: 8d (Mysuru/Mandya)", workPlan: "20 Days • 210 Calls", coreHcps: "65 Core A+ (Below Target)", jointDays: "2 Days", asm: "ASM Srinivas Murthy", status: "Revision Needed" },
-  { id: "r5", initials: "KN", name: "Karthik Nathan", code: "MR-1205", territory: "Chennai Central (South)", zone: "South Zone (Bengaluru, Chennai)", stationMix: "HQ Local (17d)", exStation: "Ex-Station: 5d (Tambaram)", workPlan: "22 Days • 235 Calls", coreHcps: "85 Core A+ HCPs", jointDays: "4 Days", asm: "ASM Balasubramanian", status: "Approved" }
-];
+const ALL_ZONES = "All Managers (Pan-India)";
+const ALL_STATUSES = "All Statuses";
+const ALL_HQ = "All Location Types";
 
-const ZONES = [
-  "All Zones (East, West, North, South)",
-  "West Zone (Mumbai, Gujarat)",
-  "North Zone (Delhi NCR, Punjab)",
-  "South Zone (Bengaluru, Chennai)",
-  "East Zone (Kolkata, Odisha)"
-];
+const STATUSES: string[] = [ALL_STATUSES, "DRAFT", "SUBMITTED", "APPROVED", "REJECTED", "VOIDED"];
 
-const STATUSES = ["All Statuses (Approved, Pending...)", "Approved", "Pending Review", "Revision Needed", "Draft"];
+const HQ_CLASSES = [ALL_HQ, "Single Location", "Multi-Location Tour"];
 
-const HQ_CLASSES = ["All HQ Classifications", "Local HQ Only", "Includes Ex-Station", "Includes Outstation (OS)"];
+const CYCLE_TO_MONTH: Record<string, string> = {
+  "Oct 2026 (Upcoming Cycle)": "2026-10",
+  "Current Month (Sep 2026)": "2026-09",
+  "Nov 2026 (Advance Planning)": "2026-11"
+};
 
 const TABS = [
-  { key: "master", label: "Monthly Tour Program (MTP) Master", count: "428" },
-  { key: "routes", label: "Route & Beat Optimization Matrix", count: "142 Beats" },
-  { key: "deviation", label: "MTP vs DCR Deviation Tracker", count: "18 Flags" },
-  { key: "joint", label: "Joint Field Work & Manager Plan", count: "64 Days" }
+  { key: "master", label: "Monthly Tour Program (MTP) Master" },
+  { key: "routes", label: "Route & Beat Optimization Matrix" },
+  { key: "deviation", label: "MTP vs DCR Deviation Tracker" },
+  { key: "joint", label: "Joint Field Work & Manager Plan" }
 ] as const;
 
-const statusPillClass: Record<Rep["status"], string> = {
-  "Approved": "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg",
-  "Pending Review": "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-status-warning-bg",
-  "Revision Needed": "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200"
+const statusPillClass: Record<string, string> = {
+  APPROVED: "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-status-success-bg",
+  SUBMITTED: "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-status-warning-bg",
+  DRAFT: "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-border-subtle",
+  REJECTED: "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-200",
+  VOIDED: "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 border border-border-subtle"
 };
 
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 8;
+
+const CYCLE_LABELS: Record<string, string> = {
+  "Oct 2026 (Upcoming Cycle)": "Oct 2026",
+  "Current Month (Sep 2026)": "Current Month",
+  "Nov 2026 (Advance Planning)": "Nov 2026"
+};
+
+function cycleLabel(cycleValue: string) {
+  return CYCLE_LABELS[cycleValue] ?? cycleValue;
+}
+
+function initialsOf(name?: string) {
+  if (!name) return "MR";
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[1]?.[0] ?? "")).toUpperCase() || "MR";
+}
+
+function mapTourPlan(tp: TourPlan): Rep {
+  const locations = tp.locations ?? [];
+  const towns = Array.from(new Set(locations.map((l) => l.town).filter(Boolean)));
+  const areas = Array.from(new Set(locations.map((l) => l.area).filter(Boolean)));
+  const jointCount = locations.filter((l) => (l.purpose || "").toLowerCase().includes("joint")).length;
+  return {
+    id: tp.id,
+    initials: initialsOf(tp.employeeName),
+    name: tp.employeeName || tp.employeeCode,
+    code: tp.employeeCode,
+    territory: areas.slice(0, 2).join(", ") || towns.slice(0, 2).join(", ") || "Territory not set",
+    zone: tp.assignedManager || tp.primaryManager || "Unassigned",
+    stationMix: `${locations.length} Location${locations.length === 1 ? "" : "s"} Planned`,
+    exStation: towns.length > 0 ? towns.join(", ") : "No stations listed",
+    workPlan: `${tp.month} • ${locations.length} Stops`,
+    coreHcps: tp.status === "REJECTED" ? `Rejected: ${tp.rejectReason || "No reason given"}` : `${areas.length} Areas Covered`,
+    jointDays: jointCount > 0 ? `${jointCount} Day${jointCount === 1 ? "" : "s"}` : "0 Days",
+    asm: tp.assignedManager || tp.primaryManager || "—",
+    status: tp.status,
+    raw: tp
+  };
+}
 
 export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const [globalSearch, setGlobalSearch] = useState("");
-  const [globalZone, setGlobalZone] = useState(ZONES[0]);
+  const [globalZone, setGlobalZone] = useState(ALL_ZONES);
   const [cycle, setCycle] = useState("Oct 2026 (Upcoming Cycle)");
   const [hasUnread, setHasUnread] = useState(true);
   const [search, setSearch] = useState("");
-  const [zone, setZone] = useState(ZONES[0]);
-  const [status, setStatus] = useState(STATUSES[0]);
-  const [hqClass, setHqClass] = useState(HQ_CLASSES[0]);
+  const [zone, setZone] = useState(ALL_ZONES);
+  const [status, setStatus] = useState<string>(ALL_STATUSES);
+  const [hqClass, setHqClass] = useState(ALL_HQ);
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<(typeof TABS)[number]["key"]>("master");
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(["r1"]));
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [detail, setDetail] = useState<{ title: string; body: string } | null>(null);
+
+  const [tourPlans, setTourPlans] = useState<TourPlan[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      setError("");
+      try {
+        const month = CYCLE_TO_MONTH[cycle];
+        const response = await apiClient.adminTourPlans({
+          month,
+          status: status !== ALL_STATUSES ? status : undefined
+        });
+        if (!cancelled) {
+          const rows = response.data ?? [];
+          setTourPlans(rows);
+          setSelectedIds((prev) => {
+            const validIds = new Set(rows.map((t) => t.id));
+            const next = new Set<string>();
+            prev.forEach((id) => { if (validIds.has(id)) next.add(id); });
+            return next;
+          });
+        }
+      } catch (e) {
+        if (!cancelled) setError(e instanceof Error ? e.message : "Failed to load tour plans");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [cycle, status]);
+
+  const reps = useMemo(() => tourPlans.map(mapTourPlan), [tourPlans]);
+
+  const zoneOptions = useMemo(() => {
+    const managers = Array.from(new Set(reps.map((r) => r.zone).filter(Boolean)));
+    return [ALL_ZONES, ...managers];
+  }, [reps]);
 
   const filtered = useMemo(() => {
     const q = (search || globalSearch).trim().toLowerCase();
-    const activeZone = zone !== ZONES[0] ? zone : globalZone;
-    return initialReps.filter((r) => {
-      if (activeZone !== ZONES[0] && r.zone !== activeZone) return false;
-      if (status !== STATUSES[0] && r.status !== status) return false;
-      if (hqClass === "Includes Ex-Station" && !r.exStation.toLowerCase().includes("ex-station")) return false;
-      if (hqClass === "Includes Outstation (OS)" && !r.exStation.toLowerCase().includes("os:") && !r.exStation.toLowerCase().includes("out-station")) return false;
+    const activeZone = zone !== ALL_ZONES ? zone : globalZone;
+    return reps.filter((r) => {
+      if (activeZone !== ALL_ZONES && r.zone !== activeZone) return false;
+      if (hqClass === "Single Location" && r.raw.locations.length > 1) return false;
+      if (hqClass === "Multi-Location Tour" && r.raw.locations.length <= 1) return false;
       if (!q) return true;
       return (
         r.name.toLowerCase().includes(q) ||
@@ -99,18 +183,18 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
         r.code.toLowerCase().includes(q)
       );
     });
-  }, [search, globalSearch, zone, globalZone, status, hqClass]);
+  }, [reps, search, globalSearch, zone, globalZone, hqClass]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const selectedRep = initialReps.find((r) => selectedIds.has(r.id)) || initialReps[0];
+  const selectedRep = reps.find((r) => selectedIds.has(r.id)) || reps[0];
 
   function resetFilters() {
     setSearch("");
-    setZone(ZONES[0]);
-    setStatus(STATUSES[0]);
-    setHqClass(HQ_CLASSES[0]);
+    setZone(ALL_ZONES);
+    setStatus(ALL_STATUSES);
+    setHqClass(ALL_HQ);
     setPage(1);
   }
 
@@ -130,13 +214,12 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
         "MR": r.name,
         "Code": r.code,
         "Territory": r.territory,
-        "Zone": r.zone,
+        "Manager": r.zone,
         "Station Mix": r.stationMix,
-        "Ex/Out-Station": r.exStation,
+        "Stations": r.exStation,
         "Work Plan": r.workPlan,
-        "Core HCPs": r.coreHcps,
-        "Joint Work ASM": r.asm,
-        "Joint Days": r.jointDays,
+        "Areas Covered": r.coreHcps,
+        "Joint Work Days": r.jointDays,
         "Status": r.status
       }))
     );
@@ -166,16 +249,12 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
   value={globalZone}
   onChange={(e) => { setGlobalZone(e.target.value); setPage(1); }}
 >
-<option>All Territories (Pan-India HQ)</option>
-<option>West Zone (Mumbai &amp; Gujarat)</option>
-<option>North Zone (Delhi NCR &amp; UP)</option>
-<option>South Zone (Bengaluru &amp; Chennai)</option>
-<option>East Zone (Kolkata &amp; Bihar)</option>
+{zoneOptions.map((z) => <option key={z}>{z}</option>)}
 </select>
 <select
   className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 cursor-pointer"
   value={cycle}
-  onChange={(e) => setCycle(e.target.value)}
+  onChange={(e) => { setCycle(e.target.value); setPage(1); }}
 >
 <option>Oct 2026 (Upcoming Cycle)</option>
 <option>Current Month (Sep 2026)</option>
@@ -197,7 +276,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
   className="relative p-2 text-text-muted hover:text-text-secondary rounded-lg border border-border-subtle hover:bg-surface-subtle transition-colors"
   title="Notifications"
   type="button"
-  onClick={() => { setHasUnread(false); setDetail({ title: "Notifications", body: "25 MRs have a pending MTP submission for October 2026. Deadline: 28 Sep." }); }}
+  onClick={() => { setHasUnread(false); setDetail({ title: "Notifications", body: `${reps.filter((r) => r.status === "DRAFT" || r.status === "SUBMITTED").length} MRs have a pending MTP submission for the current cycle.` }); }}
 >
 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
 {hasUnread && <span className="w-2 h-2 rounded-full bg-[#b43403] absolute top-1.5 right-1.5"></span>}
@@ -224,7 +303,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <div className="flex items-center gap-2">
 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-status-success-bg text-status-success border border-status-success-bg">
 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            MTP CYCLE: OCT 2026
+            MTP CYCLE: {cycleLabel(cycle).toUpperCase()}
           </span>
 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-status-warning-bg text-status-warning border border-status-warning-bg">
 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
@@ -260,7 +339,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
   className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white rounded-lg text-xs font-semibold shadow-sm flex items-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
   type="button"
   disabled={selectedIds.size === 0}
-  onClick={() => setDetail({ title: "Bulk Approve & Lock Plans", body: `${selectedIds.size} MTP(s) selected for approval and lock: ${initialReps.filter((r) => selectedIds.has(r.id)).map((r) => r.name).join(", ")}. Session-only — there is no MTP approval collection yet.` })}
+  onClick={() => setDetail({ title: "Bulk Approve & Lock Plans", body: `${selectedIds.size} MTP(s) selected for approval and lock: ${reps.filter((r) => selectedIds.has(r.id)).map((r) => r.name).join(", ")}. Session-only — there is no MTP approval/lock write endpoint yet.` })}
 ><svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>Bulk Approve &amp; Lock Plans</button>
 </div>
 </div>
@@ -280,15 +359,10 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <div className="w-7 h-7 rounded-lg bg-orange-50 text-[#b43403] flex items-center justify-center"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg></div>
 </div>
 <div className="mt-2 flex items-baseline gap-2">
-<span className="text-2xl font-black text-text-primary">428</span>
-<span className="text-[11px] font-semibold text-emerald-600 bg-status-success-bg px-1.5 py-0.5 rounded">+12 new</span>
+<span className="text-2xl font-black text-text-primary">{loading ? "…" : reps.length}</span>
 </div>
 <div className="mt-2 flex items-center justify-between text-[11px] text-text-secondary">
-<span>Roster Compliance</span>
-<span className="font-semibold text-text-primary">98.5% Active</span>
-</div>
-<div className="w-full bg-surface-subtle h-1.5 rounded-full mt-1.5 overflow-hidden">
-<div className="bg-[#b43403] h-full rounded-full" style={{ "width": "98.5%" }}></div>
+<span>Current Cycle: {cycleLabel(cycle)}</span>
 </div>
 </div>
 {/* Card 2 */}
@@ -300,19 +374,11 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 <div className="mt-2 flex items-baseline gap-2">
-<span className="text-2xl font-black text-text-primary">94.2%</span>
-<span className="text-[11px] text-text-secondary font-medium">(403 / 428)</span>
+<span className="text-2xl font-black text-text-primary">{reps.length === 0 ? "—" : `${Math.round((reps.filter((r) => r.status !== "DRAFT").length / reps.length) * 100)}%`}</span>
+<span className="text-[11px] text-text-secondary font-medium">({reps.filter((r) => r.status !== "DRAFT").length} / {reps.length})</span>
 </div>
 <div className="mt-2 flex items-center justify-between text-[11px]">
-<span className="text-rose-600 font-semibold">25 Pending</span>
-<button
-  className="text-[11px] text-[#b43403] hover:underline font-semibold flex items-center gap-1"
-  type="button"
-  onClick={() => setDetail({ title: "Ping 25 Reps", body: "A reminder notification for the pending October 2026 MTP submission has been queued for the 25 outstanding reps. Session-only — there is no notification dispatch service yet." })}
->Ping 25 Reps <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg></button>
-</div>
-<div className="w-full bg-surface-subtle h-1.5 rounded-full mt-1.5 overflow-hidden">
-<div className="bg-blue-600 h-full rounded-full" style={{ "width": "94.2%" }}></div>
+<span className="text-rose-600 font-semibold">{reps.filter((r) => r.status === "DRAFT").length} Pending</span>
 </div>
 </div>
 {/* Card 3 */}
@@ -324,17 +390,12 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 <div className="mt-2 flex items-baseline gap-2">
-<span className="text-2xl font-black text-text-primary">372</span>
-<span className="text-[11px] text-text-secondary font-medium">Approved (87%)</span>
+<span className="text-2xl font-black text-text-primary">{reps.filter((r) => r.status === "APPROVED").length}</span>
+<span className="text-[11px] text-text-secondary font-medium">Approved</span>
 </div>
 <div className="mt-2 flex items-center justify-between text-[11px] text-text-secondary">
-<span>31 In Review</span>
-<span>25 Pending Drafts</span>
-</div>
-<div className="w-full bg-surface-subtle h-1.5 rounded-full mt-1.5 flex overflow-hidden">
-<div className="bg-emerald-500 h-full" style={{ "width": "87%" }}></div>
-<div className="bg-amber-400 h-full" style={{ "width": "7%" }}></div>
-<div className="bg-slate-300 h-full" style={{ "width": "6%" }}></div>
+<span>{reps.filter((r) => r.status === "SUBMITTED").length} In Review</span>
+<span>{reps.filter((r) => r.status === "DRAFT").length} Pending Drafts</span>
 </div>
 </div>
 {/* Card 4 */}
@@ -346,15 +407,11 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 </div>
 <div className="mt-2 flex items-baseline gap-2">
-<span className="text-2xl font-black text-text-primary">4.2%</span>
-<span className="text-[11px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">18 Flags</span>
+<span className="text-2xl font-black text-text-primary">{reps.filter((r) => r.status === "REJECTED" || r.status === "VOIDED").length}</span>
+<span className="text-[11px] font-semibold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">Flags</span>
 </div>
 <div className="mt-2 flex items-center justify-between text-[11px] text-text-secondary">
-<span>Standard Beat Adherence</span>
-<span className="font-semibold text-text-primary">95.8% Normal</span>
-</div>
-<div className="w-full bg-surface-subtle h-1.5 rounded-full mt-1.5 overflow-hidden">
-<div className="bg-purple-600 h-full rounded-full" style={{ "width": "95.8%" }}></div>
+<span>Rejected / Voided Plans</span>
 </div>
 </div>
 </div>
@@ -374,7 +431,6 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
         <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
       )}
       <span>{t.label}</span>
-      <span className={active ? "bg-orange-100 text-[#b43403] px-2 py-0.5 rounded-full text-[10px] font-bold" : t.key === "deviation" ? "bg-rose-100 text-rose-700 px-1.5 py-0.5 rounded-full text-[10px] font-bold" : "bg-surface-subtle text-text-secondary px-1.5 py-0.5 rounded-full text-[10px]"}>{t.count}</span>
     </button>
   );
 })}
@@ -390,6 +446,9 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
   </div>
 ) : (
 <>
+{error && (
+  <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg p-3">{error}</div>
+)}
 {/* FILTER CONTROLS BAR */}
 <div className="bg-surface-card p-3 rounded-xl border border-border-subtle/80 shadow-sm flex flex-wrap items-center justify-between gap-3">
 <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[300px]">
@@ -410,9 +469,9 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
   value={zone}
   onChange={(e) => { setZone(e.target.value); setPage(1); }}
 >
-{ZONES.map((z) => <option key={z}>{z}</option>)}
+{zoneOptions.map((z) => <option key={z}>{z}</option>)}
 </select>
-{/* Status Filter */}
+{/* Status Filter — passed straight to the backend as ?status= */}
 <select
   className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
   value={status}
@@ -420,7 +479,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 >
 {STATUSES.map((s) => <option key={s}>{s}</option>)}
 </select>
-{/* Station Filter */}
+{/* Location-count Filter */}
 <select
   className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium"
   value={hqClass}
@@ -445,10 +504,10 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <div className="p-4 border-b border-slate-100 flex items-center justify-between">
 <div className="flex items-center gap-2">
 <h3 className="text-sm font-bold text-text-primary">Medical Representatives MTP Roster</h3>
-<span className="text-xs text-text-muted">October 2026 Cycle</span>
+<span className="text-xs text-text-muted">{cycle}</span>
 </div>
 <div className="flex items-center gap-2 text-xs text-text-secondary">
-<span>{filtered.length === 0 ? "No matching reps" : `Showing ${(safePage - 1) * PAGE_SIZE + 1} to ${Math.min(safePage * PAGE_SIZE, filtered.length)} of ${filtered.length} Reps`}</span>
+<span>{loading ? "Loading…" : filtered.length === 0 ? "No matching reps" : `Showing ${(safePage - 1) * PAGE_SIZE + 1} to ${Math.min(safePage * PAGE_SIZE, filtered.length)} of ${filtered.length} Reps`}</span>
 <div className="flex items-center gap-1 ml-2">
 <button
   className="w-6 h-6 rounded border border-border-subtle flex items-center justify-center text-text-muted hover:bg-surface-subtle disabled:opacity-50"
@@ -483,15 +542,18 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </th>
 <th className="p-3.5">MR Profile &amp; Territory</th>
 <th className="p-3.5">Station Mix</th>
-<th className="p-3.5 text-center">Work Plan &amp; Calls</th>
-<th className="p-3.5">Joint Work ASM</th>
+<th className="p-3.5 text-center">Work Plan</th>
+<th className="p-3.5">Manager</th>
 <th className="p-3.5 text-center">MTP Status</th>
 <th className="p-3.5 text-right">Actions</th>
 </tr>
 </thead>
 <tbody className="divide-y divide-slate-100 text-text-secondary">
-{pageRows.length === 0 && (
+{!loading && pageRows.length === 0 && (
   <tr><td colSpan={7} className="p-10 text-center text-text-muted text-xs">No reps match the current search/filters.</td></tr>
+)}
+{loading && (
+  <tr><td colSpan={7} className="p-10 text-center text-text-muted text-xs">Loading tour plans…</td></tr>
 )}
 {pageRows.map((r) => {
   const isSelected = selectedIds.has(r.id);
@@ -506,7 +568,6 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
         <div>
           <div className="font-bold text-text-primary flex items-center gap-1.5">
             {r.name}
-            {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Active GPS Beat"></span>}
           </div>
           <div className="text-[11px] text-text-muted">{r.code} • {r.territory}</div>
         </div>
@@ -514,11 +575,11 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
     </td>
     <td className="p-3.5">
       <div className="text-xs font-medium text-text-primary">{r.stationMix}</div>
-      <div className={r.exStation.toLowerCase().startsWith("os") ? "text-[10px] text-rose-500 font-semibold" : "text-[10px] text-text-muted"}>{r.exStation}</div>
+      <div className="text-[10px] text-text-muted">{r.exStation}</div>
     </td>
     <td className="p-3.5 text-center">
       <div className="font-bold text-text-primary">{r.workPlan}</div>
-      <div className={r.coreHcps.toLowerCase().includes("below") ? "text-[10px] text-amber-600 font-semibold" : "text-[10px] text-emerald-600 font-semibold"}>{r.coreHcps}</div>
+      <div className="text-[10px] text-text-muted">{r.coreHcps}</div>
     </td>
     <td className="p-3.5">
       <div className="flex items-center gap-1 text-text-primary font-medium">
@@ -528,7 +589,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
       <div className="text-[10px] text-text-muted">{r.asm}</div>
     </td>
     <td className="p-3.5 text-center">
-      <span className={statusPillClass[r.status]}>{r.status}</span>
+      <span className={statusPillClass[r.status] || statusPillClass.DRAFT}>{r.status}</span>
     </td>
     <td className="p-3.5 text-right">
       <button
@@ -537,7 +598,9 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
         type="button"
         onClick={() => setDetail({
           title: `${r.name} — Itinerary`,
-          body: `${r.code} • ${r.territory} · ${r.stationMix}, ${r.exStation} · ${r.workPlan} (${r.coreHcps}) · Joint work: ${r.jointDays} with ${r.asm} · Status: ${r.status}.`
+          body: r.raw.locations.length > 0
+            ? r.raw.locations.map((l) => `${l.date}: ${l.area}, ${l.town}${l.purpose ? ` (${l.purpose})` : ""}`).join(" | ")
+            : `${r.code} • ${r.territory} — no itinerary locations recorded for ${r.raw.month}.`
         })}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
@@ -552,14 +615,14 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 {/* Table Action Footer */}
 <div className="p-3 bg-surface-subtle border-t border-border-subtle flex items-center justify-between">
 <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
-<span className="font-bold text-text-primary">{selectedIds.size} MR Selected</span> • <button type="button" className="hover:underline" onClick={() => setSelectedIds(new Set(initialReps.map((r) => r.id)))}>Select All {initialReps.length}</button>
+<span className="font-bold text-text-primary">{selectedIds.size} MR Selected</span> • <button type="button" className="hover:underline" onClick={() => setSelectedIds(new Set(reps.map((r) => r.id)))}>Select All {reps.length}</button>
             </div>
 <div className="flex items-center gap-2">
 <button
   className="px-3 py-1.5 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
   type="button"
   disabled={selectedIds.size === 0}
-  onClick={() => setDetail({ title: "Bulk Revise Dates", body: `Date revision requested for ${selectedIds.size} MR(s). Session-only — there is no MTP write-back collection yet.` })}
+  onClick={() => setDetail({ title: "Bulk Revise Dates", body: `Date revision requested for ${selectedIds.size} MR(s). Session-only — there is no MTP write-back endpoint yet.` })}
 >
 <svg className="w-3.5 h-3.5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                 Bulk Revise Dates
@@ -568,7 +631,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
   className="px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
   type="button"
   disabled={selectedIds.size === 0}
-  onClick={() => setDetail({ title: "Fast Approve MTP", body: `${selectedIds.size} MR(s) fast-approved for the October 2026 cycle: ${initialReps.filter((r) => selectedIds.has(r.id)).map((r) => r.name).join(", ")}. Session-only.` })}
+  onClick={() => setDetail({ title: "Fast Approve MTP", body: `${selectedIds.size} MR(s) fast-approved for ${cycle}: ${reps.filter((r) => selectedIds.has(r.id)).map((r) => r.name).join(", ")}. Session-only — there is no MTP approval write endpoint yet.` })}
 >
 <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                 Fast Approve MTP
@@ -585,39 +648,41 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <span className="font-bold text-[#b43403]">Tour Plans (MTP)</span>
 <div>
 <div className="text-sm font-bold text-text-primary flex items-center gap-1">
-                    {selectedRep.name}
-                    <svg className="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path clipRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fillRule="evenodd"></path></svg>
+                    {selectedRep ? selectedRep.name : "No rep selected"}
 </div>
-<div className="text-[11px] text-text-muted">{selectedRep.code} • {selectedRep.territory}</div>
+<div className="text-[11px] text-text-muted">{selectedRep ? `${selectedRep.code} • ${selectedRep.territory}` : "—"}</div>
 </div>
 </div>
-<span className={selectedRep.status === "Approved" ? "text-[10px] font-bold text-status-success bg-status-success-bg px-2 py-0.5 rounded border border-status-success-bg" : selectedRep.status === "Pending Review" ? "text-[10px] font-bold text-status-warning bg-status-warning-bg px-2 py-0.5 rounded border border-status-warning-bg" : "text-[10px] font-bold text-rose-700 bg-rose-100 px-2 py-0.5 rounded border border-rose-200"}>
+{selectedRep && (
+  <span className={statusPillClass[selectedRep.status] || statusPillClass.DRAFT}>
                 {selectedRep.status}
               </span>
+)}
 </div>
 {/* Mini stats ribbon */}
+{selectedRep && (
 <div className="grid grid-cols-3 gap-2 my-3 p-2 bg-surface-subtle rounded-lg text-center">
 <div>
-<div className="text-[10px] text-text-muted">Field Days</div>
-<div className="text-xs font-bold text-text-primary">22 Days</div>
-<div className="text-[9px] text-text-muted">Target: 22d</div>
+<div className="text-[10px] text-text-muted">Locations</div>
+<div className="text-xs font-bold text-text-primary">{selectedRep.raw.locations.length}</div>
 </div>
 <div className="border-x border-border-subtle">
-<div className="text-[10px] text-text-muted">Planned Calls</div>
-<div className="text-xs font-bold text-text-primary">240 Calls</div>
-<div className="text-[9px] text-emerald-600 font-medium">Avg: 11 / Day</div>
+<div className="text-[10px] text-text-muted">Month</div>
+<div className="text-xs font-bold text-text-primary">{selectedRep.raw.month}</div>
 </div>
 <div>
-<div className="text-[10px] text-text-muted">Beat Adherence</div>
-<div className="text-xs font-bold text-emerald-600">98.2%</div>
-<div className="text-[9px] text-text-muted">Target: ≥95%</div>
+<div className="text-[10px] text-text-muted">Status</div>
+<div className="text-xs font-bold text-text-primary">{selectedRep.status}</div>
 </div>
 </div>
-{/* Oct Week 1: Beat Schedule Detail */}
+)}
+{/* Beat Rotation Schedule preview — no backend collection exists for
+    day-by-day beat schedules, so this illustrative preview is left as-is;
+    the itinerary shown when a rep's real locations are fetched (via View
+    Itinerary above) is the actual backend data. */}
 <div className="space-y-2 mt-4">
 <div className="flex items-center justify-between text-xs font-bold text-text-primary">
-<span className="uppercase tracking-wider text-[10px] text-text-muted">Oct Week 1: Beat Rotation Schedule</span>
-<span className="text-[11px] text-[#b43403] font-semibold bg-orange-50 border border-orange-200/80 px-2 py-0.5 rounded-full">Full Month (22d)</span>
+<span className="uppercase tracking-wider text-[10px] text-text-muted">Sample Beat Rotation Layout (illustrative)</span>
 </div>
 {/* Beat Day 1 */}
 <div className="p-2.5 rounded-lg border border-border-subtle/80 bg-surface-card hover:border-orange-200 transition-colors">
@@ -680,15 +745,12 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 {/* Bottom Action in Inspector Card */}
 <div className="pt-4 border-t border-slate-100 mt-4">
-<div className="flex items-center justify-between text-xs mb-3">
-<span className="text-text-secondary font-medium">Projected Travel Allowance (TA/DA):</span>
-<span className="font-bold text-text-primary">₹ 14,850 / mo</span>
-</div>
 <div className="flex items-center gap-2">
 <button
-  className="flex-1 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5"
+  className="flex-1 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
   type="button"
-  onClick={() => setDetail({ title: "Route Schedule Locked", body: `${selectedRep.name}'s October beat rotation schedule has been locked for the current MTP cycle. Session-only — there is no MTP lock collection yet.` })}
+  disabled={!selectedRep}
+  onClick={() => selectedRep && setDetail({ title: "Route Schedule Locked", body: `${selectedRep.name}'s ${selectedRep.raw.month} tour plan has been locked. Session-only — there is no MTP lock write endpoint yet.` })}
 >
 <svg className="w-3.5 h-3.5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
                 Lock Route Schedule
@@ -722,7 +784,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <button
   className="px-3 py-1.5 bg-surface-card border border-border-subtle rounded-lg font-semibold text-text-secondary hover:bg-surface-subtle transition-colors text-xs"
   type="button"
-  onClick={() => setDetail({ title: "Compliance Matrix", body: "Doctor visit frequency capped at max 2 visits / month per Rep unless a specialized multi-indication trial protocol applies. Applies across all 428 field reps on MTP." })}
+  onClick={() => setDetail({ title: "Compliance Matrix", body: `Doctor visit frequency capped at max 2 visits / month per Rep unless a specialized multi-indication trial protocol applies. Applies across ${reps.length} field reps currently loaded for ${cycle}.` })}
 >
             View Compliance Matrix
           </button>

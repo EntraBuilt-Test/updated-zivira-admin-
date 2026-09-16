@@ -1,177 +1,138 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import { apiClient, type PayrollStatusRow } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
 
 // This page used to be a fully static server component: every number was
 // hand-typed JSX and none of its buttons/selects/inputs had a real
-// onClick/onChange handler. The KPI cards at the top are left as-is (no
-// backend collection exists yet for payroll metrics), but the salary
-// roster table is now real local state: both search boxes, the
-// zone/designation/status filters and Reset actually filter it, row
-// checkboxes and Select All drive real selection state, Payslip/Audit
-// buttons load that employee's real breakdown into the right-hand
-// inspector, Export Bank NEFT Batch downloads exactly what's on screen as
-// CSV, and Run Final Payroll Lock & Disburse / Bulk Approve / Approve &
-// Send to Bank actually change each row's status (session-only).
+// onClick/onChange handler. A later pass wired it up against a local mock
+// "salary roster" array that invented a full payslip breakdown (basic pay,
+// HRA, TA/DA, PF/ESIC, bank account) that the backend does not provide.
+//
+// GET /company/analytics/payroll (apiClient.payrollAnalytics) returns
+// PayrollStatusRow[] — id, employeeCode, employeeName, role, month,
+// status (RELEASED | HOLD | EXPLANATION_SUBMITTED), holdReason,
+// missedDaysSnapshot, employeeExplanation, managerApprovedByName,
+// releasedAt — plus a summary {onHold, pendingApproval, released}. There
+// is no salary-breakdown, TA/DA, or bank-account data anywhere in this
+// endpoint, so the payslip inspector's line-item breakdown and the bank
+// handshake card are DROPPED below rather than kept as fabricated numbers;
+// the inspector now shows only the real hold/explanation/approval fields.
+// "Approve & Send to Bank" and "Run Final Payroll Lock & Disburse" now
+// call the real PATCH /company/analytics/payroll/:id/release endpoint
+// (apiClient.releasePayroll) for each selected/eligible row, then refetch.
+//
+// The Expense Audit Rule Engine widget (GPS/MTP sync %) is left as static
+// demo content — no backend collection exists for that reconciliation yet.
 
-type Employee = {
-  id: string;
-  name: string;
-  empCode: string;
-  hq: string;
-  grade: string;
-  zone: "West Zone" | "North Zone" | "South Zone" | "East Zone";
-  designation: "Medical Representative (MR)" | "Senior Executive (SR MR)" | "Area Sales Manager (ASM)";
-  workDaysNote: string;
-  workDaysNoteClass: string;
-  workDaysSub: string;
-  baseSalary: string;
-  taDa: string;
-  taDaNote: string;
-  taDaClass: string;
-  netPayout: string;
-  netPayoutClass: string;
-  status: "Approved" | "ASM Verified" | "Claim on Hold";
-  statusClass: string;
-  actionLabel: "Payslip" | "Audit";
-  rowClass: string;
-  breakdown: {
-    basic: string; hra: string; special: string; grossFixed: string;
-    daHq: string; daHqNote: string; daEx: string; daExNote: string;
-    travel: string; travelNote: string; reimb: string;
-    pf: string; pt: string; net: string;
-    bankLast4: string; ifsc: string; bankName: string;
-  };
-};
+const ALL_ROLE = "All Roles";
+const ALL_APPROVAL = "All Approval States";
 
-const initialEmployees: Employee[] = [
-  {
-    id: "emp-1049", name: "Rahul Sharma", empCode: "EMP-1049", hq: "Mumbai Metro (HQ)", grade: "Senior MR",
-    zone: "West Zone", designation: "Senior Executive (SR MR)",
-    workDaysNote: "22 / 22 Days", workDaysNoteClass: "text-emerald-600", workDaysSub: "16 HQ • 6 Ex-Stn",
-    baseSalary: "₹36,000", taDa: "₹14,850", taDaNote: "GPS: 1,420 km", taDaClass: "text-text-primary",
-    netPayout: "₹50,850", netPayoutClass: "text-[#b43403]",
-    status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip",
-    rowClass: "bg-status-warning-bg/40 hover:bg-status-warning-bg/70",
-    breakdown: {
-      basic: "₹24,000", hra: "₹8,000", special: "₹4,000", grossFixed: "₹36,000",
-      daHq: "₹4,000", daHqNote: "16 HQ Days @ ₹250", daEx: "₹2,700", daExNote: "6 Days @ ₹450",
-      travel: "₹7,810", travelNote: "1,420 km @ ₹5.50/km", reimb: "₹340",
-      pf: "₹2,160", pt: "₹200", net: "₹50,850",
-      bankLast4: "8920", ifsc: "HDFC0000128", bankName: "HDFC Bank"
-    }
-  },
-  {
-    id: "emp-0842", name: "Amit Duggal", empCode: "EMP-0842", hq: "Delhi South", grade: "MR",
-    zone: "North Zone", designation: "Medical Representative (MR)",
-    workDaysNote: "21 / 22 Days", workDaysNoteClass: "text-text-secondary", workDaysSub: "14 HQ • 7 Outstation",
-    baseSalary: "₹32,500", taDa: "₹18,200", taDaNote: "Night Halt: 2 Days", taDaClass: "text-text-primary",
-    netPayout: "₹50,700", netPayoutClass: "text-text-primary",
-    status: "ASM Verified", statusClass: "bg-blue-100 text-blue-800", actionLabel: "Payslip",
-    rowClass: "hover:bg-surface-subtle/80",
-    breakdown: {
-      basic: "₹22,000", hra: "₹7,000", special: "₹3,500", grossFixed: "₹32,500",
-      daHq: "₹3,500", daHqNote: "14 HQ Days @ ₹250", daEx: "₹3,150", daExNote: "7 Days @ ₹450",
-      travel: "₹9,900", travelNote: "1,800 km @ ₹5.50/km", reimb: "₹1,650",
-      pf: "₹1,950", pt: "₹200", net: "₹50,700",
-      bankLast4: "3312", ifsc: "ICIC0001120", bankName: "ICICI Bank"
-    }
-  },
-  {
-    id: "emp-1120", name: "Subhashish Mitra", empCode: "EMP-1120", hq: "Kolkata Central", grade: "Executive MR",
-    zone: "East Zone", designation: "Medical Representative (MR)",
-    workDaysNote: "23 / 22 Days", workDaysNoteClass: "text-indigo-600", workDaysSub: "18 HQ • 5 Ex-Stn",
-    baseSalary: "₹38,000", taDa: "₹16,400", taDaNote: "Fare: ₹8,200", taDaClass: "text-text-primary",
-    netPayout: "₹54,400", netPayoutClass: "text-text-primary",
-    status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip",
-    rowClass: "hover:bg-surface-subtle/80",
-    breakdown: {
-      basic: "₹25,500", hra: "₹8,500", special: "₹4,000", grossFixed: "₹38,000",
-      daHq: "₹4,500", daHqNote: "18 HQ Days @ ₹250", daEx: "₹2,250", daExNote: "5 Days @ ₹450",
-      travel: "₹8,200", travelNote: "Fare reimbursement", reimb: "₹1,450",
-      pf: "₹2,280", pt: "₹200", net: "₹54,400",
-      bankLast4: "7741", ifsc: "SBIN0004455", bankName: "State Bank of India"
-    }
-  },
-  {
-    id: "emp-0994", name: "Sunita Kulkarni", empCode: "EMP-0994", hq: "Bengaluru Central", grade: "MR",
-    zone: "South Zone", designation: "Medical Representative (MR)",
-    workDaysNote: "20 / 22 Days", workDaysNoteClass: "text-amber-600", workDaysSub: "12 HQ • 8 Outstation",
-    baseSalary: "₹31,000", taDa: "₹19,800", taDaNote: "Odometer Mismatch", taDaClass: "text-rose-600",
-    netPayout: "₹50,800", netPayoutClass: "text-text-primary",
-    status: "Claim on Hold", statusClass: "bg-rose-100 text-rose-800", actionLabel: "Audit",
-    rowClass: "hover:bg-surface-subtle/80",
-    breakdown: {
-      basic: "₹20,500", hra: "₹6,800", special: "₹3,700", grossFixed: "₹31,000",
-      daHq: "₹3,000", daHqNote: "12 HQ Days @ ₹250", daEx: "₹3,600", daExNote: "8 Days @ ₹450",
-      travel: "₹12,100", travelNote: "Disputed odometer reading — under review", reimb: "₹1,100",
-      pf: "₹1,860", pt: "₹200", net: "₹50,800",
-      bankLast4: "5567", ifsc: "AXIS0000234", bankName: "Axis Bank"
-    }
-  },
-  {
-    id: "emp-1205", name: "Karthik Nathan", empCode: "EMP-1205", hq: "Chennai Central", grade: "MR",
-    zone: "South Zone", designation: "Medical Representative (MR)",
-    workDaysNote: "22 / 22 Days", workDaysNoteClass: "text-emerald-600", workDaysSub: "17 HQ • 5 Ex-Stn",
-    baseSalary: "₹34,000", taDa: "₹15,200", taDaNote: "GPS: 1,380 km", taDaClass: "text-text-primary",
-    netPayout: "₹49,200", netPayoutClass: "text-text-primary",
-    status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip",
-    rowClass: "hover:bg-surface-subtle/80",
-    breakdown: {
-      basic: "₹23,000", hra: "₹7,500", special: "₹3,500", grossFixed: "₹34,000",
-      daHq: "₹4,250", daHqNote: "17 HQ Days @ ₹250", daEx: "₹2,250", daExNote: "5 Days @ ₹450",
-      travel: "₹7,590", travelNote: "1,380 km @ ₹5.50/km", reimb: "₹1,110",
-      pf: "₹2,040", pt: "₹200", net: "₹49,200",
-      bankLast4: "9012", ifsc: "HDFC0000551", bankName: "HDFC Bank"
-    }
-  }
+const APPROVAL_OPTIONS = [ALL_APPROVAL, "Manager Approved", "Not Yet Approved"];
+
+const STATUS_OPTIONS: { label: string; value: "all" | PayrollStatusRow["status"] }[] = [
+  { label: "All Disbursal Statuses", value: "all" },
+  { label: "Released", value: "RELEASED" },
+  { label: "On Hold", value: "HOLD" },
+  { label: "Explanation Submitted", value: "EXPLANATION_SUBMITTED" }
 ];
+
+const MONTH_OPTIONS: { label: string; value: string }[] = [
+  { label: "September 2026 (Active Cycle)", value: "2026-09" },
+  { label: "August 2026 (Processed)", value: "2026-08" },
+  { label: "July 2026 (Audited)", value: "2026-07" }
+];
+
+const statusPillClass: Record<PayrollStatusRow["status"], string> = {
+  RELEASED: "bg-emerald-100 text-emerald-800",
+  HOLD: "bg-rose-100 text-rose-800",
+  EXPLANATION_SUBMITTED: "bg-blue-100 text-blue-800"
+};
 
 const PAGE_SIZE = 5;
 
 export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
-  const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
+  const [rows, setRows] = useState<PayrollStatusRow[]>([]);
+  const [summary, setSummary] = useState<{ onHold: number; pendingApproval: number; released: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [cycle, setCycle] = useState(MONTH_OPTIONS[0].value);
+
   const [search, setSearch] = useState("");
-  const [zoneFilter, setZoneFilter] = useState<"all" | Employee["zone"]>("all");
-  const [designationFilter, setDesignationFilter] = useState<"all" | Employee["designation"]>("all");
-  const [statusFilter, setStatusFilter] = useState<"all" | Employee["status"]>("all");
+  const [roleFilter, setRoleFilter] = useState(ALL_ROLE);
+  const [approvalFilter, setApprovalFilter] = useState(ALL_APPROVAL);
+  const [statusFilter, setStatusFilter] = useState<"all" | PayrollStatusRow["status"]>("all");
   const [page, setPage] = useState(1);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(["emp-1049"]));
-  const [inspectedId, setInspectedId] = useState<string>("emp-1049");
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [inspectedId, setInspectedId] = useState<string | null>(null);
   const [activeSubTab, setActiveSubTab] = useState(0);
   const [detail, setDetail] = useState<{ title: string; body: string } | null>(null);
   const [showLockConfirm, setShowLockConfirm] = useState(false);
+  const [releasing, setReleasing] = useState(false);
   const [division, setDivision] = useState("All Divisions (Pan-India HQ)");
-  const [cycle, setCycle] = useState("September 2026 (Active Cycle)");
+
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      const response = await apiClient.payrollAnalytics(cycle);
+      const data = response.data ?? [];
+      setRows(data);
+      setSummary(response.summary ?? null);
+      setSelectedIds((prev) => {
+        const validIds = new Set(data.map((r) => r.id));
+        const next = new Set<string>();
+        prev.forEach((id) => { if (validIds.has(id)) next.add(id); });
+        return next;
+      });
+      setInspectedId((prev) => (prev && data.some((r) => r.id === prev)) ? prev : (data[0]?.id ?? null));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load payroll data");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (cancelled) return;
+      await load();
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cycle]);
+
+  const roleOptions = useMemo(() => [ALL_ROLE, ...Array.from(new Set(rows.map((r) => r.role).filter(Boolean) as string[]))], [rows]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return employees.filter((e) => {
-      if (zoneFilter !== "all" && e.zone !== zoneFilter) return false;
-      if (designationFilter !== "all" && e.designation !== designationFilter) return false;
-      if (statusFilter !== "all" && e.status !== statusFilter) return false;
+    return rows.filter((r) => {
+      if (roleFilter !== ALL_ROLE && r.role !== roleFilter) return false;
+      if (statusFilter !== "all" && r.status !== statusFilter) return false;
+      if (approvalFilter === "Manager Approved" && !r.managerApprovedByName) return false;
+      if (approvalFilter === "Not Yet Approved" && r.managerApprovedByName) return false;
       if (!q) return true;
       return (
-        e.name.toLowerCase().includes(q) ||
-        e.empCode.toLowerCase().includes(q) ||
-        e.hq.toLowerCase().includes(q) ||
-        e.grade.toLowerCase().includes(q)
+        (r.employeeName || "").toLowerCase().includes(q) ||
+        r.employeeCode.toLowerCase().includes(q) ||
+        (r.role || "").toLowerCase().includes(q)
       );
     });
-  }, [employees, search, zoneFilter, designationFilter, statusFilter]);
+  }, [rows, search, roleFilter, statusFilter, approvalFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-  const inspected = employees.find((e) => e.id === inspectedId) ?? employees[0];
+  const inspected = rows.find((r) => r.id === inspectedId) ?? rows[0] ?? null;
 
   function resetFilters() {
     setSearch("");
-    setZoneFilter("all");
-    setDesignationFilter("all");
+    setRoleFilter(ALL_ROLE);
+    setApprovalFilter(ALL_APPROVAL);
     setStatusFilter("all");
     setPage(1);
   }
@@ -186,55 +147,73 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
   }
 
   function selectAll() {
-    setSelectedIds(new Set(filtered.map((e) => e.id)));
+    setSelectedIds(new Set(filtered.map((r) => r.id)));
   }
 
   function handleExport() {
     if (filtered.length === 0) return;
     downloadCsv(
-      "payroll-neft-batch.csv",
-      filtered.map((e) => ({
-        "Employee": e.name,
-        "Emp Code": e.empCode,
-        "HQ": e.hq,
-        "Grade": e.grade,
-        "Zone": e.zone,
-        "Base Salary": e.baseSalary,
-        "TA/DA Claimed": e.taDa,
-        "Net Payout": e.netPayout,
-        "Status": e.status,
-        "Bank": e.breakdown.bankName,
-        "Account (last 4)": e.breakdown.bankLast4,
-        "IFSC": e.breakdown.ifsc
+      "payroll-status-batch.csv",
+      filtered.map((r) => ({
+        "Employee": r.employeeName || r.employeeCode,
+        "Emp Code": r.employeeCode,
+        "Role": r.role || "—",
+        "Month": r.month,
+        "Status": r.status,
+        "Hold Reason": r.holdReason || "",
+        "Missed Days Snapshot": r.missedDaysSnapshot ?? "",
+        "Employee Explanation": r.employeeExplanation || "",
+        "Manager Approved By": r.managerApprovedByName || "",
+        "Released At": r.releasedAt || ""
       }))
     );
   }
 
-  function handleBulkApprove() {
-    if (selectedIds.size === 0) return;
-    setEmployees((prev) => prev.map((e) => (selectedIds.has(e.id) ? { ...e, status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip" } : e)));
-    setDetail({ title: "Bulk Approve Complete", body: `${selectedIds.size} staff allowance claim(s) marked Approved for this session.` });
+  async function releaseIds(ids: string[]) {
+    if (ids.length === 0) return;
+    setReleasing(true);
+    try {
+      for (const id of ids) {
+        const row = rows.find((r) => r.id === id);
+        if (!row || row.status === "RELEASED") continue;
+        await apiClient.releasePayroll(id);
+      }
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to release payroll for one or more employees");
+    } finally {
+      setReleasing(false);
+    }
   }
 
-  function handleApproveAndSend() {
-    setEmployees((prev) => prev.map((e) => (e.id === inspected.id ? { ...e, status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip" } : e)));
-    setDetail({ title: "Sent to Bank NEFT Batch", body: `${inspected.name}'s payslip (${inspected.netPayout}) has been marked Approved and queued for the NEFT batch this session.` });
+  async function handleBulkApprove() {
+    if (selectedIds.size === 0) return;
+    const ids = Array.from(selectedIds);
+    await releaseIds(ids);
+    setDetail({ title: "Bulk Release Complete", body: `${ids.length} employee(s) were sent to POST /company/analytics/payroll/:id/release and the roster has been refreshed.` });
+  }
+
+  async function handleApproveAndSend() {
+    if (!inspected) return;
+    await releaseIds([inspected.id]);
+    setDetail({ title: "Released to Bank", body: `${inspected.employeeName || inspected.employeeCode}'s payroll hold has been released via the real payroll-release endpoint.` });
   }
 
   function handleDownloadSlip() {
-    downloadCsv(`payslip-${inspected.empCode}.csv`, [{
-      "Employee": inspected.name, "Emp Code": inspected.empCode, "HQ": inspected.hq,
-      "Basic": inspected.breakdown.basic, "HRA": inspected.breakdown.hra, "Special Allowance": inspected.breakdown.special,
-      "Gross Fixed": inspected.breakdown.grossFixed, "DA (HQ)": inspected.breakdown.daHq, "DA (Ex-Station)": inspected.breakdown.daEx,
-      "Travel Allowance": inspected.breakdown.travel, "Mobile/Stationery Reimb.": inspected.breakdown.reimb,
-      "PF/ESIC": inspected.breakdown.pf, "Professional Tax": inspected.breakdown.pt, "Net Payable": inspected.breakdown.net
+    if (!inspected) return;
+    downloadCsv(`payroll-status-${inspected.employeeCode}.csv`, [{
+      "Employee": inspected.employeeName || inspected.employeeCode, "Emp Code": inspected.employeeCode, "Role": inspected.role || "—",
+      "Month": inspected.month, "Status": inspected.status, "Hold Reason": inspected.holdReason || "",
+      "Missed Days Snapshot": inspected.missedDaysSnapshot ?? "", "Employee Explanation": inspected.employeeExplanation || "",
+      "Manager Approved By": inspected.managerApprovedByName || "", "Released At": inspected.releasedAt || ""
     }]);
   }
 
-  function handleFinalLock() {
-    setEmployees((prev) => prev.map((e) => (e.status !== "Claim on Hold" ? { ...e, status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip" } : e)));
+  async function handleFinalLock() {
+    const idsToRelease = rows.filter((r) => r.status !== "RELEASED").map((r) => r.id);
+    await releaseIds(idsToRelease);
     setShowLockConfirm(false);
-    setDetail({ title: "Payroll Locked & Disbursed", body: "All non-disputed claims have been marked Approved and queued for disbursal this session. Claims on hold were left untouched pending audit resolution." });
+    setDetail({ title: "Payroll Lock Complete", body: `${idsToRelease.length} non-released employee(s) were sent to the real payroll-release endpoint and the roster has been refreshed.` });
   }
 
   return (
@@ -248,12 +227,12 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
       <div className="flex items-center gap-4 flex-1 max-w-xl">
         <div className="relative w-full">
           <span className="material-symbols-outlined absolute left-3 top-3 text-xs text-text-muted">{`search`}</span>
-          <input type="text" placeholder="Search MR name, employee code, TA/DA claims, station bills..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-[#b43403] text-text-primary placeholder-slate-400" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}/>
+          <input type="text" placeholder="Search employee name, code, role..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-[#b43403] text-text-primary placeholder-slate-400" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}/>
         </div>
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Territory Selector */}
+        {/* Territory Selector — cosmetic only, no backend division field on PayrollStatusRow */}
         <div className="relative">
           <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer" value={division} onChange={(e) => setDivision(e.target.value)}>
             <option>All Divisions (Pan-India HQ)</option>
@@ -264,23 +243,21 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
-        {/* Payroll Month Picker */}
+        {/* Payroll Month Picker — real API param */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer" value={cycle} onChange={(e) => setCycle(e.target.value)}>
-            <option>September 2026 (Active Cycle)</option>
-            <option>August 2026 (Processed)</option>
-            <option>July 2026 (Audited)</option>
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer" value={cycle} onChange={(e) => { setCycle(e.target.value); setPage(1); }}>
+            {MONTH_OPTIONS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
           </select>
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         {/* Refresh Button */}
-        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle" title="Sync Expense Ledgers" onClick={() => setDetail({ title: "Ledger Sync Triggered", body: "A sync of expense ledgers against DCR and GPS logs has been queued for this session. There is no live sync backend yet." })}>
+        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle" title="Refresh Payroll Data" onClick={() => load()}>
           <span className="material-symbols-outlined text-xs">{`sync`}</span>
         </button>
 
         {/* Alerts */}
-        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle relative" title="Notifications" onClick={() => setDetail({ title: "Notifications", body: "14 audit claim deviations pending review (₹48,250 on hold). 11 claims pending ASM sign-off." })}>
+        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle relative" title="Notifications" onClick={() => setDetail({ title: "Notifications", body: `${summary?.onHold ?? 0} employee(s) on payroll hold and ${summary?.pendingApproval ?? 0} pending approval this cycle.` })}>
           <span className="material-symbols-outlined text-xs">{`circle`}</span>
           <span className="w-2 h-2 bg-[#b43403] rounded-full absolute top-2 right-2"></span>
         </button>
@@ -312,26 +289,23 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             <span className="font-semibold text-text-primary">Payroll &amp; Field Allowances</span>
           </div>
           <div className="flex items-center gap-3">
-            <h2 className="text-xl font-extrabold text-text-primary tracking-tight">Field Force Payroll, TA/DA &amp; Expense Engine</h2>
+            <h2 className="text-xl font-extrabold text-text-primary tracking-tight">Salary Integration &amp; Payroll Hold Engine</h2>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-status-info-bg text-status-info border border-status-info-bg">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Cycle: Sep 2026
-            </span>
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-status-success-bg text-status-success border border-status-success-bg">
-              <span className="material-symbols-outlined text-[10px]">{`circle`}</span> Bank Cutoff: 01 Oct
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span> Cycle: {MONTH_OPTIONS.find((m) => m.value === cycle)?.label}
             </span>
           </div>
           <p className="text-xs text-text-secondary mt-1">
-            Reconcile daily DCR call allowances, HQ/Ex/Outstation travel fare meters, manager joint-work claims, and one-click salary disbursement.
+            Track real payroll-hold status per employee (DCR-compliance driven), employee explanations, manager approvals, and release employees to disbursement.
           </p>
         </div>
 
         {/* Action CTAs */}
         <div className="flex items-center gap-2.5">
-          <button className="px-3.5 py-2 border border-border-subtle text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle flex items-center gap-2 transition-colors" onClick={handleExport} disabled={filtered.length === 0}>
+          <button className="px-3.5 py-2 border border-border-subtle text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle flex items-center gap-2 transition-colors disabled:opacity-50" onClick={handleExport} disabled={filtered.length === 0}>
             <span className="material-symbols-outlined text-xs">{`circle`}</span>
-            <span>Export Bank NEFT Batch</span>
+            <span>Export Payroll Status Batch</span>
           </button>
-          <button className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors" onClick={() => setShowLockConfirm(true)}>
+          <button className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors disabled:opacity-60" onClick={() => setShowLockConfirm(true)} disabled={releasing}>
             <span className="material-symbols-outlined text-xs">{`circle`}</span>
             <span>Run Final Payroll Lock &amp; Disburse</span>
           </button>
@@ -342,86 +316,72 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         <AdminTabGrid node={node} path={path} />
       </div>
 
-      {/* KPI METRIC PULSE CARDS */}
+      {error && (
+        <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-lg p-3">{error}</div>
+      )}
+
+      {/* KPI METRIC PULSE CARDS — sourced from the real analytics summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-        {/* Metric 1: Total Net Payroll */}
+        {/* Metric 1: Released */}
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Total Field Gross Payout</p>
+              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Released to Bank</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <h3 className="text-2xl font-black text-text-primary">₹1.84 Cr</h3>
-                <span className="text-[11px] font-bold text-emerald-600 bg-status-success-bg px-1.5 py-0.5 rounded">+4.2% MoM</span>
+                <h3 className="text-2xl font-black text-text-primary">{loading ? "…" : (summary?.released ?? 0)}</h3>
+                <span className="text-[11px] font-medium text-text-secondary">of {rows.length} employees</span>
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-success-bg text-emerald-600 flex items-center justify-center">
               <span className="material-symbols-outlined text-lg">{`account_balance_wallet`}</span>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
-            <span>428 Roster Reps: <strong>₹1.52 Cr Base</strong></span>
-            <span className="font-bold text-text-secondary">₹32.4 L TA/DA</span>
-          </div>
         </div>
 
-        {/* Metric 2: Daily Allowance (TA/DA) Total */}
+        {/* Metric 2: On Hold */}
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Reconciled Travel (TA/DA)</p>
+              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">On Payroll Hold</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <h3 className="text-2xl font-black text-text-primary">₹32,48,600</h3>
-                <span className="text-[11px] font-medium text-text-secondary">GPS Verified</span>
+                <h3 className="text-2xl font-black text-text-primary">{loading ? "…" : (summary?.onHold ?? 0)}</h3>
               </div>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center">
               <span className="material-symbols-outlined text-lg">{`route`}</span>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
-            <span>Total Beat KM: <strong>1,42,800 km</strong></span>
-            <span className="font-semibold text-emerald-600">96.8% Validated</span>
-          </div>
         </div>
 
-        {/* Metric 3: Expense Discrepancies & Flags */}
+        {/* Metric 3: Pending Approval */}
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Audit Claim Deviations</p>
+              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Pending Approval</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <h3 className="text-2xl font-black text-text-primary">14</h3>
-                <span className="text-[11px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">₹48,250 Hold</span>
+                <h3 className="text-2xl font-black text-text-primary">{loading ? "…" : (summary?.pendingApproval ?? 0)}</h3>
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-warning-bg text-amber-600 flex items-center justify-center">
               <span className="material-symbols-outlined text-lg">{`receipt`}</span>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
-            <span>Disputed Kilometrage: <strong>8 Reps</strong></span>
-            <span className="font-semibold text-amber-600">Under Review</span>
-          </div>
         </div>
 
-        {/* Metric 4: ASM / Manager Endorsements */}
+        {/* Metric 4: Manager Approvals Recorded */}
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm relative overflow-hidden">
           <div className="flex items-start justify-between">
             <div>
-              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Manager Expense Sign-Off</p>
+              <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Manager Approvals Recorded</p>
               <div className="flex items-baseline gap-2 mt-1">
-                <h3 className="text-2xl font-black text-text-primary">97.4%</h3>
-                <span className="text-[11px] font-bold text-emerald-600 bg-status-success-bg px-1.5 py-0.5 rounded">417 / 428 Reps</span>
+                <h3 className="text-2xl font-black text-text-primary">{rows.filter((r) => r.managerApprovedByName).length}</h3>
+                <span className="text-[11px] text-text-secondary font-medium">of {rows.length}</span>
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-[#b43403]/10 text-[#b43403] flex items-center justify-center">
               <span className="material-symbols-outlined text-lg">{`how_to_reg`}</span>
             </div>
-          </div>
-          <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-text-secondary">
-            <span>Pending ASM Clearance: <strong>11 Claims</strong></span>
-            <span className="font-semibold text-text-secondary">Auto-Pinged</span>
           </div>
         </div>
 
@@ -429,19 +389,17 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
       {/* PAYROLL SUB-TABS */}
       <div className="flex items-center gap-6 border-b border-border-subtle text-xs font-semibold">
-        {["Field Staff Salary & Allowance Roll (428)", "Kilometre Fare & DA Tier Matrix", "Outstation Lodge & Boarding Ledger", "Statutory Tax & TDS Section 192/194R Declarations"].map((label, i) => (
+        {["Field Staff Payroll Status Roll", "Kilometre Fare & DA Tier Matrix", "Outstation Lodge & Boarding Ledger", "Statutory Tax & TDS Section 192/194R Declarations"].map((label, i) => (
           <button
             key={label}
             className={i === activeSubTab ? "pb-3 border-b-2 border-[#b43403] text-[#b43403] flex items-center gap-2" : "pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors"}
             onClick={() => {
               setActiveSubTab(i);
-              if (i !== 0) setDetail({ title: label, body: "This roster view isn't built out yet — showing the Field Staff Salary & Allowance Roll below in the meantime." });
+              if (i !== 0) setDetail({ title: label, body: "This roster view isn't built out yet — there is no backend collection for it. Showing the Field Staff Payroll Status Roll below in the meantime." });
             }}
           >
             <span className="material-symbols-outlined">{`circle`}</span>
             <span>{label}</span>
-            {i === 2 && <span className="px-1.5 py-0.2 text-[10px] bg-status-warning-bg text-status-warning rounded font-bold">14 Claims</span>}
-            {i === 1 && <span className="px-1.5 py-0.2 text-[10px] bg-surface-subtle text-text-secondary rounded">Pan-India Rates</span>}
           </button>
         ))}
       </div>
@@ -452,32 +410,22 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           {/* Text search */}
           <div className="relative min-w-[240px]">
             <span className="material-symbols-outlined absolute left-3 top-2.5 text-xs text-text-muted">{`search`}</span>
-            <input type="text" placeholder="Search by Rep Name, Emp ID, Territory, Grade..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#b43403] text-text-secondary placeholder-slate-400" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}/>
+            <input type="text" placeholder="Search by Employee Name, Code, Role..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#b43403] text-text-secondary placeholder-slate-400" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}/>
           </div>
 
-          {/* Zone filter */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={zoneFilter} onChange={(e) => { setZoneFilter(e.target.value as typeof zoneFilter); setPage(1); }}>
-            <option value="all">All Territories (Pan-India)</option>
-            <option value="West Zone">West Zone (Mumbai, Pune)</option>
-            <option value="North Zone">North Zone (Delhi NCR)</option>
-            <option value="South Zone">South Zone (Bengaluru)</option>
-            <option value="East Zone">East Zone (Kolkata)</option>
+          {/* Role filter */}
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={roleFilter} onChange={(e) => { setRoleFilter(e.target.value); setPage(1); }}>
+            {roleOptions.map((r) => <option key={r} value={r}>{r}</option>)}
           </select>
 
-          {/* Designation Grade */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={designationFilter} onChange={(e) => { setDesignationFilter(e.target.value as typeof designationFilter); setPage(1); }}>
-            <option value="all">All Designations (MR, Senior MR, ASM)</option>
-            <option value="Medical Representative (MR)">Medical Representative (MR)</option>
-            <option value="Senior Executive (SR MR)">Senior Executive (SR MR)</option>
-            <option value="Area Sales Manager (ASM)">Area Sales Manager (ASM)</option>
+          {/* Manager Approval filter */}
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={approvalFilter} onChange={(e) => { setApprovalFilter(e.target.value); setPage(1); }}>
+            {APPROVAL_OPTIONS.map((a) => <option key={a} value={a}>{a}</option>)}
           </select>
 
           {/* Disbursal Status */}
           <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); setPage(1); }}>
-            <option value="all">All Disbursal Statuses</option>
-            <option value="Approved">Passed for Bank Payment</option>
-            <option value="ASM Verified">Pending ASM Sign-off</option>
-            <option value="Claim on Hold">TA/DA Dispute Hold</option>
+            {STATUS_OPTIONS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
         </div>
 
@@ -491,7 +439,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         </div>
       </div>
 
-      {/* MAIN PAYROLL ROSTER & SALARY BREAKDOWN INSPECTOR */}
+      {/* MAIN PAYROLL ROSTER & STATUS INSPECTOR */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Left 2 Cols: Comprehensive Payroll Roster Table */}
@@ -499,12 +447,12 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           <div className="p-4 border-b border-border-subtle flex items-center justify-between">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-[#b43403]"></span>
-              <h3 className="font-bold text-sm text-text-primary">September 2026 Salary &amp; Expense Reconciliation Roster</h3>
+              <h3 className="font-bold text-sm text-text-primary">Payroll Status &amp; Hold Reconciliation Roster</h3>
             </div>
             <div className="flex items-center gap-2">
               <button className="text-xs font-medium text-[#b43403] hover:underline" onClick={selectAll}>Select All {filtered.length}</button>
-              <button className="px-2.5 py-1 bg-surface-subtle hover:bg-slate-200 text-text-secondary text-xs font-semibold rounded transition-colors disabled:opacity-50" onClick={handleBulkApprove} disabled={selectedIds.size === 0}>
-                Bulk Approve Allowances
+              <button className="px-2.5 py-1 bg-surface-subtle hover:bg-slate-200 text-text-secondary text-xs font-semibold rounded transition-colors disabled:opacity-50" onClick={handleBulkApprove} disabled={selectedIds.size === 0 || releasing}>
+                Bulk Release Selected
               </button>
             </div>
           </div>
@@ -514,52 +462,50 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             <table className="w-full text-left text-xs">
               <thead className="bg-surface-subtle border-b border-border-subtle text-[11px] font-bold text-text-secondary uppercase tracking-wider">
                 <tr>
-                  <th className="py-3 px-4 w-8"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0" checked={pageRows.length > 0 && pageRows.every((e) => selectedIds.has(e.id))} onChange={() => {
+                  <th className="py-3 px-4 w-8"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0" checked={pageRows.length > 0 && pageRows.every((r) => selectedIds.has(r.id))} onChange={() => {
                     setSelectedIds((prev) => {
                       const next = new Set(prev);
-                      const allSelected = pageRows.every((e) => next.has(e.id));
-                      pageRows.forEach((e) => (allSelected ? next.delete(e.id) : next.add(e.id)));
+                      const allSelected = pageRows.every((r) => next.has(r.id));
+                      pageRows.forEach((r) => (allSelected ? next.delete(r.id) : next.add(r.id)));
                       return next;
                     });
                   }}/></th>
-                  <th className="py-3 px-4">Field Employee &amp; HQ</th>
-                  <th className="py-3 px-4">Work Days / DCRs</th>
-                  <th className="py-3 px-4">Base Salary</th>
-                  <th className="py-3 px-4">TA/DA Claimed</th>
-                  <th className="py-3 px-4">Net Payout</th>
+                  <th className="py-3 px-4">Field Employee &amp; Role</th>
+                  <th className="py-3 px-4">Missed Days Snapshot</th>
+                  <th className="py-3 px-4">Hold Reason</th>
+                  <th className="py-3 px-4">Manager Approval</th>
                   <th className="py-3 px-4">Status</th>
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-text-secondary">
-                {pageRows.length === 0 && (
-                  <tr><td colSpan={8} className="py-10 px-4 text-center text-text-muted">No staff match the current search/filters.</td></tr>
+                {!loading && pageRows.length === 0 && (
+                  <tr><td colSpan={7} className="py-10 px-4 text-center text-text-muted">No staff match the current search/filters.</td></tr>
                 )}
-                {pageRows.map((e) => (
-                  <tr key={e.id} className={`${e.rowClass} transition-colors ${inspectedId === e.id ? "ring-1 ring-inset ring-[#b43403]/40" : ""}`}>
-                    <td className="py-3.5 px-4"><input type="checkbox" checked={selectedIds.has(e.id)} onChange={() => toggleSelect(e.id)} className="rounded text-[#b43403] focus:ring-0"/></td>
+                {loading && (
+                  <tr><td colSpan={7} className="py-10 px-4 text-center text-text-muted">Loading payroll data…</td></tr>
+                )}
+                {pageRows.map((r) => (
+                  <tr key={r.id} className={`transition-colors ${inspectedId === r.id ? "ring-1 ring-inset ring-[#b43403]/40" : "hover:bg-surface-subtle/80"}`}>
+                    <td className="py-3.5 px-4"><input type="checkbox" checked={selectedIds.has(r.id)} onChange={() => toggleSelect(r.id)} className="rounded text-[#b43403] focus:ring-0"/></td>
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-text-primary">{e.name}</div>
-                      <div className="text-[11px] text-text-secondary">{e.empCode} &bull; {e.hq}</div>
-                      <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">{e.grade}</span>
+                      <div className="font-bold text-text-primary">{r.employeeName || r.employeeCode}</div>
+                      <div className="text-[11px] text-text-secondary">{r.employeeCode} &bull; {r.role || "Role not specified"}</div>
+                    </td>
+                    <td className="py-3.5 px-4 font-semibold text-text-primary">{r.missedDaysSnapshot ?? "—"}</td>
+                    <td className="py-3.5 px-4">
+                      <div className="text-[11px] text-text-secondary">{r.holdReason || "—"}</div>
+                      {r.employeeExplanation && <div className="text-[10px] text-text-muted italic mt-0.5">"{r.employeeExplanation}"</div>}
                     </td>
                     <td className="py-3.5 px-4">
-                      <div className="font-bold text-text-primary">{e.workDaysNote}</div>
-                      <div className={`text-[11px] font-medium ${e.workDaysNoteClass}`}>{e.workDaysNote}</div>
-                      <div className="text-[10px] text-text-muted">{e.workDaysSub}</div>
+                      <div className="text-[11px] text-text-secondary">{r.managerApprovedByName || "Not yet approved"}</div>
                     </td>
-                    <td className="py-3.5 px-4 font-semibold text-text-primary">{e.baseSalary}</td>
                     <td className="py-3.5 px-4">
-                      <div className={`font-bold ${e.taDaClass}`}>{e.taDa}</div>
-                      <div className={`text-[10px] ${e.taDaClass === "text-rose-600" ? "text-rose-500" : "text-text-muted"}`}>{e.taDaNote}</div>
-                    </td>
-                    <td className={`py-3.5 px-4 font-extrabold text-sm ${e.netPayoutClass}`}>{e.netPayout}</td>
-                    <td className="py-3.5 px-4">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${e.statusClass}`}>{e.status}</span>
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${statusPillClass[r.status]}`}>{r.status}</span>
                     </td>
                     <td className="py-3.5 px-4 text-right">
-                      <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1" onClick={() => setInspectedId(e.id)}>
-                        <span>{e.actionLabel}</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
+                      <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1" onClick={() => setInspectedId(r.id)}>
+                        <span>{r.status === "RELEASED" ? "View" : "Review"}</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
                       </button>
                     </td>
                   </tr>
@@ -585,100 +531,78 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           </div>
         </div>
 
-        {/* Right Col: Selected Rep Salary & Allowance Dissect Inspector */}
+        {/* Right Col: Selected Employee Payroll Status Inspector */}
         <div className="space-y-4">
 
           <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#b43403]">PAYSLIP SLATE #SEP-2026-{inspected.empCode.replace("EMP-", "")}</span>
+                <span className="text-xs font-bold text-[#b43403]">{inspected ? `PAYROLL CASE — ${inspected.employeeCode}` : "No employee selected"}</span>
               </div>
-              <span className={`px-2 py-0.5 font-bold text-[10px] rounded-full border ${inspected.status === "Claim on Hold" ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-status-success-bg text-status-success border-status-success-bg"}`}>
-                {inspected.status === "Claim on Hold" ? "Hold — Under Audit" : "Ready for Disbursal"}
-              </span>
+              {inspected && (
+                <span className={`px-2 py-0.5 font-bold text-[10px] rounded-full border ${inspected.status === "HOLD" ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-status-success-bg text-status-success border-status-success-bg"}`}>
+                  {inspected.status === "HOLD" ? "Hold — Under Review" : inspected.status === "EXPLANATION_SUBMITTED" ? "Explanation Submitted" : "Released"}
+                </span>
+              )}
             </div>
 
+            {inspected ? (
             <div className="mt-3 space-y-3 text-xs">
               <div>
                 <p className="text-[10px] font-bold text-text-muted uppercase">Field Representative</p>
-                <p className="font-bold text-text-primary mt-0.5">{inspected.name}</p>
-                <p className="text-text-secondary text-[11px]">{inspected.grade} &bull; {inspected.hq}</p>
+                <p className="font-bold text-text-primary mt-0.5">{inspected.employeeName || inspected.employeeCode}</p>
+                <p className="text-text-secondary text-[11px]">{inspected.role || "Role not specified"} &bull; {inspected.month}</p>
               </div>
 
-              {/* Breakdown Items */}
+              {/* Real fields only — no fabricated salary breakdown. The
+                  payroll API does not return basic pay / HRA / TA-DA /
+                  deductions / bank account data, so that breakdown is not
+                  shown here (not available from payroll API yet). */}
               <div className="space-y-2 bg-surface-subtle p-3 rounded-lg border border-slate-100 text-xs">
                 <div className="flex justify-between items-center text-text-secondary">
-                  <span>Basic Salary ({inspected.workDaysNote}):</span>
-                  <span className="font-semibold text-text-primary">{inspected.breakdown.basic}</span>
+                  <span>Missed Days Snapshot:</span>
+                  <span className="font-semibold text-text-primary">{inspected.missedDaysSnapshot ?? "—"}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary">
-                  <span>House Rent Allowance (HRA):</span>
-                  <span className="font-semibold text-text-primary">{inspected.breakdown.hra}</span>
+                  <span>Hold Reason:</span>
+                  <span className="font-semibold text-text-primary text-right max-w-[60%]">{inspected.holdReason || "—"}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary">
-                  <span>Special &amp; Medical Allowance:</span>
-                  <span className="font-semibold text-text-primary">{inspected.breakdown.special}</span>
-                </div>
-                <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-text-primary font-bold">
-                  <span>Gross Fixed Compensation:</span>
-                  <span>{inspected.breakdown.grossFixed}</span>
-                </div>
-
-                <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-[#b43403] font-bold">
-                  <span>Daily Allowance (DA) - {inspected.breakdown.daHqNote}:</span>
-                  <span>{inspected.breakdown.daHq}</span>
-                </div>
-                <div className="flex justify-between items-center text-[#b43403] font-bold">
-                  <span>Ex-Station DA - {inspected.breakdown.daExNote}:</span>
-                  <span>{inspected.breakdown.daEx}</span>
-                </div>
-                <div className="flex justify-between items-center text-[#b43403] font-bold">
-                  <span>Travel Allowance ({inspected.breakdown.travelNote}):</span>
-                  <span>{inspected.breakdown.travel}</span>
-                </div>
-                <div className="flex justify-between items-center text-text-secondary font-semibold">
-                  <span>Mobile &amp; Stationery Reimb.:</span>
-                  <span>{inspected.breakdown.reimb}</span>
-                </div>
-
-                <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-text-secondary">
-                  <span>Statutory PF &amp; ESIC Deduction:</span>
-                  <span className="text-rose-600">- {inspected.breakdown.pf}</span>
+                  <span>Manager Approved By:</span>
+                  <span className="font-semibold text-text-primary">{inspected.managerApprovedByName || "Not yet approved"}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary">
-                  <span>Professional Tax (PT):</span>
-                  <span className="text-rose-600">- {inspected.breakdown.pt}</span>
+                  <span>Released At:</span>
+                  <span className="font-semibold text-text-primary">{inspected.releasedAt || "Not released"}</span>
                 </div>
-
-                <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-text-primary font-extrabold text-sm">
-                  <span>Net Payable Amount:</span>
-                  <span className="text-[#b43403]">{inspected.breakdown.net}</span>
-                </div>
-              </div>
-
-              {/* Bank Handshake Info */}
-              <div className="p-2.5 bg-status-info-bg/60 border border-status-info-bg rounded-lg text-[11px] text-blue-900">
-                <div className="font-bold flex items-center justify-between">
-                  <span>Bank Account Linked</span>
-                  <span className="text-status-info">{inspected.breakdown.bankName}</span>
-                </div>
-                <p className="text-status-info/80 mt-0.5">A/C: **** **** {inspected.breakdown.bankLast4} &bull; IFSC: {inspected.breakdown.ifsc}</p>
+                {inspected.employeeExplanation && (
+                  <div className="pt-2 border-t border-border-subtle">
+                    <span className="text-text-muted block mb-1">Employee Explanation:</span>
+                    <p className="text-text-secondary italic">"{inspected.employeeExplanation}"</p>
+                  </div>
+                )}
+                <p className="text-[10px] text-text-muted pt-2 border-t border-border-subtle">
+                  Salary/allowance line-item breakdown and bank account details are not available from the payroll API yet.
+                </p>
               </div>
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
-                <button className="w-full py-2 bg-[#b43403] hover:bg-[#9a3412] text-white font-semibold rounded-lg text-xs shadow-sm flex items-center justify-center gap-2" onClick={handleApproveAndSend}>
+                <button className="w-full py-2 bg-[#b43403] hover:bg-[#9a3412] text-white font-semibold rounded-lg text-xs shadow-sm flex items-center justify-center gap-2 disabled:opacity-50" onClick={handleApproveAndSend} disabled={inspected.status === "RELEASED" || releasing}>
                   <span className="material-symbols-outlined">{`circle`}</span>
-                  <span>Approve &amp; Send to Bank NEFT Batch</span>
+                  <span>{inspected.status === "RELEASED" ? "Already Released" : "Approve & Send to Bank"}</span>
                 </button>
                 <button className="w-full py-2 border border-border-subtle text-text-secondary font-semibold rounded-lg text-xs hover:bg-surface-subtle flex items-center justify-center gap-2" onClick={handleDownloadSlip}>
                   <span className="material-symbols-outlined text-text-secondary">{`circle`}</span>
-                  <span>Download Verified Salary Slip</span>
+                  <span>Download Payroll Status Record</span>
                 </button>
               </div>
             </div>
+            ) : (
+              <p className="text-xs text-text-muted mt-3">No employees loaded for this cycle yet.</p>
+            )}
           </div>
 
-          {/* Automated Statutory & Expense Compliance Widget */}
+          {/* Expense Audit Rule Engine — static demo, no backend collection yet */}
           <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm space-y-3">
             <h4 className="text-xs font-bold text-text-primary flex items-center gap-2">
               <span className="material-symbols-outlined text-blue-600">{`calculate`}</span>
@@ -729,8 +653,8 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           <button className="px-3 py-1.5 border border-border-subtle bg-surface-card text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle" onClick={() => setDetail({ title: "TA/DA Policy", body: "Ex-station and Outstation travel allowances are exempt under Income Tax Section 10(14)(i), subject to verified DCR visit proof and travel voucher logs submitted within the same payroll cycle." })}>
             View TA/DA Policy
           </button>
-          <button className="px-3 py-1.5 bg-[#b43403] text-white text-xs font-semibold rounded-lg hover:bg-[#9a3412]" onClick={handleExport} disabled={filtered.length === 0}>
-            Bulk NEFT Matrix
+          <button className="px-3 py-1.5 bg-[#b43403] text-white text-xs font-semibold rounded-lg hover:bg-[#9a3412] disabled:opacity-50" onClick={handleExport} disabled={filtered.length === 0}>
+            Export Batch
           </button>
         </div>
       </div>
@@ -746,12 +670,11 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         <div className="bg-surface-card rounded-xl p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
           <h3 className="font-display font-bold text-text-primary text-lg">Run Final Payroll Lock &amp; Disburse</h3>
           <p className="text-sm text-text-secondary leading-relaxed">
-            This will mark every non-disputed claim in the current roster ({employees.filter((e) => e.status !== "Claim on Hold").length} of {employees.length} employees) as Approved and queue them for the Bank NEFT batch.
+            This will call the real payroll-release endpoint for every non-released employee in the current roster ({rows.filter((r) => r.status !== "RELEASED").length} of {rows.length} employees) and mark them RELEASED.
           </p>
-          <p className="text-[11px] text-text-muted">Session-only simulation — there is no live disbursement/banking backend yet, so this does not persist after a page reload.</p>
           <div className="flex justify-end gap-2 pt-2">
             <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-subtle" onClick={() => setShowLockConfirm(false)}>Cancel</button>
-            <button type="button" className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#b43403] text-white hover:bg-[#9a3412]" onClick={handleFinalLock}>Confirm &amp; Lock</button>
+            <button type="button" className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#b43403] text-white hover:bg-[#9a3412] disabled:opacity-50" onClick={handleFinalLock} disabled={releasing}>Confirm &amp; Lock</button>
           </div>
         </div>
       </div>
