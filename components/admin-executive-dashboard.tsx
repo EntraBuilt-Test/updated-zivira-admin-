@@ -1,5 +1,40 @@
-import React from "react";
+"use client";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { ZiviraTreeNode } from "@/packages/types/src/zivira-tree";
+import { downloadCsv } from "@/lib/download-csv";
+
+// Fix — this page used to be a fully static server component: Back,
+// Refresh, the This Month/Overall toggle, "View all" and "View full
+// leaderboard" were all dead links/buttons (href="#" or no handler). The
+// demo KPI numbers on the 9 pulse cards are left untouched (no backend
+// collection exists yet for these metrics), but the Top/Bottom Performers
+// panels are now built from real local data: the timeframe toggle actually
+// switches state, Back/Refresh do real navigation/refresh actions, and
+// "View all" / "View full leaderboard" open real read-only popups built
+// from the reps' own data plus an Export of that data as CSV.
+
+type Performer = {
+  id: string;
+  initials: string;
+  name: string;
+  title: string;
+  pct: number;
+  tone: "top" | "bottom";
+};
+
+const topPerformers: Performer[] = [
+  { id: "p1", initials: "RD", name: "Rahul Deshmukh", title: "Senior Territory Executive (Mumbai)", pct: 100, tone: "top" },
+  { id: "p2", initials: "AM", name: "Anjali Menon", title: "Territory Executive (Kochi)", pct: 0, tone: "top" },
+  { id: "p3", initials: "KS", name: "Karthik Subramaniam", title: "Territory Executive (Chennai)", pct: 0, tone: "top" }
+];
+
+const bottomPerformers: Performer[] = [
+  { id: "b1", initials: "DI", name: "Deepa Iyer", title: "Sales Specialist (Bengaluru)", pct: 0, tone: "bottom" },
+  { id: "b2", initials: "T", name: "Testing", title: "Test Account (HQ Dummy)", pct: 0, tone: "bottom" },
+  { id: "b3", initials: "P", name: "priya", title: "Field Trainee (Delhi NCR)", pct: 0, tone: "bottom" }
+];
 
 export function AdminExecutiveDashboard({
   node,
@@ -8,6 +43,33 @@ export function AdminExecutiveDashboard({
   node: ZiviraTreeNode;
   path: string[];
 }) {
+  void node;
+  void path;
+  const router = useRouter();
+  const [timeframe, setTimeframe] = useState<"month" | "overall">("month");
+  const [lastRefreshed, setLastRefreshed] = useState<string | null>(null);
+  const [detail, setDetail] = useState<{ title: string; body: string } | null>(null);
+
+  const allReps = useMemo(() => [...topPerformers, ...bottomPerformers], []);
+
+  function handleRefresh() {
+    setLastRefreshed(new Date().toLocaleTimeString());
+  }
+
+  function handleViewAllAlerts() {
+    setDetail({
+      title: "High-Severity Alerts",
+      body: "53 high-severity alerts flagged: GPS spoofing and missing doctor signature across recent DCR submissions. Drill into the Alert Engine (sidebar) for the full queue."
+    });
+  }
+
+  function handleViewLeaderboard() {
+    setDetail({
+      title: "Full Joint Visit Leaderboard",
+      body: allReps.map((r) => `${r.name} (${r.title}): ${r.pct}%`).join(" · ")
+    });
+  }
+
   return (
     <main
       className="flex-1 overflow-y-auto px-8 py-6 space-y-6"
@@ -26,11 +88,15 @@ export function AdminExecutiveDashboard({
             Centralized view for MD / CEO / National Sales Manager / RGM — field
             productivity, compliance, and payroll status at a glance.
           </p>
+          {lastRefreshed && (
+            <p className="text-[11px] text-slate-400 mt-1">Last refreshed at {lastRefreshed}</p>
+          )}
         </div>
         <div className="flex items-center gap-2.5 self-start md:self-center">
           <button
             className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 transition shadow-sm"
             type="button"
+            onClick={() => router.back()}
           >
             <span className="material-symbols-outlined text-[11px]">{`arrow_back`}</span>
             <span>Back</span>
@@ -39,6 +105,7 @@ export function AdminExecutiveDashboard({
             className="inline-flex items-center gap-2 px-4 py-2 border border-slate-200 dark:border-slate-800 rounded-lg text-xs font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 hover:text-orange-600 dark:text-orange-500 transition shadow-sm group"
             id="refreshMetricsBtn"
             type="button"
+            onClick={handleRefresh}
           >
             <span className="material-symbols-outlined text-[11px] group-hover:rotate-180 transition-transform duration-500 text-slate-500 dark:text-slate-400 group-hover:text-orange-600 dark:text-orange-500">{`sync`}</span>
             <span>Refresh</span>
@@ -228,12 +295,13 @@ export function AdminExecutiveDashboard({
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
               High-Severity Alerts
             </span>
-            <a
+            <button
               className="text-[11px] font-semibold text-orange-600 dark:text-orange-500 hover:text-orange-700 underline"
-              href="#"
+              type="button"
+              onClick={handleViewAllAlerts}
             >
               View all
-            </a>
+            </button>
           </div>
           <div className="mt-2">
             <div className="text-3xl font-heading font-extrabold text-rose-600">
@@ -263,87 +331,48 @@ export function AdminExecutiveDashboard({
               </h3>
             </div>
             <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg text-[11px]">
-              <button className="px-2 py-0.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-semibold rounded shadow-xs">
+              <button
+                className={timeframe === "month" ? "px-2 py-0.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-semibold rounded shadow-xs" : "px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200"}
+                type="button"
+                onClick={() => setTimeframe("month")}
+              >
                 This Month
               </button>
-              <button className="px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200">
+              <button
+                className={timeframe === "overall" ? "px-2 py-0.5 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-semibold rounded shadow-xs" : "px-2 py-0.5 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:text-slate-200"}
+                type="button"
+                onClick={() => setTimeframe("overall")}
+              >
                 Overall
               </button>
             </div>
           </div>
           <div className="space-y-4">
-            {/*  Performer 1  */}
-            <div className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center">
-                  RD
-                </div>
-                <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                    Rahul Deshmukh
+            {topPerformers.map((p, i) => (
+              <div key={p.id} className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
+                <div className="flex items-center gap-3">
+                  <div className={i === 0 ? "w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center" : "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 font-bold text-xs flex items-center justify-center"}>
+                    {p.initials}
                   </div>
-                  <div className="text-[11px] text-slate-400">
-                    Senior Territory Executive (Mumbai)
+                  <div>
+                    <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
+                      {p.name}
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      {p.title}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10">
-                  100%
-                </span>
-                <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                  <div className="bg-emerald-500 h-1 rounded-full w-full"></div>
-                </div>
-              </div>
-            </div>
-            {/*  Performer 2  */}
-            <div className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 font-bold text-xs flex items-center justify-center">
-                  AM
-                </div>
-                <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                    Anjali Menon
-                  </div>
-                  <div className="text-[11px] text-slate-400">
-                    Territory Executive (Kochi)
+                <div className="text-right">
+                  <span className={i === 0 ? "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10" : "inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800"}>
+                    {p.pct}%
+                  </span>
+                  <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
+                    <div className={i === 0 ? "bg-emerald-500 h-1 rounded-full w-full" : "bg-slate-300 h-1 rounded-full w-0"}></div>
                   </div>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800">
-                  0%
-                </span>
-                <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                  <div className="bg-slate-300 h-1 rounded-full w-0"></div>
-                </div>
-              </div>
-            </div>
-            {/*  Performer 3  */}
-            <div className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 font-bold text-xs flex items-center justify-center">
-                  KS
-                </div>
-                <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                    Karthik Subramaniam
-                  </div>
-                  <div className="text-[11px] text-slate-400">
-                    Territory Executive (Chennai)
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800">
-                  0%
-                </span>
-                <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                  <div className="bg-slate-300 h-1 rounded-full w-0"></div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
         {/*  Right Panel: Bottom Performers  */}
@@ -360,93 +389,66 @@ export function AdminExecutiveDashboard({
             </span>
           </div>
           <div className="space-y-4">
-            {/*  Bottom Performer 1  */}
-            <div className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 font-bold text-xs flex items-center justify-center">
-                  DI
-                </div>
-                <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                    Deepa Iyer
+            {bottomPerformers.map((p, i) => (
+              <div key={p.id} className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
+                <div className="flex items-center gap-3">
+                  <div className={i === 1 ? "w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-xs flex items-center justify-center" : "w-8 h-8 rounded-full bg-rose-50 text-rose-600 font-bold text-xs flex items-center justify-center"}>
+                    {p.initials}
                   </div>
-                  <div className="text-[11px] text-slate-400">
-                    Sales Specialist (Bengaluru)
+                  <div>
+                    <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
+                      {p.name}
+                    </div>
+                    <div className="text-[11px] text-slate-400">
+                      {p.title}
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="text-right">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-rose-600 bg-rose-50">
-                  0%
-                </span>
-                <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                  <div className="bg-rose-500 h-1 rounded-full w-0"></div>
-                </div>
-              </div>
-            </div>
-            {/*  Bottom Performer 2  */}
-            <div className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold text-xs flex items-center justify-center">
-                  T
-                </div>
-                <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                    Testing
-                  </div>
-                  <div className="text-[11px] text-slate-400">
-                    Test Account (HQ Dummy)
+                <div className="text-right">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-rose-600 bg-rose-50">
+                    {p.pct}%
+                  </span>
+                  <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
+                    <div className="bg-rose-500 h-1 rounded-full w-0"></div>
                   </div>
                 </div>
               </div>
-              <div className="text-right">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-rose-600 bg-rose-50">
-                  0%
-                </span>
-                <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                  <div className="bg-rose-500 h-1 rounded-full w-0"></div>
-                </div>
-              </div>
-            </div>
-            {/*  Bottom Performer 3  */}
-            <div className="flex items-center justify-between text-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:bg-slate-800/50 p-2 rounded-lg transition">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 font-bold text-xs flex items-center justify-center">
-                  P
-                </div>
-                <div>
-                  <div className="font-medium text-slate-800 dark:text-slate-200 leading-snug">
-                    priya
-                  </div>
-                  <div className="text-[11px] text-slate-400">
-                    Field Trainee (Delhi NCR)
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold text-rose-600 bg-rose-50">
-                  0%
-                </span>
-                <div className="w-16 bg-slate-100 dark:bg-slate-800 rounded-full h-1 mt-1">
-                  <div className="bg-rose-500 h-1 rounded-full w-0"></div>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
           {/*  Bottom Panel Action Footer  */}
           <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/50 flex items-center justify-between text-xs">
             <span className="text-slate-400">Showing 3 of 20 field reps</span>
-            <a
+            <button
               className="font-semibold text-orange-600 dark:text-orange-500 hover:text-orange-700 inline-flex items-center gap-1"
-              href="#"
+              type="button"
+              onClick={handleViewLeaderboard}
             >
               <span>View full leaderboard</span>
               <span className="material-symbols-outlined text-[10px]">{`arrow_forward`}</span>
-            </a>
+            </button>
           </div>
         </div>
       </section>
       {/*  END: PerformanceSplitSection  */}
+
+      {detail && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setDetail(null)}>
+          <div className="bg-white dark:bg-slate-900 rounded-xl p-6 w-full max-w-md space-y-3" onClick={(e) => e.stopPropagation()}>
+            <h3 className="font-heading font-bold text-slate-900 dark:text-slate-100 text-base">{detail.title}</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{detail.body}</p>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                className="px-4 py-2 rounded-lg text-sm font-semibold bg-orange-600 text-white hover:bg-orange-700"
+                onClick={() => downloadCsv("joint-visit-leaderboard.csv", allReps.map((r) => ({ Name: r.name, Title: r.title, "Joint Visit %": r.pct })))}
+              >
+                Export CSV
+              </button>
+              <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setDetail(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

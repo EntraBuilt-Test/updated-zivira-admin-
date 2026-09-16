@@ -1,27 +1,261 @@
-import Link from "next/link";
+"use client";
+
+import { useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import { downloadCsv } from "@/lib/download-csv";
+
+// This page used to be a fully static server component: every number was
+// hand-typed JSX and none of its buttons/selects/inputs had a real
+// onClick/onChange handler. The KPI cards at the top are left as-is (no
+// backend collection exists yet for payroll metrics), but the salary
+// roster table is now real local state: both search boxes, the
+// zone/designation/status filters and Reset actually filter it, row
+// checkboxes and Select All drive real selection state, Payslip/Audit
+// buttons load that employee's real breakdown into the right-hand
+// inspector, Export Bank NEFT Batch downloads exactly what's on screen as
+// CSV, and Run Final Payroll Lock & Disburse / Bulk Approve / Approve &
+// Send to Bank actually change each row's status (session-only).
+
+type Employee = {
+  id: string;
+  name: string;
+  empCode: string;
+  hq: string;
+  grade: string;
+  zone: "West Zone" | "North Zone" | "South Zone" | "East Zone";
+  designation: "Medical Representative (MR)" | "Senior Executive (SR MR)" | "Area Sales Manager (ASM)";
+  workDaysNote: string;
+  workDaysNoteClass: string;
+  workDaysSub: string;
+  baseSalary: string;
+  taDa: string;
+  taDaNote: string;
+  taDaClass: string;
+  netPayout: string;
+  netPayoutClass: string;
+  status: "Approved" | "ASM Verified" | "Claim on Hold";
+  statusClass: string;
+  actionLabel: "Payslip" | "Audit";
+  rowClass: string;
+  breakdown: {
+    basic: string; hra: string; special: string; grossFixed: string;
+    daHq: string; daHqNote: string; daEx: string; daExNote: string;
+    travel: string; travelNote: string; reimb: string;
+    pf: string; pt: string; net: string;
+    bankLast4: string; ifsc: string; bankName: string;
+  };
+};
+
+const initialEmployees: Employee[] = [
+  {
+    id: "emp-1049", name: "Rahul Sharma", empCode: "EMP-1049", hq: "Mumbai Metro (HQ)", grade: "Senior MR",
+    zone: "West Zone", designation: "Senior Executive (SR MR)",
+    workDaysNote: "22 / 22 Days", workDaysNoteClass: "text-emerald-600", workDaysSub: "16 HQ • 6 Ex-Stn",
+    baseSalary: "₹36,000", taDa: "₹14,850", taDaNote: "GPS: 1,420 km", taDaClass: "text-text-primary",
+    netPayout: "₹50,850", netPayoutClass: "text-[#b43403]",
+    status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip",
+    rowClass: "bg-status-warning-bg/40 hover:bg-status-warning-bg/70",
+    breakdown: {
+      basic: "₹24,000", hra: "₹8,000", special: "₹4,000", grossFixed: "₹36,000",
+      daHq: "₹4,000", daHqNote: "16 HQ Days @ ₹250", daEx: "₹2,700", daExNote: "6 Days @ ₹450",
+      travel: "₹7,810", travelNote: "1,420 km @ ₹5.50/km", reimb: "₹340",
+      pf: "₹2,160", pt: "₹200", net: "₹50,850",
+      bankLast4: "8920", ifsc: "HDFC0000128", bankName: "HDFC Bank"
+    }
+  },
+  {
+    id: "emp-0842", name: "Amit Duggal", empCode: "EMP-0842", hq: "Delhi South", grade: "MR",
+    zone: "North Zone", designation: "Medical Representative (MR)",
+    workDaysNote: "21 / 22 Days", workDaysNoteClass: "text-text-secondary", workDaysSub: "14 HQ • 7 Outstation",
+    baseSalary: "₹32,500", taDa: "₹18,200", taDaNote: "Night Halt: 2 Days", taDaClass: "text-text-primary",
+    netPayout: "₹50,700", netPayoutClass: "text-text-primary",
+    status: "ASM Verified", statusClass: "bg-blue-100 text-blue-800", actionLabel: "Payslip",
+    rowClass: "hover:bg-surface-subtle/80",
+    breakdown: {
+      basic: "₹22,000", hra: "₹7,000", special: "₹3,500", grossFixed: "₹32,500",
+      daHq: "₹3,500", daHqNote: "14 HQ Days @ ₹250", daEx: "₹3,150", daExNote: "7 Days @ ₹450",
+      travel: "₹9,900", travelNote: "1,800 km @ ₹5.50/km", reimb: "₹1,650",
+      pf: "₹1,950", pt: "₹200", net: "₹50,700",
+      bankLast4: "3312", ifsc: "ICIC0001120", bankName: "ICICI Bank"
+    }
+  },
+  {
+    id: "emp-1120", name: "Subhashish Mitra", empCode: "EMP-1120", hq: "Kolkata Central", grade: "Executive MR",
+    zone: "East Zone", designation: "Medical Representative (MR)",
+    workDaysNote: "23 / 22 Days", workDaysNoteClass: "text-indigo-600", workDaysSub: "18 HQ • 5 Ex-Stn",
+    baseSalary: "₹38,000", taDa: "₹16,400", taDaNote: "Fare: ₹8,200", taDaClass: "text-text-primary",
+    netPayout: "₹54,400", netPayoutClass: "text-text-primary",
+    status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip",
+    rowClass: "hover:bg-surface-subtle/80",
+    breakdown: {
+      basic: "₹25,500", hra: "₹8,500", special: "₹4,000", grossFixed: "₹38,000",
+      daHq: "₹4,500", daHqNote: "18 HQ Days @ ₹250", daEx: "₹2,250", daExNote: "5 Days @ ₹450",
+      travel: "₹8,200", travelNote: "Fare reimbursement", reimb: "₹1,450",
+      pf: "₹2,280", pt: "₹200", net: "₹54,400",
+      bankLast4: "7741", ifsc: "SBIN0004455", bankName: "State Bank of India"
+    }
+  },
+  {
+    id: "emp-0994", name: "Sunita Kulkarni", empCode: "EMP-0994", hq: "Bengaluru Central", grade: "MR",
+    zone: "South Zone", designation: "Medical Representative (MR)",
+    workDaysNote: "20 / 22 Days", workDaysNoteClass: "text-amber-600", workDaysSub: "12 HQ • 8 Outstation",
+    baseSalary: "₹31,000", taDa: "₹19,800", taDaNote: "Odometer Mismatch", taDaClass: "text-rose-600",
+    netPayout: "₹50,800", netPayoutClass: "text-text-primary",
+    status: "Claim on Hold", statusClass: "bg-rose-100 text-rose-800", actionLabel: "Audit",
+    rowClass: "hover:bg-surface-subtle/80",
+    breakdown: {
+      basic: "₹20,500", hra: "₹6,800", special: "₹3,700", grossFixed: "₹31,000",
+      daHq: "₹3,000", daHqNote: "12 HQ Days @ ₹250", daEx: "₹3,600", daExNote: "8 Days @ ₹450",
+      travel: "₹12,100", travelNote: "Disputed odometer reading — under review", reimb: "₹1,100",
+      pf: "₹1,860", pt: "₹200", net: "₹50,800",
+      bankLast4: "5567", ifsc: "AXIS0000234", bankName: "Axis Bank"
+    }
+  },
+  {
+    id: "emp-1205", name: "Karthik Nathan", empCode: "EMP-1205", hq: "Chennai Central", grade: "MR",
+    zone: "South Zone", designation: "Medical Representative (MR)",
+    workDaysNote: "22 / 22 Days", workDaysNoteClass: "text-emerald-600", workDaysSub: "17 HQ • 5 Ex-Stn",
+    baseSalary: "₹34,000", taDa: "₹15,200", taDaNote: "GPS: 1,380 km", taDaClass: "text-text-primary",
+    netPayout: "₹49,200", netPayoutClass: "text-text-primary",
+    status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip",
+    rowClass: "hover:bg-surface-subtle/80",
+    breakdown: {
+      basic: "₹23,000", hra: "₹7,500", special: "₹3,500", grossFixed: "₹34,000",
+      daHq: "₹4,250", daHqNote: "17 HQ Days @ ₹250", daEx: "₹2,250", daExNote: "5 Days @ ₹450",
+      travel: "₹7,590", travelNote: "1,380 km @ ₹5.50/km", reimb: "₹1,110",
+      pf: "₹2,040", pt: "₹200", net: "₹49,200",
+      bankLast4: "9012", ifsc: "HDFC0000551", bankName: "HDFC Bank"
+    }
+  }
+];
+
+const PAGE_SIZE = 5;
 
 export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
+  const [employees, setEmployees] = useState<Employee[]>(initialEmployees);
+  const [search, setSearch] = useState("");
+  const [zoneFilter, setZoneFilter] = useState<"all" | Employee["zone"]>("all");
+  const [designationFilter, setDesignationFilter] = useState<"all" | Employee["designation"]>("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | Employee["status"]>("all");
+  const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set(["emp-1049"]));
+  const [inspectedId, setInspectedId] = useState<string>("emp-1049");
+  const [activeSubTab, setActiveSubTab] = useState(0);
+  const [detail, setDetail] = useState<{ title: string; body: string } | null>(null);
+  const [showLockConfirm, setShowLockConfirm] = useState(false);
+  const [division, setDivision] = useState("All Divisions (Pan-India HQ)");
+  const [cycle, setCycle] = useState("September 2026 (Active Cycle)");
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return employees.filter((e) => {
+      if (zoneFilter !== "all" && e.zone !== zoneFilter) return false;
+      if (designationFilter !== "all" && e.designation !== designationFilter) return false;
+      if (statusFilter !== "all" && e.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
+        e.name.toLowerCase().includes(q) ||
+        e.empCode.toLowerCase().includes(q) ||
+        e.hq.toLowerCase().includes(q) ||
+        e.grade.toLowerCase().includes(q)
+      );
+    });
+  }, [employees, search, zoneFilter, designationFilter, statusFilter]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  const inspected = employees.find((e) => e.id === inspectedId) ?? employees[0];
+
+  function resetFilters() {
+    setSearch("");
+    setZoneFilter("all");
+    setDesignationFilter("all");
+    setStatusFilter("all");
+    setPage(1);
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function selectAll() {
+    setSelectedIds(new Set(filtered.map((e) => e.id)));
+  }
+
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "payroll-neft-batch.csv",
+      filtered.map((e) => ({
+        "Employee": e.name,
+        "Emp Code": e.empCode,
+        "HQ": e.hq,
+        "Grade": e.grade,
+        "Zone": e.zone,
+        "Base Salary": e.baseSalary,
+        "TA/DA Claimed": e.taDa,
+        "Net Payout": e.netPayout,
+        "Status": e.status,
+        "Bank": e.breakdown.bankName,
+        "Account (last 4)": e.breakdown.bankLast4,
+        "IFSC": e.breakdown.ifsc
+      }))
+    );
+  }
+
+  function handleBulkApprove() {
+    if (selectedIds.size === 0) return;
+    setEmployees((prev) => prev.map((e) => (selectedIds.has(e.id) ? { ...e, status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip" } : e)));
+    setDetail({ title: "Bulk Approve Complete", body: `${selectedIds.size} staff allowance claim(s) marked Approved for this session.` });
+  }
+
+  function handleApproveAndSend() {
+    setEmployees((prev) => prev.map((e) => (e.id === inspected.id ? { ...e, status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip" } : e)));
+    setDetail({ title: "Sent to Bank NEFT Batch", body: `${inspected.name}'s payslip (${inspected.netPayout}) has been marked Approved and queued for the NEFT batch this session.` });
+  }
+
+  function handleDownloadSlip() {
+    downloadCsv(`payslip-${inspected.empCode}.csv`, [{
+      "Employee": inspected.name, "Emp Code": inspected.empCode, "HQ": inspected.hq,
+      "Basic": inspected.breakdown.basic, "HRA": inspected.breakdown.hra, "Special Allowance": inspected.breakdown.special,
+      "Gross Fixed": inspected.breakdown.grossFixed, "DA (HQ)": inspected.breakdown.daHq, "DA (Ex-Station)": inspected.breakdown.daEx,
+      "Travel Allowance": inspected.breakdown.travel, "Mobile/Stationery Reimb.": inspected.breakdown.reimb,
+      "PF/ESIC": inspected.breakdown.pf, "Professional Tax": inspected.breakdown.pt, "Net Payable": inspected.breakdown.net
+    }]);
+  }
+
+  function handleFinalLock() {
+    setEmployees((prev) => prev.map((e) => (e.status !== "Claim on Hold" ? { ...e, status: "Approved", statusClass: "bg-emerald-100 text-emerald-800", actionLabel: "Payslip" } : e)));
+    setShowLockConfirm(false);
+    setDetail({ title: "Payroll Locked & Disbursed", body: "All non-disputed claims have been marked Approved and queued for disbursal this session. Claims on hold were left untouched pending audit resolution." });
+  }
+
   return (
     <div className="flex flex-col w-full space-y-6">
-      
 
 
-    
+
+
     {/* TOP HEADER */}
     <header className="h-16 bg-surface-card border-b border-border-subtle px-6 flex items-center justify-between shrink-0 sticky top-0 z-20">
       <div className="flex items-center gap-4 flex-1 max-w-xl">
         <div className="relative w-full">
           <span className="material-symbols-outlined absolute left-3 top-3 text-xs text-text-muted">{`search`}</span>
-          <input type="text" placeholder="Search MR name, employee code, TA/DA claims, station bills..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-[#b43403] text-text-primary placeholder-slate-400"/>
+          <input type="text" placeholder="Search MR name, employee code, TA/DA claims, station bills..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-4 py-2 focus:outline-none focus:border-[#b43403] text-text-primary placeholder-slate-400" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}/>
         </div>
       </div>
-      
+
       <div className="flex items-center gap-3">
         {/* Territory Selector */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer">
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer" value={division} onChange={(e) => setDivision(e.target.value)}>
             <option>All Divisions (Pan-India HQ)</option>
             <option>Cardio-Diabetic Division</option>
             <option>Respiratory Care Division</option>
@@ -32,7 +266,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
         {/* Payroll Month Picker */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer">
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer" value={cycle} onChange={(e) => setCycle(e.target.value)}>
             <option>September 2026 (Active Cycle)</option>
             <option>August 2026 (Processed)</option>
             <option>July 2026 (Audited)</option>
@@ -41,12 +275,12 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
         </div>
 
         {/* Refresh Button */}
-        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle" title="Sync Expense Ledgers">
+        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle" title="Sync Expense Ledgers" onClick={() => setDetail({ title: "Ledger Sync Triggered", body: "A sync of expense ledgers against DCR and GPS logs has been queued for this session. There is no live sync backend yet." })}>
           <span className="material-symbols-outlined text-xs">{`sync`}</span>
         </button>
 
         {/* Alerts */}
-        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle relative" title="Notifications">
+        <button className="w-9 h-9 border border-border-subtle rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle relative" title="Notifications" onClick={() => setDetail({ title: "Notifications", body: "14 audit claim deviations pending review (₹48,250 on hold). 11 claims pending ASM sign-off." })}>
           <span className="material-symbols-outlined text-xs">{`circle`}</span>
           <span className="w-2 h-2 bg-[#b43403] rounded-full absolute top-2 right-2"></span>
         </button>
@@ -66,7 +300,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
     {/* CONTENT BODY */}
     <div className="p-6 space-y-6">
-      
+
       {/* BREADCRUMB & TITLE BAR */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
@@ -93,11 +327,11 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
         {/* Action CTAs */}
         <div className="flex items-center gap-2.5">
-          <button className="px-3.5 py-2 border border-border-subtle text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle flex items-center gap-2 transition-colors">
+          <button className="px-3.5 py-2 border border-border-subtle text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle flex items-center gap-2 transition-colors" onClick={handleExport} disabled={filtered.length === 0}>
             <span className="material-symbols-outlined text-xs">{`circle`}</span>
             <span>Export Bank NEFT Batch</span>
           </button>
-          <button className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors">
+          <button className="px-4 py-2 bg-[#b43403] hover:bg-[#9a3412] text-white text-xs font-semibold rounded-lg shadow-sm flex items-center gap-2 transition-colors" onClick={() => setShowLockConfirm(true)}>
             <span className="material-symbols-outlined text-xs">{`circle`}</span>
             <span>Run Final Payroll Lock &amp; Disburse</span>
           </button>
@@ -110,7 +344,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
       {/* KPI METRIC PULSE CARDS */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        
+
         {/* Metric 1: Total Net Payroll */}
         <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm relative overflow-hidden">
           <div className="flex items-start justify-between">
@@ -195,24 +429,21 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
       {/* PAYROLL SUB-TABS */}
       <div className="flex items-center gap-6 border-b border-border-subtle text-xs font-semibold">
-        <button className="pb-3 border-b-2 border-[#b43403] text-[#b43403] flex items-center gap-2">
-          <span className="material-symbols-outlined">{`circle`}</span>
-          <span>Field Staff Salary &amp; Allowance Roll (428)</span>
-        </button>
-        <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <span className="material-symbols-outlined">{`circle`}</span>
-          <span>Kilometre Fare &amp; DA Tier Matrix</span>
-          <span className="px-1.5 py-0.2 text-[10px] bg-surface-subtle text-text-secondary rounded">Pan-India Rates</span>
-        </button>
-        <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <span className="material-symbols-outlined">{`circle`}</span>
-          <span>Outstation Lodge &amp; Boarding Ledger</span>
-          <span className="px-1.5 py-0.2 text-[10px] bg-status-warning-bg text-status-warning rounded font-bold">14 Claims</span>
-        </button>
-        <button className="pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors">
-          <span className="material-symbols-outlined">{`circle`}</span>
-          <span>Statutory Tax &amp; TDS Section 192/194R Declarations</span>
-        </button>
+        {["Field Staff Salary & Allowance Roll (428)", "Kilometre Fare & DA Tier Matrix", "Outstation Lodge & Boarding Ledger", "Statutory Tax & TDS Section 192/194R Declarations"].map((label, i) => (
+          <button
+            key={label}
+            className={i === activeSubTab ? "pb-3 border-b-2 border-[#b43403] text-[#b43403] flex items-center gap-2" : "pb-3 text-text-secondary hover:text-text-primary border-b-2 border-transparent flex items-center gap-2 transition-colors"}
+            onClick={() => {
+              setActiveSubTab(i);
+              if (i !== 0) setDetail({ title: label, body: "This roster view isn't built out yet — showing the Field Staff Salary & Allowance Roll below in the meantime." });
+            }}
+          >
+            <span className="material-symbols-outlined">{`circle`}</span>
+            <span>{label}</span>
+            {i === 2 && <span className="px-1.5 py-0.2 text-[10px] bg-status-warning-bg text-status-warning rounded font-bold">14 Claims</span>}
+            {i === 1 && <span className="px-1.5 py-0.2 text-[10px] bg-surface-subtle text-text-secondary rounded">Pan-India Rates</span>}
+          </button>
+        ))}
       </div>
 
       {/* FILTER CONTROLS BAR */}
@@ -221,39 +452,39 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           {/* Text search */}
           <div className="relative min-w-[240px]">
             <span className="material-symbols-outlined absolute left-3 top-2.5 text-xs text-text-muted">{`search`}</span>
-            <input type="text" placeholder="Search by Rep Name, Emp ID, Territory, Grade..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#b43403] text-text-secondary placeholder-slate-400"/>
+            <input type="text" placeholder="Search by Rep Name, Emp ID, Territory, Grade..." className="w-full bg-surface-subtle border border-border-subtle text-xs rounded-lg pl-8 pr-3 py-1.5 focus:outline-none focus:border-[#b43403] text-text-secondary placeholder-slate-400" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }}/>
           </div>
 
           {/* Zone filter */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Territories (Pan-India)</option>
-            <option>West Zone (Mumbai, Pune)</option>
-            <option>North Zone (Delhi NCR)</option>
-            <option>South Zone (Bengaluru)</option>
-            <option>East Zone (Kolkata)</option>
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={zoneFilter} onChange={(e) => { setZoneFilter(e.target.value as typeof zoneFilter); setPage(1); }}>
+            <option value="all">All Territories (Pan-India)</option>
+            <option value="West Zone">West Zone (Mumbai, Pune)</option>
+            <option value="North Zone">North Zone (Delhi NCR)</option>
+            <option value="South Zone">South Zone (Bengaluru)</option>
+            <option value="East Zone">East Zone (Kolkata)</option>
           </select>
 
           {/* Designation Grade */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Designations (MR, Senior MR, ASM)</option>
-            <option>Medical Representative (MR)</option>
-            <option>Senior Executive (SR MR)</option>
-            <option>Area Sales Manager (ASM)</option>
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={designationFilter} onChange={(e) => { setDesignationFilter(e.target.value as typeof designationFilter); setPage(1); }}>
+            <option value="all">All Designations (MR, Senior MR, ASM)</option>
+            <option value="Medical Representative (MR)">Medical Representative (MR)</option>
+            <option value="Senior Executive (SR MR)">Senior Executive (SR MR)</option>
+            <option value="Area Sales Manager (ASM)">Area Sales Manager (ASM)</option>
           </select>
 
           {/* Disbursal Status */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Disbursal Statuses</option>
-            <option>Passed for Bank Payment</option>
-            <option>Pending ASM Sign-off</option>
-            <option>TA/DA Dispute Hold</option>
+          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); setPage(1); }}>
+            <option value="all">All Disbursal Statuses</option>
+            <option value="Approved">Passed for Bank Payment</option>
+            <option value="ASM Verified">Pending ASM Sign-off</option>
+            <option value="Claim on Hold">TA/DA Dispute Hold</option>
           </select>
         </div>
 
         {/* Reset & Count */}
         <div className="flex items-center gap-3">
-          <span className="text-xs text-text-secondary font-medium">Showing <strong>5 of 428</strong> Staff</span>
-          <button className="text-xs text-text-secondary hover:text-text-primary font-semibold flex items-center gap-1 p-1">
+          <span className="text-xs text-text-secondary font-medium">Showing <strong>{filtered.length === 0 ? 0 : (safePage - 1) * PAGE_SIZE + 1}-{Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}</strong> Staff</span>
+          <button className="text-xs text-text-secondary hover:text-text-primary font-semibold flex items-center gap-1 p-1" onClick={resetFilters}>
             <span className="material-symbols-outlined text-[11px]">{`circle`}</span>
             <span>Reset</span>
           </button>
@@ -262,7 +493,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
       {/* MAIN PAYROLL ROSTER & SALARY BREAKDOWN INSPECTOR */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Left 2 Cols: Comprehensive Payroll Roster Table */}
         <div className="lg:col-span-2 bg-surface-card border border-border-subtle rounded-xl overflow-hidden shadow-sm flex flex-col">
           <div className="p-4 border-b border-border-subtle flex items-center justify-between">
@@ -271,8 +502,8 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               <h3 className="font-bold text-sm text-text-primary">September 2026 Salary &amp; Expense Reconciliation Roster</h3>
             </div>
             <div className="flex items-center gap-2">
-              <button className="text-xs font-medium text-[#b43403] hover:underline">Select All 428</button>
-              <button className="px-2.5 py-1 bg-surface-subtle hover:bg-slate-200 text-text-secondary text-xs font-semibold rounded transition-colors">
+              <button className="text-xs font-medium text-[#b43403] hover:underline" onClick={selectAll}>Select All {filtered.length}</button>
+              <button className="px-2.5 py-1 bg-surface-subtle hover:bg-slate-200 text-text-secondary text-xs font-semibold rounded transition-colors disabled:opacity-50" onClick={handleBulkApprove} disabled={selectedIds.size === 0}>
                 Bulk Approve Allowances
               </button>
             </div>
@@ -283,7 +514,14 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             <table className="w-full text-left text-xs">
               <thead className="bg-surface-subtle border-b border-border-subtle text-[11px] font-bold text-text-secondary uppercase tracking-wider">
                 <tr>
-                  <th className="py-3 px-4 w-8"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></th>
+                  <th className="py-3 px-4 w-8"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0" checked={pageRows.length > 0 && pageRows.every((e) => selectedIds.has(e.id))} onChange={() => {
+                    setSelectedIds((prev) => {
+                      const next = new Set(prev);
+                      const allSelected = pageRows.every((e) => next.has(e.id));
+                      pageRows.forEach((e) => (allSelected ? next.delete(e.id) : next.add(e.id)));
+                      return next;
+                    });
+                  }}/></th>
                   <th className="py-3 px-4">Field Employee &amp; HQ</th>
                   <th className="py-3 px-4">Work Days / DCRs</th>
                   <th className="py-3 px-4">Base Salary</th>
@@ -294,187 +532,53 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-text-secondary">
-                
-                {/* Row 1 (Selected) */}
-                <tr className="bg-status-warning-bg/40 hover:bg-status-warning-bg/70 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" defaultChecked className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">Rahul Sharma</div>
-                    <div className="text-[11px] text-text-secondary">EMP-1049 &bull; Mumbai Metro (HQ)</div>
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Senior MR</span>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">22 / 22 Days</div>
-                    <div className="text-[11px] text-emerald-600 font-medium">100% DCR Logged</div>
-                    <div className="text-[10px] text-text-muted">16 HQ &bull; 6 Ex-Stn</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹36,000</td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">₹14,850</div>
-                    <div className="text-[10px] text-text-muted">GPS: 1,420 km</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-extrabold text-[#b43403] text-sm">
-                    ₹50,850
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
-                      Approved
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 2 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">Amit Duggal</div>
-                    <div className="text-[11px] text-text-secondary">EMP-0842 &bull; Delhi South</div>
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">MR</span>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">21 / 22 Days</div>
-                    <div className="text-[11px] text-text-secondary">1 Day Leave Approved</div>
-                    <div className="text-[10px] text-text-muted">14 HQ &bull; 7 Outstation</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹32,500</td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">₹18,200</div>
-                    <div className="text-[10px] text-text-muted">Night Halt: 2 Days</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
-                    ₹50,700
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-100 text-blue-800">
-                      ASM Verified
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 3 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">Subhashish Mitra</div>
-                    <div className="text-[11px] text-text-secondary">EMP-1120 &bull; Kolkata Central</div>
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">Executive MR</span>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">23 / 22 Days</div>
-                    <div className="text-[11px] text-indigo-600 font-medium">+1 Sun Camp Day</div>
-                    <div className="text-[10px] text-text-muted">18 HQ &bull; 5 Ex-Stn</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹38,000</td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">₹16,400</div>
-                    <div className="text-[10px] text-text-muted">Fare: ₹8,200</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
-                    ₹54,400
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
-                      Approved
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 4 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">Sunita Kulkarni</div>
-                    <div className="text-[11px] text-text-secondary">EMP-0994 &bull; Bengaluru Central</div>
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">MR</span>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">20 / 22 Days</div>
-                    <div className="text-[11px] text-amber-600 font-medium">2 Days Late DCR</div>
-                    <div className="text-[10px] text-text-muted">12 HQ &bull; 8 Outstation</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹31,000</td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-rose-600">₹19,800</div>
-                    <div className="text-[10px] text-rose-500">Odometer Mismatch</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
-                    ₹50,800
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-100 text-rose-800">
-                      Claim on Hold
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Audit</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
-                    </button>
-                  </td>
-                </tr>
-
-                {/* Row 5 */}
-                <tr className="hover:bg-surface-subtle/80 transition-colors">
-                  <td className="py-3.5 px-4"><input type="checkbox" className="rounded text-[#b43403] focus:ring-0"/></td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">Karthik Nathan</div>
-                    <div className="text-[11px] text-text-secondary">EMP-1205 &bull; Chennai Central</div>
-                    <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">MR</span>
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">22 / 22 Days</div>
-                    <div className="text-[11px] text-emerald-600 font-medium">Full Attendance</div>
-                    <div className="text-[10px] text-text-muted">17 HQ &bull; 5 Ex-Stn</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-semibold text-text-primary">₹34,000</td>
-                  <td className="py-3.5 px-4">
-                    <div className="font-bold text-text-primary">₹15,200</div>
-                    <div className="text-[10px] text-text-muted">GPS: 1,380 km</div>
-                  </td>
-                  <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm">
-                    ₹49,200
-                  </td>
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800">
-                      Approved
-                    </span>
-                  </td>
-                  <td className="py-3.5 px-4 text-right">
-                    <button className="text-text-secondary hover:text-text-primary font-semibold text-xs inline-flex items-center gap-1">
-                      <span>Payslip</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
-                    </button>
-                  </td>
-                </tr>
-
+                {pageRows.length === 0 && (
+                  <tr><td colSpan={8} className="py-10 px-4 text-center text-text-muted">No staff match the current search/filters.</td></tr>
+                )}
+                {pageRows.map((e) => (
+                  <tr key={e.id} className={`${e.rowClass} transition-colors ${inspectedId === e.id ? "ring-1 ring-inset ring-[#b43403]/40" : ""}`}>
+                    <td className="py-3.5 px-4"><input type="checkbox" checked={selectedIds.has(e.id)} onChange={() => toggleSelect(e.id)} className="rounded text-[#b43403] focus:ring-0"/></td>
+                    <td className="py-3.5 px-4">
+                      <div className="font-bold text-text-primary">{e.name}</div>
+                      <div className="text-[11px] text-text-secondary">{e.empCode} &bull; {e.hq}</div>
+                      <span className="inline-block mt-0.5 px-1.5 py-0.2 bg-surface-subtle text-text-secondary rounded text-[10px] font-semibold">{e.grade}</span>
+                    </td>
+                    <td className="py-3.5 px-4">
+                      <div className="font-bold text-text-primary">{e.workDaysNote}</div>
+                      <div className={`text-[11px] font-medium ${e.workDaysNoteClass}`}>{e.workDaysNote}</div>
+                      <div className="text-[10px] text-text-muted">{e.workDaysSub}</div>
+                    </td>
+                    <td className="py-3.5 px-4 font-semibold text-text-primary">{e.baseSalary}</td>
+                    <td className="py-3.5 px-4">
+                      <div className={`font-bold ${e.taDaClass}`}>{e.taDa}</div>
+                      <div className={`text-[10px] ${e.taDaClass === "text-rose-600" ? "text-rose-500" : "text-text-muted"}`}>{e.taDaNote}</div>
+                    </td>
+                    <td className={`py-3.5 px-4 font-extrabold text-sm ${e.netPayoutClass}`}>{e.netPayout}</td>
+                    <td className="py-3.5 px-4">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold ${e.statusClass}`}>{e.status}</span>
+                    </td>
+                    <td className="py-3.5 px-4 text-right">
+                      <button className="text-[#b43403] hover:text-[#9a3412] font-semibold text-xs inline-flex items-center gap-1" onClick={() => setInspectedId(e.id)}>
+                        <span>{e.actionLabel}</span> <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
           {/* Table Footer Pagination */}
           <div className="p-3 border-t border-border-subtle flex items-center justify-between bg-surface-subtle text-xs">
-            <span className="text-text-secondary">1 Staff Selected &bull; Total 428 Records</span>
+            <span className="text-text-secondary">{selectedIds.size} Staff Selected &bull; Total {filtered.length} Records</span>
             <div className="flex items-center gap-1">
-              <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card disabled:opacity-40" disabled={true}>
+              <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card disabled:opacity-40" disabled={safePage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
                 <span className="material-symbols-outlined text-[10px]">{`chevron_left`}</span>
               </button>
-              <button className="w-7 h-7 flex items-center justify-center bg-[#b43403] text-white rounded font-bold">1</button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium">2</button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium">3</button>
-              <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <button key={n} className={n === safePage ? "w-7 h-7 flex items-center justify-center bg-[#b43403] text-white rounded font-bold" : "w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-secondary hover:bg-surface-card font-medium"} onClick={() => setPage(n)}>{n}</button>
+              ))}
+              <button className="w-7 h-7 flex items-center justify-center border border-border-subtle rounded text-text-muted hover:bg-surface-card disabled:opacity-40" disabled={safePage >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
                 <span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span>
               </button>
             </div>
@@ -483,72 +587,72 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
         {/* Right Col: Selected Rep Salary & Allowance Dissect Inspector */}
         <div className="space-y-4">
-          
+
           <div className="bg-surface-card border border-border-subtle rounded-xl p-4 shadow-sm">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-[#b43403]">PAYSLIP SLATE #SEP-2026-1049</span>
+                <span className="text-xs font-bold text-[#b43403]">PAYSLIP SLATE #SEP-2026-{inspected.empCode.replace("EMP-", "")}</span>
               </div>
-              <span className="px-2 py-0.5 bg-status-success-bg text-status-success font-bold text-[10px] rounded-full border border-status-success-bg">
-                Ready for Disbursal
+              <span className={`px-2 py-0.5 font-bold text-[10px] rounded-full border ${inspected.status === "Claim on Hold" ? "bg-rose-100 text-rose-800 border-rose-200" : "bg-status-success-bg text-status-success border-status-success-bg"}`}>
+                {inspected.status === "Claim on Hold" ? "Hold — Under Audit" : "Ready for Disbursal"}
               </span>
             </div>
 
             <div className="mt-3 space-y-3 text-xs">
               <div>
                 <p className="text-[10px] font-bold text-text-muted uppercase">Field Representative</p>
-                <p className="font-bold text-text-primary mt-0.5">Rahul Sharma</p>
-                <p className="text-text-secondary text-[11px]">Senior MR &bull; Mumbai Metro (HQ: Dadar)</p>
+                <p className="font-bold text-text-primary mt-0.5">{inspected.name}</p>
+                <p className="text-text-secondary text-[11px]">{inspected.grade} &bull; {inspected.hq}</p>
               </div>
 
               {/* Breakdown Items */}
               <div className="space-y-2 bg-surface-subtle p-3 rounded-lg border border-slate-100 text-xs">
                 <div className="flex justify-between items-center text-text-secondary">
-                  <span>Basic Salary (22/22 Days):</span>
-                  <span className="font-semibold text-text-primary">₹24,000</span>
+                  <span>Basic Salary ({inspected.workDaysNote}):</span>
+                  <span className="font-semibold text-text-primary">{inspected.breakdown.basic}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary">
                   <span>House Rent Allowance (HRA):</span>
-                  <span className="font-semibold text-text-primary">₹8,000</span>
+                  <span className="font-semibold text-text-primary">{inspected.breakdown.hra}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary">
                   <span>Special &amp; Medical Allowance:</span>
-                  <span className="font-semibold text-text-primary">₹4,000</span>
+                  <span className="font-semibold text-text-primary">{inspected.breakdown.special}</span>
                 </div>
                 <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-text-primary font-bold">
                   <span>Gross Fixed Compensation:</span>
-                  <span>₹36,000</span>
+                  <span>{inspected.breakdown.grossFixed}</span>
                 </div>
-                
+
                 <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-[#b43403] font-bold">
-                  <span>Daily Allowance (DA) - 16 HQ Days @ ₹250:</span>
-                  <span>₹4,000</span>
+                  <span>Daily Allowance (DA) - {inspected.breakdown.daHqNote}:</span>
+                  <span>{inspected.breakdown.daHq}</span>
                 </div>
                 <div className="flex justify-between items-center text-[#b43403] font-bold">
-                  <span>Ex-Station DA - 6 Days @ ₹450:</span>
-                  <span>₹2,700</span>
+                  <span>Ex-Station DA - {inspected.breakdown.daExNote}:</span>
+                  <span>{inspected.breakdown.daEx}</span>
                 </div>
                 <div className="flex justify-between items-center text-[#b43403] font-bold">
-                  <span>Travel Allowance (1,420 km @ ₹5.50/km):</span>
-                  <span>₹7,810</span>
+                  <span>Travel Allowance ({inspected.breakdown.travelNote}):</span>
+                  <span>{inspected.breakdown.travel}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary font-semibold">
                   <span>Mobile &amp; Stationery Reimb.:</span>
-                  <span>₹340</span>
+                  <span>{inspected.breakdown.reimb}</span>
                 </div>
 
                 <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-text-secondary">
                   <span>Statutory PF &amp; ESIC Deduction:</span>
-                  <span className="text-rose-600">- ₹2,160</span>
+                  <span className="text-rose-600">- {inspected.breakdown.pf}</span>
                 </div>
                 <div className="flex justify-between items-center text-text-secondary">
                   <span>Professional Tax (PT):</span>
-                  <span className="text-rose-600">- ₹200</span>
+                  <span className="text-rose-600">- {inspected.breakdown.pt}</span>
                 </div>
 
                 <div className="pt-2 border-t border-border-subtle flex justify-between items-center text-text-primary font-extrabold text-sm">
                   <span>Net Payable Amount:</span>
-                  <span className="text-[#b43403]">₹50,850</span>
+                  <span className="text-[#b43403]">{inspected.breakdown.net}</span>
                 </div>
               </div>
 
@@ -556,17 +660,17 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               <div className="p-2.5 bg-status-info-bg/60 border border-status-info-bg rounded-lg text-[11px] text-blue-900">
                 <div className="font-bold flex items-center justify-between">
                   <span>Bank Account Linked</span>
-                  <span className="text-status-info">HDFC Bank</span>
+                  <span className="text-status-info">{inspected.breakdown.bankName}</span>
                 </div>
-                <p className="text-status-info/80 mt-0.5">A/C: **** **** 8920 &bull; IFSC: HDFC0000128</p>
+                <p className="text-status-info/80 mt-0.5">A/C: **** **** {inspected.breakdown.bankLast4} &bull; IFSC: {inspected.breakdown.ifsc}</p>
               </div>
 
               <div className="pt-2 border-t border-slate-100 space-y-2">
-                <button className="w-full py-2 bg-[#b43403] hover:bg-[#9a3412] text-white font-semibold rounded-lg text-xs shadow-sm flex items-center justify-center gap-2">
+                <button className="w-full py-2 bg-[#b43403] hover:bg-[#9a3412] text-white font-semibold rounded-lg text-xs shadow-sm flex items-center justify-center gap-2" onClick={handleApproveAndSend}>
                   <span className="material-symbols-outlined">{`circle`}</span>
                   <span>Approve &amp; Send to Bank NEFT Batch</span>
                 </button>
-                <button className="w-full py-2 border border-border-subtle text-text-secondary font-semibold rounded-lg text-xs hover:bg-surface-subtle flex items-center justify-center gap-2">
+                <button className="w-full py-2 border border-border-subtle text-text-secondary font-semibold rounded-lg text-xs hover:bg-surface-subtle flex items-center justify-center gap-2" onClick={handleDownloadSlip}>
                   <span className="material-symbols-outlined text-text-secondary">{`circle`}</span>
                   <span>Download Verified Salary Slip</span>
                 </button>
@@ -580,7 +684,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               <span className="material-symbols-outlined text-blue-600">{`calculate`}</span>
               <span>Expense Audit Rule Engine (DCR Verified)</span>
             </h4>
-            
+
             <div className="text-[11px] space-y-2 text-text-secondary">
               <div className="flex items-center justify-between">
                 <span>GPS Distance Validation Adherence:</span>
@@ -589,7 +693,7 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               <div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
                 <div className="bg-emerald-500 h-full rounded-full" style={{ "width": "98.2%" }}></div>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <span>MTP Route Plan vs Actual DCR Calls:</span>
                 <span className="font-bold text-text-primary">95.4% Sync</span>
@@ -622,10 +726,10 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button className="px-3 py-1.5 border border-border-subtle bg-surface-card text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle">
+          <button className="px-3 py-1.5 border border-border-subtle bg-surface-card text-xs font-semibold text-text-secondary rounded-lg hover:bg-surface-subtle" onClick={() => setDetail({ title: "TA/DA Policy", body: "Ex-station and Outstation travel allowances are exempt under Income Tax Section 10(14)(i), subject to verified DCR visit proof and travel voucher logs submitted within the same payroll cycle." })}>
             View TA/DA Policy
           </button>
-          <button className="px-3 py-1.5 bg-[#b43403] text-white text-xs font-semibold rounded-lg hover:bg-[#9a3412]">
+          <button className="px-3 py-1.5 bg-[#b43403] text-white text-xs font-semibold rounded-lg hover:bg-[#9a3412]" onClick={handleExport} disabled={filtered.length === 0}>
             Bulk NEFT Matrix
           </button>
         </div>
@@ -633,7 +737,38 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
 
     </div>
 
-  
+
+    </div>
+
+    {/* Final Payroll Lock confirmation modal */}
+    {showLockConfirm && (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setShowLockConfirm(false)}>
+        <div className="bg-surface-card rounded-xl p-6 w-full max-w-md space-y-4" onClick={(e) => e.stopPropagation()}>
+          <h3 className="font-display font-bold text-text-primary text-lg">Run Final Payroll Lock &amp; Disburse</h3>
+          <p className="text-sm text-text-secondary leading-relaxed">
+            This will mark every non-disputed claim in the current roster ({employees.filter((e) => e.status !== "Claim on Hold").length} of {employees.length} employees) as Approved and queue them for the Bank NEFT batch.
+          </p>
+          <p className="text-[11px] text-text-muted">Session-only simulation — there is no live disbursement/banking backend yet, so this does not persist after a page reload.</p>
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-subtle" onClick={() => setShowLockConfirm(false)}>Cancel</button>
+            <button type="button" className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#b43403] text-white hover:bg-[#9a3412]" onClick={handleFinalLock}>Confirm &amp; Lock</button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Detail popup */}
+    {detail && (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setDetail(null)}>
+        <div className="bg-surface-card rounded-xl p-6 w-full max-w-md space-y-3" onClick={(e) => e.stopPropagation()}>
+          <h3 className="font-display font-bold text-text-primary text-base">{detail.title}</h3>
+          <p className="text-sm text-text-secondary leading-relaxed">{detail.body}</p>
+          <div className="flex justify-end pt-2">
+            <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-subtle" onClick={() => setDetail(null)}>Close</button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

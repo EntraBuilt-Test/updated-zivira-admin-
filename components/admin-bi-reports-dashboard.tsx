@@ -28,37 +28,37 @@ const GROUPS: ReportGroup[] = [
     icon: Users,
     items: [
       { label: "Daily Activity", href: "/admin/dcr" },
-      { label: "Attendance & Compliance", href: "/admin/analytics/compliance" },
-      { label: "Missed DCR", href: "/admin/analytics/compliance" },
-      { label: "Productivity (KPIs)", href: "/admin/analytics/kpi" }
+      { label: "Attendance & Compliance", href: "/admin/compliance" },
+      { label: "Missed DCR", href: "/admin/compliance" },
+      { label: "Productivity (KPIs)", href: "/admin/kpi-engine" }
     ]
   },
   {
     title: "Manager Reports",
     icon: ShieldCheck,
     items: [
-      { label: "Joint Calls", href: "/admin/analytics/rep-manager" },
-      { label: "Territory Visits", href: "/admin/analytics/territory-coverage" },
-      { label: "Team Performance (KPIs)", href: "/admin/analytics/kpi" },
-      { label: "Coaching Analysis (manager ranking)", href: "/admin/analytics/rep-manager" }
+      { label: "Joint Calls", href: "/admin/rep-vs-manager" },
+      { label: "Territory Visits", href: "/admin/territory-coverage" },
+      { label: "Team Performance (KPIs)", href: "/admin/kpi-engine" },
+      { label: "Coaching Analysis (manager ranking)", href: "/admin/rep-vs-manager" }
     ]
   },
   {
     title: "Doctor Reports",
     icon: Stethoscope,
     items: [
-      { label: "Last Visit / Coverage Alerts", href: "/admin/analytics/territory-coverage" },
-      { label: "Products Discussed", href: "/admin/analytics/products-discussed" },
-      { label: "Samples Received", href: "/admin/analytics/sample-distribution" },
-      { label: "Prescription Trend", href: "/admin/analytics/product-exposure" }
+      { label: "Last Visit / Coverage Alerts", href: "/admin/territory-coverage" },
+      { label: "Products Discussed", href: "/admin/products-discussed" },
+      { label: "Samples Received", href: "/admin/sample-distribution" },
+      { label: "Prescription Trend", href: "/admin/product-exposure" }
     ]
   },
   {
     title: "Product Reports",
     icon: BarChart3,
     items: [
-      { label: "Exposure", href: "/admin/analytics/product-exposure" },
-      { label: "Conversion (proxy: prescription interest)", href: "/admin/analytics/product-exposure" },
+      { label: "Exposure", href: "/admin/product-exposure" },
+      { label: "Conversion (proxy: prescription interest)", href: "/admin/product-exposure" },
       { label: "Growth", note: "Needs multi-period sales/prescription data not yet captured." },
       { label: "Market Share", note: "Needs competitor/market data outside this system." }
     ]
@@ -67,9 +67,9 @@ const GROUPS: ReportGroup[] = [
     title: "Territory Reports",
     icon: MapPin,
     items: [
-      { label: "Coverage", href: "/admin/analytics/territory-coverage" },
-      { label: "Visit Frequency", href: "/admin/analytics/visit-frequency" },
-      { label: "Untouched Doctors", href: "/admin/analytics/territory-coverage?bucket=NEVER_VISITED" },
+      { label: "Coverage", href: "/admin/territory-coverage" },
+      { label: "Visit Frequency", href: "/admin/visit-frequency" },
+      { label: "Untouched Doctors", href: "/admin/territory-coverage?bucket=NEVER_VISITED" },
       { label: "Doctor Density", note: "Needs a geographic doctor map, not tracked yet." }
     ]
   }
@@ -121,9 +121,9 @@ export function AdminBiReportsDashboard({ node, path }: { node: ZiviraTreeNode; 
         <ClipboardList size={16} style={{ opacity: 0.6, flexShrink: 0 }} />
         <p className="muted" style={{ fontSize: 13, margin: 0 }}>
           Looking for the Alert Engine, Payroll hold queue, or Executive rollup? Those live under their own sidebar links —{" "}
-          <Link href="/admin/analytics/alerts" style={{ color: "var(--brand)", fontWeight: 600 }}>Alerts</Link>,{" "}
-          <Link href="/admin/analytics/payroll" style={{ color: "var(--brand)", fontWeight: 600 }}>Payroll</Link>, and{" "}
-          <Link href="/admin/analytics/executive" style={{ color: "var(--brand)", fontWeight: 600 }}>Executive Dashboard</Link>.
+          <Link href="/admin/alerts" style={{ color: "var(--brand)", fontWeight: 600 }}>Alerts</Link>,{" "}
+          <Link href="/admin/payroll" style={{ color: "var(--brand)", fontWeight: 600 }}>Payroll</Link>, and{" "}
+          <Link href="/admin/executive" style={{ color: "var(--brand)", fontWeight: 600 }}>Executive Dashboard</Link>.
         </p>
       </div>
     </section>

@@ -117,6 +117,26 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
     return <AdminExecutiveDashboard node={node} path={rootPath} />;
   }
 
+  if (tab === "products-discussed") {
+    const { ProductsDiscussedReport } = await import("@/components/products-discussed-report");
+    return (
+      <>
+        <PageHeader eyebrow={meta.eyebrow} title={meta.title} description={meta.description} action={<BackButton />} />
+        <ProductsDiscussedReport />
+      </>
+    );
+  }
+
+  if (tab === "visit-frequency") {
+    const { VisitFrequencyReport } = await import("@/components/visit-frequency-report");
+    return (
+      <>
+        <PageHeader eyebrow={meta.eyebrow} title={meta.title} description={meta.description} action={<BackButton />} />
+        <VisitFrequencyReport />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader

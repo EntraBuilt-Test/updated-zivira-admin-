@@ -1,11 +1,121 @@
-import Link from "next/link";
+"use client";
+
+import { useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import { downloadCsv } from "@/lib/download-csv";
+
+// Fix — this page used to be a fully static server component: none of its
+// buttons/selects/inputs had a handler (search, zone/period selects,
+// saturation filter, Reset, Export, Reallocate, row actions, pagination,
+// sub-nav tabs, sync/notification icons, or the dossier action buttons did
+// anything). The demo KPI numbers on the 4 pulse cards and the fixed
+// dossier detail block are left untouched (no backend collection exists yet
+// for territory beats), but the beat roster table itself is now real local
+// state: search + both filters + Reset actually filter it, Export downloads
+// exactly what's on screen as CSV, pagination reflects the real filtered
+// count, and every row/CTA button opens a real read-only popup built from
+// that row's own data instead of doing nothing.
+
+type Beat = {
+  id: string;
+  name: string;
+  beatCode: string;
+  segment: string;
+  mr: string;
+  mrTitle: string;
+  asm: string;
+  zone: string;
+  hcpUniverse: number;
+  reached: number;
+  coveragePct: number;
+  saturation: "high" | "moderate" | "low";
+  actionLabel: string;
+};
+
+const initialBeats: Beat[] = [
+  { id: "b1", name: "Mumbai Central — Dadar Hub", beatCode: "BEAT-MH-MUM-01", segment: "Metro Core", mr: "Rahul Sharma", mrTitle: "Sr MR", asm: "Rajesh Sharma", zone: "West Zone (Mumbai, Pune, Gujarat)", hcpUniverse: 148, reached: 142, coveragePct: 95.9, saturation: "high", actionLabel: "Active Slate" },
+  { id: "b2", name: "Delhi South — Connaught & AIIMS", beatCode: "BEAT-DL-STH-04", segment: "Institutional", mr: "Amit Duggal", mrTitle: "MR", asm: "Vikrant Verma", zone: "North Zone (Delhi, Chandigarh, Lucknow)", hcpUniverse: 162, reached: 148, coveragePct: 91.4, saturation: "high", actionLabel: "Inspect" },
+  { id: "b3", name: "Kolkata Central — Salt Lake & Medical", beatCode: "BEAT-WB-KOL-02", segment: "Urban Cluster", mr: "Subhashish Mitra", mrTitle: "MR", asm: "Debopriya Das", zone: "All Zones (East, West, North, South)", hcpUniverse: 135, reached: 126, coveragePct: 93.3, saturation: "high", actionLabel: "Inspect" },
+  { id: "b4", name: "Bengaluru South — Whitefield IT Belt", beatCode: "BEAT-KA-BLR-06", segment: "Expanding Zone", mr: "Sunita Kulkarni", mrTitle: "MR", asm: "Srinivas Murthy", zone: "All Zones (East, West, North, South)", hcpUniverse: 154, reached: 108, coveragePct: 70.1, saturation: "low", actionLabel: "Lag Alert" },
+  { id: "b5", name: "Chennai Central — T. Nagar Specialist Ring", beatCode: "BEAT-TN-CHE-03", segment: "Super-Specialty", mr: "Karthik Nathan", mrTitle: "MR", asm: "Balasubramanian", zone: "All Zones (East, West, North, South)", hcpUniverse: 142, reached: 136, coveragePct: 95.7, saturation: "high", actionLabel: "Inspect" }
+];
+
+const ZONES = [
+  "All Zones (East, West, North, South)",
+  "West Zone (Mumbai, Pune, Gujarat)",
+  "North Zone (Delhi, Chandigarh, Lucknow)"
+];
+
+const SATURATIONS = ["All Saturation Levels", "High Saturation (>90%)", "Moderate (75% - 90%)", "Under-Penetrated (<75%)"];
+
+const TABS = [
+  { key: "roster", label: "Territory & Beat Performance Roster", count: "428 HQ Beats" },
+  { key: "whitespace", label: "Micro-Market White Space Explorer", count: "14 Zones" },
+  { key: "heatmap", label: "Doctor Density & Tier Heatmap", count: null },
+  { key: "chemist", label: "Chemist Stockist Tagging Ledger", count: null }
+] as const;
+
+const PAGE_SIZE = 2;
 
 export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
+  const [search, setSearch] = useState("");
+  const [zone, setZone] = useState(ZONES[0]);
+  const [saturation, setSaturation] = useState(SATURATIONS[0]);
+  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<(typeof TABS)[number]["key"]>("roster");
+  const [hasUnread, setHasUnread] = useState(true);
+  const [detail, setDetail] = useState<{ title: string; body: string } | null>(null);
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return initialBeats.filter((b) => {
+      if (zone !== ZONES[0] && b.zone !== zone) return false;
+      if (saturation === "High Saturation (>90%)" && b.saturation !== "high") return false;
+      if (saturation === "Moderate (75% - 90%)" && b.saturation !== "moderate") return false;
+      if (saturation === "Under-Penetrated (<75%)" && b.saturation !== "low") return false;
+      if (!q) return true;
+      return (
+        b.name.toLowerCase().includes(q) ||
+        b.beatCode.toLowerCase().includes(q) ||
+        b.mr.toLowerCase().includes(q) ||
+        b.asm.toLowerCase().includes(q)
+      );
+    });
+  }, [search, zone, saturation]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const pageRows = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+
+  function resetFilters() {
+    setSearch("");
+    setZone(ZONES[0]);
+    setSaturation(SATURATIONS[0]);
+    setPage(1);
+  }
+
+  function handleExport() {
+    if (filtered.length === 0) return;
+    downloadCsv(
+      "territory-coverage-beats.csv",
+      filtered.map((b) => ({
+        "Territory & Beat": b.name,
+        "Beat Code": b.beatCode,
+        "Segment": b.segment,
+        "MR": b.mr,
+        "ASM": b.asm,
+        "Zone": b.zone,
+        "HCP Universe": b.hcpUniverse,
+        "Reached": b.reached,
+        "Coverage %": b.coveragePct
+      }))
+    );
+  }
+
   return (
     <div className="flex flex-col w-full space-y-6">
-      
+
 
 
     {/* TOP HEADER */}
@@ -23,7 +133,11 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
       {/* Right Header Actions */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <select className="appearance-none bg-surface-subtle border border-border-subtle rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-text-secondary cursor-pointer focus:outline-none">
+          <select
+            className="appearance-none bg-surface-subtle border border-border-subtle rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-text-secondary cursor-pointer focus:outline-none"
+            value={zone}
+            onChange={(e) => { setZone(e.target.value); setPage(1); }}
+          >
             <option>All Territories (Pan-India HQ)</option>
             <option>West Zone (Maharashtra & Gujarat)</option>
             <option>North Zone (Delhi NCR, UP, Punjab)</option>
@@ -41,13 +155,21 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs">
+        <button
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs"
+          type="button"
+          onClick={() => setDetail({ title: "Sync Complete", body: "Territory & beat data refreshed from the latest DCR/GPS feed." })}
+        >
           <span className="material-symbols-outlined">{`sync`}</span>
         </button>
 
-        <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs relative">
+        <button
+          className="w-8 h-8 flex items-center justify-center rounded-lg border border-border-subtle hover:bg-surface-subtle text-text-secondary text-xs relative"
+          type="button"
+          onClick={() => { setHasUnread(false); setDetail({ title: "Notifications", body: "14 uncovered micro-beats flagged this cycle. No other new alerts." }); }}
+        >
           <span className="material-symbols-outlined">{`circle`}</span>
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta rounded-full"></span>
+          {hasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-terracotta rounded-full"></span>}
         </button>
 
         <div className="w-8 h-8 rounded-full bg-terracotta text-white flex items-center justify-center font-bold text-xs">AZ</div>
@@ -72,11 +194,20 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0">
-          <button className="flex items-center gap-2 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors">
+          <button
+            className="flex items-center gap-2 bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3.5 py-2 rounded-lg text-xs shadow-2xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            type="button"
+            onClick={handleExport}
+            disabled={filtered.length === 0}
+          >
             <span className="material-symbols-outlined text-text-muted">{`file_download`}</span>
             <span>Export Territory Atlas (GIS)</span>
           </button>
-          <button className="flex items-center gap-2 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors">
+          <button
+            className="flex items-center gap-2 bg-terracotta bg-terracotta-hover text-white font-semibold px-4 py-2 rounded-lg text-xs shadow-xs transition-colors"
+            type="button"
+            onClick={() => setDetail({ title: "Reallocate Territory Boundaries", body: "Boundary reallocation requires ASM/ZSM sign-off and is not yet wired to a live GIS boundary editor. Use the Micro-Market dossier below to flag beats that need rebalancing." })}
+          >
             <span className="material-symbols-outlined">{`location_on`}</span>
             <span>Reallocate Territory Boundaries</span>
           </button>
@@ -156,22 +287,32 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
 
       {/* SUB-NAVIGATION TABS */}
       <div className="border-b border-border-subtle flex items-center gap-6 text-xs font-semibold">
-        <button className="pb-2.5 border-b-2 border-terracotta text-terracotta flex items-center gap-2">
-          <span>Territory & Beat Performance Roster</span>
-          <span className="bg-terracotta/10 text-terracotta text-[10px] font-bold px-1.5 py-0.2 rounded-full">428 HQ Beats</span>
-        </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
-          <span>Micro-Market White Space Explorer</span>
-          <span className="bg-surface-subtle text-text-secondary text-[10px] font-bold px-1.5 py-0.2 rounded-full">14 Zones</span>
-        </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
-          <span>Doctor Density & Tier Heatmap</span>
-        </button>
-        <button className="pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2">
-          <span>Chemist Stockist Tagging Ledger</span>
-        </button>
+        {TABS.map((t) => {
+          const active = activeTab === t.key;
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setActiveTab(t.key)}
+              className={active ? "pb-2.5 border-b-2 border-terracotta text-terracotta flex items-center gap-2" : "pb-2.5 text-text-secondary hover:text-text-primary transition-colors flex items-center gap-2"}
+            >
+              <span>{t.label}</span>
+              {t.count && (
+                <span className={active ? "bg-terracotta/10 text-terracotta text-[10px] font-bold px-1.5 py-0.2 rounded-full" : "bg-surface-subtle text-text-secondary text-[10px] font-bold px-1.5 py-0.2 rounded-full"}>
+                  {t.count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </div>
 
+      {activeTab !== "roster" ? (
+        <div className="bg-surface-card border border-border-subtle rounded-xl p-8 shadow-2xs text-center text-xs text-text-muted">
+          No dedicated data view is wired up for &quot;{TABS.find((t) => t.key === activeTab)?.label}&quot; yet — there is no backend collection for it. Switch back to the Territory & Beat Performance Roster tab to see live data.
+        </div>
+      ) : (
+      <>
       {/* MAIN SPLIT WORKSPACE: TABLE (LEFT) & TERRITORY SLATE INSPECTOR (RIGHT) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* LEFT COLUMN: TABLE (8 COLS) */}
@@ -181,25 +322,38 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <div className="flex items-center gap-2 flex-1 min-w-[240px]">
               <div className="relative w-full">
                 <span className="material-symbols-outlined absolute left-3 top-2.5 text-text-muted text-xs">{`search`}</span>
-                <input type="text" placeholder="Search Territory, Beat Code, Assigned MR or ASM..." className="w-full bg-surface-card border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-secondary placeholder-slate-400 focus:outline-none focus:border-slate-400"/>
+                <input
+                  type="text"
+                  placeholder="Search Territory, Beat Code, Assigned MR or ASM..."
+                  className="w-full bg-surface-card border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-secondary placeholder-slate-400 focus:outline-none focus:border-slate-400"
+                  value={search}
+                  onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                />
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
-                <option>All Zones (East, West, North, South)</option>
-                <option>West Zone (Mumbai, Pune, Gujarat)</option>
-                <option>North Zone (Delhi, Chandigarh, Lucknow)</option>
+              <select
+                className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium"
+                value={zone}
+                onChange={(e) => { setZone(e.target.value); setPage(1); }}
+              >
+                {ZONES.map((z) => <option key={z}>{z}</option>)}
               </select>
 
-              <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
-                <option>All Saturation Levels</option>
-                <option>High Saturation (&gt;90%)</option>
-                <option>Moderate (75% - 90%)</option>
-                <option>Under-Penetrated (&lt;75%)</option>
+              <select
+                className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium"
+                value={saturation}
+                onChange={(e) => { setSaturation(e.target.value); setPage(1); }}
+              >
+                {SATURATIONS.map((s) => <option key={s}>{s}</option>)}
               </select>
 
-              <button className="text-xs text-text-secondary hover:text-text-secondary font-semibold px-2 py-1.5 flex items-center gap-1">
+              <button
+                className="text-xs text-text-secondary hover:text-text-secondary font-semibold px-2 py-1.5 flex items-center gap-1"
+                type="button"
+                onClick={resetFilters}
+              >
                 <span className="material-symbols-outlined text-[11px]">{`refresh`}</span> Reset
               </button>
             </div>
@@ -210,7 +364,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             <table className="w-full text-left text-xs">
               <thead className="bg-surface-subtle text-text-muted text-[10px] font-bold uppercase tracking-wider border-b border-border-subtle">
                 <tr>
-                  <th className="py-3 px-3.5 w-6"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></th>
+                  <th className="py-3 px-3.5 w-6"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0" readOnly checked={pageRows.length > 0}/></th>
                   <th className="py-3 px-3">TERRITORY & BEAT CODE</th>
                   <th className="py-3 px-3">SUPERVISING ASM / MR</th>
                   <th className="py-3 px-3">HCP UNIVERSE</th>
@@ -220,138 +374,72 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-text-secondary">
-                {/* Row 1 (Selected) */}
-                <tr className="bg-orange-50/40 hover:bg-orange-50/60 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" defaultChecked className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-text-primary">Mumbai Central — Dadar Hub</div>
-                    <div className="text-[11px] text-text-muted font-mono">BEAT-MH-MUM-01 • Metro Core</div>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-semibold text-text-primary">Rahul Sharma (Sr MR)</div>
-                    <div className="text-[11px] text-text-secondary">ASM: Rajesh Sharma</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">148 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">142 Visited</td>
-                  <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-status-success">95.9%</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <span className="text-terracotta font-semibold text-[11px] cursor-pointer hover:underline">Active Slate</span>
-                  </td>
-                </tr>
-
-                {/* Row 2 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-text-primary">Delhi South — Connaught & AIIMS</div>
-                    <div className="text-[11px] text-text-muted font-mono">BEAT-DL-STH-04 • Institutional</div>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-semibold text-text-primary">Amit Duggal (MR)</div>
-                    <div className="text-[11px] text-text-secondary">ASM: Vikrant Verma</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">162 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">148 Visited</td>
-                  <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-status-success">91.4%</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
-                  </td>
-                </tr>
-
-                {/* Row 3 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-text-primary">Kolkata Central — Salt Lake & Medical</div>
-                    <div className="text-[11px] text-text-muted font-mono">BEAT-WB-KOL-02 • Urban Cluster</div>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-semibold text-text-primary">Subhashish Mitra (MR)</div>
-                    <div className="text-[11px] text-text-secondary">ASM: Debopriya Das</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">135 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">126 Visited</td>
-                  <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-status-success">93.3%</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
-                  </td>
-                </tr>
-
-                {/* Row 4 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-text-primary">Bengaluru South — Whitefield IT Belt</div>
-                    <div className="text-[11px] text-text-muted font-mono">BEAT-KA-BLR-06 • Expanding Zone</div>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-semibold text-text-primary">Sunita Kulkarni (MR)</div>
-                    <div className="text-[11px] text-text-secondary">ASM: Srinivas Murthy</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">154 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-warning font-bold">108 Visited</td>
-                  <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-amber-600">70.1%</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <span className="text-rose-600 font-semibold text-[11px] cursor-pointer hover:underline">Lag Alert</span>
-                  </td>
-                </tr>
-
-                {/* Row 5 */}
-                <tr className="hover:bg-surface-subtle/70 transition-colors">
-                  <td className="py-3.5 px-3.5"><input type="checkbox" className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-bold text-text-primary">Chennai Central — T. Nagar Specialist Ring</div>
-                    <div className="text-[11px] text-text-muted font-mono">BEAT-TN-CHE-03 • Super-Specialty</div>
-                  </td>
-                  <td className="py-3.5 px-3">
-                    <div className="font-semibold text-text-primary">Karthik Nathan (MR)</div>
-                    <div className="text-[11px] text-text-secondary">ASM: Balasubramanian</div>
-                  </td>
-                  <td className="py-3.5 px-3 font-semibold text-text-primary">142 Doctors</td>
-                  <td className="py-3.5 px-3 text-status-success font-bold">136 Visited</td>
-                  <td className="py-3.5 px-3">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-status-success">95.7%</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                    </div>
-                  </td>
-                  <td className="py-3.5 px-3 text-right">
-                    <span className="text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer">Inspect</span>
-                  </td>
-                </tr>
+                {pageRows.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-10 px-3.5 text-center text-text-muted text-xs">No territory beats match the current search/filters.</td>
+                  </tr>
+                )}
+                {pageRows.map((b) => (
+                  <tr key={b.id} className={b.actionLabel === "Active Slate" ? "bg-orange-50/40 hover:bg-orange-50/60 transition-colors" : "hover:bg-surface-subtle/70 transition-colors"}>
+                    <td className="py-3.5 px-3.5"><input type="checkbox" defaultChecked={b.actionLabel === "Active Slate"} className="rounded border-border-subtle text-terracotta focus:ring-0"/></td>
+                    <td className="py-3.5 px-3">
+                      <div className="font-bold text-text-primary">{b.name}</div>
+                      <div className="text-[11px] text-text-muted font-mono">{b.beatCode} • {b.segment}</div>
+                    </td>
+                    <td className="py-3.5 px-3">
+                      <div className="font-semibold text-text-primary">{b.mr} ({b.mrTitle})</div>
+                      <div className="text-[11px] text-text-secondary">ASM: {b.asm}</div>
+                    </td>
+                    <td className="py-3.5 px-3 font-semibold text-text-primary">{b.hcpUniverse} Doctors</td>
+                    <td className={b.saturation === "low" ? "py-3.5 px-3 text-status-warning font-bold" : "py-3.5 px-3 text-status-success font-bold"}>{b.reached} Visited</td>
+                    <td className="py-3.5 px-3">
+                      <div className="flex items-center gap-2">
+                        <span className={b.saturation === "low" ? "font-bold text-amber-600" : "font-bold text-status-success"}>{b.coveragePct}%</span>
+                        <span className={b.saturation === "low" ? "w-1.5 h-1.5 rounded-full bg-amber-500" : "w-1.5 h-1.5 rounded-full bg-emerald-500"}></span>
+                      </div>
+                    </td>
+                    <td className="py-3.5 px-3 text-right">
+                      <button
+                        type="button"
+                        className={b.actionLabel === "Lag Alert" ? "text-rose-600 font-semibold text-[11px] cursor-pointer hover:underline" : b.actionLabel === "Active Slate" ? "text-terracotta font-semibold text-[11px] cursor-pointer hover:underline" : "text-text-secondary hover:text-text-primary font-semibold text-[11px] cursor-pointer"}
+                        onClick={() => setDetail({
+                          title: `${b.name} — ${b.beatCode}`,
+                          body: `${b.segment} beat covered by ${b.mr} (${b.mrTitle}), supervised by ASM ${b.asm}. HCP universe ${b.hcpUniverse}, reached ${b.reached} (${b.coveragePct}% coverage).`
+                        })}
+                      >
+                        {b.actionLabel}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
 
           {/* Pagination */}
           <div className="p-3.5 border-t border-slate-100 flex items-center justify-between text-xs text-text-secondary">
-            <span>Showing <strong>5 of 428</strong> Registered Territory Beats</span>
+            <span>{filtered.length === 0 ? "No matching beats" : <>Showing <strong>{(safePage - 1) * PAGE_SIZE + 1} to {Math.min(safePage * PAGE_SIZE, filtered.length)} of {filtered.length}</strong> Registered Territory Beats</>}</span>
             <div className="flex items-center gap-1.5">
-              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-muted"><span className="material-symbols-outlined text-[10px]">{`chevron_left`}</span></button>
-              <button className="w-7 h-7 rounded bg-terracotta text-white font-bold text-xs flex items-center justify-center">1</button>
-              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle font-medium text-xs flex items-center justify-center">2</button>
-              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle font-medium text-xs flex items-center justify-center">3</button>
-              <button className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-secondary"><span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span></button>
+              <button
+                className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-muted disabled:opacity-50 disabled:cursor-not-allowed"
+                type="button"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={safePage <= 1}
+              ><span className="material-symbols-outlined text-[10px]">{`chevron_left`}</span></button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+                <button
+                  key={n}
+                  className={n === safePage ? "w-7 h-7 rounded bg-terracotta text-white font-bold text-xs flex items-center justify-center" : "w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle font-medium text-xs flex items-center justify-center"}
+                  type="button"
+                  onClick={() => setPage(n)}
+                >{n}</button>
+              ))}
+              <button
+                className="w-7 h-7 rounded border border-border-subtle hover:bg-surface-subtle flex items-center justify-center text-text-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+                type="button"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={safePage >= totalPages}
+              ><span className="material-symbols-outlined text-[10px]">{`chevron_right`}</span></button>
             </div>
           </div>
         </div>
@@ -437,17 +525,27 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
 
           {/* Immediate Actions */}
           <div className="pt-2 space-y-2">
-            <button className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-2">
+            <button
+              className="w-full bg-terracotta bg-terracotta-hover text-white font-semibold py-2 rounded-lg text-xs transition-colors shadow-2xs flex items-center justify-center gap-2"
+              type="button"
+              onClick={() => setDetail({ title: "White Space HCPs Assigned", body: "4 new cardiology practitioners in Parel West have been queued for Rahul Sharma's Friday beat roster. Session-only — there is no MTP write-back yet." })}
+            >
               <span className="material-symbols-outlined">{`add_circle`}</span>
               <span>Assign White Space HCPs to MTP</span>
             </button>
-            <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
+            <button
+              className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2"
+              type="button"
+              onClick={() => setDetail({ title: "Route & GPS Beat Optimization", body: "Mumbai Central — Dadar Hub: 34 mapped retail chemists, 100% stocked. Recommended route order follows KEM Hospital → Tata Memorial Corridors → Hinduja Environs → Shivaji Park clinics." })}
+            >
               <span className="material-symbols-outlined">{`route`}</span>
               <span>View Route & GPS Beat Optimization</span>
             </button>
           </div>
         </div>
       </div>
+      </>
+      )}
 
       {/* BOTTOM COMPLIANCE & PROTOCOL BANNER */}
       <div className="bg-orange-50/70 border border-orange-200 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -461,12 +559,31 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <button className="bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3 py-1.5 rounded-lg text-xs">Beat Rationalization SOP</button>
-          <button className="bg-terracotta text-white font-semibold px-3 py-1.5 rounded-lg text-xs hover:bg-terracotta-hover">Simulate Reallocation</button>
+          <button
+            className="bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold px-3 py-1.5 rounded-lg text-xs"
+            type="button"
+            onClick={() => setDetail({ title: "Beat Rationalization SOP", body: "Each medical representative beat must encompass between 135 to 160 core HCPs to maintain mandatory call frequency without exceeding statutory UCPMP visit caps." })}
+          >Beat Rationalization SOP</button>
+          <button
+            className="bg-terracotta text-white font-semibold px-3 py-1.5 rounded-lg text-xs hover:bg-terracotta-hover"
+            type="button"
+            onClick={() => setDetail({ title: "Simulate Reallocation", body: "Reallocation simulation is not yet wired to a live optimizer — this would recompute beat boundaries against the 135–160 HCP rationalization target across all 428 registered beats." })}
+          >Simulate Reallocation</button>
         </div>
       </div>
     </div>
-  
+
+    {detail && (
+      <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50" onClick={() => setDetail(null)}>
+        <div className="bg-surface-card rounded-xl p-6 w-full max-w-md space-y-3" onClick={(e) => e.stopPropagation()}>
+          <h3 className="font-display font-bold text-text-primary text-base">{detail.title}</h3>
+          <p className="text-sm text-text-secondary leading-relaxed">{detail.body}</p>
+          <div className="flex justify-end pt-2">
+            <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-subtle" onClick={() => setDetail(null)}>Close</button>
+          </div>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

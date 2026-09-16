@@ -30,7 +30,7 @@ async function handleRequest(request: NextRequest, paramsPromise: Promise<{ path
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString() ? `?${searchParams.toString()}` : "";
     
-    const backendUrl = `https://zivira-backend-7qkt.onrender.com/api/${pathString}${queryString}`;
+    const backendUrl = `https://zivira-backend-swagger-ui.onrender.com/api/${pathString}${queryString}`;
     
     // Create new headers, omitting Origin and Referer to bypass strict CORS on the backend
     const headers = new Headers();

@@ -136,6 +136,43 @@
 }
 
 @layer components {
+  /* Item 1 fix — the "bespoke" master/report pages (Field Force, Hospital
+     Master, Territory - Listed Doctor, Territory Bulk Deactivation, and
+     every other screen built with the shared .subdivision-* classes below)
+     rendered with zero visible table borders: .subdivision-table-card and
+     .subdivision-console had no rules at all, and .subdivision-table only
+     had `border-collapse` with no border color/width, so every row and
+     column ran together on a flat white background. This gives them the
+     same bordered-card look already used by <GenericMasterTable> and the
+     other admin dashboards, without touching the ~65 individual files that
+     reference these class names. */
+  .subdivision-console {
+    @apply flex flex-col;
+  }
+  .subdivision-table-card {
+    @apply bg-surface-card rounded-xl border border-border-subtle shadow-sm;
+  }
+  .subdivision-table {
+    @apply text-sm;
+  }
+  .subdivision-table thead {
+    @apply bg-surface-subtle sticky top-0 z-10;
+  }
+  .subdivision-table th {
+    @apply px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border border-border-subtle bg-surface-subtle;
+  }
+  .subdivision-table td {
+    @apply px-4 py-3 text-sm text-text-primary border border-border-subtle;
+  }
+  .subdivision-table tbody tr:hover {
+    @apply bg-surface-subtle/50;
+  }
+  .subdivision-actions {
+    @apply flex flex-wrap items-center gap-3;
+  }
+}
+
+@layer components {
   .command-select {
     @apply relative w-fit;
   }
