@@ -1,25 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
-import type { ZiviraTreeNode } from "@zivira/types";
+import type { ZiviraTreeNode, Doctor } from "@zivira/types";
+import { apiClient } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
 
-// Fix — this page used to be a fully static server component: none of its
-// buttons/selects/inputs (Export Roster, Schedule Custom Greeting, the 3
-// dropdown filters, Reset Filters, the 4 view tabs, Bulk Approve, the
-// search box, per-row Card/Approve/Notify MR/Preview/Track/Log Details, the
-// automation toggles, Edit Gateway Rules, View Full Calendar Schedule, and
-// pagination) did anything when clicked. The KPI summary cards at top are
-// left as-is (no backend collection exists yet for celebrations), but the
-// roster table is now real local state: search, all three dropdowns, the
-// view tabs and Reset Filters actually filter it, Export Roster downloads
-// exactly what's on screen as CSV, Schedule Custom Greeting / Gift Dispatch
-// adds a real row to the table (kept for this session only), the
-// automation toggles are real checkboxes, and pagination reflects the
-// real filtered count.
+// Fix — this page used to be a fully static server component, then a later
+// pass wired every button up against a local mock roster. This pass
+// replaces the mock roster with the real doctor list for the selected
+// month (apiClient.doctorCelebrations(month)), derived from each doctor's
+// real dob / anniversaryDate. There is no backend collection at all for
+// gift/greeting workflow tracking (status, gift chosen, channel toggles) —
+// those stay as local, editable admin-side state seeded to honest neutral
+// defaults ("Needs Approval" / "Not yet selected") instead of fabricated
+// numbers, exactly like the pre-existing "Schedule Custom Greeting" flow
+// already was (session-only, disclosed in the modal).
 
-type CelebrationType = "Birthday" | "Clinic Anniversary" | "Clinic Foundation Day" | "Medical Accolade";
+type CelebrationType = "Birthday" | "Clinic Anniversary";
 type WorkflowStatus = "Needs Approval" | "Dispatched" | "Scheduled" | "Delivered" | "Dispatch In Prep";
 type Tier = "Tier A+" | "Tier A";
 
@@ -39,55 +37,54 @@ type CelebrationRow = {
   giftNote: string;
 };
 
-const initialCelebrations: CelebrationRow[] = [
-  {
-    id: "cel1", doctorName: "Dr. Rajesh V. Merchant", tier: "Tier A+", specialtyClinic: "Cardiology • Breach Candy Hospital & Heart Clinic",
-    celebrationType: "Birthday", celebrationLabel: "58th Birthday", dateLabel: "In 2 Days (12 Sep)",
-    territory: "Mumbai South Metro", repName: "Rahul Sharma", repInitials: "RS",
-    workflowStatus: "Needs Approval", gift: "Personalized Desk Plaque", giftNote: "Gourmet Artisanal Box"
-  },
-  {
-    id: "cel2", doctorName: "Dr. Sunita K. Nambiar", tier: "Tier A+", specialtyClinic: "Endocrinology • Apex Diabetes Centre, Bengaluru",
-    celebrationType: "Clinic Anniversary", celebrationLabel: "15th Clinic Anniversary", dateLabel: "14 Sep 2026",
-    territory: "Bengaluru Central Hub", repName: "Vikas Kulkarni", repInitials: "VK",
-    workflowStatus: "Dispatched", gift: "Custom Crystal Milestone Trophy", giftNote: "Engraved with clinic foundation date"
-  },
-  {
-    id: "cel3", doctorName: "Dr. Arvind Sen", tier: "Tier A", specialtyClinic: "Pulmonology • Fortis Escorts Hospital, Delhi",
-    celebrationType: "Birthday", celebrationLabel: "62nd Birthday", dateLabel: "16 Sep 2026",
-    territory: "Delhi NCR South", repName: "Amit Duggal", repInitials: "AD",
-    workflowStatus: "Scheduled", gift: "Premium Floral Bouquet & Letter", giftNote: "Hand-delivered by MR Amit Duggal"
-  },
-  {
-    id: "cel4", doctorName: "Dr. Meenakshi Sundaram", tier: "Tier A+", specialtyClinic: "Neurology • Apollo Specialty Hospitals, Chennai",
-    celebrationType: "Medical Accolade", celebrationLabel: "Elected Fellow of INA", dateLabel: "18 Sep 2026",
-    territory: "Chennai Central Hub", repName: "Karthik Nathan", repInitials: "KN",
-    workflowStatus: "Delivered", gift: "Executive Leather Portfolio", giftNote: "Congratulatory Commendation from HQ"
-  },
-  {
-    id: "cel5", doctorName: "Dr. Pradip Roy", tier: "Tier A", specialtyClinic: "Pediatrics • Shishu Seva Sadan, Kolkata",
-    celebrationType: "Clinic Foundation Day", celebrationLabel: "20th Foundation Day", dateLabel: "21 Sep 2026",
-    territory: "Kolkata East & Salt Lake", repName: "Subhashish Mitra", repInitials: "SM",
-    workflowStatus: "Dispatch In Prep", gift: "Celebration Cake & Sweets Hamper", giftNote: "Local Patisserie Partner (Flurys)"
-  }
-];
+const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-const TERRITORIES = ["All Territories / Pan-India HQ", "Mumbai South Metro (Tier 1)", "Bengaluru Central & Whitefield", "Delhi NCR - South Ext & Gurugram", "Kolkata Salt Lake Sector", "Chennai Kodambakkam Hub"];
-const TYPE_OPTIONS: { label: string; value: "all" | CelebrationType }[] = [
-  { label: "Celebration Type: All (68)", value: "all" },
-  { label: "Birthdays (42)", value: "Birthday" },
-  { label: "Clinic Anniversaries (18)", value: "Clinic Anniversary" },
-  { label: "Clinic Foundation Days (8)", value: "Clinic Foundation Day" },
-  { label: "Medical Accolades & Fellowships (5)", value: "Medical Accolade" }
-];
+function mapDoctorToCelebration(d: Doctor, month: number): CelebrationRow {
+  const dob = d.dob ? new Date(d.dob) : null;
+  const anniv = d.anniversaryDate ? new Date(d.anniversaryDate) : null;
+  const isBirthday = !!dob && dob.getMonth() + 1 === month;
+  const isAnniv = !!anniv && anniv.getMonth() + 1 === month;
+  const celebrationType: CelebrationType = isBirthday || !isAnniv ? "Birthday" : "Clinic Anniversary";
+  const relevantDate = celebrationType === "Birthday" ? dob : anniv;
+  const day = relevantDate ? relevantDate.getDate() : null;
+  const dateLabel = day ? `${day} ${MONTH_NAMES[month - 1]}` : "Date on file";
+  let celebrationLabel: string = celebrationType;
+  if (celebrationType === "Birthday" && dob) {
+    const age = new Date().getFullYear() - dob.getFullYear();
+    celebrationLabel = age > 0 ? `${age}th Birthday` : "Birthday";
+  } else if (celebrationType === "Clinic Anniversary" && anniv) {
+    const years = new Date().getFullYear() - anniv.getFullYear();
+    celebrationLabel = years > 0 ? `${years}th Clinic Anniversary` : "Clinic Anniversary";
+  }
+  const repName = d.mappedEmployeeName || d.mappedEmployeeCode || "Unassigned";
+  const repInitials = repName.split(/\s+/).map((w) => w[0]).filter(Boolean).slice(0, 2).join("").toUpperCase() || "--";
+  return {
+    id: d.id,
+    doctorName: d.name,
+    tier: d.category === "A" ? "Tier A+" : "Tier A",
+    specialtyClinic: [d.specialty, d.clinicName || d.city].filter(Boolean).join(" • ") || "—",
+    celebrationType,
+    celebrationLabel,
+    dateLabel,
+    territory: d.territory || "Unassigned",
+    repName,
+    repInitials,
+    workflowStatus: "Needs Approval",
+    gift: "Not yet selected",
+    giftNote: "Schedule a gift/gesture below"
+  };
+}
+
+const TYPE_ALL: "all" = "all";
+
 const TIER_OPTIONS: { label: string; value: "all" | Tier }[] = [
   { label: "Physician Tier: All", value: "all" },
   { label: "Tier A+ (Key Opinion Leaders)", value: "Tier A+" },
   { label: "Tier A (High Prescribing)", value: "Tier A" }
 ];
 const VIEW_TABS = [
-  { key: "upcoming", label: "Upcoming Celebrations (Next 14 Days)" },
-  { key: "completed", label: "Completed & Dispatched This Month" },
+  { key: "upcoming", label: "This Month's Celebrations" },
+  { key: "completed", label: "Completed & Dispatched" },
   { key: "templates", label: "Automated Digital Greeting Templates" },
   { key: "tracker", label: "Executive Gift & CME Sponsorship Tracker" }
 ] as const;
@@ -103,9 +100,12 @@ const statusPillClass: Record<WorkflowStatus, string> = {
 };
 
 export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
-  const [celebrations, setCelebrations] = useState<CelebrationRow[]>(initialCelebrations);
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [celebrations, setCelebrations] = useState<CelebrationRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
   const [search, setSearch] = useState("");
-  const [territory, setTerritory] = useState(TERRITORIES[0]!);
+  const [territory, setTerritory] = useState<string>("all");
   const [typeFilter, setTypeFilter] = useState<"all" | CelebrationType>("all");
   const [tierFilter, setTierFilter] = useState<"all" | Tier>("all");
   const [activeView, setActiveView] = useState<(typeof VIEW_TABS)[number]["key"]>("upcoming");
@@ -115,11 +115,36 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
   const [toggles, setToggles] = useState({ whatsapp: true, sms: true, repReminder: true, managerEscalation: true });
   const [newCelebration, setNewCelebration] = useState({ doctorName: "", celebrationLabel: "", dateLabel: "", territory: "", repName: "", gift: "" });
 
+  async function loadCelebrations(m: number) {
+    setLoading(true);
+    setLoadError("");
+    try {
+      const response = await apiClient.doctorCelebrations(m);
+      setCelebrations(response.data.map((d) => mapDoctorToCelebration(d, m)));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load doctor celebrations.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadCelebrations(month);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [month]);
+
+  const territoryOptions = useMemo(() => Array.from(new Set(celebrations.map((c) => c.territory))).sort(), [celebrations]);
+  const typeCounts = useMemo(() => ({
+    all: celebrations.length,
+    Birthday: celebrations.filter((c) => c.celebrationType === "Birthday").length,
+    "Clinic Anniversary": celebrations.filter((c) => c.celebrationType === "Clinic Anniversary").length
+  }), [celebrations]);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return celebrations.filter((c) => {
       if (activeView === "completed" && c.workflowStatus !== "Delivered" && c.workflowStatus !== "Dispatched") return false;
-      if (territory !== TERRITORIES[0] && c.territory !== territory) return false;
+      if (territory !== "all" && c.territory !== territory) return false;
       if (typeFilter !== "all" && c.celebrationType !== typeFilter) return false;
       if (tierFilter !== "all" && c.tier !== tierFilter) return false;
       if (!q) return true;
@@ -138,7 +163,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 
   function resetFilters() {
     setSearch("");
-    setTerritory(TERRITORIES[0]!);
+    setTerritory("all");
     setTypeFilter("all");
     setTierFilter("all");
     setActiveView("upcoming");
@@ -207,21 +232,6 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </a>
 <span className="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
 <span className="font-label-md text-label-md text-text-primary bg-surface-container px-2.5 py-0.5 rounded-full">Doctor Celebrations</span>
-<span className="material-symbols-outlined text-[14px] text-text-muted">chevron_right</span>
-<span className="font-label-sm text-label-sm text-status-success uppercase bg-status-success-bg px-2 py-0.5 rounded-full flex items-center gap-1">
-<span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
-        Active CRM Sync (Sep 2026)
-      </span>
-</div>
-<div className="hidden sm:flex items-center gap-3">
-<div className="flex items-center gap-1.5 bg-surface-card px-3 py-1 rounded-full shadow-sm text-text-secondary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[16px] text-status-success">verified</span>
-<span className="">WhatsApp API Status: Connected</span>
-</div>
-<div className="flex items-center gap-1.5 bg-surface-card px-3 py-1 rounded-full shadow-sm text-text-secondary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[16px] text-primary">local_shipping</span>
-<span className="">Courier Dispatch Hub: Active</span>
-</div>
 </div>
 </div>
 {/* Page Header & Action Controls Bar */}
@@ -237,7 +247,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
           Doctor Celebrations &amp; Relationship Engagement
         </h1>
 <p className="font-body-md text-body-md text-text-secondary leading-relaxed">
-          Track upcoming physician birthdays, clinic anniversaries, CME milestones, and automated relationship management workflows for field representatives.
+          Track physician birthdays and clinic anniversaries for the selected month, and coordinate field representative greeting/gift workflows.
         </p>
 </div>
 {/* Action Button */}
@@ -250,25 +260,24 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="mt-6 pt-5 bg-surface-canvas rounded-lg p-3.5 flex flex-wrap items-center justify-between gap-3">
 <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
+<span className="material-symbols-outlined text-text-muted text-[18px]">calendar_month</span>
+<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none" value={month} onChange={(e) => { setMonth(Number(e.target.value)); setPage(1); }}>
+{MONTH_NAMES.map((name, i) => <option key={name} value={i + 1}>{name}</option>)}
+</select>
+</div>
+<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">travel_explore</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none" value={territory} onChange={(e) => { setTerritory(e.target.value); setPage(1); }}>
-{TERRITORIES.map((t) => <option key={t} value={t}>{t}</option>)}
+<option value="all">All Territories / Pan-India HQ</option>
+{territoryOptions.map((t) => <option key={t} value={t}>{t}</option>)}
 </select>
 </div>
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">celebration</span>
 <select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none" value={typeFilter} onChange={(e) => { setTypeFilter(e.target.value as typeof typeFilter); setPage(1); }}>
-{TYPE_OPTIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-</select>
-</div>
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
-<span className="material-symbols-outlined text-text-muted text-[18px]">calendar_month</span>
-<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
-<option>Date Range: This Month (Sep 2026)</option>
-<option>This Week (8 - 14 Sep 2026)</option>
-<option>Next 7 Days</option>
-<option>Next 14 Days (Critical Window)</option>
-<option>Q3 Consolidated</option>
+<option value={TYPE_ALL}>Celebration Type: All ({typeCounts.all})</option>
+<option value="Birthday">Birthdays ({typeCounts.Birthday})</option>
+<option value="Clinic Anniversary">Clinic Anniversaries ({typeCounts["Clinic Anniversary"]})</option>
 </select>
 </div>
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
@@ -291,6 +300,13 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
   <AdminTabGrid node={node} path={path} />
 </div>
 
+{loadError && (
+  <div className="p-3 rounded-lg border border-status-danger-bg bg-status-danger-bg text-red-600 text-xs flex items-center justify-between mb-6">
+    <span>{loadError}</span>
+    <button type="button" className="font-semibold underline" onClick={() => loadCelebrations(month)}>Retry</button>
+  </div>
+)}
+
 {/* Key Metric Summary Cards (4 across) */}
 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-grid-gutter mb-6">
 {/* Card 1 */}
@@ -299,7 +315,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">Celebrations This Month</span>
 <div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">68</span>
+<span className="font-metric-value text-metric-value text-text-primary">{loading ? "—" : typeCounts.all}</span>
 <span className="font-label-md text-label-md text-text-secondary">Doctors</span>
 </div>
 </div>
@@ -307,17 +323,9 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <span className="material-symbols-outlined text-[22px]">cake</span>
 </div>
 </div>
-<div className="space-y-2">
-<div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden flex">
-<div className="bg-primary h-full" style={{ "width": "61.7%" }} title="42 Birthdays"></div>
-<div className="bg-status-info h-full" style={{ "width": "26.5%" }} title="18 Anniversaries"></div>
-<div className="bg-tertiary h-full" style={{ "width": "11.8%" }} title="8 Clinic Foundation"></div>
-</div>
 <div className="flex items-center justify-between text-[11px] font-body-sm text-text-muted">
-<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary inline-block"></span>42 Birthdays</span>
-<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-info inline-block"></span>18 Anniv.</span>
-<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-tertiary inline-block"></span>8 Clinic Days</span>
-</div>
+<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary inline-block"></span>{typeCounts.Birthday} Birthdays</span>
+<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-status-info inline-block"></span>{typeCounts["Clinic Anniversary"]} Anniv.</span>
 </div>
 </div>
 {/* Card 2 */}
@@ -325,77 +333,36 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">Greetings Dispatched</span>
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">54</span>
-<span className="font-label-md text-label-md text-text-muted">/ 68</span>
-</div>
 </div>
 <div className="w-10 h-10 rounded-lg bg-status-success-bg text-status-success flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[22px]">mark_email_read</span>
 </div>
 </div>
-<div className="space-y-2">
-<div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-<div className="bg-status-success h-full rounded-full" style={{ "width": "79.4%" }}></div>
-</div>
-<div className="flex items-center justify-between font-body-sm text-body-sm">
-<span className="font-label-md text-label-md text-status-success flex items-center gap-1">
-<span className="material-symbols-outlined text-[16px]">check_circle</span>
-            79.4% Fulfillment
-          </span>
-<span className="text-text-muted font-label-sm text-label-sm">SMS / WA &amp; MR Hand-off</span>
-</div>
-</div>
+<div className="text-xs text-text-muted italic">No data yet — greeting dispatch delivery is not tracked by any backend module.</div>
 </div>
 {/* Card 3 */}
 <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">Personalized Cakes &amp; Hampers</span>
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">28</span>
-<span className="font-label-md text-label-md text-text-secondary">Delivered</span>
-</div>
 </div>
 <div className="w-10 h-10 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[22px]">featured_seasonal_and_gifts</span>
 </div>
 </div>
-<div className="space-y-2">
-<div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-<div className="bg-status-info h-full rounded-full" style={{ "width": "70.8%" }}></div>
-</div>
-<div className="flex items-center justify-between font-body-sm text-body-sm">
-<span className="font-label-md text-label-md text-text-primary">₹42,500 <span className="text-text-muted font-normal">spent</span></span>
-<span className="font-label-sm text-label-sm text-text-muted">Cap: ₹60,000 alloc.</span>
-</div>
-</div>
+<div className="text-xs text-text-muted italic">No data yet — gift spend is not tracked by any backend module.</div>
 </div>
 {/* Card 4 */}
 <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-start justify-between gap-3 mb-3">
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted block mb-1">MR Acknowledgement Rate</span>
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">91.2%</span>
-<span className="font-label-sm text-label-sm text-status-success font-semibold flex items-center">
-<span className="material-symbols-outlined text-[14px]">trending_up</span> +3.4%
-          </span>
-</div>
 </div>
 <div className="w-10 h-10 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center flex-shrink-0">
 <span className="material-symbols-outlined text-[22px]">how_to_reg</span>
 </div>
 </div>
-<div className="space-y-2">
-<div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-<div className="bg-status-warning h-full rounded-full" style={{ "width": "91.2%" }}></div>
-</div>
-<div className="flex items-center justify-between font-body-sm text-body-sm">
-<span className="text-text-secondary">Logged personal visit</span>
-<span className="font-label-md text-label-md text-text-primary">62/68 MRs</span>
-</div>
-</div>
+<div className="text-xs text-text-muted italic">No data yet — MR acknowledgement is not tracked by any backend module.</div>
 </div>
 </div>
 {/* Interactive Navigation Tabs */}
@@ -412,14 +379,17 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
   );
 })}
 </div>
+{(activeView === "templates" || activeView === "tracker") && (
+  <div className="text-xs text-text-muted italic mb-3 px-1">Note: this view shows the same real doctor roster as "This Month's Celebrations" — greeting templates and CME sponsorship tracking have no backend module of their own yet.</div>
+)}
 {/* Celebration Schedule & Action Grid */}
 <div className="bg-surface-card rounded-xl shadow-sm mb-6 overflow-hidden">
 <div className="px-card-padding-spacious py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface-subtle/50">
 <div className="flex items-center gap-3">
 <span className="material-symbols-outlined text-primary text-[22px]">calendar_today</span>
 <div>
-<h2 className="font-headline-sm text-headline-sm text-text-primary">Upcoming Active Physician Milestones</h2>
-<p className="font-body-sm text-body-sm text-text-muted">Real-time status tracking for greeting cards, automated communications, and representative deliveries.</p>
+<h2 className="font-headline-sm text-headline-sm text-text-primary">{MONTH_NAMES[month - 1]} Physician Milestones</h2>
+<p className="font-body-sm text-body-sm text-text-muted">Real doctor roster for the selected month, with locally-tracked greeting/gift workflow status.</p>
 </div>
 </div>
 <div className="flex items-center gap-2.5">
@@ -450,13 +420,18 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </tr>
 </thead>
 <tbody className="divide-y-0">
-{pageRows.length === 0 && (
+{loading && (
+  <tr>
+    <td colSpan={7} className="px-4 py-10 text-center text-text-muted font-body-sm text-body-sm">Loading doctor celebrations…</td>
+  </tr>
+)}
+{!loading && pageRows.length === 0 && (
   <tr>
     <td colSpan={7} className="px-4 py-10 text-center text-text-muted font-body-sm text-body-sm">No celebrations match the current search/filters.</td>
   </tr>
 )}
-{pageRows.map((c) => {
-  const typeIcon = c.celebrationType === "Birthday" ? "cake" : c.celebrationType === "Clinic Anniversary" ? "domain_verification" : c.celebrationType === "Clinic Foundation Day" ? "foundation" : "workspace_premium";
+{!loading && pageRows.map((c) => {
+  const typeIcon = c.celebrationType === "Birthday" ? "cake" : "domain_verification";
   return (
     <tr key={c.id} className="hover:bg-surface-subtle/50 transition-colors">
       <td className="pl-card-padding-spacious pr-3 py-3.5">
@@ -554,7 +529,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 {/* Table Pagination & Footer Status */}
 <div className="px-card-padding-spacious py-3.5 bg-surface-card flex flex-col sm:flex-row items-center justify-between gap-3 text-text-secondary font-body-sm text-body-sm">
 <div className="flex items-center gap-2">
-<span className="">{filtered.length === 0 ? "No matching celebrations" : `Displaying rows ${(safePage - 1) * PAGE_SIZE + 1} - ${Math.min(safePage * PAGE_SIZE, filtered.length)} of ${filtered.length} upcoming events`}</span>
+<span className="">{filtered.length === 0 ? "No matching celebrations" : `Displaying rows ${(safePage - 1) * PAGE_SIZE + 1} - ${Math.min(safePage * PAGE_SIZE, filtered.length)} of ${filtered.length} events`}</span>
 <span className="w-1 h-1 rounded-full bg-text-muted"></span>
 <span className="text-primary font-label-sm text-label-sm">{needsApprovalCount} events require manager clearance</span>
 </div>
@@ -571,138 +546,8 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 </div>
-{/* Bottom Visual Analytics Panels (60/40 Split) */}
-<div className="grid grid-cols-1 lg:grid-cols-12 gap-grid-gutter mb-2">
-{/* Left: Monthly Celebration Distribution Calendar Preview (7 Cols) */}
-<div className="lg:col-span-7 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
-<div>
-<div className="flex items-center justify-between mb-4">
-<div className="flex items-center gap-2.5">
-<span className="w-2.5 h-2.5 rounded-full bg-status-info"></span>
-<h3 className="font-headline-sm text-headline-sm text-text-primary">Monthly Celebration Distribution Calendar (Sep 2026)</h3>
-</div>
-<span className="font-label-sm text-label-sm text-text-muted bg-surface-subtle px-2.5 py-1 rounded-md">Peak Cluster: Week 3</span>
-</div>
-<p className="font-body-sm text-body-sm text-text-secondary mb-4">
-      Heatmap overview of HCP milestones across 4 distinct weeks. Optimize representative physical visits and prevent dispatch bottlenecks.
-    </p>
-{/* Inline Visual Heatmap Grid */}
-<div className="grid grid-cols-4 gap-3 mb-5">
-{/* Week 1 */}
-<div className="bg-surface-canvas rounded-lg p-3 relative">
-<div className="flex items-center justify-between mb-1.5">
-<span className="font-label-sm text-label-sm uppercase text-text-muted">Week 1 (1 - 7 Sep)</span>
-<span className="font-label-sm text-label-sm font-bold text-text-primary">12 Docs</span>
-</div>
-<div className="space-y-1">
-<div className="h-2 w-full bg-surface-subtle rounded-full overflow-hidden">
-<div className="h-full bg-status-success rounded-full" style={{ "width": "100%" }}></div>
-</div>
-<span className="text-[11px] font-body-sm text-status-success flex items-center gap-1 font-semibold">
-<span className="material-symbols-outlined text-[13px]">done_all</span> 100% Fulfilled
-          </span>
-</div>
-</div>
-{/* Week 2 (Current) */}
-<div className="bg-brand-primary-subtle/50 rounded-lg p-3 relative ring-1 ring-primary/20">
-<div className="flex items-center justify-between mb-1.5">
-<span className="font-label-sm text-label-sm uppercase text-primary font-bold">Week 2 (8 - 14 Sep)</span>
-<span className="font-label-sm text-label-sm font-bold text-primary">18 Docs</span>
-</div>
-<div className="space-y-1">
-<div className="h-2 w-full bg-surface-subtle rounded-full overflow-hidden">
-<div className="h-full bg-primary rounded-full" style={{ "width": "66%" }}></div>
-</div>
-<span className="text-[11px] font-body-sm text-primary flex items-center gap-1 font-semibold">
-<span className="material-symbols-outlined text-[13px]">pending</span> 12 Done • 6 Pending
-          </span>
-</div>
-</div>
-{/* Week 3 (Peak) */}
-<div className="bg-surface-canvas rounded-lg p-3 relative">
-<div className="flex items-center justify-between mb-1.5">
-<span className="font-label-sm text-label-sm uppercase text-text-muted">Week 3 (15 - 21 Sep)</span>
-<span className="font-label-sm text-label-sm font-bold text-status-warning">26 Docs</span>
-</div>
-<div className="space-y-1">
-<div className="h-2 w-full bg-surface-subtle rounded-full overflow-hidden">
-<div className="h-full bg-status-warning rounded-full" style={{ "width": "30%" }}></div>
-</div>
-<span className="text-[11px] font-body-sm text-text-muted flex items-center gap-1">
-<span className="material-symbols-outlined text-[13px]">schedule</span> Peak Workload Stage
-          </span>
-</div>
-</div>
-{/* Week 4 */}
-<div className="bg-surface-canvas rounded-lg p-3 relative">
-<div className="flex items-center justify-between mb-1.5">
-<span className="font-label-sm text-label-sm uppercase text-text-muted">Week 4 (22 - 30 Sep)</span>
-<span className="font-label-sm text-label-sm font-bold text-text-primary">12 Docs</span>
-</div>
-<div className="space-y-1">
-<div className="h-2 w-full bg-surface-subtle rounded-full overflow-hidden">
-<div className="h-full bg-secondary rounded-full" style={{ "width": "0%" }}></div>
-</div>
-<span className="text-[11px] font-body-sm text-text-muted flex items-center gap-1">
-<span className="material-symbols-outlined text-[13px]">schedule_send</span> Queued in Pipeline
-          </span>
-</div>
-</div>
-</div>
-{/* SVG Mini Bar Chart: Daily Density */}
-<div className="bg-surface-canvas rounded-lg p-4">
-<div className="flex items-center justify-between mb-2">
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Daily Distribution Curve (Sep 1 - 30)</span>
-<div className="flex items-center gap-3 text-[11px] font-body-sm text-text-secondary">
-<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-primary inline-block"></span> Birthdays</span>
-<span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-status-info inline-block"></span> Anniversaries</span>
-</div>
-</div>
-<svg className="w-full h-20 text-primary" fill="none" preserveAspectRatio="none" viewBox="0 0 600 80">
-{/* Grid lines */}
-<line stroke="#E2E8F0" strokeDasharray="3 3" x1="0" x2="600" y1="20" y2="20"></line>
-<line stroke="#E2E8F0" strokeDasharray="3 3" x1="0" x2="600" y1="50" y2="50"></line>
-{/* Week 1 Bars */}
-<rect fill="#a33900" height="30" opacity="0.8" rx="2" width="14" x="20" y="45"></rect>
-<rect fill="#2563EB" height="20" opacity="0.8" rx="2" width="14" x="40" y="55"></rect>
-<rect fill="#a33900" height="40" opacity="0.8" rx="2" width="14" x="60" y="35"></rect>
-<rect fill="#2563EB" height="15" opacity="0.8" rx="2" width="14" x="80" y="60"></rect>
-<rect fill="#a33900" height="35" opacity="0.8" rx="2" width="14" x="100" y="40"></rect>
-{/* Week 2 Bars (Current) */}
-<rect fill="#a33900" height="45" rx="2" width="14" x="150" y="30"></rect>
-<rect fill="#2563EB" height="55" rx="2" width="14" x="170" y="20"></rect>
-<rect fill="#a33900" height="60" rx="2" width="14" x="190" y="15"></rect>
-<rect fill="#a33900" height="40" rx="2" width="14" x="210" y="35"></rect>
-<rect fill="#2563EB" height="30" rx="2" width="14" x="230" y="45"></rect>
-{/* Week 3 Bars (Peak) */}
-<rect fill="#a33900" height="65" rx="2" width="14" x="290" y="10"></rect>
-<rect fill="#2563EB" height="60" rx="2" width="14" x="310" y="15"></rect>
-<rect fill="#a33900" height="70" rx="2" width="14" x="330" y="5"></rect>
-<rect fill="#a33900" height="55" rx="2" width="14" x="350" y="20"></rect>
-<rect fill="#2563EB" height="50" rx="2" width="14" x="370" y="25"></rect>
-<rect fill="#a33900" height="57" rx="2" width="14" x="390" y="18"></rect>
-{/* Week 4 Bars */}
-<rect fill="#a33900" height="25" opacity="0.6" rx="2" width="14" x="450" y="50"></rect>
-<rect fill="#2563EB" height="35" opacity="0.6" rx="2" width="14" x="470" y="40"></rect>
-<rect fill="#a33900" height="20" opacity="0.6" rx="2" width="14" x="490" y="55"></rect>
-<rect fill="#a33900" height="15" opacity="0.6" rx="2" width="14" x="510" y="60"></rect>
-<rect fill="#2563EB" height="10" opacity="0.6" rx="2" width="14" x="530" y="65"></rect>
-</svg>
-</div>
-</div>
-<div className="mt-4 pt-3 flex items-center justify-between text-text-secondary font-body-sm text-body-sm">
-<span className="flex items-center gap-1.5">
-<span className="material-symbols-outlined text-[17px] text-primary">local_shipping</span>
-      Gifts pre-batched to courier hub 4 days ahead of event
-    </span>
-<button className="text-primary hover:text-brand-primary-hover font-label-md text-label-md flex items-center gap-1" type="button" onClick={() => setDetail({ title: "Full Calendar Schedule", body: "Week 1: 12 docs (100% fulfilled) • Week 2: 18 docs (12 done, 6 pending) • Week 3: 26 docs (peak workload) • Week 4: 12 docs (queued)." })}>
-<span className="">View Full Calendar Schedule</span>
-<span className="material-symbols-outlined text-[15px]">arrow_forward</span>
-</button>
-</div>
-</div>
-{/* Right: Automated Greeting Channel Configuration (5 Cols) */}
-<div className="lg:col-span-5 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">
+{/* Right: Automated Greeting Channel Configuration */}
+<div className="bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between mb-2">
 <div>
 <div className="flex items-center justify-between mb-4">
 <div className="flex items-center gap-2.5">
@@ -712,10 +557,10 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm font-bold">{Object.values(toggles).filter(Boolean).length} Active Flows</span>
 </div>
 <p className="font-body-sm text-body-sm text-text-secondary mb-4">
-      Centralized CRM triggers coordinating headquarters digital communications and field rep notifications.
+      Centralized CRM triggers coordinating headquarters digital communications and field rep notifications. These toggles are admin preferences kept in this browser session — there is no automation-rules backend yet.
     </p>
 {/* Automation Controls List */}
-<div className="space-y-3">
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 {/* Toggle 1: WhatsApp */}
 <div className="bg-surface-canvas rounded-lg p-3 flex items-center justify-between gap-3">
 <div className="flex items-start gap-3">
@@ -783,12 +628,11 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 </div>
 </div>
 <div className="mt-4 pt-3 flex items-center justify-between">
-<span className="font-body-sm text-body-sm text-text-muted">Last sync with CRM: 4 mins ago</span>
+<span className="font-body-sm text-body-sm text-text-muted">Roster refreshed from backend on load</span>
 <button className="h-8 px-3 rounded-lg bg-surface-subtle hover:bg-surface-container text-text-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors" type="button" onClick={() => setDetail({ title: "Edit Gateway Rules", body: "Gateway rules govern which channel (WhatsApp, SMS, or MR hand-off) is used first and when to fall back. There is no gateway-rules collection yet, so this is a read-only preview." })}>
 <span className="material-symbols-outlined text-[16px]">tune</span>
 <span className="">Edit Gateway Rules</span>
 </button>
-</div>
 </div>
 </div>
 
@@ -807,7 +651,7 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
               <input className="w-full px-3 py-2 rounded-md border border-border-subtle bg-surface-card text-sm" placeholder="Assigned field rep" value={newCelebration.repName} onChange={(e) => setNewCelebration((s) => ({ ...s, repName: e.target.value }))} />
               <input className="w-full px-3 py-2 rounded-md border border-border-subtle bg-surface-card text-sm" placeholder="Gift / gesture" value={newCelebration.gift} onChange={(e) => setNewCelebration((s) => ({ ...s, gift: e.target.value }))} />
             </div>
-            <p className="text-[11px] text-text-muted">Saved to this table for the current session. There is no celebrations database collection yet, so this does not persist after a page reload.</p>
+            <p className="text-[11px] text-text-muted">Saved to this table for the current session. There is no celebrations/greeting-workflow database collection yet, so this does not persist after a page reload.</p>
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" className="px-4 py-2 rounded-lg text-sm font-medium text-text-secondary hover:bg-surface-subtle" onClick={() => setShowSchedule(false)}>Cancel</button>
               <button type="button" className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#b43403] text-white hover:bg-[#9a3412] disabled:opacity-50" disabled={!newCelebration.doctorName.trim() || !newCelebration.celebrationLabel.trim()} onClick={handleSchedule}>Schedule</button>

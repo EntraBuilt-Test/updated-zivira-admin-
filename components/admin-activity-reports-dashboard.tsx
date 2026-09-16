@@ -1,29 +1,29 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import { apiClient, type DcrRecord, type Employee } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
 
-// Item fix — this page used to be a fully static server component: the
-// timeframe/zone/division filters, Export dropdown, Generate Custom Report,
-// the 5 report tabs, bulk selection, More Filters, Columns, search, the
-// status/role pills, every row's View/Download/History buttons, the
-// specialty "Export"/"Rebalance Targets", the leaderboard "Send Nudge" /
-// "Full Headquarter Audit", and the DCR audit modal's Flag/Approve buttons
-// did nothing when clicked. The demo KPI numbers on the 4 summary cards are
-// left as-is (no backend reports collection exists yet), but the DCR table
-// itself is now real local state: search, zone/division/role/status
-// filters and report tabs actually filter it, column visibility really
-// hides columns, selection + bulk approve really change rows, Export
-// downloads real CSVs, Generate Custom Report builds a CSV of the current
-// filtered view, and the DCR audit modal opens per-row with real data and
-// its Approve/Flag buttons update that row's review status.
+// Item fix — this page used to be a fully static server component, then a
+// later pass wired every button up against a local mock array. This pass
+// replaces the "Daily Field Call Log" tab's data with the real DCR log
+// (apiClient.dcrs(), joined against apiClient.employees() for rep names).
+// Bulk Approve / the audit modal's Approve button now call the real
+// apiClient.approveDcr(id) endpoint for that tab. The other 4 report tabs
+// (Doctor Detailing Frequency, Chemist & Stockist POB, Missed Calls &
+// Deviations, VA Slide Analytics) have no distinct backing collection on
+// the DCR record — the backend only stores one visit-level DCR row, not
+// these rollups — so those tabs keep their original illustrative sample
+// data with a visible note instead of silently pretending it's live. The
+// Specialty Distribution and Territory Leaderboard panels are the same:
+// no matching analytics endpoint exists for them yet, so they're left as
+// sample data with an explicit note rather than removed (per the
+// instruction to not delete working functionality).
 
-type Role = "MR" | "ABM" | "RBM";
 type ReviewStatus = "Approved" | "Pending" | "Flagged";
 type ReportCategory = "call" | "frequency" | "pob" | "missed" | "va";
-type Zone = "North" | "West" | "South" | "East";
 
 type DcrRow = {
   id: string;
@@ -31,7 +31,7 @@ type DcrRow = {
   avatarClass: string;
   name: string;
   meta: string;
-  role: Role;
+  role: string;
   date: string;
   time: string;
   syncStatus: "On-Time" | "Late Sync" | "Delayed";
@@ -45,23 +45,57 @@ type DcrRow = {
   managerReview: string;
   reviewStatus: ReviewStatus;
   reportCategory: ReportCategory;
-  zone: Zone;
+  zone: string;
 };
 
-const initialRows: DcrRow[] = [
+function mapDcrReviewStatus(status: DcrRecord["status"]): ReviewStatus {
+  if (status === "APPROVED" || status === "MANAGER_APPROVED") return "Approved";
+  if (status === "REJECTED") return "Flagged";
+  return "Pending";
+}
+
+function mapDcrToReportRow(d: DcrRecord, employeeByCode: Map<string, Employee>): DcrRow {
+  const emp = employeeByCode.get(d.employeeCode);
+  const doctor = d.doctorId;
+  const name = emp?.name || d.employeeCode;
+  const initials = name.split(/\s+/).map((w) => w[0]).slice(0, 2).join("").toUpperCase() || "NA";
+  const isJoint = !!d.jointWork?.wasJoint;
+  const visitDate = d.visitDate ? new Date(d.visitDate) : null;
+  const createdAt = d.createdAt ? new Date(d.createdAt) : null;
+  let syncStatus: DcrRow["syncStatus"] = "On-Time";
+  if (visitDate && createdAt) {
+    const diffDays = Math.round((createdAt.getTime() - visitDate.getTime()) / 86400000);
+    syncStatus = diffDays <= 0 ? "On-Time" : diffDays === 1 ? "Late Sync" : "Delayed";
+  }
+  return {
+    id: d.id,
+    initials,
+    avatarClass: "bg-brand-primary-subtle text-primary",
+    name,
+    meta: `${d.employeeCode} • HQ: ${emp?.territory || "—"}`,
+    role: emp?.role || "—",
+    date: visitDate ? visitDate.toLocaleDateString() : "—",
+    time: d.callTime || "—",
+    syncStatus,
+    callsLabel: "1 Visit",
+    callsBreakdown: isJoint ? "Joint Work w/ Manager" : (doctor?.specialty || "Doctor Visit"),
+    products: d.productsDetailed || [],
+    pobValue: "No data yet",
+    pobOrdersLabel: "Not tracked on the DCR record",
+    geoVariant: d.overVisitFlag ? "danger" : "success",
+    geoText: d.overVisitFlag ? `Over-visit flagged${d.overVisitCount ? ` (${d.overVisitCount} visits)` : ""}` : "No over-visit flag",
+    managerReview: d.managerApprovedBy ? `Approved by ${d.managerApprovedBy}` : d.managerId?.displayName ? `Awaiting sign-off from ${d.managerId.displayName}` : "Awaiting manager sign-off",
+    reviewStatus: mapDcrReviewStatus(d.status),
+    reportCategory: "call",
+    zone: emp?.territory || "Unassigned"
+  };
+}
+
+// Sample rows kept for the 4 report tabs that have no matching backend
+// collection (see comment above) — unchanged from the original mock data.
+const OTHER_REPORT_ROWS: DcrRow[] = [
   {
-    id: "r1", initials: "VJ", avatarClass: "bg-brand-primary-subtle text-primary",
-    name: "Vikram Joshi", meta: "MR-5520 • HQ: Ahmedabad Central", role: "MR", zone: "West",
-    date: "10 Sep 2026", time: "07:15 PM", syncStatus: "On-Time",
-    callsLabel: "12 Calls", callsBreakdown: "9 Doctors, 3 Chemists",
-    products: ["CardioCare 20 (4x)", "ZiviCal D3 (5x)", "GlycoZiv (3x)"],
-    pobValue: "₹84,500", pobOrdersLabel: "3 secondary orders",
-    geoVariant: "success", geoText: "100% Verified (0 mismatch)",
-    managerReview: "Approved by R. Sharma (ABM)", reviewStatus: "Approved",
-    reportCategory: "call"
-  },
-  {
-    id: "r2", initials: "AP", avatarClass: "bg-surface-subtle text-secondary",
+    id: "m2", initials: "AP", avatarClass: "bg-surface-subtle text-secondary",
     name: "Ananya Patel", meta: "MR-4418 • HQ: Mumbai Suburban", role: "MR", zone: "West",
     date: "10 Sep 2026", time: "08:40 PM", syncStatus: "Late Sync",
     callsLabel: "11 Calls", callsBreakdown: "8 Doctors, 3 Chemists",
@@ -72,7 +106,7 @@ const initialRows: DcrRow[] = [
     reportCategory: "missed"
   },
   {
-    id: "r3", initials: "SM", avatarClass: "bg-status-info-bg text-status-info",
+    id: "m3", initials: "SM", avatarClass: "bg-status-info-bg text-status-info",
     name: "Suresh Menon", meta: "MR-3902 • HQ: Bengaluru South", role: "MR", zone: "South",
     date: "10 Sep 2026", time: "06:45 PM", syncStatus: "On-Time",
     callsLabel: "14 Calls", callsBreakdown: "11 Doctors, 3 Chemists",
@@ -83,7 +117,7 @@ const initialRows: DcrRow[] = [
     reportCategory: "frequency"
   },
   {
-    id: "r4", initials: "RK", avatarClass: "bg-secondary-container text-on-secondary-container",
+    id: "m4", initials: "RK", avatarClass: "bg-secondary-container text-on-secondary-container",
     name: "Rajesh Kumar", meta: "MR-2109 • HQ: Delhi North", role: "MR", zone: "North",
     date: "10 Sep 2026", time: "07:55 PM", syncStatus: "On-Time",
     callsLabel: "10 Calls", callsBreakdown: "7 Doctors, 3 Chemists",
@@ -94,7 +128,7 @@ const initialRows: DcrRow[] = [
     reportCategory: "pob"
   },
   {
-    id: "r5", initials: "PS", avatarClass: "bg-status-warning-bg text-status-warning",
+    id: "m5", initials: "PS", avatarClass: "bg-status-warning-bg text-status-warning",
     name: "Pooja Sen", meta: "MR-1894 • HQ: Kolkata Central", role: "MR", zone: "East",
     date: "10 Sep 2026", time: "11:10 PM", syncStatus: "Delayed",
     callsLabel: "8 Calls", callsBreakdown: "6 Doctors, 2 Chemists",
@@ -105,7 +139,7 @@ const initialRows: DcrRow[] = [
     reportCategory: "missed"
   },
   {
-    id: "r6", initials: "DA", avatarClass: "bg-primary text-on-primary",
+    id: "m6", initials: "DA", avatarClass: "bg-primary text-on-primary",
     name: "Deepak Agarwal", meta: "ABM-104 (Joint Work) • HQ: Pune Metro", role: "ABM", zone: "West",
     date: "10 Sep 2026", time: "07:05 PM", syncStatus: "On-Time",
     callsLabel: "9 Joint Calls", callsBreakdown: "With MR Amit Deshmukh",
@@ -153,14 +187,18 @@ const COLUMN_DEFS: { key: keyof typeof COLUMN_DEFAULT; label: string }[] = [
 const PAGE_SIZES = [25, 50, 100];
 
 export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
-  const [rows, setRows] = useState<DcrRow[]>(initialRows);
+  const [dcrRows, setDcrRows] = useState<DcrRow[]>([]);
+  const [mockRows, setMockRows] = useState<DcrRow[]>(OTHER_REPORT_ROWS);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [actionError, setActionError] = useState("");
   const [timeframe, setTimeframe] = useState<"Today" | "This Week" | "MTD (Sep)" | "Q3">("MTD (Sep)");
-  const [zone, setZone] = useState<"all" | Zone>("all");
+  const [zone, setZone] = useState<string>("all");
   const [division, setDivision] = useState("Cardio-Diabetic + General");
   const [tab, setTab] = useState<"all" | ReportCategory>("all");
   const [search, setSearch] = useState("");
   const [statusPill, setStatusPill] = useState<"All" | ReviewStatus>("All");
-  const [rolePill, setRolePill] = useState<"all" | Role>("all");
+  const [rolePill, setRolePill] = useState<"all" | string>("all");
   const [geoIssuesOnly, setGeoIssuesOnly] = useState(false);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [showExportMenu, setShowExportMenu] = useState(false);
@@ -174,11 +212,30 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
   const [auditRow, setAuditRow] = useState<DcrRow | null>(null);
   const [feedback, setFeedback] = useState("");
 
+  async function loadReports() {
+    setLoading(true);
+    setLoadError("");
+    try {
+      const [dcrResponse, employeeResponse] = await Promise.all([apiClient.dcrs(), apiClient.employees()]);
+      const employeeByCode = new Map<string, Employee>(employeeResponse.data.map((e) => [e.employeeCode, e]));
+      setDcrRows(dcrResponse.data.map((d) => mapDcrToReportRow(d, employeeByCode)));
+    } catch (err) {
+      setLoadError(err instanceof Error ? err.message : "Failed to load activity reports.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadReports();
+  }, []);
+
+  const activeRows = tab === "all" ? dcrRows : mockRows.filter((r) => r.reportCategory === tab);
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return rows.filter((r) => {
+    return activeRows.filter((r) => {
       if (zone !== "all" && r.zone !== zone) return false;
-      if (tab !== "all" && r.reportCategory !== tab) return false;
       if (statusPill !== "All" && r.reviewStatus !== statusPill) return false;
       if (rolePill !== "all" && r.role !== rolePill) return false;
       if (geoIssuesOnly && r.geoVariant === "success") return false;
@@ -189,12 +246,19 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
         r.products.some((p) => p.toLowerCase().includes(q))
       );
     });
-  }, [rows, zone, tab, statusPill, rolePill, geoIssuesOnly, search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeRows, zone, statusPill, rolePill, geoIssuesOnly, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const pageRows = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
   const allPageSelected = pageRows.length > 0 && pageRows.every((r) => selected.has(r.id));
+
+  const zoneOptions = useMemo(() => Array.from(new Set([...dcrRows, ...mockRows].map((r) => r.zone))).sort(), [dcrRows, mockRows]);
+  const roleOptions = useMemo(() => Array.from(new Set([...dcrRows, ...mockRows].map((r) => r.role))).filter(Boolean).sort(), [dcrRows, mockRows]);
+
+  const flaggedCount = dcrRows.filter((r) => r.reviewStatus === "Flagged").length;
+  const flaggedRate = dcrRows.length ? ((flaggedCount / dcrRows.length) * 100).toFixed(1) : "0.0";
 
   function toggleSelected(id: string) {
     setSelected((prev) => {
@@ -261,14 +325,40 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
     setReportName("");
   }
 
-  function bulkApprove() {
+  async function bulkApprove() {
     if (selected.size === 0) return;
-    setRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, reviewStatus: "Approved" } : r)));
+    if (tab === "all") {
+      const ids = Array.from(selected);
+      setActionError("");
+      try {
+        await Promise.all(ids.map((id) => apiClient.approveDcr(id)));
+        setDcrRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, reviewStatus: "Approved" } : r)));
+      } catch (err) {
+        setActionError(err instanceof Error ? err.message : "Failed to bulk-approve some DCRs.");
+      }
+    } else {
+      setMockRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, reviewStatus: "Approved" } : r)));
+    }
     setSelected(new Set());
   }
 
-  function setReviewStatus(id: string, status: ReviewStatus) {
-    setRows((prev) => prev.map((r) => (r.id === id ? { ...r, reviewStatus: status } : r)));
+  async function setReviewStatus(id: string, status: ReviewStatus) {
+    if (tab === "all") {
+      if (status === "Approved") {
+        setActionError("");
+        try {
+          await apiClient.approveDcr(id);
+          setDcrRows((prev) => prev.map((r) => (r.id === id ? { ...r, reviewStatus: status } : r)));
+        } catch (err) {
+          setActionError(err instanceof Error ? err.message : "Failed to approve DCR.");
+        }
+      } else {
+        // No reject/flag endpoint exists yet — recorded locally only.
+        setDcrRows((prev) => prev.map((r) => (r.id === id ? { ...r, reviewStatus: status } : r)));
+      }
+    } else {
+      setMockRows((prev) => prev.map((r) => (r.id === id ? { ...r, reviewStatus: status } : r)));
+    }
   }
 
   const reviewPillClass: Record<ReviewStatus, string> = {
@@ -313,13 +403,10 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <select
   className="h-[38px] pl-3 pr-8 rounded-lg bg-surface-card text-text-primary font-label-md text-label-md focus:outline-none appearance-none shadow-sm cursor-pointer"
   value={zone}
-  onChange={(e) => { setZone(e.target.value as typeof zone); setPage(1); }}
+  onChange={(e) => { setZone(e.target.value); setPage(1); }}
 >
 <option value="all">All Zones / Nationwide</option>
-<option value="North">North Zone (Del/NCR/PB)</option>
-<option value="West">West Zone (MH/GJ/GA)</option>
-<option value="South">South Zone (KA/TN/AP)</option>
-<option value="East">East Zone (WB/OD/NE)</option>
+{zoneOptions.map((z) => <option key={z} value={z}>{z}</option>)}
 </select>
 <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-[16px] text-text-muted pointer-events-none">expand_more</span>
 </div>
@@ -368,7 +455,18 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </button>
 </div>
 </div>
-{/* Executive Summary KPI Metric Cards (untouched KPI display) */}
+
+{loadError && (
+  <div className="p-3 rounded-lg border border-status-danger-bg bg-status-danger-bg text-red-600 text-xs flex items-center justify-between">
+    <span>{loadError}</span>
+    <button type="button" className="font-semibold underline" onClick={loadReports}>Retry</button>
+  </div>
+)}
+{actionError && (
+  <div className="p-3 rounded-lg border border-status-danger-bg bg-status-danger-bg text-red-600 text-xs">{actionError}</div>
+)}
+
+{/* Executive Summary KPI Metric Cards */}
 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-grid-gutter">
 {/* Card 1: Total DCRs Filed */}
 <div className="bg-surface-card p-card-padding-standard rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
@@ -380,22 +478,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </div>
 <div className="mt-3 flex items-baseline justify-between">
 <div>
-<span className="font-metric-value text-metric-value text-text-primary tracking-tight">4,892</span>
-<span className="text-body-sm font-body-sm text-text-muted">/ 5,200</span>
-</div>
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-status-success-bg text-status-success">
-          On Track
-        </span>
-</div>
-<div className="mt-3">
-<div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-<div className="bg-status-success h-1.5 rounded-full transition-all duration-500" style={{ "width": "94.1%" }}></div>
-</div>
-<div className="flex items-center justify-between mt-2 text-label-sm font-label-sm">
-<span className="text-status-success font-semibold flex items-center gap-0.5">
-<span className="material-symbols-outlined text-[13px]">arrow_upward</span> +3.8% MoM
-          </span>
-<span className="text-text-muted">94.1% Adherence</span>
+<span className="font-metric-value text-metric-value text-text-primary tracking-tight">{loading ? "—" : dcrRows.length}</span>
 </div>
 </div>
 </div>
@@ -407,29 +490,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <span className="material-symbols-outlined text-[19px]">speed</span>
 </div>
 </div>
-<div className="mt-3 flex items-baseline justify-between">
-<div>
-<span className="font-metric-value text-metric-value text-text-primary tracking-tight">10.4</span>
-<span className="text-body-sm font-body-sm text-text-muted">calls/day</span>
-</div>
-<span className="font-label-sm text-label-sm text-status-success font-semibold flex items-center gap-0.5">
-<span className="material-symbols-outlined text-[13px]">trending_up</span> +0.8 MoM
-        </span>
-</div>
-<div className="mt-3">
-<div className="flex h-1.5 w-full rounded-full overflow-hidden bg-surface-subtle">
-<div className="bg-primary" style={{ "width": "75%" }} title="Doctors: 7.8 calls"></div>
-<div className="bg-secondary" style={{ "width": "25%" }} title="Chemists: 2.6 calls"></div>
-</div>
-<div className="flex items-center justify-between mt-2 text-label-sm font-label-sm text-text-secondary">
-<span className="flex items-center gap-1.5">
-<span className="w-2 h-2 rounded-full bg-primary inline-block"></span> 7.8 Doctors
-          </span>
-<span className="flex items-center gap-1.5">
-<span className="w-2 h-2 rounded-full bg-secondary inline-block"></span> 2.6 Chemists
-          </span>
-</div>
-</div>
+<div className="text-xs text-text-muted italic mt-3">No data yet — daily call-volume aggregation is not exposed by the DCR endpoint yet.</div>
 </div>
 {/* Card 3: POB Booked (Secondary Sales) */}
 <div className="bg-surface-card p-card-padding-standard rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
@@ -439,20 +500,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <span className="material-symbols-outlined text-[19px]">shopping_bag</span>
 </div>
 </div>
-<div className="mt-3 flex items-baseline justify-between">
-<div>
-<span className="font-metric-value text-metric-value text-text-primary tracking-tight">₹1.42 Cr</span>
-</div>
-<span className="inline-flex items-center px-2 py-0.5 rounded-full text-label-sm font-label-sm bg-brand-primary-subtle text-primary font-semibold">
-          1,840 Orders
-        </span>
-</div>
-<div className="mt-3 flex items-center justify-between pt-1">
-<span className="font-body-sm text-body-sm text-text-secondary">Avg Order: ₹7,717</span>
-<span className="text-label-sm font-label-sm text-status-success font-semibold flex items-center gap-0.5">
-<span className="material-symbols-outlined text-[13px]">arrow_upward</span> +12.4% MoM
-        </span>
-</div>
+<div className="text-xs text-text-muted italic mt-3">No data yet — chemist/stockist order booking is not tracked on the DCR record.</div>
 </div>
 {/* Card 4: Flagged / Discrepancy Rate */}
 <div className="bg-surface-card p-card-padding-standard rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
@@ -464,15 +512,12 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </div>
 <div className="mt-3 flex items-baseline justify-between">
 <div>
-<span className="font-metric-value text-metric-value text-text-primary tracking-tight">1.8%</span>
-<span className="text-body-sm font-body-sm text-text-muted">deviation</span>
+<span className="font-metric-value text-metric-value text-text-primary tracking-tight">{loading ? "—" : `${flaggedRate}%`}</span>
+<span className="text-body-sm font-body-sm text-text-muted">of DCRs rejected</span>
 </div>
-<span className="text-label-sm font-label-sm text-status-success font-semibold flex items-center gap-0.5">
-<span className="material-symbols-outlined text-[13px]">arrow_downward</span> -0.6% Improved
-        </span>
 </div>
 <div className="mt-3 flex items-center justify-between pt-1 text-label-sm font-label-sm">
-<span className="text-text-secondary">88 Flagged Alerts (Geofence/Sync)</span>
+<span className="text-text-secondary">{loading ? "—" : flaggedCount} Flagged/Rejected DCRs</span>
 <a className="text-primary hover:underline font-semibold flex items-center gap-0.5" href="#audit-table">
           Resolve <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
 </a>
@@ -493,7 +538,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
     key={rt.label}
     className={`report-tab-btn px-4 py-2 text-label-md font-label-md rounded-lg transition-colors flex items-center gap-2 whitespace-nowrap ${tab === rt.key ? "bg-surface-card text-primary shadow-sm font-semibold" : "text-text-secondary hover:text-text-primary"}`}
     type="button"
-    onClick={() => { setTab(rt.key); setPage(1); }}
+    onClick={() => { setTab(rt.key); setPage(1); setSelected(new Set()); }}
   >
 <span className="material-symbols-outlined text-[18px]">{rt.icon}</span>
 <span className="">{rt.label}</span>
@@ -527,6 +572,11 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </button>
 </div>
 </div>
+{tab !== "all" && (
+  <div className="text-xs text-text-muted italic px-1">
+    Note: {REPORT_TABS.find((t) => t.key === tab)?.label} is not tracked as a separate collection on the backend yet — the rows below are illustrative sample data, not live figures.
+  </div>
+)}
 {/* Quick Search & Pill Filters Strip */}
 <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
 <div className="relative flex-1 w-full">
@@ -556,13 +606,18 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <span className="text-text-muted text-[13px] px-1">|</span>
 {/* Role Pills */}
 <span className="text-label-sm font-label-sm text-text-muted whitespace-nowrap">Role:</span>
-{(["all", "MR", "ABM", "RBM"] as const).map((r) => (
+<button
+  className={`px-2.5 py-1 rounded-full text-label-sm font-label-sm ${rolePill === "all" ? "bg-surface-subtle text-text-primary font-semibold" : "bg-surface-subtle text-text-secondary hover:bg-surface-dim"}`}
+  type="button"
+  onClick={() => { setRolePill("all"); setPage(1); }}
+>All Roles</button>
+{roleOptions.map((r) => (
   <button
     key={r}
     className={`px-2.5 py-1 rounded-full text-label-sm font-label-sm ${rolePill === r ? "bg-surface-subtle text-text-primary font-semibold" : "bg-surface-subtle text-text-secondary hover:bg-surface-dim"}`}
     type="button"
     onClick={() => { setRolePill(r); setPage(1); }}
-  >{r === "all" ? "All Roles" : r}</button>
+  >{r}</button>
 ))}
 <button type="button" className="text-label-sm font-label-sm text-primary hover:underline whitespace-nowrap" onClick={resetFilters}>Reset</button>
 </div>
@@ -588,10 +643,13 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 </tr>
 </thead>
 <tbody className="divide-y divide-surface-subtle text-table-cell font-table-cell text-text-primary">
-{pageRows.length === 0 && (
+{loading && tab === "all" && (
+  <tr><td colSpan={9} className="px-4 py-10 text-center text-text-muted font-body-sm text-body-sm">Loading DCRs…</td></tr>
+)}
+{!(loading && tab === "all") && pageRows.length === 0 && (
   <tr><td colSpan={9} className="px-4 py-10 text-center text-text-muted font-body-sm text-body-sm">No DCRs match the current search/filters.</td></tr>
 )}
-{pageRows.map((r) => {
+{!(loading && tab === "all") && pageRows.map((r) => {
   const syncClass = r.syncStatus === "On-Time" ? "bg-status-success-bg text-status-success" : r.syncStatus === "Late Sync" ? "bg-status-warning-bg text-status-warning" : "bg-status-danger-bg text-status-danger";
   const geoClass = r.geoVariant === "success" ? "bg-status-success-bg text-status-success" : r.geoVariant === "danger" ? "bg-status-danger-bg text-status-danger" : "bg-status-warning-bg text-status-warning";
   const geoIcon = r.geoVariant === "success" ? "verified" : r.geoVariant === "danger" ? "fmd_bad" : "location_searching";
@@ -637,7 +695,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 {columns.detailing && (
 <td className="px-4 py-3">
 <div className="flex flex-wrap gap-1 max-w-xs">
-{r.products.map((p) => <span key={p} className="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle text-[11px] font-medium text-text-secondary">{p}</span>)}
+{r.products.length === 0 ? <span className="text-text-muted text-[11px]">None</span> : r.products.map((p) => <span key={p} className="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle text-[11px] font-medium text-text-secondary">{p}</span>)}
 </div>
 </td>
 )}
@@ -719,7 +777,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
             Call Frequency Distribution by Doctor Specialty
           </h2>
 <p className="font-body-sm text-body-sm text-text-secondary mt-0.5">
-            Audit of 3,815 detailed medical interactions against quarterly divisional target coverage.
+            Sample data — no specialty-vs-target analytics endpoint exists on the backend yet.
           </p>
 </div>
 <button className="p-1.5 rounded-lg hover:bg-surface-subtle text-text-secondary transition-colors" title="Export Specialty Matrix" type="button" onClick={() => downloadCsv("specialty-distribution.csv", SPECIALTY_BARS.map((b) => ({ Specialty: b.label, "Share %": b.pct, Calls: b.calls, "Target %": b.target })))}>
@@ -761,11 +819,11 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
             Territory Compliance Leaderboard
           </h2>
 <p className="font-body-sm text-body-sm text-text-secondary mt-0.5">
-            DCR submission rate &amp; timing adherence by HQ cluster.
+            Sample data — no HQ-cluster compliance leaderboard endpoint exists on the backend yet.
           </p>
 </div>
 <span className="px-2 py-0.5 rounded text-label-sm font-label-sm bg-surface-subtle text-text-secondary font-semibold">
-          Live Sync
+          Sample Data
         </span>
 </div>
 {/* Leaderboard Entries */}
@@ -869,11 +927,11 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
               <div className="grid grid-cols-2 gap-3 text-body-sm font-body-sm text-text-secondary">
                 <div><span className="text-text-muted">Calls: </span><span className="font-semibold text-text-primary">{auditRow.callsLabel}</span> ({auditRow.callsBreakdown})</div>
                 <div><span className="text-text-muted">Sync: </span><span className="font-semibold text-text-primary">{auditRow.syncStatus}</span> at {auditRow.time}</div>
-                <div><span className="text-text-muted">Products: </span><span className="text-text-primary">{auditRow.products.join(", ")}</span></div>
+                <div><span className="text-text-muted">Products: </span><span className="text-text-primary">{auditRow.products.join(", ") || "None"}</span></div>
                 <div><span className="text-text-muted">POB: </span><span className="font-semibold text-text-primary">{auditRow.pobValue}</span> ({auditRow.pobOrdersLabel})</div>
                 <div className="col-span-2"><span className="text-text-muted">Geofence: </span><span className="text-text-primary">{auditRow.geoText}</span></div>
               </div>
-              <p className="text-[11px] text-text-muted pt-1">A full call-by-call timeline isn't available in this preview since raw DCR logs aren't wired to a backend yet — the summary above reflects this rep's actual submission for the day.</p>
+              <p className="text-[11px] text-text-muted pt-1">A full call-by-call timeline isn't available in this preview — the summary above reflects this rep's actual DCR submission for the day.</p>
             </div>
             {/* Manager Feedback Field */}
             <div className="space-y-1.5">
