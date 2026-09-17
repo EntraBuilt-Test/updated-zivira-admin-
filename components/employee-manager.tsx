@@ -4,7 +4,7 @@ import type { Employee } from "@zivira/types";
 import { RefreshCw, X, AlertTriangle, Download } from "lucide-react";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { useMemo } from "react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { apiClient } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
@@ -26,7 +26,7 @@ const DESIGNATION_TO_ROLE: Record<string, string> = {
 // Sample initial data with all SFA master columns
 const initialFieldForce: any[] = [];
 
-export function EmployeeManager() {
+function EmployeeManagerInner() {
   const searchParams = useSearchParams();
   const [employees, setEmployees] = useState<any[]>(initialFieldForce);
   const [showForm, setShowForm] = useState(false);
@@ -422,5 +422,13 @@ export function EmployeeManager() {
         </table>
       </div>
     </>
+  );
+}
+
+export function EmployeeManager() {
+  return (
+    <Suspense fallback={null}>
+      <EmployeeManagerInner />
+    </Suspense>
   );
 }
