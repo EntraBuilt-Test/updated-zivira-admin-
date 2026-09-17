@@ -460,7 +460,7 @@ export function AdminHomeDashboard() {
             <span>Refresh</span>
           </button>
           <button 
-            onClick={() => router.push("/admin/fieldforce/new")}
+            onClick={() => router.push("/admin/fieldforce?add=1")}
             className="h-[38px] px-4 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>

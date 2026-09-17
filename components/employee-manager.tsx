@@ -5,6 +5,7 @@ import { RefreshCw, X, AlertTriangle, Download } from "lucide-react";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { apiClient } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
 import { formatDate } from "@/lib/format-date";
@@ -26,6 +27,7 @@ const DESIGNATION_TO_ROLE: Record<string, string> = {
 const initialFieldForce: any[] = [];
 
 export function EmployeeManager() {
+  const searchParams = useSearchParams();
   const [employees, setEmployees] = useState<any[]>(initialFieldForce);
   const [showForm, setShowForm] = useState(false);
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
@@ -165,6 +167,10 @@ export function EmployeeManager() {
   useEffect(() => {
     void loadEmployees();
   }, []);
+
+  useEffect(() => {
+    if (searchParams.get("add") === "1") setShowForm(true);
+  }, [searchParams]);
 
   return (
     <>
