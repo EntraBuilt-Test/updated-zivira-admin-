@@ -25,6 +25,11 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
   const [personFilter, setPersonFilter] = useState("");
   const [monthFilter, setMonthFilter] = useState("");
   const [yearFilter, setYearFilter] = useState("");
+  const [fromMonthFilter, setFromMonthFilter] = useState("");
+  const [fromYearFilter, setFromYearFilter] = useState("");
+  const [toMonthFilter, setToMonthFilter] = useState("");
+  const [toYearFilter, setToYearFilter] = useState("");
+  const [modeFilter, setModeFilter] = useState("");
   const [applied, setApplied] = useState(false);
   const [formRow, setFormRow] = useState<Record<string, unknown> | null>(null);
   const [saving, setSaving] = useState(false);
@@ -70,6 +75,14 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
   const personField = schema?.fields.find((f) => f.sourceMaster && f.sourceField);
   const hasMonth = !!schema?.fields.find((f) => f.key === "month");
   const hasYear = !!schema?.fields.find((f) => f.key === "year");
+  // Several sanpharma.info report screens (Sample/Input Dispatch, Expense
+  // Consolidated View, Leave Status) filter by a From/To month-year range
+  // instead of a single Month+Year pair — detected the same way.
+  const fromMonthField = schema?.fields.find((f) => f.key === "fromMonth");
+  const fromYearField = schema?.fields.find((f) => f.key === "fromYear");
+  const toMonthField = schema?.fields.find((f) => f.key === "toMonth");
+  const toYearField = schema?.fields.find((f) => f.key === "toYear");
+  const modeField = schema?.fields.find((f) => f.key === "mode");
   const personOptions = personField ? dropdownOptions[`${personField.sourceMaster}.${personField.sourceField}`] ?? [] : [];
 
   const visibleRows = useMemo(() => {
@@ -78,9 +91,17 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
       if (personField && personFilter && String(r[personField.key] ?? "") !== personFilter) return false;
       if (hasMonth && monthFilter && String(r.month ?? "") !== monthFilter) return false;
       if (hasYear && yearFilter && String(r.year ?? "") !== yearFilter) return false;
+      if (fromMonthField && fromMonthFilter && String(r.fromMonth ?? "") !== fromMonthFilter) return false;
+      if (fromYearField && fromYearFilter && String(r.fromYear ?? "") !== fromYearFilter) return false;
+      if (toMonthField && toMonthFilter && String(r.toMonth ?? "") !== toMonthFilter) return false;
+      if (toYearField && toYearFilter && String(r.toYear ?? "") !== toYearFilter) return false;
+      if (modeField && modeFilter && String(r.mode ?? "") !== modeFilter) return false;
       return true;
-    });
-  }, [rows, applied, personFilter, monthFilter, yearFilter, personField, hasMonth, hasYear]);
+   });
+  }, [
+    rows, applied, personFilter, monthFilter, yearFilter, personField, hasMonth, hasYear,
+    fromMonthField, fromMonthFilter, fromYearField, fromYearFilter, toMonthField, toMonthFilter, toYearField, toYearFilter, modeField, modeFilter
+  ]);
 
   function optionsFor(f: MasterField): string[] | null {
     if (f.options) return f.options;
@@ -177,7 +198,9 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
               <button onClick={() => setFormRow(null)} type="button" aria-label="Close"><X size={20} /></button>
             </div>
             {schema.fields.map((f) => {
-              const opts = f.key === "month" ? MONTHS : f.key === "year" ? YEARS : optionsFor(f);
+              const isMonthField = f.key === "month" || f.key === "fromMonth" || f.key === "toMonth";
+              const isYearField = f.key === "year" || f.key === "fromYear" || f.key === "toYear";
+              const opts = isMonthField ? MONTHS : isYearField ? YEARS : optionsFor(f);
               return (
                 <label key={f.key} style={{ display: "block", marginBottom: "12px" }}>
                   <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>{f.label}</span>
@@ -239,13 +262,47 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
               <CustomSelect value={yearFilter} options={YEARS} onChange={setYearFilter} placeholder="All Years" />
             </div>
           )}
+          {fromMonthField && (
+            <div style={{ minWidth: "150px" }}>
+              <span className="block text-xs font-medium text-text-muted mb-1">{fromMonthField.label}</span>
+              <CustomSelect value={fromMonthFilter} options={MONTHS} onChange={setFromMonthFilter} placeholder="From Month" />
+            </div>
+          )}
+          {fromYearField && (
+            <div style={{ minWidth: "120px" }}>
+              <span className="block text-xs font-medium text-text-muted mb-1">{fromYearField.label}</span>
+              <CustomSelect value={fromYearFilter} options={YEARS} onChange={setFromYearFilter} placeholder="From Year" />
+            </div>
+          )}
+          {toMonthField && (
+            <div style={{ minWidth: "150px" }}>
+              <span className="block text-xs font-medium text-text-muted mb-1">{toMonthField.label}</span>
+              <CustomSelect value={toMonthFilter} options={MONTHS} onChange={setToMonthFilter} placeholder="To Month" />
+            </div>
+          )}
+          {toYearField && (
+            <div style={{ minWidth: "120px" }}>
+              <span className="block text-xs font-medium text-text-muted mb-1">{toYearField.label}</span>
+              <CustomSelect value={toYearFilter} options={YEARS} onChange={setToYearFilter} placeholder="To Year" />
+            </div>
+          )}
+          {modeField && (
+            <div style={{ minWidth: "180px" }}>
+              <span className="block text-xs font-medium text-text-muted mb-1">{modeField.label}</span>
+              <CustomSelect value={modeFilter} options={modeField.options ?? []} onChange={setModeFilter} placeholder={`All ${modeField.label}`} />
+            </div>
+          )}
           <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-5 py-2 rounded-lg font-medium text-sm transition-colors" onClick={() => setApplied(true)} type="button">
             View
           </button>
           {applied && (
             <button
               className="bg-surface-card border border-border-subtle text-text-primary hover:bg-surface-subtle px-4 py-2 rounded-lg font-medium text-sm transition-colors"
-              onClick={() => { setApplied(false); setPersonFilter(""); setMonthFilter(""); setYearFilter(""); }}
+              onClick={() => {
+                setApplied(false);
+                setPersonFilter(""); setMonthFilter(""); setYearFilter("");
+                setFromMonthFilter(""); setFromYearFilter(""); setToMonthFilter(""); setToYearFilter(""); setModeFilter("");
+              }}
               type="button"
             >
               Clear
