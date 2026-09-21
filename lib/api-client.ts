@@ -310,7 +310,7 @@ export type MasterField = {
   sourceField?: string;
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[] };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export const apiClient = {

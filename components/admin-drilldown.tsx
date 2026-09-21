@@ -3,6 +3,7 @@
 import type { ZiviraTreeNode } from "@zivira/types";
 import Link from "next/link";
 import { GenericMasterTable } from "@/components/generic-master-table";
+import { MasterScreen } from "@/components/master-screen";
 import { AdminTabGrid } from "@/components/admin-tab-grid";
 import { AdminDcrView } from "@/components/admin-dcr-view";
 import { ExpenseMaster } from "@/components/expense-master";
@@ -310,67 +311,67 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
     if (pathStr.endsWith("approvals/listed-dr-addition")) {
-    return <GenericMasterTable masterKey="approvalListedDrAddition" />;
+    return <MasterScreen masterKey="approvalListedDrAddition" />;
   }
 
   if (pathStr.endsWith("approvals/listed-dr-deactivation")) {
-    return <GenericMasterTable masterKey="approvalListedDrDeactivation" />;
+    return <MasterScreen masterKey="approvalListedDrDeactivation" />;
   }
 
   if (pathStr.endsWith("approvals/tp")) {
-    return <GenericMasterTable masterKey="approvalTp" />;
+    return <MasterScreen masterKey="approvalTp" />;
   }
 
   if (pathStr.endsWith("approvals/dcr")) {
-    return <GenericMasterTable masterKey="approvalDcr" />;
+    return <MasterScreen masterKey="approvalDcr" />;
   }
 
   if (pathStr.endsWith("approvals/leave")) {
-    return <GenericMasterTable masterKey="approvalLeave" />;
+    return <MasterScreen masterKey="approvalLeave" />;
   }
 
   if (pathStr.endsWith("activities/expense/approval-active")) {
-    return <GenericMasterTable masterKey="expenseApprovalActive" />;
+    return <MasterScreen masterKey="expenseApprovalActive" />;
   }
 
   if (pathStr.endsWith("activities/expense/approval-vacant-resigned")) {
-    return <GenericMasterTable masterKey="expenseApprovalVacantResigned" />;
+    return <MasterScreen masterKey="expenseApprovalVacantResigned" />;
   }
 
   if (pathStr.endsWith("activities/expense/analysis")) {
-    return <GenericMasterTable masterKey="activitiesExpenseAnalysis" />;
+    return <MasterScreen masterKey="activitiesExpenseAnalysis" />;
   }
 
   if (pathStr.endsWith("activities/expense/consolidated-view")) {
-    return <GenericMasterTable masterKey="activitiesExpenseConsolidatedView" />;
+    return <MasterScreen masterKey="activitiesExpenseConsolidatedView" />;
   }
 
   if (pathStr.endsWith("sample-dispatch/view")) {
-    return <GenericMasterTable masterKey="sampleDispatchView" />;
+    return <MasterScreen masterKey="sampleDispatchView" />;
   }
 
   if (pathStr.endsWith("sample-dispatch/status")) {
-    return <GenericMasterTable masterKey="sampleDispatchStatus" />;
+    return <MasterScreen masterKey="sampleDispatchStatus" />;
   }
 
   if (pathStr.endsWith("input-dispatch/view")) {
-    return <GenericMasterTable masterKey="inputDispatchView" />;
+    return <MasterScreen masterKey="inputDispatchView" />;
   }
 
   if (pathStr.endsWith("input-dispatch/status")) {
-    return <GenericMasterTable masterKey="inputDispatchStatus" />;
+    return <MasterScreen masterKey="inputDispatchStatus" />;
   }
 
   if (pathStr.endsWith("msis/view")) {
-    return <GenericMasterTable masterKey="msisView" />;
+    return <MasterScreen masterKey="msisView" />;
   }
 
   if (pathStr.endsWith("login-details/manager")) {
-    return <GenericMasterTable masterKey="loginDetailsManager" />;
+    return <MasterScreen masterKey="loginDetailsManager" />;
   }
 
   if (pathStr.endsWith("login-details/fieldrepo")) {
-    return <GenericMasterTable masterKey="loginDetailsFieldrepo" />;
+    return <MasterScreen masterKey="loginDetailsFieldrepo" />;
   }
 
   if (pathStr.endsWith("activities/login-into-fieldforce")) {
@@ -390,7 +391,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("activities/activity/status")) {
-    return <GenericMasterTable masterKey="activityStatus" />;
+    return <MasterScreen masterKey="activityStatus" />;
   }
 
   if (pathStr.endsWith("manager-missed-call/setup")) {
@@ -398,7 +399,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("manager-missed-call/view")) {
-    return <GenericMasterTable masterKey="managerMissedCallView" />;
+    return <MasterScreen masterKey="managerMissedCallView" />;
   }
 
   if (pathStr.endsWith("division-options/dashboard")) {
@@ -626,7 +627,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/leave-status")) {
-    return <GenericMasterTable masterKey="leaveStatusOptions" />;
+    return <MasterScreen masterKey="leaveStatusOptions" />;
   }
 
   if (pathStr.endsWith("transfers/transfer-master-details")) {
