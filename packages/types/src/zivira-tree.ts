@@ -177,8 +177,7 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
           node("Listed Dr Deactivation", "listed-dr-deactivation", "division"),
           node("TP", "tp", "division"),
           node("DCR", "dcr", "division"),
-          node("Leave", "leave", "division"),
-          node("Order Booking Approval", "order-booking-approval", "division")
+          node("Leave", "leave", "division")
         ]),
         node("Expense", "expense", "division", [
           node("Approval(Active)", "approval-active", "division"),

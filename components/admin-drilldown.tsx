@@ -330,10 +330,6 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <MasterScreen masterKey="approvalLeave" />;
   }
 
-  if (pathStr.endsWith("approvals/order-booking-approval")) {
-    return <MasterScreen masterKey="approvalOrderBooking" />;
-  }
-
   if (pathStr.endsWith("activities/expense/approval-active")) {
     return <MasterScreen masterKey="expenseApprovalActive" />;
   }

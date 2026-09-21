@@ -36,7 +36,12 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
         apiClient.masterRecords(masterKey)
       ]);
       setSchema(schemaRes.data);
-      setRows(rowsRes.data);
+      // "Remove" soft-deactivates a request (sets status: "Inactive") via
+      // the same generic master API every other screen uses -- there's no
+      // hard-delete endpoint. On an Approvals queue "Remove" means "make
+      // this request disappear", not "show it as inactive", so filter
+      // deactivated rows out here rather than rendering them.
+      setRows(rowsRes.data.filter((r) => String(r.status ?? "Active") !== "Inactive"));
 
       // Pre-fetch live records for any field sourced from another master
       // (dropdown fields) or that computes a display value from one — e.g.
