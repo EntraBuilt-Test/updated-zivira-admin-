@@ -1,0 +1,162 @@
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+@layer base {
+  :root {
+    --surface-canvas: #F8FAFC;
+    --surface-card: #FFFFFF;
+    --surface-subtle: #F1F5F9;
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+    --border-subtle: #E2E8F0;
+    --border-strong: #CBD5E1;
+    --status-success-bg: #ECFDF5;
+    --status-danger-bg: #FEF2F2;
+    --status-warning-bg: #FFFBEB;
+    --status-info-bg: #EFF6FF;
+
+    /* Legacy Variable Aliases */
+    --panel: var(--surface-card);
+    --border: var(--border-subtle);
+    --ink: var(--text-primary);
+    --muted: var(--text-muted);
+    --line: var(--surface-subtle);
+  }
+
+  .dark {
+    --surface-canvas: #0f172a; /* Slate 900 */
+    --surface-card: #1e293b; /* Slate 800 */
+    --surface-subtle: #334155; /* Slate 700 */
+    --text-primary: #f8fafc; /* Slate 50 */
+    --text-secondary: #cbd5e1; /* Slate 300 */
+    --text-muted: #64748b; /* Slate 500 */
+    --border-subtle: #334155; /* Slate 700 */
+    --border-strong: #475569; /* Slate 600 */
+    --status-success-bg: #064e3b;
+    --status-danger-bg: #7f1d1d;
+    --status-warning-bg: #78350f;
+    --status-info-bg: #1e3a8a;
+  }
+
+  html, body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; }
+  main > :first-child { margin-top: 0 !important; }
+  main > :last-child { margin-bottom: 0 !important; }
+  
+  table, .subdivision-table {
+    @apply w-full text-center border-collapse;
+  }
+  th, td {
+    @apply text-center align-middle;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@layer components {
+  .button {
+    @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors bg-brand-primary text-white shadow-sm hover:bg-brand-primary/90 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-4;
+  }
+  .button-secondary {
+    @apply border border-border-subtle bg-surface-subtle text-text-primary shadow-none hover:bg-border-subtle;
+  }
+  
+  .form-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+  .field {
+    @apply flex flex-col gap-1.5;
+  }
+  label, .field label, .field span, .field {
+    @apply text-sm font-medium text-text-secondary;
+  }
+  .field input, .field select, .field-input, .input {
+    @apply w-full px-3 py-2 rounded-md border border-border-subtle bg-surface-card text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary transition-colors;
+  }
+  
+  /* Make sure generic selects look good everywhere */
+  select {
+    @apply appearance-none bg-surface-card text-text-primary border-border-subtle focus:ring-brand-primary/20 focus:border-brand-primary rounded-md border px-3 py-2 w-full text-sm outline-none transition-colors;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394A3B8%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 16px;
+    padding-right: 2.5rem !important;
+  }
+  
+  .modern-tabs {
+    @apply flex items-center gap-4 border-b border-border-subtle mb-6 overflow-x-auto;
+  }
+  .modern-tab-button {
+    @apply px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap;
+  }
+  .modern-tab-button.active {
+    @apply text-brand-primary border-b-2 border-brand-primary bg-brand-primary/5 rounded-t-lg;
+  }
+  .modern-tab-button.inactive {
+    @apply text-text-secondary hover:text-text-primary hover:bg-surface-subtle rounded-t-lg;
+  }
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-text-primary;
+  }
+}
+
+@layer components {
+  .subdivision-head {
+    @apply flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6;
+  }
+  .subdivision-head p.subdivision-eyebrow {
+    @apply text-sm font-medium text-brand-primary uppercase tracking-wider mb-1;
+  }
+  .subdivision-head h2 {
+    @apply text-2xl font-bold text-text-primary tracking-tight;
+  }
+  .subdivision-head p:not(.subdivision-eyebrow) {
+    @apply text-sm text-text-muted mt-1 leading-relaxed;
+  }
+  .subdivision-icon-button {
+    @apply p-1.5 rounded text-text-muted hover:text-brand-primary hover:bg-brand-primary/10 transition-colors inline-flex items-center justify-center cursor-pointer;
+  }
+  .subdivision-danger-button {
+    @apply p-1.5 rounded text-text-muted hover:text-red-500 hover:bg-red-500/10 hover:shadow-md hover:shadow-red-500/50 transition-all inline-flex items-center justify-center cursor-pointer;
+  }
+}
+
+@layer components {
+  .command-select {
+    @apply relative w-fit;
+  }
+  .command-select-button {
+    @apply flex items-center justify-between px-4 py-2 bg-surface-card border border-border-subtle rounded-md text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-brand-primary/20 transition-colors w-full;
+  }
+  .command-select-menu {
+    @apply absolute left-0 top-[calc(100%+4px)] w-full max-h-[300px] overflow-y-auto bg-surface-card border border-border-subtle rounded-md shadow-lg z-50 py-1;
+  }
+  .command-select-option {
+    @apply w-full text-left px-3 py-2 text-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center justify-between bg-transparent border-none cursor-pointer;
+  }
+  .command-select-option-active {
+    @apply bg-brand-primary/10 text-brand-primary font-medium;
+  }
+  .command-select-option-active:hover {
+    @apply bg-brand-primary/20;
+  }
+}

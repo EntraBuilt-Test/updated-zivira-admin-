@@ -1,0 +1,182 @@
+"use client";
+
+import { Check, Pencil, Plus, RotateCcw, SlidersHorizontal, Trash2, X, Ban } from "lucide-react";
+import { useState } from "react";
+
+type AddressRow = {
+  id: string;
+  clinicName: string;
+  address: string;
+  area: string;
+  city: string;
+  state: string;
+  country: string;
+  pinCode: string;
+};
+
+const initialAddresses: AddressRow[] = [];
+
+function AddressForm({ row, onSave, onBack }: { row: any; onSave: (r: AddressRow) => void; onBack: () => void }) {
+  const [form, setForm] = useState<AddressRow>({
+    id: row.id ?? "",
+    clinicName: row.clinicName ?? "",
+    address: row.address ?? "",
+    area: row.area ?? "",
+    city: row.city ?? "",
+    state: row.state ?? "",
+    country: row.country ?? "India",
+    pinCode: row.pinCode ?? ""
+  });
+
+  const isEdit = !!row.id;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>{isEdit ? "Edit Address" : "Add Address"}</h2>
+          <p>Maintain clinic or hospital address listings.</p>
+        </div>
+        <button className="button button-secondary" onClick={onBack} type="button"><RotateCcw size={16} /> Back</button>
+      </div>
+      <div className="subdivision-form-card">
+        <label className="field">
+          <span>Clinic / Hospital Name</span>
+          <input value={form.clinicName} onChange={e => setForm({ ...form, clinicName: e.target.value })} placeholder="e.g. City Care Clinic" />
+        </label>
+        <label className="field">
+          <span>Address</span>
+          <input value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder="e.g. No. 24, Anna Salai" />
+        </label>
+        <label className="field">
+          <span>Area</span>
+          <input value={form.area} onChange={e => setForm({ ...form, area: e.target.value })} placeholder="e.g. T. Nagar" />
+        </label>
+        <label className="field">
+          <span>City</span>
+          <input value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} placeholder="e.g. Chennai" />
+        </label>
+        <label className="field">
+          <span>State</span>
+          <input value={form.state} onChange={e => setForm({ ...form, state: e.target.value })} placeholder="e.g. Tamil Nadu" />
+        </label>
+        <label className="field">
+          <span>Country</span>
+          <input value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} placeholder="e.g. India" />
+        </label>
+        <label className="field">
+          <span>PIN Code</span>
+          <input value={form.pinCode} onChange={e => setForm({ ...form, pinCode: e.target.value })} placeholder="e.g. 600017" />
+        </label>
+        <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.clinicName.trim()}>
+          <Check size={16} /> Add Address
+        </button>
+      </div>
+    </section>
+  );
+}
+
+export function DoctorSpecialityMaster() {
+  const [addresses, setAddresses] = useState<AddressRow[]>(initialAddresses);
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState<"list" | "add" | "edit">("list");
+  const [editTarget, setEditTarget] = useState<AddressRow | null>(null);
+
+  const filtered = addresses.filter(
+    (a) =>
+      a.clinicName.toLowerCase().includes(search.toLowerCase()) ||
+      a.city.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function handleSave(form: AddressRow) {
+    if (view === "add") {
+      const newAddr = {
+        ...form,
+        id: `ADDR${String(addresses.length + 1).padStart(3, "0")}`
+      };
+      setAddresses([...addresses, newAddr]);
+    } else {
+      setAddresses(addresses.map(a => a.id === form.id ? { ...form } : a));
+    }
+    setView("list");
+  }
+
+  function handleDeactivate(id: string) {
+    setAddresses(addresses.filter(a => a.id !== id));
+  }
+
+  if (view === "add") return <AddressForm row={{}} onSave={handleSave} onBack={() => setView("list")} />;
+  if (view === "edit" && editTarget) return <AddressForm row={editTarget} onSave={handleSave} onBack={() => setView("list")} />;
+
+  return (
+    <section className="subdivision-console">
+      <div className="subdivision-head">
+        <div>
+          <p className="subdivision-eyebrow">Master Setup</p>
+          <h2>Address Master</h2>
+          <p>Create and manage doctor clinic and hospital locations.</p>
+        </div>
+        <div className="subdivision-actions">
+          
+          <button className="button" onClick={() => setView("add")} type="button">Add Address</button>
+        </div>
+      </div>
+
+      <div style={{ marginBottom: "16px" }}>
+        <input className="input w-full max-w-md"
+          placeholder="Search by clinic name or city..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
+        <table className="w-full text-left border-collapse">
+          <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+            <tr className="hover:bg-surface-subtle/50 transition-colors group">
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Clinic Name</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Address</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Area</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">City</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">State</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Country</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">PIN Code</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" colSpan={2}>Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border-subtle">
+            {filtered.map((row) => (
+              <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong style={{ color: "var(--ink)" }}>{row.clinicName}</strong></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.address}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.area}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.city}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.state}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.country}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><span style={{ display: "inline-block", padding: "2px 8px", borderRadius: "6px", background: "#f3f4f6", fontSize: "12px", fontWeight: 600, color: "#374151" }}>{row.pinCode}</span></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                  <button className="subdivision-icon-button" onClick={() => { setEditTarget(row); setView("edit"); }} type="button">
+                    <Pencil size={15} />
+                  </button>
+                </td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                  <button className="p-1.5 rounded text-text-muted hover:!text-red-500 hover:!bg-red-50 hover:!shadow-md hover:!shadow-red-500 transition-all inline-flex items-center justify-center cursor-pointer pointer-events-auto" onClick={() => handleDeactivate(row.id)} type="button">
+                    <Ban size={15} />
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {filtered.length === 0 && (
+              <tr className="hover:bg-surface-subtle/50 transition-colors group">
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                  No addresses found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
