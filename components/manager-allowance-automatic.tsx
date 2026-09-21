@@ -36,7 +36,7 @@ export function ManagerAllowanceAutomatic() {
       </div>
       {/* Main Settings Panel */}
       <div className="card" style={{ padding: "28px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+        <div>
           {/* Label */}
           <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap" }}>
             Allowance Fixation

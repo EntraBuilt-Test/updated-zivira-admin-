@@ -50,7 +50,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: LeaveReport
         </label>
         <label className="field">
           <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })}>
             <option value="Chennai Central HQ">Chennai Central HQ</option>
             <option value="Coimbatore HQ">Coimbatore HQ</option>
             <option value="Madurai HQ">Madurai HQ</option>
@@ -58,7 +58,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: LeaveReport
         </label>
         <label className="field">
           <span>Leave Type</span>
-          <select value={form.leaveType} onChange={e => setForm({ ...form, leaveType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.leaveType} onChange={e => setForm({ ...form, leaveType: e.target.value })}>
             <option value="Casual Leave">Casual Leave</option>
             <option value="Sick Leave">Sick Leave</option>
             <option value="Earned Leave">Earned Leave</option>
@@ -67,11 +67,11 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: LeaveReport
         </label>
         <label className="field">
           <span>* From Date</span>
-          <input type="date" value={form.fromDate} onChange={e => setForm({ ...form, fromDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.fromDate} onChange={e => setForm({ ...form, fromDate: e.target.value })} />
         </label>
         <label className="field">
           <span>* To Date</span>
-          <input type="date" value={form.toDate} onChange={e => setForm({ ...form, toDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.toDate} onChange={e => setForm({ ...form, toDate: e.target.value })} />
         </label>
         <label className="field">
           <span>* Total Days</span>
@@ -83,7 +83,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: LeaveReport
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
             <option value="Rejected">Rejected</option>
@@ -158,19 +158,10 @@ export function ManagerLeaveReport() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by employee or reason..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

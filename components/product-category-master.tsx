@@ -37,10 +37,9 @@ function CategoryForm({ row, onSave, onBack, saving, error }: { row: any; onSave
         </label>
         <label className="field">
           <span>Status</span>
-          <select 
+          <select className="input" 
             value={form.status} 
             onChange={e => setForm(f => ({ ...f, status: e.target.value as "ACTIVE" | "INACTIVE" }))}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="ACTIVE">Active</option>
             <option value="INACTIVE">Inactive</option>
@@ -81,7 +80,7 @@ function BulkEditView({ rows, onSave, onBack, saving }: { rows: ProductCategory[
             {draft.map((row, i) => (
               <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color:"var(--muted)", fontWeight:500 }}>{i + 1}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><input className="subdivision-inline-input" style={{ width:"100%" }} value={row.categoryName} onChange={e => update(row.id, "categoryName", e.target.value)} /></td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><input className="subdivision-inline-input" value={row.categoryName} onChange={e => update(row.id, "categoryName", e.target.value)} /></td>
               </tr>
             ))}
           </tbody>
@@ -206,7 +205,7 @@ function DeactivateDialog({ name, onConfirm, onCancel }: { name: string; onConfi
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:100, display:"flex", alignItems:"center", justifyContent:"center" }}>
       <div style={{ background:"var(--panel)", borderRadius:"16px", padding:"32px 28px", maxWidth:"400px", width:"90%", boxShadow:"0 20px 60px rgba(0,0,0,0.18)" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"12px" }}>
+        <div>
           <span style={{ background:"#fef2f2", borderRadius:"50%", width:"44px", height:"44px", display:"flex", alignItems:"center", justifyContent:"center" }}>
             <Ban size={15} />
           </span>
@@ -218,9 +217,9 @@ function DeactivateDialog({ name, onConfirm, onCancel }: { name: string; onConfi
         <p style={{ fontSize:"14px", color:"var(--ink)", margin:"0 0 24px", lineHeight:1.6 }}>
           Are you sure you want to deactivate <strong>{name}</strong>?
         </p>
-        <div style={{ display:"flex", gap:"10px", justifyContent:"flex-end" }}>
+        <div>
           <button className="button button-secondary" onClick={onCancel} type="button">Cancel</button>
-          <button onClick={onConfirm} type="button" style={{ display:"flex", alignItems:"center", gap:"6px", padding:"8px 18px", borderRadius:"8px", border:"none", background:"#ef4444", color:"#fff", fontWeight:600, fontSize:"14px", cursor:"pointer" }}>
+          <button onClick={onConfirm} type="button">
             <Ban size={15} /> Yes, Deactivate
           </button>
         </div>
@@ -433,11 +432,10 @@ export function ProductCategoryMaster() {
                     </td>
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
-                        <select 
+                        <select className="input" 
                           value={draftRow.status} 
                           onChange={e => setDraftRow({ ...draftRow, status: e.target.value as "ACTIVE" | "INACTIVE" })}
                           className="subdivision-inline-input"
-                          style={{ padding: "4px", borderRadius: "4px", border: "1px solid #ccc", background: "var(--panel)" }}
                         >
                           <option value="ACTIVE">Active</option>
                           <option value="INACTIVE">Inactive</option>

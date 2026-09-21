@@ -69,7 +69,7 @@ export function TerritoryCoverageAnalytics() {
           <h2>Territory Coverage &amp; Doctor Exceptions</h2>
           <p>Doctors not visited for extended periods, with the documented reason (if the field team logged one) so nothing reads as unexplained neglect.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <ExportMenuButton
@@ -97,9 +97,9 @@ export function TerritoryCoverageAnalytics() {
         ))}
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+      <div>
         <Filter size={14} style={{ color: "var(--muted)" }} />
-        <select className="input" style={{ maxWidth: 220 }} value={bucketFilter} onChange={(e) => setBucketFilter(e.target.value)}>
+        <select className="input" value={bucketFilter} onChange={(e) => setBucketFilter(e.target.value)}>
           <option value="ALL">All flagged doctors</option>
           <option value="30">30+ days</option>
           <option value="60">60+ days</option>

@@ -70,7 +70,7 @@ export function PersonalInformationEntry() {
         </div>
       </div>
       {/* Tabs Row */}
-      <div style={{ display: "flex", gap: "8px", overflowX: "auto", padding: "8px 0", marginBottom: "20px", borderBottom: "1px solid var(--border)" }}>
+      <div>
         <button
           className={`button ${activeCategory === "company" ? "" : "button-secondary"}`}
           onClick={() => setActiveCategory("company")}

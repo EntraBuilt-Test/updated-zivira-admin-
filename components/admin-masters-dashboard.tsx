@@ -1,6 +1,23 @@
+"use client";
 import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
+import { AddFieldForceModal } from "./add-field-force-modal";
 
 export function AdminMastersDashboard() {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [showAddFieldForce, setShowAddFieldForce] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
     <div className="flex flex-col w-full space-y-6">
       <section className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
@@ -32,10 +49,53 @@ export function AdminMastersDashboard() {
             <span className="material-symbols-outlined text-[18px] text-text-secondary">download</span>
             <span className="">Bulk Export Master Data</span>
           </button>
-          <button className="h-[38px] px-4 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all active:scale-95" type="button">
-            <span className="material-symbols-outlined text-[18px]">add</span>
-            <span className="">Quick Add Master Record</span>
-          </button>
+          <div className="relative" ref={dropdownRef}>
+            <button 
+              className="h-[38px] px-4 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all active:scale-95" 
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <span className="material-symbols-outlined text-[18px]">add</span>
+              <span className="">Quick Add Master Record</span>
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-56 bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden z-50 py-1 animate-in fade-in zoom-in-95 duration-100">
+                <div className="px-3 py-2 text-[11px] font-bold text-text-muted uppercase tracking-wider border-b border-border-subtle">
+                  Select Master
+                </div>
+                <button className="w-full text-left px-4 py-2.5 text-label-md text-text-primary hover:bg-surface-subtle hover:text-primary transition-colors flex items-center gap-2.5 group">
+                  <span className="material-symbols-outlined text-[18px] text-text-secondary group-hover:text-primary">account_tree</span>
+                  SubDivision
+                </button>
+                <button className="w-full text-left px-4 py-2.5 text-label-md text-text-primary hover:bg-surface-subtle hover:text-primary transition-colors flex items-center gap-2.5 group">
+                  <span className="material-symbols-outlined text-[18px] text-text-secondary group-hover:text-primary">medication</span>
+                  Product
+                </button>
+                <button 
+                  className="w-full text-left px-4 py-2.5 text-label-md text-text-primary hover:bg-surface-subtle hover:text-primary transition-colors flex items-center gap-2.5 group"
+                  onClick={() => {
+                    setIsDropdownOpen(false);
+                    setShowAddFieldForce(true);
+                  }}
+                >
+                  <span className="material-symbols-outlined text-[18px] text-text-secondary group-hover:text-primary">badge</span>
+                  Field Force
+                </button>
+                <button className="w-full text-left px-4 py-2.5 text-label-md text-text-primary hover:bg-surface-subtle hover:text-primary transition-colors flex items-center gap-2.5 group">
+                  <span className="material-symbols-outlined text-[18px] text-text-secondary group-hover:text-primary">clinical_notes</span>
+                  Customer
+                </button>
+                <button className="w-full text-left px-4 py-2.5 text-label-md text-text-primary hover:bg-surface-subtle hover:text-primary transition-colors flex items-center gap-2.5 group">
+                  <span className="material-symbols-outlined text-[18px] text-text-secondary group-hover:text-primary">featured_play_list</span>
+                  Input / Sample
+                </button>
+                <button className="w-full text-left px-4 py-2.5 text-label-md text-text-primary hover:bg-surface-subtle hover:text-primary transition-colors flex items-center gap-2.5 group">
+                  <span className="material-symbols-outlined text-[18px] text-text-secondary group-hover:text-primary">store</span>
+                  Stockist
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </section>
 
@@ -55,7 +115,7 @@ export function AdminMastersDashboard() {
           </div>
           <div className="mt-4">
             <div className="w-full bg-surface-subtle rounded-full h-1.5 overflow-hidden">
-              <div className="bg-primary h-1.5 rounded-full transition-all duration-700" style={{ width: "100%" }}></div>
+              <div className="bg-primary h-1.5 rounded-full transition-all duration-700"></div>
             </div>
             <div className="flex items-center justify-between mt-2 font-body-sm text-body-sm text-text-muted">
               <span className="">Active enterprise modules</span>
@@ -259,7 +319,7 @@ export function AdminMastersDashboard() {
                     <span className="material-symbols-outlined text-[20px]">clinical_notes</span>
                   </div>
                   <div>
-                    <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Doctor</h3>
+                    <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Customer</h3>
                     <span className="font-label-sm text-[11px] text-text-muted">4 sub tabs</span>
                   </div>
                 </div>
@@ -269,13 +329,13 @@ export function AdminMastersDashboard() {
               </div>
               <p className="font-body-sm text-body-sm text-text-secondary">Prescriber registry, specialization, hospital tags, MCL categories &amp; core list.</p>
               <div className="flex items-center gap-2 pt-1">
-                <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">12,450 Doctors</span>
+                <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">12,450 Customers</span>
                 <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">98% MCL tagged</span>
               </div>
             </div>
             <div className="pt-4 border-t border-border-subtle flex items-center justify-between mt-4">
               <Link className="text-primary hover:text-brand-primary-hover font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor">
-                <span className="">Doctor Master Registry</span>
+                <span className="">Customer Master Registry</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
               <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
@@ -350,38 +410,7 @@ export function AdminMastersDashboard() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-9 h-9 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
-                    <span className="material-symbols-outlined text-[20px]">calendar_month</span>
-                  </div>
-                  <div>
-                    <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Statewise - Holiday Fixation</h3>
-                    <span className="font-label-sm text-[11px] text-text-muted">2 sub tabs</span>
-                  </div>
-                </div>
-                <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-[11px] font-semibold flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-status-success"></span>Configured
-                </span>
-              </div>
-              <p className="font-body-sm text-body-sm text-text-secondary">State-specific gazetted calendars, field off-days, and seasonal scheduling.</p>
-              <div className="flex items-center gap-2 pt-1">
-                <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">28 States</span>
-                <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-muted font-label-sm text-[11px]">2026 Calendar</span>
-              </div>
-            </div>
-            <div className="pt-4 border-t border-border-subtle flex items-center justify-between mt-4">
-              <Link className="text-primary hover:text-brand-primary-hover font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/statewise-holiday-fixation">
-                <span className="">Manage Calendars</span>
-                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-              </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
-            </div>
-          </div>
+
 
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
@@ -723,6 +752,11 @@ export function AdminMastersDashboard() {
           </div>
         </div>
       </section>
+
+      {/* Modals */}
+      {showAddFieldForce && (
+        <AddFieldForceModal onClose={() => setShowAddFieldForce(false)} />
+      )}
     </div>
   );
 }

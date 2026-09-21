@@ -212,23 +212,22 @@ export function UnlistedDoctorMaster() {
         </div>
       </div>
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by name, code or MR..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
       {view !== "list" && (
         <div className="modal-overlay" style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 100, display: "flex", justifyContent: "center", alignItems: "flex-start", padding: "40px 20px", overflowY: "auto" }}>
           <div style={{ background: "var(--panel)", borderRadius: "12px", width: "100%", maxWidth: "500px", padding: "24px", boxShadow: "0 10px 40px rgba(0,0,0,0.15)", position: "relative" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div>
               <h2>{view === "add" ? "Add Unlisted Doctor" : "Edit Unlisted Doctor"}</h2>
               <button className="button button-secondary" onClick={() => setView("list")} type="button">Close</button>
             </div>
             <div style={{ marginTop: "16px" }}>
           {/* Tabs header row */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "6px 0", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
+          <div>
             {[
               { id: 1, label: "Doctor Details" },
               { id: 2, label: "Clinic Address" },
@@ -274,7 +273,7 @@ export function UnlistedDoctorMaster() {
                 </div>
                 <div className="field">
                   <label>Status</label>
-                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                  <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                     <option value="Pending">Pending</option>
                     <option value="Approved">Approved</option>
                     <option value="Rejected">Rejected</option>
@@ -334,7 +333,7 @@ export function UnlistedDoctorMaster() {
               <>
                 <div className="field">
                   <label>Visit Frequency</label>
-                  <select value={form.visitFrequency} onChange={e => setForm({ ...form, visitFrequency: e.target.value })}>
+                  <select className="input" value={form.visitFrequency} onChange={e => setForm({ ...form, visitFrequency: e.target.value })}>
                     <option value="Weekly">Weekly</option>
                     <option value="Fortnight">Fortnight</option>
                     <option value="Monthly">Monthly</option>
@@ -342,7 +341,7 @@ export function UnlistedDoctorMaster() {
                 </div>
                 <div className="field">
                   <label>Potential</label>
-                  <select value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value })}>
+                  <select className="input" value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value })}>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
                     <option value="Low">Low</option>

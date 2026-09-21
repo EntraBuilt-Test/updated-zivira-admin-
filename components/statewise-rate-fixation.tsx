@@ -113,10 +113,9 @@ export function StatewiseRateFixation() {
         <div className="subdivision-form-card">
           <label className="field">
             <span>Product</span>
-            <select
+            <select className="input"
               value={formRow.productName}
               onChange={(e) => setFormRow({ ...formRow, productName: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               {productList.map((p, idx) => (
                 <option key={idx} value={p}>{p}</option>
@@ -137,7 +136,6 @@ export function StatewiseRateFixation() {
               type="date"
               value={formRow.mfgDate}
               onChange={(e) => setFormRow({ ...formRow, mfgDate: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             />
           </label>
           <label className="field">
@@ -146,7 +144,6 @@ export function StatewiseRateFixation() {
               type="date"
               value={formRow.expDate}
               onChange={(e) => setFormRow({ ...formRow, expDate: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             />
           </label>
           <label className="field">
@@ -186,10 +183,9 @@ export function StatewiseRateFixation() {
           </label>
           <label className="field">
             <span>Currency</span>
-            <select
+            <select className="input"
               value={formRow.currency}
               onChange={(e) => setFormRow({ ...formRow, currency: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               <option value="INR">INR</option>
               <option value="USD">USD</option>
@@ -201,15 +197,13 @@ export function StatewiseRateFixation() {
               type="date"
               value={formRow.effectiveDate}
               onChange={(e) => setFormRow({ ...formRow, effectiveDate: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             />
           </label>
           <label className="field">
             <span>Status</span>
-            <select
+            <select className="input"
               value={formRow.status}
               onChange={(e) => setFormRow({ ...formRow, status: e.target.value as any })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
@@ -240,19 +234,10 @@ export function StatewiseRateFixation() {
         </div>
       </div>
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by product or batch..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
       <div className="subdivision-stats" style={{ marginBottom: "20px" }}>
@@ -275,7 +260,7 @@ export function StatewiseRateFixation() {
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">PTS (₹)</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">MRP (₹)</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "space-between" }}>
+                <div>
                   <span>Currency</span>
                   <button
                     type="button"
@@ -362,7 +347,7 @@ export function StatewiseRateFixation() {
               </th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Effective Date</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "130px", position: "relative" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "6px", justifyContent: "space-between" }}>
+                <div>
                   <span>Status</span>
                   <button
                     type="button"

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -59,43 +60,19 @@ export function AdminDoctorCelebrationsDashboard({ node, path }: { node: ZiviraT
 <div className="flex flex-wrap items-center gap-3 flex-1 min-w-0">
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">travel_explore</span>
-<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
-<option>All Territories / Pan-India HQ</option>
-<option>Mumbai South Metro (Tier 1)</option>
-<option>Bengaluru Central &amp; Whitefield</option>
-<option>Delhi NCR - South Ext &amp; Gurugram</option>
-<option>Kolkata Salt Lake Sector</option>
-<option>Chennai Kodambakkam Hub</option>
-</select>
+<ToolbarDropdown options={["All Territories / Pan-India HQ", "Mumbai South Metro (Tier 1)", "Bengaluru Central &amp; Whitefield", "Delhi NCR - South Ext &amp; Gurugram", "Kolkata Salt Lake Sector", "Chennai Kodambakkam Hub"]} initialSelected={"All Territories / Pan-India HQ"} />
 </div>
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">celebration</span>
-<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
-<option>Celebration Type: All (68)</option>
-<option>Birthdays (42)</option>
-<option>Clinic Anniversaries (18)</option>
-<option>Clinic Foundation Days (8)</option>
-<option>Medical Accolades &amp; Fellowships (5)</option>
-</select>
+<ToolbarDropdown options={["Celebration Type: All (68)", "Birthdays (42)", "Clinic Anniversaries (18)", "Clinic Foundation Days (8)", "Medical Accolades &amp; Fellowships (5)"]} initialSelected={"Celebration Type: All (68)"} />
 </div>
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">calendar_month</span>
-<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
-<option>Date Range: This Month (Sep 2026)</option>
-<option>This Week (8 - 14 Sep 2026)</option>
-<option>Next 7 Days</option>
-<option>Next 14 Days (Critical Window)</option>
-<option>Q3 Consolidated</option>
-</select>
+<ToolbarDropdown options={["Date Range: This Month (Sep 2026)", "This Week (8 - 14 Sep 2026)", "Next 7 Days", "Next 14 Days (Critical Window)", "Q3 Consolidated"]} initialSelected={"Date Range: This Month (Sep 2026)"} />
 </div>
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-text-muted text-[18px]">stars</span>
-<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none">
-<option>Physician Tier: All</option>
-<option>Tier A+ (Key Opinion Leaders)</option>
-<option>Tier A (High Prescribing)</option>
-<option>Tier B (Core Network)</option>
-</select>
+<ToolbarDropdown options={["Physician Tier: All", "Tier A+ (Key Opinion Leaders)", "Tier A (High Prescribing)", "Tier B (Core Network)"]} initialSelected={"Physician Tier: All"} />
 </div>
 </div>
 <div className="flex items-center gap-2">

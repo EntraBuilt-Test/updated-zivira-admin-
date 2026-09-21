@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import { ZoneDropdown } from "./zone-dropdown";
 
 export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   return (
@@ -11,16 +13,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="flex flex-col space-y-1"><div className="flex items-center gap-2"><span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span><span className="text-text-muted text-body-sm font-body-sm">/</span><span className="font-label-md text-label-md text-primary font-semibold">Activities</span></div><div className="flex items-center gap-3 flex-wrap"><h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Activities</h1><span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-md text-label-md"><span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>Live In-Flight (Sync 10s)</span></div><p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2"><span className="">Real-time field force telemetry, physician call audit, sample custody verification, and geofence verification across nationwide operating hubs.</span></p></div>
 {/* ACTION CONTROLS & COMMAND FILTERS */}
 <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
-<div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
-<span className="material-symbols-outlined text-text-muted text-[18px]">public</span>
-<select className="bg-transparent font-label-md text-label-md text-text-primary focus:outline-none cursor-pointer">
-<option>All Zones / West Hub</option>
-<option>North Territory - Delhi HQ</option>
-<option>West Zone - Mumbai &amp; Pune</option>
-<option>South Sector - Bangalore</option>
-<option>East Region - Kolkata Hub</option>
-</select>
-</div>
+<ZoneDropdown />
 <div className="flex items-center gap-2 bg-surface-card px-3 py-1.5 rounded-lg shadow-sm">
 <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
 <span className="font-label-md text-label-md text-text-primary">Today: 10 Sep 2026</span>
@@ -615,11 +608,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="px-card-padding-spacious py-3 bg-surface-canvas/50 flex flex-col sm:flex-row items-center justify-between gap-3">
 <div className="flex items-center gap-2 font-body-sm text-body-sm text-text-muted">
 <span className="">Rows per page:</span>
-<select className="bg-surface-card px-2 py-1 rounded text-text-primary font-label-md text-label-md focus:outline-none">
-<option>25</option>
-<option>50</option>
-<option>100</option>
-</select>
+<ToolbarDropdown options={["25", "50", "100"]} initialSelected={"25"} />
 <span className="">Showing 1 to 6 of 1,420 entries</span>
 </div>
 <div className="flex items-center gap-1">

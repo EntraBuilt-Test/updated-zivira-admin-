@@ -64,7 +64,7 @@ export function PayrollHoldEngine() {
           <h2>Salary Integration — Payroll Status</h2>
           <p>Auto-held for chronic defaulters (missed &gt;5 working-day DCRs in the last 30 days); released once the manager approves the employee&apos;s explanation.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <ExportMenuButton

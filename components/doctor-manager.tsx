@@ -37,7 +37,7 @@ function ClassForm({ row, onSave, onBack }: { row: any; onSave: (r: ClassRow) =>
       <div className="subdivision-form-card">
         <label className="field">
           <span>Doctor Category</span>
-          <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.category} onChange={e => setForm({ ...form, category: e.target.value as any })}>
             <option value="A">A (High-value doctor)</option>
             <option value="B">B (Moderate-value doctor)</option>
             <option value="C">C (Low-value doctor)</option>
@@ -45,7 +45,7 @@ function ClassForm({ row, onSave, onBack }: { row: any; onSave: (r: ClassRow) =>
         </label>
         <label className="field">
           <span>Potential</span>
-          <select value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value as any })}>
             <option value="High">High</option>
             <option value="Medium">Medium</option>
             <option value="Low">Low</option>
@@ -53,7 +53,7 @@ function ClassForm({ row, onSave, onBack }: { row: any; onSave: (r: ClassRow) =>
         </label>
         <label className="field">
           <span>Visit Frequency</span>
-          <select value={form.frequency} onChange={e => setForm({ ...form, frequency: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.frequency} onChange={e => setForm({ ...form, frequency: e.target.value as any })}>
             <option value="Weekly">Weekly (4 visits/month)</option>
             <option value="Twice a Month">Twice a Month (2 visits/month)</option>
             <option value="Fortnightly">Fortnightly (Every 15 days)</option>
@@ -64,7 +64,7 @@ function ClassForm({ row, onSave, onBack }: { row: any; onSave: (r: ClassRow) =>
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
@@ -131,19 +131,10 @@ export function DoctorManager() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by category, potential or frequency..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

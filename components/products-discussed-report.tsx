@@ -56,7 +56,7 @@ export function ProductsDiscussedReport() {
           <h2>Products Discussed</h2>
           <p>Which products came up most often on doctor visits, and how many doctors and reps each one reached — derived from field DCR records.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
         </div>

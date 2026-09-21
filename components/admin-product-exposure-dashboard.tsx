@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -23,20 +24,12 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
       {/* Right Header Actions */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <select className="appearance-none bg-surface-subtle border border-border-subtle rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-text-secondary cursor-pointer focus:outline-none">
-            <option>All Therapeutic Divisions (Cardio, Diab, Ortho)</option>
-            <option>Cardio-Diabetic Division</option>
-            <option>Respiratory & Pulmo Care</option>
-            <option>Orthopedic & Pain Management</option>
-          </select>
+          <ToolbarDropdown options={["All Therapeutic Divisions (Cardio, Diab, Ortho)", "Cardio-Diabetic Division", "Respiratory & Pulmo Care", "Orthopedic & Pain Management"]} initialSelected={"All Therapeutic Divisions (Cardio, Diab, Ortho)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         <div className="relative">
-          <select className="appearance-none bg-surface-subtle border border-border-subtle rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-text-secondary cursor-pointer focus:outline-none">
-            <option>Cycle: Sep 2026 (Active Detailing)</option>
-            <option>Cycle: Aug 2026</option>
-          </select>
+          <ToolbarDropdown options={["Cycle: Sep 2026 (Active Detailing)", "Cycle: Aug 2026"]} initialSelected={"Cycle: Sep 2026 (Active Detailing)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
@@ -181,18 +174,9 @@ export function AdminProductExposureDashboard({ node, path }: { node: ZiviraTree
             </div>
 
             <div className="flex items-center gap-2">
-              <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
-                <option>All Segments (Cardio, Diab, Ortho, Pulmo)</option>
-                <option>Cardio-Vascular</option>
-                <option>Diabetology</option>
-                <option>Respiratory</option>
-              </select>
+              <ToolbarDropdown options={["All Segments (Cardio, Diab, Ortho, Pulmo)", "Cardio-Vascular", "Diabetology", "Respiratory"]} initialSelected={"All Segments (Cardio, Diab, Ortho, Pulmo)"} />
 
-              <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
-                <option>All Priority Levels (P1, P2, P3)</option>
-                <option>Priority 1 (Strategic Focus)</option>
-                <option>Priority 2 (Core Maintenance)</option>
-              </select>
+              <ToolbarDropdown options={["All Priority Levels (P1, P2, P3)", "Priority 1 (Strategic Focus)", "Priority 2 (Core Maintenance)"]} initialSelected={"All Priority Levels (P1, P2, P3)"} />
 
               <button className="text-xs text-text-secondary hover:text-text-secondary font-semibold px-2 py-1.5 flex items-center gap-1">
                 <span className="material-symbols-outlined text-[11px]">{`refresh`}</span> Reset

@@ -34,7 +34,7 @@ export function AdminDcrView() {
         <div>
           <p className="subdivision-eyebrow">Admin Review</p>
           <h2>DCR Reports</h2>
-          <p style={{ display:"flex", alignItems:"center", gap:6 }}><Clock size={13} /> Live DCR records from Field Force and Manager review. Auto-refreshes every 10 minutes for MIS demo flow.</p>
+          <p><Clock size={13} /> Live DCR records from Field Force and Manager review. Auto-refreshes every 10 minutes for MIS demo flow.</p>
         </div>
         <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
       </div>

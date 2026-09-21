@@ -57,7 +57,7 @@ function StockistForm({ row, onSave, onBack, isSuperStockist }: { row: any; onSa
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
@@ -142,15 +142,6 @@ export function StockistDetailsMaster({ isSuperStockist = false }: { isSuperStoc
           placeholder={`Search by ${labelPrefix.toLowerCase()} name, code, GST or License...`}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

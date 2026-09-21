@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -21,23 +22,13 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
       <div className="flex items-center gap-3">
         {/* Territory Selector */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer">
-            <option>All Territories (Pan-India HQ)</option>
-            <option>West Zone (Mumbai, Pune, Guj)</option>
-            <option>North Zone (Delhi NCR, Punjab)</option>
-            <option>South Zone (Bengaluru, Chennai)</option>
-            <option>East Zone (Kolkata, Bihar)</option>
-          </select>
+          <ToolbarDropdown options={["All Territories (Pan-India HQ)", "West Zone (Mumbai, Pune, Guj)", "North Zone (Delhi NCR, Punjab)", "South Zone (Bengaluru, Chennai)", "East Zone (Kolkata, Bihar)"]} initialSelected={"All Territories (Pan-India HQ)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[14px] text-text-muted pointer-events-none">expand_more</span>
         </div>
 
         {/* Audit Period Selector */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer">
-            <option>Q3 FY2026-27 (Statutory Audit)</option>
-            <option>Sep 2026 (Monthly Rollup)</option>
-            <option>Aug 2026 (Archived)</option>
-          </select>
+          <ToolbarDropdown options={["Q3 FY2026-27 (Statutory Audit)", "Sep 2026 (Monthly Rollup)", "Aug 2026 (Archived)"]} initialSelected={"Q3 FY2026-27 (Statutory Audit)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[14px] text-text-muted pointer-events-none">expand_more</span>
         </div>
 
@@ -226,30 +217,13 @@ export function AdminComplianceDashboard({ node, path }: { node: ZiviraTreeNode;
           </div>
 
           {/* Zone filter */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Zones (East, West, North, South)</option>
-            <option>West Zone (Mumbai &amp; Pune)</option>
-            <option>North Zone (Delhi NCR)</option>
-            <option>South Zone (Bengaluru)</option>
-            <option>East Zone (Kolkata)</option>
-          </select>
+          <ToolbarDropdown options={["All Zones (East, West, North, South)", "West Zone (Mumbai &amp; Pune)", "North Zone (Delhi NCR)", "South Zone (Bengaluru)", "East Zone (Kolkata)"]} initialSelected={"All Zones (East, West, North, South)"} />
 
           {/* Violation Type */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Violation Categories</option>
-            <option>Excess Call Frequency (&gt;2/mo)</option>
-            <option>Unsigned Sample Receipt</option>
-            <option>Gift/Hospitality Over-Declaration</option>
-            <option>Unplanned Beat Visit</option>
-          </select>
+          <ToolbarDropdown options={["All Violation Categories", "Excess Call Frequency (&gt;2/mo)", "Unsigned Sample Receipt", "Gift/Hospitality Over-Declaration", "Unplanned Beat Visit"]} initialSelected={"All Violation Categories"} />
 
           {/* Severity Status */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Statuses (Pending, Cleared, Escalated)</option>
-            <option>Pending Manager Explanation</option>
-            <option>Compliance Clarified</option>
-            <option>Escalated to ZSM</option>
-          </select>
+          <ToolbarDropdown options={["All Statuses (Pending, Cleared, Escalated)", "Pending Manager Explanation", "Compliance Clarified", "Escalated to ZSM"]} initialSelected={"All Statuses (Pending, Cleared, Escalated)"} />
         </div>
 
         {/* Reset & Count */}

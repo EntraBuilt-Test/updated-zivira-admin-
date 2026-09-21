@@ -49,7 +49,7 @@ export function ProductExposureDashboard() {
           <h2>Product Exposure &amp; Performance</h2>
           <p>Which products are promoted most/least, which rep and territory drive them, and how prescription interest tracks with sample volume.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <ExportMenuButton

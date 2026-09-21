@@ -232,8 +232,8 @@ export function HospitalMaster() {
           }}
         >
           <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div>
+              <div>
                 <AlertTriangle size={18} color="#ef4444" />
                 <h3 style={{ margin: 0, fontSize: "1rem", color: "#ef4444" }}>Something went wrong</h3>
               </div>
@@ -260,17 +260,16 @@ export function HospitalMaster() {
         </div>
       </div>
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by name, code or MR..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
       {view !== "list" ? (
         <div style={{ marginTop: "16px" }}>
           {/* Tabs row */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "6px 0", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
+          <div>
             {[
               { id: 1, label: "Hospital Master" },
               { id: 2, label: "Address" },
@@ -304,7 +303,7 @@ export function HospitalMaster() {
                 </div>
                 <div className="field">
                   <label>Type</label>
-                  <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
+                  <select className="input" value={form.type} onChange={e => setForm({ ...form, type: e.target.value })}>
                     <option value="Multi-Specialty">Multi-Specialty</option>
                     <option value="Super-Specialty">Super-Specialty</option>
                     <option value="General Clinic">General Clinic</option>
@@ -320,7 +319,7 @@ export function HospitalMaster() {
                 </div>
                 <div className="field">
                   <label>Status</label>
-                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                  <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
@@ -351,7 +350,7 @@ export function HospitalMaster() {
               <>
                 <div className="field">
                   <label>Sales Territory (Patch)</label>
-                  <select value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
+                  <select className="input" value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
                     <option value="T. Nagar">T. Nagar</option>
                     <option value="Mylapore">Mylapore</option>
                     <option value="Adyar">Adyar</option>

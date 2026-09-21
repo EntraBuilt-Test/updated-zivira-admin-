@@ -290,7 +290,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("target-master")) {
-    return <GenericMasterTable masterKey="targetMaster" />;
+    return <GenericMasterTable masterKey="targetMaster" showImportButton={true} />;
   }
 
   if (pathStr.endsWith("primary-sales")) {

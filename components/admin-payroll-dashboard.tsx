@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -21,22 +22,13 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
       <div className="flex items-center gap-3">
         {/* Territory Selector */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer">
-            <option>All Divisions (Pan-India HQ)</option>
-            <option>Cardio-Diabetic Division</option>
-            <option>Respiratory Care Division</option>
-            <option>Pediatric &amp; Ortho Division</option>
-          </select>
+          <ToolbarDropdown options={["All Divisions (Pan-India HQ)", "Cardio-Diabetic Division", "Respiratory Care Division", "Pediatric &amp; Ortho Division"]} initialSelected={"All Divisions (Pan-India HQ)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         {/* Payroll Month Picker */}
         <div className="relative">
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-2 pr-8 focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer">
-            <option>September 2026 (Active Cycle)</option>
-            <option>August 2026 (Processed)</option>
-            <option>July 2026 (Audited)</option>
-          </select>
+          <ToolbarDropdown options={["September 2026 (Active Cycle)", "August 2026 (Processed)", "July 2026 (Audited)"]} initialSelected={"September 2026 (Active Cycle)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-3 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
@@ -225,29 +217,13 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
           </div>
 
           {/* Zone filter */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Territories (Pan-India)</option>
-            <option>West Zone (Mumbai, Pune)</option>
-            <option>North Zone (Delhi NCR)</option>
-            <option>South Zone (Bengaluru)</option>
-            <option>East Zone (Kolkata)</option>
-          </select>
+          <ToolbarDropdown options={["All Territories (Pan-India)", "West Zone (Mumbai, Pune)", "North Zone (Delhi NCR)", "South Zone (Bengaluru)", "East Zone (Kolkata)"]} initialSelected={"All Territories (Pan-India)"} />
 
           {/* Designation Grade */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Designations (MR, Senior MR, ASM)</option>
-            <option>Medical Representative (MR)</option>
-            <option>Senior Executive (SR MR)</option>
-            <option>Area Sales Manager (ASM)</option>
-          </select>
+          <ToolbarDropdown options={["All Designations (MR, Senior MR, ASM)", "Medical Representative (MR)", "Senior Executive (SR MR)", "Area Sales Manager (ASM)"]} initialSelected={"All Designations (MR, Senior MR, ASM)"} />
 
           {/* Disbursal Status */}
-          <select className="bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary rounded-lg px-3 py-1.5 focus:outline-none focus:border-[#b43403]">
-            <option>All Disbursal Statuses</option>
-            <option>Passed for Bank Payment</option>
-            <option>Pending ASM Sign-off</option>
-            <option>TA/DA Dispute Hold</option>
-          </select>
+          <ToolbarDropdown options={["All Disbursal Statuses", "Passed for Bank Payment", "Pending ASM Sign-off", "TA/DA Dispute Hold"]} initialSelected={"All Disbursal Statuses"} />
         </div>
 
         {/* Reset & Count */}

@@ -194,7 +194,7 @@ export function ManagerWorkTypeAllowance() {
 
       {/* Main Settings Panel */}
       <div className="card" style={{ padding: "28px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+        <div>
           {/* Label */}
           <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap" }}>
             Work Type Wise - Allowance Fix
@@ -291,7 +291,7 @@ export function ManagerWorkTypeAllowance() {
           Confirmed / Trainee / Probation, each split by HQ / EX / OS. */}
       {activeLevel && (
         <div className="card" style={{ marginTop: "20px", padding: "24px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "10px" }}>
+          <div>
             <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--ink)" }}>
               Work Type Wise Allowance - Fare Fixation — {activeLevel}
             </span>
@@ -375,19 +375,9 @@ export function ManagerWorkTypeAllowance() {
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "6px 8px", color: "var(--ink)", border: "1px solid var(--border)", textAlign: "center" }}>{idx + 1}</td>
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "6px 8px", color: "var(--ink)", fontWeight: 600, whiteSpace: "nowrap", border: "1px solid var(--border)" }}>{wt}</td>
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "4px 6px", border: "1px solid var(--border)" }}>
-                      <select
+                      <select className="input"
                         value={grid[wt]?.allowanceFareType ?? "NA"}
                         onChange={(e) => updateAllowanceFareType(wt, e.target.value)}
-                        style={{
-                          width: "230px",
-                          height: "28px",
-                          borderRadius: "6px",
-                          border: "1px solid var(--line)",
-                          background: "var(--panel)",
-                          color: "var(--ink)",
-                          fontSize: "12px",
-                          padding: "0 6px"
-                        }}
                       >
                         {ALLOWANCE_FARE_TYPES.map((opt) => (
                           <option key={opt} value={opt}>{opt}</option>

@@ -236,8 +236,8 @@ export function ListedDoctorMaster() {
       }}
     >
       <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div>
+          <div>
             <AlertTriangle size={18} color="#ef4444" />
             <h3 style={{ margin: 0, fontSize: "1rem", color: "#ef4444" }}>Something went wrong</h3>
           </div>
@@ -267,7 +267,7 @@ export function ListedDoctorMaster() {
           </button>
         </div>
         {/* Tab Selection Row for Add/Edit Form */}
-        <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "6px 0", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
+        <div>
           {[
             { id: 1, label: "Doctor Master" },
             { id: 2, label: "Address" },
@@ -309,7 +309,7 @@ export function ListedDoctorMaster() {
               </div>
               <div className="field">
                 <label>Category</label>
-                <select required value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+                <select className="input" required value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
                   <option value="A">A</option>
                   <option value="B">B</option>
                   <option value="C">C</option>
@@ -325,7 +325,7 @@ export function ListedDoctorMaster() {
               </div>
               <div className="field">
                 <label>Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
@@ -364,7 +364,7 @@ export function ListedDoctorMaster() {
             <>
               <div className="field">
                 <label>Doctor Category</label>
-                <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
+                <select className="input" value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
                   <option value="A">A</option>
                   <option value="B">B</option>
                   <option value="C">C</option>
@@ -372,7 +372,7 @@ export function ListedDoctorMaster() {
               </div>
               <div className="field">
                 <label>Potential</label>
-                <select value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value })}>
+                <select className="input" value={form.potential} onChange={e => setForm({ ...form, potential: e.target.value })}>
                   <option value="High">High</option>
                   <option value="Medium">Medium</option>
                   <option value="Low">Low</option>
@@ -380,7 +380,7 @@ export function ListedDoctorMaster() {
               </div>
               <div className="field">
                 <label>Visit Frequency</label>
-                <select value={form.visitFrequency} onChange={e => setForm({ ...form, visitFrequency: e.target.value })}>
+                <select className="input" value={form.visitFrequency} onChange={e => setForm({ ...form, visitFrequency: e.target.value })}>
                   <option value="Fortnight">Fortnight</option>
                   <option value="Monthly">Monthly</option>
                   <option value="Weekly">Weekly</option>
@@ -392,7 +392,7 @@ export function ListedDoctorMaster() {
             <>
               <div className="field">
                 <label>Select Sales Territory (Patch)</label>
-                <select value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
+                <select className="input" value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
                   <option value="T. Nagar">T. Nagar</option>
                   <option value="Mylapore">Mylapore</option>
                   <option value="Adyar">Adyar</option>
@@ -436,7 +436,7 @@ export function ListedDoctorMaster() {
               </div>
               <div className="field">
                 <label>Marital Status</label>
-                <select value={form.maritalStatus} onChange={e => setForm({ ...form, maritalStatus: e.target.value })}>
+                <select className="input" value={form.maritalStatus} onChange={e => setForm({ ...form, maritalStatus: e.target.value })}>
                   <option value="Single">Single</option>
                   <option value="Married">Married</option>
                   <option value="Unmarried">Unmarried</option>
@@ -474,11 +474,10 @@ export function ListedDoctorMaster() {
         </div>
       </div>
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by doctor code, name or specialty..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
       <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">

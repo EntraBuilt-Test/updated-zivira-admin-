@@ -77,7 +77,7 @@ export function AlertsNotificationEngine() {
           <h2>Alert &amp; Notification Engine</h2>
           <p>Automated alerts pulled live from compliance, coverage, payroll, and sample-stock signals across the platform.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
         </div>
@@ -92,7 +92,7 @@ export function AlertsNotificationEngine() {
         </div>
       )}
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 16 }}>
+      <div>
         {TYPE_FILTERS.map((t) => {
           const active = typeFilter === t.key;
           return (

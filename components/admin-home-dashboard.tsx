@@ -1,11 +1,15 @@
 "use client";
 
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { X, Check } from "lucide-react";
 import { apiClient, getApiBaseUrl, getToken } from "@/lib/api-client";
 import { downloadCsv } from "@/lib/download-csv";
+import { MonthYearPicker } from "@/components/month-year-picker";
+import { FieldForcePicker } from "@/components/field-force-picker";
+import { AddFieldForceModal } from "@/components/add-field-force-modal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 type FieldForceRow = {
@@ -229,25 +233,11 @@ function PostNoticeModal({ onClose, onPosted }: { onClose: () => void; onPosted:
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="font-label-sm text-label-sm text-text-secondary">Audience</label>
-              <select 
-                className="w-full h-10 px-3 rounded-lg border border-border-subtle outline-none" 
-                value={audience} onChange={e => setAudience(e.target.value as any)}
-              >
-                <option value="ALL">All</option>
-                <option value="MR">Field Force (MR)</option>
-                <option value="MANAGER">Managers</option>
-                <option value="ADMIN">Admin only</option>
-              </select>
+              <ToolbarDropdown options={["All", "Field Force (MR)", "Managers", "Admin only"]} initialSelected={audience} />
             </div>
             <div className="space-y-1">
               <label className="font-label-sm text-label-sm text-text-secondary">Priority</label>
-              <select 
-                className="w-full h-10 px-3 rounded-lg border border-border-subtle outline-none" 
-                value={priority} onChange={e => setPriority(e.target.value as any)}
-              >
-                <option value="NORMAL">Normal</option>
-                <option value="URGENT">Urgent</option>
-              </select>
+              <ToolbarDropdown options={["Normal", "Urgent"]} initialSelected={priority} />
             </div>
           </div>
         </div>
@@ -287,7 +277,9 @@ export function AdminHomeDashboard() {
   
   // UI state
   const [showNoticeModal, setShowNoticeModal] = useState(false);
+  const [showAddFieldForce, setShowAddFieldForce] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "ON_DUTY" | "DELAYED">("ALL");
   
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -368,11 +360,20 @@ export function AdminHomeDashboard() {
   const delayedRows = fieldForceRows.filter((r) => r.dcrStatus === "NOT_SUBMITTED");
   
   // Filtered table rows
-  const displayRows = fieldForceRows.filter(r => 
-    !searchQuery || 
-    r.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    r.territory.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const displayRows = fieldForceRows.filter(r => {
+    const matchesSearch = !searchQuery || 
+      r.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      r.territory.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    let matchesStatus = true;
+    if (statusFilter === "DELAYED") {
+      matchesStatus = r.dcrStatus === "NOT_SUBMITTED";
+    } else if (statusFilter === "ON_DUTY") {
+      matchesStatus = r.attendanceStatus === "PRESENT" || r.dcrStatus === "SUBMITTED" || r.dcrStatus === "APPROVED";
+    }
+    
+    return matchesSearch && matchesStatus;
+  });
   
   function viewEmployee(code: string) {
     router.push(`/admin/fieldforce/${code}?month=${month}&year=${year}`);
@@ -401,6 +402,12 @@ export function AdminHomeDashboard() {
         />
       )}
       
+      <AddFieldForceModal 
+        isOpen={showAddFieldForce} 
+        onClose={() => setShowAddFieldForce(false)} 
+        onSuccess={() => void loadData()}
+      />
+      
       {/* ── TOP COMMAND BAR & FILTERS ── */}
       <section className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div className="flex flex-col gap-1 min-w-0">
@@ -424,27 +431,17 @@ export function AdminHomeDashboard() {
         </div>
         
         <div className="flex items-center flex-wrap gap-2.5">
-          <div className="relative min-w-[170px]">
-            <select 
-              className="w-full h-[38px] pl-3 pr-8 rounded-lg bg-surface-canvas text-text-primary font-body-md text-body-md appearance-none focus:outline-none focus:bg-surface-card shadow-sm cursor-pointer border border-transparent focus:border-border-strong"
-              value={employeeCode} onChange={(e) => setEmployeeCode(e.target.value)}
-            >
-              <option value="admin">All Field Force</option>
-              {fieldForceRows.map(r => (
-                <option key={r.employeeCode} value={r.employeeCode}>{r.employeeCode} | {r.name}</option>
-              ))}
-            </select>
-            <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-[18px]">expand_more</span>
-          </div>
-          <div className="relative min-w-[120px]">
-            <select 
-              className="w-full h-[38px] pl-3 pr-8 rounded-lg bg-surface-canvas text-text-primary font-body-md text-body-md appearance-none focus:outline-none focus:bg-surface-card shadow-sm cursor-pointer border border-transparent focus:border-border-strong"
-              value={month} onChange={(e) => setMonth(e.target.value)}
-            >
-              {months.map(m => <option key={m} value={m}>{m} {year}</option>)}
-            </select>
-            <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none text-[18px]">calendar_month</span>
-          </div>
+          <FieldForcePicker
+            value={employeeCode}
+            onChange={setEmployeeCode}
+            rows={fieldForceRows}
+          />
+          <MonthYearPicker 
+            month={month} 
+            year={year} 
+            onMonthChange={setMonth} 
+            onYearChange={setYear} 
+          />
           <button 
             onClick={() => employeeCode !== "admin" && viewEmployee(employeeCode)}
             className="w-[38px] h-[38px] rounded-lg bg-surface-subtle hover:bg-border-subtle text-text-primary flex items-center justify-center transition-colors shadow-sm"
@@ -460,7 +457,7 @@ export function AdminHomeDashboard() {
             <span>Refresh</span>
           </button>
           <button 
-            onClick={() => router.push("/admin/fieldforce/new")}
+            onClick={() => setShowAddFieldForce(true)}
             className="h-[38px] px-4 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all active:scale-95"
           >
             <span className="material-symbols-outlined text-[18px]">add</span>
@@ -676,9 +673,24 @@ export function AdminHomeDashboard() {
               />
             </div>
             <div className="flex items-center bg-surface-canvas rounded-lg p-0.5 text-text-secondary font-label-sm text-label-sm border border-border-subtle">
-              <button className="px-3 py-1.5 rounded-md bg-surface-card text-text-primary font-bold shadow-sm">All ({fieldForceRows.length})</button>
-              <button className="px-2.5 py-1.5 rounded-md hover:text-text-primary transition-colors">On Duty</button>
-              <button className="px-2.5 py-1.5 rounded-md hover:text-text-primary transition-colors text-status-danger">Delayed ({delayedRows.length})</button>
+              <button 
+                onClick={() => setStatusFilter("ALL")}
+                className={`px-3 py-1.5 rounded-md transition-colors ${statusFilter === "ALL" ? "bg-surface-card text-text-primary font-bold shadow-sm" : "hover:text-text-primary"}`}
+              >
+                All ({fieldForceRows.length})
+              </button>
+              <button 
+                onClick={() => setStatusFilter("ON_DUTY")}
+                className={`px-2.5 py-1.5 rounded-md transition-colors ${statusFilter === "ON_DUTY" ? "bg-surface-card text-text-primary font-bold shadow-sm" : "hover:text-text-primary"}`}
+              >
+                On Duty
+              </button>
+              <button 
+                onClick={() => setStatusFilter("DELAYED")}
+                className={`px-2.5 py-1.5 rounded-md transition-colors ${statusFilter === "DELAYED" ? "bg-status-danger-bg text-status-danger font-bold shadow-sm" : "text-status-danger hover:opacity-80"}`}
+              >
+                Delayed ({delayedRows.length})
+              </button>
             </div>
             <button onClick={handleExport} className="h-[36px] px-3 rounded-lg bg-surface-subtle border border-border-subtle hover:bg-border-subtle text-text-primary font-label-md text-label-md flex items-center gap-1 shadow-sm transition-colors">
               <span className="material-symbols-outlined text-[16px]">file_download</span>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -16,18 +17,8 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 </div>
 {/* Territory Filter */}
 <div className="flex items-center gap-2 border-l border-border-subtle pl-4">
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 cursor-pointer">
-<option>All Territories (Pan-India HQ)</option>
-<option>West Zone (Mumbai &amp; Gujarat)</option>
-<option>North Zone (Delhi NCR &amp; UP)</option>
-<option>South Zone (Bengaluru &amp; Chennai)</option>
-<option>East Zone (Kolkata &amp; Bihar)</option>
-</select>
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs font-medium text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 cursor-pointer">
-<option>Oct 2026 (Upcoming Cycle)</option>
-<option>Current Month (Sep 2026)</option>
-<option>Nov 2026 (Advance Planning)</option>
-</select>
+<ToolbarDropdown options={["All Territories (Pan-India HQ)", "West Zone (Mumbai &amp; Gujarat)", "North Zone (Delhi NCR &amp; UP)", "South Zone (Bengaluru &amp; Chennai)", "East Zone (Kolkata &amp; Bihar)"]} initialSelected={"All Territories (Pan-India HQ)"} />
+<ToolbarDropdown options={["Oct 2026 (Upcoming Cycle)", "Current Month (Sep 2026)", "Nov 2026 (Advance Planning)"]} initialSelected={"Oct 2026 (Upcoming Cycle)"} />
 </div>
 </div>
 {/* Top Right Controls */}
@@ -218,28 +209,11 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <input className="w-full bg-surface-subtle border border-border-subtle rounded-lg pl-8 pr-3 py-1.5 text-xs text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 focus:bg-surface-card transition-all" placeholder="Search by MR Name, Territory, Beat Code..." type="text"/>
 </div>
 {/* Zone Filter */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium">
-<option>All Zones (East, West, North, South)</option>
-<option>West Zone (Mumbai, Gujarat)</option>
-<option>North Zone (Delhi NCR, Punjab)</option>
-<option>South Zone (Bengaluru, Chennai)</option>
-<option>East Zone (Kolkata, Odisha)</option>
-</select>
+<ToolbarDropdown options={["All Zones (East, West, North, South)", "West Zone (Mumbai, Gujarat)", "North Zone (Delhi NCR, Punjab)", "South Zone (Bengaluru, Chennai)", "East Zone (Kolkata, Odisha)"]} initialSelected={"All Zones (East, West, North, South)"} />
 {/* Status Filter */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium">
-<option>All Statuses (Approved, Pending...)</option>
-<option>Approved</option>
-<option>Pending Review</option>
-<option>Revision Needed</option>
-<option>Draft</option>
-</select>
+<ToolbarDropdown options={["All Statuses (Approved, Pending...)", "Approved", "Pending Review", "Revision Needed", "Draft"]} initialSelected={"All Statuses (Approved, Pending...)"} />
 {/* Station Filter */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary focus:outline-none focus:ring-1 focus:ring-orange-500 font-medium">
-<option>All HQ Classifications</option>
-<option>Local HQ Only</option>
-<option>Includes Ex-Station</option>
-<option>Includes Outstation (OS)</option>
-</select>
+<ToolbarDropdown options={["All HQ Classifications", "Local HQ Only", "Includes Ex-Station", "Includes Outstation (OS)"]} initialSelected={"All HQ Classifications"} />
 </div>
 <button className="px-2.5 py-1.5 text-xs text-text-secondary hover:text-text-primary font-medium flex items-center gap-1.5 transition-colors">
 <svg className="w-3.5 h-3.5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>

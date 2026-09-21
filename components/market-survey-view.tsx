@@ -52,7 +52,7 @@ function SurveyForm({ row, onSave, onBack }: { row: any; onSave: (r: SurveyRow) 
       <div className="subdivision-form-card">
         <label className="field">
           <span>* Survey Date</span>
-          <input type="date" value={form.surveyDate} onChange={e => setForm({ ...form, surveyDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.surveyDate} onChange={e => setForm({ ...form, surveyDate: e.target.value })} />
         </label>
         <label className="field">
           <span>* Employee Name</span>
@@ -60,7 +60,7 @@ function SurveyForm({ row, onSave, onBack }: { row: any; onSave: (r: SurveyRow) 
         </label>
         <label className="field">
           <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })}>
             <option value="Chennai Central HQ">Chennai Central HQ</option>
             <option value="Coimbatore HQ">Coimbatore HQ</option>
             <option value="Madurai HQ">Madurai HQ</option>
@@ -92,7 +92,7 @@ function SurveyForm({ row, onSave, onBack }: { row: any; onSave: (r: SurveyRow) 
         </label>
         <label className="field">
           <span>Availability</span>
-          <select value={form.availability} onChange={e => setForm({ ...form, availability: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.availability} onChange={e => setForm({ ...form, availability: e.target.value as any })}>
             <option value="Available">Available</option>
             <option value="Out of Stock">Out of Stock</option>
             <option value="Short Supply">Short Supply</option>
@@ -169,19 +169,10 @@ export function MarketSurveyView() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by employee, chemist or brand..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

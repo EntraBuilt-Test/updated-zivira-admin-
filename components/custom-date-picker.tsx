@@ -20,20 +20,9 @@ export function CustomDatePicker({
   return (
     <input
       type="date"
+      className="input"
       value={value || ""}
       onChange={(e) => onChange(e.target.value)}
-      style={{
-        width: "100%",
-        padding: "8px 12px",
-        borderRadius: "6px",
-        border: "1px solid #e5e7eb",
-        background: "var(--panel)",
-        color: "var(--ink)",
-        fontSize: "14px",
-        minHeight: "42px",
-        boxSizing: "border-box",
-        colorScheme: "light dark"
-      }}
     />
   );
 }

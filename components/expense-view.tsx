@@ -44,7 +44,7 @@ function ExpenseForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRow
       <div className="subdivision-form-card">
         <label className="field">
           <span>* Expense Date</span>
-          <input type="date" value={form.expenseDate} onChange={e => setForm({ ...form, expenseDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.expenseDate} onChange={e => setForm({ ...form, expenseDate: e.target.value })} />
         </label>
         <label className="field">
           <span>* Employee Name</span>
@@ -52,7 +52,7 @@ function ExpenseForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRow
         </label>
         <label className="field">
           <span>Expense Type</span>
-          <select value={form.expenseType} onChange={e => setForm({ ...form, expenseType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.expenseType} onChange={e => setForm({ ...form, expenseType: e.target.value })}>
             <option value="Travel">Travel</option>
             <option value="Food">Food</option>
             <option value="Lodging">Lodging</option>
@@ -73,7 +73,7 @@ function ExpenseForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRow
         </label>
         <label className="field">
           <span>Approval Status</span>
-          <select value={form.approvalStatus} onChange={e => setForm({ ...form, approvalStatus: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.approvalStatus} onChange={e => setForm({ ...form, approvalStatus: e.target.value as any })}>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
             <option value="Rejected">Rejected</option>
@@ -146,19 +146,10 @@ export function ExpenseView() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by employee, bill no or remarks..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

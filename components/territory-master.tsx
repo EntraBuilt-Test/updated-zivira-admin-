@@ -10,8 +10,6 @@ type PatchRow = {
   hq: string;
   region: string;
   division: string;
-  mr: string;
-  am: string;
   noOfDoctors: number;
   status: "Active" | "Inactive";
 };
@@ -34,8 +32,6 @@ export function TerritoryMaster() {
     state: "Tamil Nadu",
     city: "Chennai",
     hq: "Chennai Central HQ",
-    mr: "Rahul Sharma",
-    am: "Priya Nair",
     status: "Active" as "Active" | "Inactive"
   });
 
@@ -50,8 +46,6 @@ export function TerritoryMaster() {
       state: "Tamil Nadu",
       city: "Chennai",
       hq: "Chennai Central HQ",
-      mr: "Rahul Sharma",
-      am: "Priya Nair",
       status: "Active"
     });
     setView("add");
@@ -68,8 +62,6 @@ export function TerritoryMaster() {
       state: "Tamil Nadu",
       city: "Chennai",
       hq: row.hq,
-      mr: row.mr,
-      am: row.am,
       status: row.status
     });
     setView("edit");
@@ -85,8 +77,6 @@ export function TerritoryMaster() {
         hq: patchForm.hq,
         region: patchForm.region,
         division: patchForm.division,
-        mr: patchForm.mr,
-        am: patchForm.am,
         noOfDoctors: 0,
         status: patchForm.status
       };
@@ -98,8 +88,6 @@ export function TerritoryMaster() {
         hq: patchForm.hq,
         region: patchForm.region,
         division: patchForm.division,
-        mr: patchForm.mr,
-        am: patchForm.am,
         status: patchForm.status
       } : p));
     }
@@ -118,11 +106,6 @@ export function TerritoryMaster() {
   const [regionFilterOpen, setRegionFilterOpen] = useState(false);
   const [divisionFilter, setDivisionFilter] = useState<string>("All");
   const [divisionFilterOpen, setDivisionFilterOpen] = useState(false);
-  const [mrFilter, setMrFilter] = useState<string>("All");
-  const [mrFilterOpen, setMrFilterOpen] = useState(false);
-  const [amFilter, setAmFilter] = useState<string>("All");
-  const [amFilterOpen, setAmFilterOpen] = useState(false);
-
   const filtered = list.filter(p =>
     (statusFilter === "All" ||
       (statusFilter === "Active" && p.status === "Active") ||
@@ -130,11 +113,8 @@ export function TerritoryMaster() {
     (hqFilter === "All" || p.hq === hqFilter) &&
     (regionFilter === "All" || p.region === regionFilter) &&
     (divisionFilter === "All" || p.division === divisionFilter) &&
-    (mrFilter === "All" || p.mr === mrFilter) &&
-    (amFilter === "All" || p.am === amFilter) &&
     (p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.code.toLowerCase().includes(search.toLowerCase()) ||
-      p.mr.toLowerCase().includes(search.toLowerCase()))
+      p.code.toLowerCase().includes(search.toLowerCase()))
   );
 
   if (view !== "list") {
@@ -170,7 +150,7 @@ export function TerritoryMaster() {
           </div>
           <div className="field">
             <label>Division</label>
-            <select value={patchForm.division} onChange={e => setPatchForm({ ...patchForm, division: e.target.value })}>
+            <select className="input" value={patchForm.division} onChange={e => setPatchForm({ ...patchForm, division: e.target.value })}>
               <option value="Zivira">Zivira</option>
               <option value="Astra">Astra</option>
               <option value="Aura">Aura</option>
@@ -178,7 +158,7 @@ export function TerritoryMaster() {
           </div>
           <div className="field">
             <label>Zone</label>
-            <select value={patchForm.zone} onChange={e => setPatchForm({ ...patchForm, zone: e.target.value })}>
+            <select className="input" value={patchForm.zone} onChange={e => setPatchForm({ ...patchForm, zone: e.target.value })}>
               <option value="South">South Zone</option>
               <option value="North">North Zone</option>
               <option value="East">East Zone</option>
@@ -202,27 +182,9 @@ export function TerritoryMaster() {
             <input value={patchForm.hq} onChange={e => setPatchForm({ ...patchForm, hq: e.target.value })} />
           </div>
 
-          <div style={{ gridColumn: "span 2", borderBottom: "1px solid var(--border)", paddingBottom: "8px", paddingTop: "12px", fontWeight: 700, color: "#9d174d", fontSize: "14px" }}>
-            Employee Mapping
-          </div>
-          <div className="field">
-            <label>Medical Representative (MR)</label>
-            <select value={patchForm.mr} onChange={e => setPatchForm({ ...patchForm, mr: e.target.value })}>
-              <option value="Rahul Sharma">Rahul Sharma</option>
-              <option value="Karthik Iyer">Karthik Iyer</option>
-              <option value="Priya Nair">Priya Nair</option>
-            </select>
-          </div>
-          <div className="field">
-            <label>Area Manager (AM)</label>
-            <select value={patchForm.am} onChange={e => setPatchForm({ ...patchForm, am: e.target.value })}>
-              <option value="Priya Nair">Priya Nair</option>
-              <option value="Rahul Sharma">Rahul Sharma</option>
-            </select>
-          </div>
           <div className="field">
             <label>Status</label>
-            <select value={patchForm.status} onChange={e => setPatchForm({ ...patchForm, status: e.target.value as any })}>
+            <select className="input" value={patchForm.status} onChange={e => setPatchForm({ ...patchForm, status: e.target.value as any })}>
               <option value="Active">Active</option>
               <option value="Inactive">Inactive</option>
             </select>
@@ -253,11 +215,10 @@ export function TerritoryMaster() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by patch code, name or MR..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
 
@@ -330,50 +291,6 @@ export function TerritoryMaster() {
                       </button>
                     ))}
                     <button type="button" onClick={() => { setDivisionFilter("All"); setDivisionFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
-                  </div>
-                )}
-              </th>
-              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "180px", position: "relative" }}>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <span>Medical Representative</span>
-                  <button
-                    type="button"
-                    onClick={() => setMrFilterOpen(!mrFilterOpen)}
-                    style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center" }}
-                  >
-                    <ChevronDown size={14} />
-                  </button>
-                </div>
-                {mrFilterOpen && (
-                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "160px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
-                    {["Rahul Sharma", "Karthik Iyer", "Vignesh Raj"].map(mr => (
-                      <button key={mr} type="button" onClick={() => { setMrFilter(mr); setMrFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: mrFilter === mr ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: mrFilter === mr ? 600 : 400 }}>
-                        {mr}
-                      </button>
-                    ))}
-                    <button type="button" onClick={() => { setMrFilter("All"); setMrFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
-                  </div>
-                )}
-              </th>
-              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle" style={{ minWidth: "160px", position: "relative" }}>
-                <div style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                  <span>Area Manager</span>
-                  <button
-                    type="button"
-                    onClick={() => setAmFilterOpen(!amFilterOpen)}
-                    style={{ background: "none", border: "none", color: "var(--muted)", cursor: "pointer", padding: "2px", display: "flex", alignItems: "center" }}
-                  >
-                    <ChevronDown size={14} />
-                  </button>
-                </div>
-                {amFilterOpen && (
-                  <div style={{ position: "absolute", top: "100%", right: 0, background: "var(--panel)", border: "1px solid var(--border)", borderRadius: "6px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", zIndex: 10, minWidth: "140px", display: "flex", flexDirection: "column", padding: "4px 0" }}>
-                    {["Priya Nair", "Meena Patel", "Arvind Kumar"].map(am => (
-                      <button key={am} type="button" onClick={() => { setAmFilter(am); setAmFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", background: amFilter === am ? "var(--line)" : "none", border: "none", color: "var(--ink)", fontSize: "12px", cursor: "pointer", fontWeight: amFilter === am ? 600 : 400 }}>
-                        {am}
-                      </button>
-                    ))}
-                    <button type="button" onClick={() => { setAmFilter("All"); setAmFilterOpen(false); }} style={{ padding: "6px 12px", textAlign: "left", borderTop: "1px solid var(--border)", background: "none", color: "var(--muted)", fontSize: "11px", cursor: "pointer" }}>Clear Filter</button>
                   </div>
                 )}
               </th>
@@ -475,8 +392,6 @@ export function TerritoryMaster() {
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.hq}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.region}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.division}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.mr}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{row.am}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ padding: "2px 8px", background: "#f3f4f6", borderRadius: "6px", fontSize: "12px", fontWeight: 700 }}>
                     {row.noOfDoctors}
@@ -509,7 +424,7 @@ export function TerritoryMaster() {
             ))}
             {filtered.length === 0 && (
               <tr className="hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={11} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={9} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No records found
                 </td>
               </tr>

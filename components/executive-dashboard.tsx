@@ -82,7 +82,7 @@ export function ExecutiveDashboard() {
           <h2>Executive Dashboard</h2>
           <p>Centralized view for MD / CEO / National Sales Manager / RGM — field productivity, compliance, and payroll status at a glance.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
         </div>
@@ -105,18 +105,18 @@ export function ExecutiveDashboard() {
 
           <div className="grid grid-2" style={{ gap: 20 }}>
             <div className="card" style={{ padding: 16 }}>
-              <h3 className="section-title" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><TrendingUp size={16} color="#15803d" /> Top Performers (Joint Visit %)</h3>
+              <h3 className="section-title"><TrendingUp size={16} color="#15803d" /> Top Performers (Joint Visit %)</h3>
               {metrics.topPerformers.map((p) => (
-                <div key={p.name} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--border)" }}>
+                <div key={p.name}>
                   <span>{p.name}</span><strong style={{ color: "#15803d" }}>{p.jointVisitPercent}%</strong>
                 </div>
               ))}
               {metrics.topPerformers.length === 0 && <p className="muted">No data yet.</p>}
             </div>
             <div className="card" style={{ padding: 16 }}>
-              <h3 className="section-title" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><BarChart3 size={16} color="#b91c1c" /> Bottom Performers (Joint Visit %)</h3>
+              <h3 className="section-title"><BarChart3 size={16} color="#b91c1c" /> Bottom Performers (Joint Visit %)</h3>
               {metrics.bottomPerformers.map((p) => (
-                <div key={p.name} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid var(--border)" }}>
+                <div key={p.name}>
                   <span>{p.name}</span><strong style={{ color: "#b91c1c" }}>{p.jointVisitPercent}%</strong>
                 </div>
               ))}

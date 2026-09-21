@@ -82,7 +82,7 @@ export function BranchesMaster() {
           </div>
           <div className="field">
             <label>State</label>
-            <select value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}>
+            <select className="input" value={form.state} onChange={e => setForm({ ...form, state: e.target.value })}>
               {INDIAN_STATES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
@@ -91,7 +91,7 @@ export function BranchesMaster() {
             <input required value={form.pincode} onChange={e => setForm({ ...form, pincode: e.target.value })} />
           </div>
           <div className="field">
-            <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <label>
               <input type="checkbox" checked={form.isHeadquarters} onChange={e => setForm({ ...form, isHeadquarters: e.target.checked })} />
               This is the Head Office
             </label>

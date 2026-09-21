@@ -50,7 +50,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
       <div className="subdivision-form-card">
         <label className="field">
           <span>* Expense Date</span>
-          <input type="date" value={form.expenseDate} onChange={e => setForm({ ...form, expenseDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.expenseDate} onChange={e => setForm({ ...form, expenseDate: e.target.value })} />
         </label>
         <label className="field">
           <span>* Employee Code</span>
@@ -62,7 +62,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
         </label>
         <label className="field">
           <span>Division</span>
-          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
             <option value="Zivira">Zivira</option>
             <option value="Astra">Astra</option>
             <option value="Aura">Aura</option>
@@ -70,7 +70,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
         </label>
         <label className="field">
           <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })}>
             <option value="Chennai Central HQ">Chennai Central HQ</option>
             <option value="Coimbatore HQ">Coimbatore HQ</option>
             <option value="Madurai HQ">Madurai HQ</option>
@@ -78,7 +78,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
         </label>
         <label className="field">
           <span>Expense Type</span>
-          <select value={form.expenseType} onChange={e => setForm({ ...form, expenseType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.expenseType} onChange={e => setForm({ ...form, expenseType: e.target.value })}>
             <option value="Travel">Travel</option>
             <option value="Food">Food</option>
             <option value="Lodging">Lodging</option>
@@ -99,7 +99,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ExpenseRepo
         </label>
         <label className="field">
           <span>Approval Status</span>
-          <select value={form.approvalStatus} onChange={e => setForm({ ...form, approvalStatus: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.approvalStatus} onChange={e => setForm({ ...form, approvalStatus: e.target.value as any })}>
             <option value="Pending">Pending</option>
             <option value="Approved">Approved</option>
             <option value="Rejected">Rejected</option>
@@ -178,19 +178,10 @@ export function ManagerExpenseReport() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by employee, code or description..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

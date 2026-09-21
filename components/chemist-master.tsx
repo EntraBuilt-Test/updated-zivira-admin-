@@ -118,7 +118,7 @@ export function ChemistMaster() {
       type: "Retailer", // Defaulting as dealer doesn't have type
       city: row.city || "Chennai",
       mr: row.employeeName || row.employeeCode || "",
-      // Backend stores "ACTIVE"/"INACTIVE" but the <select> options below
+      // Backend stores "ACTIVE"/"INACTIVE" but the <select className="input"> options below
       // are value="Active"/"Inactive" — without normalizing case here, an
       // edited record's dropdown matched neither option and rendered blank
       // instead of showing the record's real status.
@@ -230,23 +230,19 @@ export function ChemistMaster() {
     <section className="subdivision-console">
       {error && (
         <div
-          style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)",
-            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 70
-          }}
         >
-          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div>
+            <div>
+              <div>
                 <AlertTriangle size={18} color="#ef4444" />
-                <h3 style={{ margin: 0, fontSize: "1rem", color: "#ef4444" }}>Something went wrong</h3>
+                <h3>Something went wrong</h3>
               </div>
               <button className="subdivision-icon-button" onClick={() => setError(null)} type="button" title="Close" aria-label="Close">
                 <X size={16} />
               </button>
             </div>
-            <p style={{ margin: 0, fontSize: "13px", color: "var(--ink)" }}>{error}</p>
-            <button className="button button-secondary" style={{ marginTop: "16px", width: "100%" }} onClick={() => setError(null)} type="button">
+            <p>{error}</p>
+            <button className="button button-secondary" onClick={() => setError(null)} type="button">
               Close
             </button>
           </div>
@@ -262,27 +258,26 @@ export function ChemistMaster() {
           <button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
         </div>
       </div>
-      <div className="subdivision-stats" style={{ marginBottom: "16px", display: "flex", gap: "16px" }}>
-        <article style={{ background: "var(--panel)", padding: "16px", borderRadius: "8px", border: "1px solid var(--border)", minWidth: "160px" }}>
-          <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--muted)", textTransform: "uppercase" }}>Total Records</span>
-          <strong style={{ display: "block", fontSize: "28px", marginTop: "4px" }}>{filtered.length}</strong>
+      <div className="subdivision-stats">
+        <article>
+          <span>Total Records</span>
+          <strong>{filtered.length}</strong>
         </article>
-        <Link className="button button-secondary" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category" style={{ height: "fit-content", alignSelf: "center", textDecoration: "none" }}>
+        <Link className="button button-secondary" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/category">
           Doctor
         </Link>
       </div>
-      <div style={{ marginBottom: "16px" }}>
-        <input
+      <div>
+        <input className="input w-full max-w-md"
           placeholder="Search by name, code or MR..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
       {view !== "list" ? (
-        <div style={{ marginTop: "16px" }}>
+        <div>
           {/* Tabs row */}
-          <div style={{ display: "flex", gap: "6px", overflowX: "auto", padding: "6px 0", marginBottom: "16px", borderBottom: "1px solid var(--border)" }}>
+          <div>
             {[
               { id: 1, label: "Chemist Master" },
               { id: 2, label: "Address" },
@@ -296,19 +291,18 @@ export function ChemistMaster() {
                 key={t.id}
                 onClick={() => setActiveFormTab(t.id)}
                 className={`button ${activeFormTab === t.id ? "" : "button-secondary"}`}
-                style={{ whiteSpace: "nowrap", padding: "6px 12px", fontSize: "12px" }}
                 type="button"
               >
                 {t.label}
               </button>
             ))}
           </div>
-          <form onSubmit={handleSave} className="card form-grid" style={{ animation: "popIn 0.3s ease-out forwards" }}>
+          <form onSubmit={handleSave} className="card form-grid">
             {activeFormTab === 1 && (
               <>
                 <div className="field">
                   <label>Chemist Code</label>
-                  <input readOnly value={form.code} style={{ opacity: 0.7 }} />
+                  <input readOnly value={form.code} />
                 </div>
                 <div className="field">
                   <label>Chemist Name</label>
@@ -332,7 +326,7 @@ export function ChemistMaster() {
                 </div>
                 <div className="field">
                   <label>Status</label>
-                  <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
+                  <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
@@ -363,7 +357,7 @@ export function ChemistMaster() {
               <>
                 <div className="field">
                   <label>Sales Territory (Patch)</label>
-                  <select value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
+                  <select className="input" value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
                     <option value="T. Nagar">T. Nagar</option>
                     <option value="Mylapore">Mylapore</option>
                     <option value="Adyar">Adyar</option>

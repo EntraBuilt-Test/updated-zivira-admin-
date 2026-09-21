@@ -33,20 +33,7 @@ export function CustomSelect({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        style={{
-          width: "100%",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "var(--panel)",
-          border: "1px solid #e5e7eb",
-          borderRadius: "6px",
-          padding: "8px 12px",
-          color: value ? "inherit" : "var(--muted)",
-          cursor: "pointer",
-          fontSize: "14px",
-          outline: "none",
-        }}
+        className="input flex items-center justify-between"
       >
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {value || placeholder || "Select an option"}

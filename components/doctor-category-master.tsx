@@ -66,10 +66,9 @@ function DoctorForm({ row, onSave, onBack, saving, error, nextCode }: { row: any
         </label>
         <label className="field">
           <span>Status</span>
-          <select 
+          <select className="input" 
             value={form.status} 
             onChange={e => setForm({ ...form, status: e.target.value as "ACTIVE" | "INACTIVE" })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="ACTIVE">Active</option>
             <option value="INACTIVE">Inactive</option>

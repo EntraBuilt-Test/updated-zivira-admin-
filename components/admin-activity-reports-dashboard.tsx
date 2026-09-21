@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 
 export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   return (
@@ -33,26 +34,26 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <button className="px-3 py-1.5 text-label-md font-label-md rounded-md hover:bg-surface-card text-text-secondary transition-all" type="button">Q3</button>
 </div>
 {/* Territory Zone Dropdown */}
-<div className="relative">
-<select className="h-[38px] pl-3 pr-8 rounded-lg bg-surface-card text-text-primary font-label-md text-label-md focus:outline-none appearance-none shadow-sm cursor-pointer">
-<option>All Zones / Nationwide</option>
-<option>North Zone (Del/NCR/PB)</option>
-<option>West Zone (MH/GJ/GA)</option>
-<option>South Zone (KA/TN/AP)</option>
-<option>East Zone (WB/OD/NE)</option>
-</select>
-<span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-[16px] text-text-muted pointer-events-none">expand_more</span>
-</div>
+<ToolbarDropdown 
+  initialSelected="All Zones / Nationwide"
+  options={[
+    "All Zones / Nationwide",
+    "North Zone (Del/NCR/PB)",
+    "West Zone (MH/GJ/GA)",
+    "South Zone (KA/TN/AP)",
+    "East Zone (WB/OD/NE)"
+  ]}
+/>
 {/* Division Select */}
-<div className="relative">
-<select className="h-[38px] pl-3 pr-8 rounded-lg bg-surface-card text-text-primary font-label-md text-label-md focus:outline-none appearance-none shadow-sm cursor-pointer">
-<option>Cardio-Diabetic + General</option>
-<option>Cardio Speciality (Vascuziv)</option>
-<option>Endo &amp; Metabolic Care</option>
-<option>Neuro-Psychiatry Wing</option>
-</select>
-<span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-[16px] text-text-muted pointer-events-none">expand_more</span>
-</div>
+<ToolbarDropdown 
+  initialSelected="Cardio-Diabetic + General"
+  options={[
+    "Cardio-Diabetic + General",
+    "Cardio Speciality (Vascuziv)",
+    "Endo & Metabolic Care",
+    "Neuro-Psychiatry Wing"
+  ]}
+/>
 {/* Export Dropdown */}
 <div className="relative">
 <button className="h-[38px] px-3.5 rounded-lg bg-surface-card text-text-primary font-label-md text-label-md shadow-sm hover:bg-surface-subtle flex items-center gap-1.5 transition-all" type="button">
@@ -722,11 +723,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
 <span className="text-text-muted">|</span>
 <div className="flex items-center gap-1">
 <span className="text-label-sm font-label-sm text-text-muted uppercase">Rows:</span>
-<select className="h-7 px-2 rounded bg-surface-subtle text-text-primary font-label-md text-label-md focus:outline-none">
-<option>25</option>
-<option>50</option>
-<option>100</option>
-</select>
+<ToolbarDropdown options={["25", "50", "100"]} initialSelected={"25"} />
 </div>
 </div>
 <div className="flex items-center gap-1">

@@ -76,11 +76,10 @@ function FieldForceView({ subdivisionName, onBack }: { subdivisionName: string; 
         <article><span>Sub-Division</span><strong>{subdivisionName}</strong></article>
       </div>
       <div style={{ marginBottom:"16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by name, HQ or designation..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width:"100%", maxWidth:"360px", padding:"8px 14px", borderRadius:"8px", border:"1px solid #e5e7eb", fontSize:"14px", outline:"none" }}
         />
       </div>
       <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
@@ -131,7 +130,7 @@ function ProductwiseView({ subdivisionName, onBack }: { subdivisionName: string;
         <article><span>Categories</span><strong>{categories.length}</strong></article>
         <article><span>Sub-Division</span><strong>{subdivisionName}</strong></article>
       </div>
-      <div style={{ display:"flex", flexWrap:"wrap", gap:"8px", marginBottom:"16px" }}>
+      <div>
         {categories.map(cat => <CategoryBadge key={cat} category={cat} />)}
       </div>
       <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
@@ -160,7 +159,7 @@ function DeleteConfirmDialog({ name, onConfirm, onCancel }: { name: string; onCo
   return (
     <div style={{ position:"fixed", inset:0, background:"rgba(0,0,0,0.45)", zIndex:100, display:"flex", alignItems:"center", justifyContent:"center" }}>
       <div style={{ background:"var(--panel)", borderRadius:"16px", padding:"32px 28px", maxWidth:"400px", width:"90%", boxShadow:"0 20px 60px rgba(0,0,0,0.18)" }}>
-        <div style={{ display:"flex", alignItems:"center", gap:"12px", marginBottom:"12px" }}>
+        <div>
           <span style={{ background:"#fef2f2", borderRadius:"50%", width:"44px", height:"44px", display:"flex", alignItems:"center", justifyContent:"center" }}>
             <Ban size={15} />
           </span>
@@ -172,9 +171,9 @@ function DeleteConfirmDialog({ name, onConfirm, onCancel }: { name: string; onCo
         <p style={{ fontSize:"14px", color:"var(--ink)", margin:"0 0 24px", lineHeight:1.6 }}>
           Are you sure you want to deactivate <strong>{name}</strong>? All associated product and fieldforce mappings will be affected.
         </p>
-        <div style={{ display:"flex", gap:"10px", justifyContent:"flex-end" }}>
+        <div>
           <button className="button button-secondary" onClick={onCancel} type="button">Cancel</button>
-          <button onClick={onConfirm} type="button" style={{ display:"flex", alignItems:"center", gap:"6px", padding:"8px 18px", borderRadius:"8px", border:"none", background:"#ef4444", color:"#fff", fontWeight:600, fontSize:"14px", cursor:"pointer" }}>
+          <button onClick={onConfirm} type="button">
             <Ban size={15} /> Yes, Deactivate
           </button>
         </div>
@@ -325,10 +324,9 @@ export function SubdivisionMaster() {
           {error && <p style={{ color: "#ef4444", fontSize: "13px" }}>{error}</p>}
           <label className="field">
             <span>Division Name</span>
-            <select 
+            <select className="input" 
               value={formRow.division} 
               onChange={e => setFormRow({ ...formRow, division: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               <option value="Astra">Astra</option>
               <option value="Aura">Aura</option>
@@ -337,10 +335,9 @@ export function SubdivisionMaster() {
           </label>
           <label className="field">
             <span>Division Short Name</span>
-            <select
+            <select className="input"
               value={formRow.subdivisionName}
               onChange={e => setFormRow({ ...formRow, subdivisionName: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               <option value="AST">AST</option>
               <option value="AUR">AUR</option>
@@ -349,10 +346,9 @@ export function SubdivisionMaster() {
           </label>
           <label className="field">
             <span>Status</span>
-            <select 
+            <select className="input" 
               value={formRow.status} 
               onChange={e => setFormRow({ ...formRow, status: e.target.value as "ACTIVE" | "INACTIVE" })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
@@ -545,11 +541,10 @@ export function SubdivisionMaster() {
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>DOC{String(index + 1).padStart(4, "0")}</td>
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
-                        <select 
+                        <select className="input" 
                           value={draftRow.division} 
                           onChange={e => setDraftRow({ ...draftRow, division: e.target.value })}
                           className="subdivision-inline-input"
-                          style={{ padding: "4px", borderRadius: "4px", border: "1px solid #ccc", background: "var(--panel)" }}
                         >
                           <option value="Astra">Astra</option>
                           <option value="Aura">Aura</option>
@@ -559,11 +554,10 @@ export function SubdivisionMaster() {
                     </td>
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
-                        <select
+                        <select className="input"
                           value={draftRow.subdivisionName}
                           onChange={e => setDraftRow({ ...draftRow, subdivisionName: e.target.value })}
                           className="subdivision-inline-input"
-                          style={{ padding: "4px", borderRadius: "4px", border: "1px solid #ccc", background: "var(--panel)" }}
                         >
                           <option value="AST">AST</option>
                           <option value="AUR">AUR</option>
@@ -573,11 +567,10 @@ export function SubdivisionMaster() {
                     </td>
                     <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                       {editing ? (
-                        <select 
+                        <select className="input" 
                           value={draftRow.status} 
                           onChange={e => setDraftRow({ ...draftRow, status: e.target.value as "ACTIVE" | "INACTIVE" })}
                           className="subdivision-inline-input"
-                          style={{ padding: "4px", borderRadius: "4px", border: "1px solid #ccc", background: "var(--panel)" }}
                         >
                           <option value="ACTIVE">Active</option>
                           <option value="INACTIVE">Inactive</option>
@@ -715,7 +708,7 @@ export function SubdivisionProductwise() {
 
       <div style={{ marginBottom: "20px" }}>
         <span style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px", color: "var(--ink)" }}>Sub Division Name</span>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+        <div>
           <div ref={dropdownRef} className="command-select" style={{ position: "relative" }}>
             <button
               className="command-select-button"
@@ -895,7 +888,7 @@ export function SubdivisionFieldforcewise() {
 
       <div style={{ marginBottom: "20px" }}>
         <span style={{ display: "block", fontSize: "14px", fontWeight: 500, marginBottom: "6px", color: "var(--ink)" }}>Sub Division Name</span>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+        <div>
           <div ref={dropdownRef} className="command-select" style={{ position: "relative" }}>
             <button
               className="command-select-button"

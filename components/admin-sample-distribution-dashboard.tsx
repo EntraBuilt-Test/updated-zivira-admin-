@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -17,11 +18,11 @@ export function AdminSampleDistributionDashboard({ node, path }: { node: ZiviraT
 {/* Global Header Controls */}
 <div className="flex items-center gap-3 flex-shrink-0">
 <div className="relative">
-<select className="h-8 pl-3 pr-8 text-xs font-medium bg-surface-subtle border border-border-subtle rounded-lg text-text-secondary hover:border-border-subtle focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer"><option>All Territories (Pan-India HQ)</option><option>North Division (Delhi &amp; NCR)</option><option>West Zone (Mumbai HQ)</option><option>South Hub (Bengaluru HQ)</option><option>Eastern Coast (Kolkata)</option></select>
+<ToolbarDropdown options={["All Territories (Pan-India HQ)", "North Division (Delhi &amp; NCR)", "West Zone (Mumbai HQ)", "South Hub (Bengaluru HQ)", "Eastern Coast (Kolkata)"]} initialSelected={"All Territories (Pan-India HQ)"} />
 <span className="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted text-[16px]">expand_more</span>
 </div>
 <div className="relative">
-<select className="h-8 pl-3 pr-8 text-xs font-medium bg-surface-subtle border border-border-subtle rounded-lg text-text-secondary hover:border-border-subtle focus:outline-none focus:border-[#b43403] appearance-none cursor-pointer"><option>All Territories (Pan-India HQ)</option><option>North Division (Delhi &amp; NCR)</option><option>West Zone (Mumbai HQ)</option><option>South Hub (Bengaluru HQ)</option><option>Eastern Coast (Kolkata)</option></select>
+<ToolbarDropdown options={["All Territories (Pan-India HQ)", "North Division (Delhi &amp; NCR)", "West Zone (Mumbai HQ)", "South Hub (Bengaluru HQ)", "Eastern Coast (Kolkata)"]} initialSelected={"All Territories (Pan-India HQ)"} />
 <span className="material-symbols-outlined pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-text-muted text-[16px]">expand_more</span>
 </div>
 <button className="w-8 h-8 rounded-lg border border-border-subtle bg-surface-card text-text-secondary hover:text-text-primary hover:bg-surface-subtle flex items-center justify-center transition-colors shadow-xs" title="Refresh Telemetry" type="button">
@@ -212,20 +213,8 @@ Form 13-A Filing: Up to Date
 <input className="w-full text-xs bg-transparent text-text-secondary placeholder-slate-400 focus:outline-none border-none p-0" placeholder="Search SKU, Batch No, Molecule..." type="text"/>
 </div>
 <div className="flex items-center gap-2">
-<select className="h-8 px-3 rounded-lg bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary focus:outline-none focus:border-[#b43403] cursor-pointer">
-<option>All Therapeutic Categories</option>
-<option>Cardiology</option>
-<option>Diabetology</option>
-<option>Pulmonology</option>
-<option>Orthopedics</option>
-<option>Gastroenterology</option>
-</select>
-<select className="h-8 px-3 rounded-lg bg-surface-subtle border border-border-subtle text-xs font-medium text-text-secondary focus:outline-none focus:border-[#b43403] cursor-pointer">
-<option>Stock Status: All</option>
-<option>Sufficient Depot Stock</option>
-<option>Near Expiry (&lt;60 Days)</option>
-<option>Quota Exhausted</option>
-</select>
+<ToolbarDropdown options={["All Therapeutic Categories", "Cardiology", "Diabetology", "Pulmonology", "Orthopedics", "Gastroenterology"]} initialSelected={"All Therapeutic Categories"} />
+<ToolbarDropdown options={["Stock Status: All", "Sufficient Depot Stock", "Near Expiry (&lt;60 Days)", "Quota Exhausted"]} initialSelected={"Stock Status: All"} />
 <button className="h-8 w-8 rounded-lg bg-surface-subtle border border-border-subtle text-text-secondary hover:text-text-primary hover:bg-surface-subtle flex items-center justify-center transition-colors" title="Reset Filters" type="button">
 <span className="material-symbols-outlined text-[17px]">restart_alt</span>
 </button>

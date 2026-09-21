@@ -32,7 +32,7 @@ function CelebTable({ rows, type }: { rows: DobRow[]; type: TabKey }) {
   }, [rows, search]);
   return (
     <>
-      <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:16 }}>
+      <div>
         <div style={{ position:"relative", flex:1, maxWidth:320 }}>
           <Search size={14} style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"var(--muted)" }} />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, territory, date…" style={{ paddingLeft:32, width:"100%" }} />
@@ -163,12 +163,12 @@ export function DoctorCelebrations() {
       <div className="subdivision-head">
         <div>
           <p className="subdivision-eyebrow">MIS Reports</p>
-          <h2 style={{ display:"flex", alignItems:"center", gap:10 }}>
+          <h2>
             Doctor Celebrations
           </h2>
           <p>Listed doctor date of birth and wedding anniversary details by field force and month.</p>
         </div>
-        <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+        <div>
           <div ref={dropdownRef} className="command-select" style={{ position:"relative" }}>
             <button
               className="command-select-button"
@@ -200,7 +200,7 @@ export function DoctorCelebrations() {
               </div>
             )}
           </div>
-          <button className="button button-secondary" type="button" style={{ display:"flex", alignItems:"center", gap:6 }}>
+          <button className="button button-secondary" type="button">
             <Download size={14} /> Export
           </button>
         </div>
@@ -213,25 +213,12 @@ export function DoctorCelebrations() {
         <article><span>Total Records</span><strong>{dobData.length + dowData.length}</strong></article>
       </div>
       {/* Tabs */}
-      <div style={{ display:"flex", gap:6, marginBottom:20, borderBottom:"1px solid var(--line)", paddingBottom:0 }}>
+      <div>
         {TABS.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             type="button"
-            style={{
-              display:"flex", alignItems:"center", gap:6,
-              padding:"8px 16px",
-              borderRadius:"8px 8px 0 0",
-              border:"1px solid var(--line)",
-              borderBottom: activeTab === tab.key ? "2px solid var(--brand)" : "1px solid var(--line)",
-              background: activeTab === tab.key ? "var(--panel)" : "transparent",
-              color: activeTab === tab.key ? "var(--brand)" : "var(--muted)",
-              fontWeight: activeTab === tab.key ? 700 : 500,
-              fontSize:13, cursor:"pointer",
-              marginBottom: activeTab === tab.key ? -1 : 0,
-              transition:"all 0.15s"
-            }}
           >
             {tab.label}
             <span style={{ background: activeTab === tab.key ? "var(--brand)" : "var(--panel-strong)", color: activeTab === tab.key ? "#fff" : "var(--muted)", borderRadius:99, padding:"1px 7px", fontSize:11, fontWeight:700 }}>

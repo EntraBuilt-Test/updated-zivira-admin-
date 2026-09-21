@@ -55,17 +55,7 @@ export function StatusFilterDropdown({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen(!open)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: "none",
-          border: "none",
-          color: "inherit",
-          cursor: "pointer",
-          padding: "2px",
-          fontFamily: "inherit",
-        }}
+        className="flex items-center justify-start group hover:text-brand-primary transition-colors outline-none"
       >
         <span>Status</span>
         <ChevronDown size={14} style={{ color: "var(--muted)", marginLeft: "4px" }} />
@@ -102,20 +92,6 @@ export function StatusFilterDropdown({
                   onChange(opt.value);
                   setOpen(false);
                 }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 10px",
-                  textAlign: "left",
-                  background: isSelected ? `${tint}15` : "transparent",
-                  color: isSelected ? tint : "var(--ink)",
-                  fontSize: "13px",
-                  cursor: "pointer",
-                  border: "none",
-                  borderRadius: "8px",
-                  fontWeight: isSelected ? 600 : 500
-                }}
                 onMouseEnter={(e) => {
                   if (!isSelected) e.currentTarget.style.background = "var(--line)";
                 }}
@@ -134,20 +110,6 @@ export function StatusFilterDropdown({
             onClick={() => {
               onChange("All");
               setOpen(false);
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 10px",
-              textAlign: "left",
-              background: value === "All" ? "var(--line)" : "transparent",
-              color: "var(--muted)",
-              fontSize: "13px",
-              cursor: "pointer",
-              border: "none",
-              borderRadius: "8px",
-              fontWeight: 500
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "var(--line)")}
             onMouseLeave={(e) => (e.currentTarget.style.background = value === "All" ? "var(--line)" : "transparent")}

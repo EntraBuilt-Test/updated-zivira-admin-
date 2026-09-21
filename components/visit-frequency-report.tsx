@@ -54,7 +54,7 @@ export function VisitFrequencyReport() {
           <h2>Visit Frequency</h2>
           <p>How often each doctor is being visited, and by how many reps — derived from field DCR records.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
         </div>

@@ -96,10 +96,6 @@ export function AdminBiReportsDashboard({ node, path }: { node: ZiviraTreeNode; 
                   <Link
                     key={item.label}
                     href={item.href}
-                    style={{
-                      display: "flex", alignItems: "center", justifyContent: "space-between",
-                      padding: "9px 4px", color: "var(--ink)", fontSize: 14, borderBottom: "1px solid var(--line)"
-                    }}
                   >
                     {item.label} <ArrowRight size={14} style={{ opacity: 0.6, flexShrink: 0 }} />
                   </Link>

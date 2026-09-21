@@ -6,11 +6,11 @@ export function PaginationControls({ pagination, onPrev, onNext }: { pagination:
   const start = total === 0 ? 0 : (page - 1) * limit + 1;
   const end = Math.min(page * limit, total);
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", padding: "12px 16px", borderTop: "1px solid var(--line)" }}>
+    <div>
       <span style={{ fontSize: "13px", color: "var(--muted)" }}>
         {total === 0 ? "No records" : `Showing ${start}–${end} of ${total}`}
       </span>
-      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+      <div>
         <button className="button button-secondary" type="button" onClick={onPrev} disabled={page <= 1} style={{ height: "34px", padding: "0 12px" }}>
           <ChevronLeft size={15} /> Previous
         </button>

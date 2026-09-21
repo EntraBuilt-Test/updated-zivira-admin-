@@ -55,7 +55,7 @@ export function ComplianceAnalytics() {
           <h2>Attendance &amp; Compliance Analytics</h2>
           <p>DCR submission compliance and chronic-defaulter detection — live from field DCR records. Working days exclude Sundays.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <ExportMenuButton

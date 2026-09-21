@@ -57,17 +57,7 @@ export function ColumnFilterDropdown({
         ref={buttonRef}
         type="button"
         onClick={() => setOpen(!open)}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "none",
-          border: "none",
-          color: "inherit",
-          cursor: "pointer",
-          padding: "2px",
-          fontFamily: "inherit",
-        }}
+        className="flex items-center justify-start group hover:text-brand-primary transition-colors outline-none"
       >
         <span>{title}</span>
         <ChevronDown size={14} style={{ color: "var(--muted)", marginLeft: "4px" }} />

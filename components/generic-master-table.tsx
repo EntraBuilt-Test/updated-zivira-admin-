@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus, Pencil, Ban, Download, X, AlertTriangle, FileText, Sheet } from "lucide-react";
+import { Plus, Pencil, Ban, Download, X, AlertTriangle, FileText, Sheet, Upload } from "lucide-react";
 import type { CSSProperties } from "react";
 import { useEffect, useState, useMemo, useRef } from "react";
 import { apiClient, type MasterField, type MasterRecord, type MasterSchema } from "@/lib/api-client";
@@ -132,7 +132,7 @@ const exportMenuOptionStyle: CSSProperties = {
  * never drift out of sync with the document because the headers come from
  * the backend's registry, not from anything hardcoded here.
  */
-export function GenericMasterTable({ masterKey }: { masterKey: string }) {
+export function GenericMasterTable({ masterKey, showImportButton = false }: { masterKey: string, showImportButton?: boolean }) {
   const [isSuperStockist, setIsSuperStockist] = useState(false);
   const [isReportingStructure, setIsReportingStructure] = useState(false);
   const [schema, setSchema] = useState<MasterSchema | null>(null);
@@ -147,6 +147,9 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
   // The Export button opens a small menu offering Excel / PDF / CSV instead
   // of downloading a single fixed format.
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
+  const [importRows, setImportRows] = useState<string[][]>([]);
+
   const exportMenuRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -386,6 +389,10 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
               schemaData.fields.push(extra as any);
             }
           }
+          schemaData.fields = schemaData.fields.filter((f: any) => 
+            f.label.toUpperCase() !== "MEDICAL REPRESENTATIVE" && 
+            f.label.toUpperCase() !== "AREA MANAGER"
+          );
         } else if (masterKey === "inputMaster") {
           const extraFields = [
             { key: "typeOfInput", label: "Type of Input", type: "string" },
@@ -401,6 +408,24 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
               schemaData.fields.push(extra as any);
             }
           }
+        } else if (masterKey === "patchNameMaster") {
+          schemaData.fields = schemaData.fields.filter((f: any) => 
+            f.label.toUpperCase() !== "MEDICAL REPRESENTATIVE" && 
+            f.label.toUpperCase() !== "AREA MANAGER"
+          );
+        } else if (masterKey === "regionZoneMaster") {
+          schemaData.fields = schemaData.fields.filter((f: any) => 
+            f.label.toUpperCase() !== "DIVISION" && 
+            f.label.toUpperCase() !== "MANAGER"
+          );
+          if (!schemaData.fields.some((f: any) => f.label.toUpperCase() === "TERRITORY CODE")) {
+            schemaData.fields.push({ key: "territoryCode", label: "Territory code", type: "string" } as any);
+          }
+        } else if (masterKey === "territoryHqMaster") {
+          schemaData.fields = schemaData.fields.filter((f: any) => 
+            f.label.toUpperCase() !== "DIVISION" && 
+            f.label.toUpperCase() !== "PATCH NAME"
+          );
         } else if (masterKey === "stockistMaster") {
           if (isSuperStockist) {
              schemaData.fields = [
@@ -488,7 +513,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
     "stockistMaster", "stockistAddress", "stockistContact", "stockistHeadquarters", "stockistDivisionMapping", "stockistBankDetails", "stockistLicenseDetails", "stockistStatus", // Stockist Details
     "expenseCategory", "expenseTypes", "sfc", "allowanceFixation", // Expense Setup
     "managerTravelApproval", "expenseApproval", "expenseReports", // Manager Expense
-    "employeePersonalInfo", "personalInformationView", // Personal Information
+    "employeePersonalInfo", "personalInformationView", "personalEntry", // Personal Information
     "targetMaster", "primarySales", "secondarySales", "claimsMaster" // Sales
   ];
   const isReadonly = readonlyKeys.includes(masterKey);
@@ -979,6 +1004,103 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
   // instead of being clipped, and the page switches to landscape + a smaller
   // font as column count grows so wide masters (many fields) still fit
   // on the page without any column's text spilling into its neighbor.
+  
+  async function saveImportedData() {
+    if (!schema) return;
+    const activeHeaders = schema.fields.filter((f: any) => !f.tableOnly);
+    const objectsToSave = [];
+    
+    // Convert matrix to objects
+    for (let r = 0; r < importRows.length; r++) {
+      const row = importRows[r];
+      // Skip entirely empty rows
+      if (!row || row.every(cell => !cell || !cell.trim())) continue;
+      
+      const payload: Record<string, any> = {};
+      for (let c = 0; c < activeHeaders.length; c++) {
+         const field = activeHeaders[c];
+         payload[field.key] = row[c] || "";
+      }
+      objectsToSave.push(payload);
+    }
+
+    if (objectsToSave.length === 0) {
+      setIsImportModalOpen(false);
+      return;
+    }
+
+    setSaving(true);
+    try {
+       for (const payload of objectsToSave) {
+          // Fire and forget or await
+          await apiClient.createMasterRecord(effectiveMasterKey, payload).catch(() => {});
+       }
+       setIsImportModalOpen(false);
+       load(); // Refresh table
+    } finally {
+       setSaving(false);
+    }
+  }
+
+  function handleImportPaste(e: React.ClipboardEvent<HTMLTableElement>) {
+    e.preventDefault();
+    const clipboardData = e.clipboardData.getData("Text");
+    if (!clipboardData) return;
+    
+    // Parse tab-separated values (TSV) from Excel
+    const pastedRows = clipboardData.split(/\r?\n/).map(row => row.split("\t"));
+    if (pastedRows.length === 0) return;
+    
+    // Start at currently active cell if any, or 0,0
+    const target = e.target as HTMLElement;
+    let startRow = 0;
+    let startCol = 0;
+    
+    if (target.tagName === "INPUT" && target.hasAttribute("data-row")) {
+       startRow = parseInt(target.getAttribute("data-row") || "0", 10);
+       startCol = parseInt(target.getAttribute("data-col") || "0", 10);
+    }
+    
+    setImportRows(prev => {
+       const next = [...prev].map(r => [...r]);
+       
+       for (let r = 0; r < pastedRows.length; r++) {
+         const destR = startRow + r;
+         if (destR >= next.length) {
+            // Expand grid if needed
+            const newRow = new Array(schema?.fields.filter((f: any) => !f.tableOnly).length || 10).fill("");
+            next.push(newRow);
+         }
+         
+         const rowData = pastedRows[r];
+         for (let c = 0; c < rowData.length; c++) {
+            const destC = startCol + c;
+            if (destC < next[destR].length) {
+               next[destR][destC] = rowData[c];
+            }
+         }
+       }
+       return next;
+    });
+  }
+
+  function updateImportCell(r: number, c: number, val: string) {
+    setImportRows(prev => {
+       const next = [...prev];
+       next[r] = [...next[r]];
+       next[r][c] = val;
+       return next;
+    });
+  }
+
+  function openImportModal() {
+     const cols = schema?.fields.filter((f: any) => !f.tableOnly).length || 10;
+     // Create a 50-row empty grid
+     const emptyGrid = Array(50).fill(null).map(() => Array(cols).fill(""));
+     setImportRows(emptyGrid);
+     setIsImportModalOpen(true);
+  }
+
   async function exportToPDF() {
     if (!schema || rows.length === 0) return;
     const { headers, rows: dataRows } = buildExportMatrix();
@@ -1030,13 +1152,13 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
           }}
         >
           <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                 <AlertTriangle size={18} color="#ef4444" />
                 <h3 style={{ margin: 0, fontSize: "1rem", color: "#ef4444" }}>Something went wrong</h3>
               </div>
               <button className="subdivision-icon-button" onClick={() => setError(null)} type="button" title="Close" aria-label="Close">
-                <X size={16} />
+                <X size={20} />
               </button>
             </div>
             <p style={{ margin: 0, fontSize: "13px", color: "var(--ink)" }}>{error}</p>
@@ -1055,7 +1177,7 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
         >
           <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px" }}>
             <p>Deactivate this record?</p>
-            <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+            <div>
               <button className="button" onClick={confirmDeactivate} type="button" disabled={saving}>
                 {saving ? "Working..." : "Yes, deactivate"}
               </button>
@@ -1077,10 +1199,10 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
             }}
           >
             <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "500px", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                 <h2 style={{ margin: 0, fontSize: "1.25rem" }}>{isEdit ? `Edit ${schema.title}` : `Add ${schema.title}`}</h2>
-                <button className="button button-secondary" onClick={() => setFormRow(null)} type="button">
-                  Close
+                <button className="subdivision-icon-button" onClick={() => setFormRow(null)} type="button" title="Close" aria-label="Close">
+                  <X size={20} />
                 </button>
               </div>
               <div className="subdivision-form-card" style={{ boxShadow: "none", padding: 0 }}>
@@ -1133,18 +1255,11 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
                           onClick={captureLocation}
                           disabled={capturingLocation}
                           title={hasLocation ? "Click to re-capture the current location" : "Click to capture the current location"}
-                          style={{
-                            width: "100%", padding: 0, borderRadius: "8px",
-                            border: "1px dashed var(--line)", background: "var(--panel)",
-                            cursor: capturingLocation ? "wait" : "pointer", overflow: "hidden",
-                            display: "block"
-                          }}
                         >
                           {hasLocation ? (
                             <img
                               src={mapImgSrc}
                               alt="Captured location"
-                              style={{ width: "100%", height: "160px", objectFit: "cover", display: "block" }}
                             />
                           ) : (
                             <div style={{ height: "160px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", color: "var(--muted)", fontSize: "13px" }}>
@@ -1201,6 +1316,88 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
           </div>
         );
       })()}
+      
+      {isImportModalOpen && schema && (
+        <div
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+            display: "flex", alignItems: "center", justifyContent: "center", zIndex: 60,
+            padding: "20px"
+          }}
+        >
+          <div style={{ background: "var(--surface-card)", borderRadius: "10px", padding: "24px", width: "95vw", height: "90vh", display: "flex", flexDirection: "column", boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.25)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: "1.25rem", color: "var(--text-primary)" }}>Import {schema.title}</h2>
+                <p style={{ margin: 0, fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px" }}>
+                  Type directly into the cells or paste data from an Excel spreadsheet.
+                </p>
+              </div>
+              <button className="subdivision-icon-button" onClick={() => setIsImportModalOpen(false)} type="button" title="Close" aria-label="Close">
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div style={{ flex: 1, overflow: "auto", border: "1px solid var(--border-subtle)", borderRadius: "6px", background: "var(--surface-canvas)" }}>
+              <table style={{ borderCollapse: "collapse", width: "100%", minWidth: "max-content" }} onPaste={handleImportPaste}>
+                <thead style={{ position: "sticky", top: 0, zIndex: 10 }}>
+                  <tr>
+                    <th style={{ background: "#f3f4f6", border: "1px solid #d1d5db", padding: "8px", width: "40px", textAlign: "center", color: "#6b7280", fontWeight: "normal", fontSize: "12px" }}></th>
+                    {schema.fields.filter((f: any) => !f.tableOnly).map((f: any) => (
+                      <th key={f.key} style={{ background: "#f3f4f6", border: "1px solid #d1d5db", padding: "8px 12px", textAlign: "center", fontSize: "13px", fontWeight: 600, color: "#374151" }}>
+                        {f.label}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {importRows.map((row, rIdx) => (
+                    <tr key={rIdx}>
+                      <td style={{ background: "#f3f4f6", border: "1px solid #d1d5db", padding: "4px", textAlign: "center", color: "#6b7280", fontSize: "12px", fontWeight: 500 }}>
+                        {rIdx + 1}
+                      </td>
+                      {row.map((cell, cIdx) => (
+                        <td key={cIdx} style={{ border: "1px solid #d1d5db", padding: 0, background: "white" }}>
+                          <input
+                            type="text"
+                            value={cell}
+                            data-row={rIdx}
+                            data-col={cIdx}
+                            onChange={(e) => updateImportCell(rIdx, cIdx, e.target.value)}
+                            style={{ 
+                              width: "100%", height: "100%", minHeight: "28px", border: "none", outline: "none", 
+                              padding: "4px 8px", fontSize: "13px", background: "transparent"
+                            }}
+                            onFocus={(e) => {
+                              e.target.style.background = "#eff6ff";
+                              e.target.style.outline = "2px solid #3b82f6";
+                              e.target.style.outlineOffset = "-2px";
+                            }}
+                            onBlur={(e) => {
+                              e.target.style.background = "transparent";
+                              e.target.style.outline = "none";
+                            }}
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "20px" }}>
+              <button className="button button-secondary" onClick={() => setIsImportModalOpen(false)} type="button" disabled={saving}>
+                Cancel
+              </button>
+              <button className="button" onClick={saveImportedData} type="button" disabled={saving}>
+                {saving ? "Importing..." : "Import Data"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <section className="flex flex-col gap-6 w-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -1208,11 +1405,13 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
             <h2 className="text-2xl font-bold text-text-primary">{schema.title}</h2>
             <p className="text-sm text-text-muted mt-1">{schema.fields.length} fields, matching the Technical Report exactly.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm" onClick={openAddForm} type="button">
-              <span>Add {schema.title}</span>
-            </button>
-          </div>
+          {masterKey !== "employeePersonalInfo" && (
+            <div className="flex items-center gap-3">
+              <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm" onClick={openAddForm} type="button">
+                <span>Add {schema.title}</span>
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="flex flex-wrap items-center gap-4 bg-surface-card p-4 rounded-xl border border-border-subtle shadow-sm">
@@ -1220,6 +1419,15 @@ export function GenericMasterTable({ masterKey }: { masterKey: string }) {
             <span className="text-sm text-text-muted">Total Records</span>
             <strong className="text-lg font-semibold text-text-primary">{rows.length}</strong>
           </article>
+          {showImportButton && (
+            <button
+              className="bg-surface-card border border-border-subtle text-text-primary hover:bg-surface-subtle px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2"
+              onClick={openImportModal}
+              type="button"
+            >
+              <Upload size={16} className="text-text-secondary" /> <span>Import</span>
+            </button>
+          )}
           
           <div ref={exportMenuRef} className="relative">
             <button

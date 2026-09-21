@@ -90,7 +90,7 @@ export function SampleDistributionAnalytics() {
           <h2>Sample Distribution Analytics</h2>
           <p>Issued vs distributed vs remaining sample stock, by rep, by product, and by doctor.</p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div>
           <BackButton fallback="/admin/analytics" />
           <button className="button button-secondary" onClick={load} type="button"><RefreshCw size={15} />{loading ? "Loading" : "Refresh"}</button>
           <ExportMenuButton
@@ -116,14 +116,14 @@ export function SampleDistributionAnalytics() {
 
       <div className="card" style={{ padding: 16, marginBottom: 20 }}>
         <div className="grid" style={{ gap: 10, gridTemplateColumns: "1.4fr 1.4fr 1fr 0.7fr auto", alignItems: "end" }}>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12, color: "var(--muted)" }}>
+          <label>
             Representative
             <select className="input" value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })}>
               <option value="">Select…</option>
               {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} ({e.employeeCode})</option>)}
             </select>
           </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12, color: "var(--muted)" }}>
+          <label>
             Product
             <select
               className="input"
@@ -137,11 +137,11 @@ export function SampleDistributionAnalytics() {
               {products.map((p) => <option key={p.code} value={p.code}>{p.name}</option>)}
             </select>
           </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12, color: "var(--muted)" }}>
+          <label>
             Batch No.
             <input className="input" placeholder="Optional" value={form.batchNumber} onChange={(e) => setForm({ ...form, batchNumber: e.target.value })} />
           </label>
-          <label style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12, color: "var(--muted)" }}>
+          <label>
             Qty
             <input className="input" placeholder="50" type="number" min={1} value={form.qtyIssued} onChange={(e) => setForm({ ...form, qtyIssued: e.target.value })} />
           </label>

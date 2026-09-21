@@ -58,7 +58,7 @@ function SummaryForm({ row, onSave, onBack }: { row: any; onSave: (r: DcrSummary
       <div className="subdivision-form-card">
         <label className="field">
           <span>* Date</span>
-          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
         </label>
         <label className="field">
           <span>* Employee Code</span>
@@ -70,7 +70,7 @@ function SummaryForm({ row, onSave, onBack }: { row: any; onSave: (r: DcrSummary
         </label>
         <label className="field">
           <span>Division</span>
-          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
             <option value="Zivira">Zivira</option>
             <option value="Astra">Astra</option>
             <option value="Aura">Aura</option>
@@ -78,7 +78,7 @@ function SummaryForm({ row, onSave, onBack }: { row: any; onSave: (r: DcrSummary
         </label>
         <label className="field">
           <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })}>
             <option value="Chennai Central HQ">Chennai Central HQ</option>
             <option value="Coimbatore HQ">Coimbatore HQ</option>
             <option value="Madurai HQ">Madurai HQ</option>
@@ -187,19 +187,10 @@ export function ManagerDcrSummary() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by MR, code or patch..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

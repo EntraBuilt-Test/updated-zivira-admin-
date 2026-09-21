@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -23,21 +24,12 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
       {/* Right Header Actions */}
       <div className="flex items-center gap-3">
         <div className="relative">
-          <select className="appearance-none bg-surface-subtle border border-border-subtle rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-text-secondary cursor-pointer focus:outline-none">
-            <option>All Territories (Pan-India HQ)</option>
-            <option>West Zone (Maharashtra & Gujarat)</option>
-            <option>North Zone (Delhi NCR, UP, Punjab)</option>
-            <option>South Zone (KA, TN, TS)</option>
-            <option>East Zone (WB, Bihar, Odisha)</option>
-          </select>
+          <ToolbarDropdown options={["All Territories (Pan-India HQ)", "West Zone (Maharashtra & Gujarat)", "North Zone (Delhi NCR, UP, Punjab)", "South Zone (KA, TN, TS)", "East Zone (WB, Bihar, Odisha)"]} initialSelected={"All Territories (Pan-India HQ)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
         <div className="relative">
-          <select className="appearance-none bg-surface-subtle border border-border-subtle rounded-lg pl-3 pr-8 py-1.5 text-xs font-semibold text-text-secondary cursor-pointer focus:outline-none">
-            <option>Q3 FY2026-27 (Sep 2026 Active)</option>
-            <option>Q2 FY2026-27</option>
-          </select>
+          <ToolbarDropdown options={["Q3 FY2026-27 (Sep 2026 Active)", "Q2 FY2026-27"]} initialSelected={"Q3 FY2026-27 (Sep 2026 Active)"} />
           <span className="material-symbols-outlined absolute right-2.5 top-2.5 text-[10px] text-text-muted pointer-events-none">{`expand_more`}</span>
         </div>
 
@@ -186,18 +178,9 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             </div>
 
             <div className="flex items-center gap-2">
-              <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
-                <option>All Zones (East, West, North, South)</option>
-                <option>West Zone (Mumbai, Pune, Gujarat)</option>
-                <option>North Zone (Delhi, Chandigarh, Lucknow)</option>
-              </select>
+              <ToolbarDropdown options={["All Zones (East, West, North, South)", "West Zone (Mumbai, Pune, Gujarat)", "North Zone (Delhi, Chandigarh, Lucknow)"]} initialSelected={"All Zones (East, West, North, South)"} />
 
-              <select className="bg-surface-card border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium">
-                <option>All Saturation Levels</option>
-                <option>High Saturation (&gt;90%)</option>
-                <option>Moderate (75% - 90%)</option>
-                <option>Under-Penetrated (&lt;75%)</option>
-              </select>
+              <ToolbarDropdown options={["All Saturation Levels", "High Saturation (&gt;90%)", "Moderate (75% - 90%)", "Under-Penetrated (&lt;75%)"]} initialSelected={"All Saturation Levels"} />
 
               <button className="text-xs text-text-secondary hover:text-text-secondary font-semibold px-2 py-1.5 flex items-center gap-1">
                 <span className="material-symbols-outlined text-[11px]">{`refresh`}</span> Reset

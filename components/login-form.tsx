@@ -31,7 +31,7 @@ export function LoginForm() {
       <div className="space-y-1.5">
         <label htmlFor="username" className="block text-xs font-bold text-[#31234c]">Username</label>
         <div className="relative">
-          <select 
+          <select className="input" 
             id="username" 
             value={username} 
             onChange={(event) => setUsername(event.target.value)}

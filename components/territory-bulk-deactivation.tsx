@@ -2,7 +2,7 @@
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { RotateCcw, SlidersHorizontal, Trash2, ChevronDown } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { apiClient } from "@/lib/api-client";
 type DeactivationRow = {
   id: string;
@@ -22,6 +22,19 @@ export function TerritoryBulkDeactivation() {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  const [optionsMenuOpen, setOptionsMenuOpen] = useState(false);
+  const optionsMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (optionsMenuRef.current && !optionsMenuRef.current.contains(event.target as Node)) {
+        setOptionsMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   useEffect(() => {
     fetchData();
   }, []);
@@ -133,7 +146,7 @@ export function TerritoryBulkDeactivation() {
         <form onSubmit={handleSave} className="card form-grid" style={{ animation: "popIn 0.3s ease-out forwards" }}>
           <div className="field">
             <label>Select Division</label>
-            <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
+            <select className="input" value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
               <option value="Zivira">Zivira</option>
               <option value="Astra">Astra</option>
               <option value="Aura">Aura</option>
@@ -141,7 +154,7 @@ export function TerritoryBulkDeactivation() {
           </div>
           <div className="field">
             <label>Select Patch</label>
-            <select value={form.patch} onChange={e => handlePatchChange(e.target.value)}>
+            <select className="input" value={form.patch} onChange={e => handlePatchChange(e.target.value)}>
               {list.map(p => (
                 <option key={p.patch} value={p.patch}>{p.patch}</option>
               ))}
@@ -186,11 +199,10 @@ export function TerritoryBulkDeactivation() {
         </div>
       </div>
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by patch or HQ..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
       <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
@@ -236,23 +248,54 @@ export function TerritoryBulkDeactivation() {
                 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Doctors</th>
                 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Active Doctor</th>
                 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
-                  <div style={{ display: "flex", flexDirection: "column", gap: "4px", alignItems: "center" }}>
+                  <div className="flex flex-col items-center gap-1.5" ref={optionsMenuRef}>
                     <span>Selected For Deactivation</span>
-                    <select 
-                      onChange={(e) => {
-                        if (e.target.value === "Select All") {
-                          setList(list.map(x => ({ ...x, selectedForDeactivation: true })));
-                        } else if (e.target.value === "Deselect All") {
-                          setList(list.map(x => ({ ...x, selectedForDeactivation: false })));
-                        }
-                        e.target.value = ""; // Reset dropdown after action
-                      }}
-                      style={{ fontSize: "11px", padding: "2px 4px", borderRadius: "4px", border: "1px solid #e5e7eb", outline: "none", cursor: "pointer", background: "white" }}
-                    >
-                      <option value="">Options</option>
-                      <option value="Select All">Select All</option>
-                      <option value="Deselect All">Deselect All</option>
-                    </select>
+                    <div style={{ position: "relative" }}>
+                      <button 
+                        type="button"
+                        onClick={() => setOptionsMenuOpen(!optionsMenuOpen)}
+                        className="bg-white border border-border-subtle rounded px-1.5 py-0.5 text-xs text-ink flex items-center justify-between shadow-sm hover:border-border cursor-pointer outline-none"
+                        style={{ width: "85px" }}
+                      >
+                        <span className="font-medium text-[13px]">Options</span>
+                        <ChevronDown size={16} strokeWidth={2.5} style={{ color: "var(--ink)", marginLeft: "4px" }} />
+                      </button>
+                      {optionsMenuOpen && (
+                        <div style={{ position: "absolute", top: "100%", left: "0", marginTop: "2px", background: "white", border: "1px solid #767676", borderRadius: "2px", boxShadow: "2px 2px 5px rgba(0,0,0,0.2)", zIndex: 50, padding: "2px 0", minWidth: "120px", display: "flex", flexDirection: "column" }}>
+                          <button
+                            type="button"
+                            className="w-full text-left px-2 py-1 text-[13px] cursor-pointer border-none bg-[#0058d0] text-white"
+                            onClick={() => {
+                              setOptionsMenuOpen(false);
+                            }}
+                          >
+                            Options
+                          </button>
+                          <button
+                            type="button"
+                            className="w-full text-left px-2 py-1 text-[13px] hover:bg-[#0058d0] hover:text-white cursor-pointer border-none bg-transparent whitespace-nowrap"
+                            style={{ color: "black" }}
+                            onClick={() => {
+                              setList(list.map(x => ({ ...x, selectedForDeactivation: true })));
+                              setOptionsMenuOpen(false);
+                            }}
+                          >
+                            Select All
+                          </button>
+                          <button
+                            type="button"
+                            className="w-full text-left px-2 py-1 text-[13px] hover:bg-[#0058d0] hover:text-white cursor-pointer border-none bg-transparent whitespace-nowrap"
+                            style={{ color: "black" }}
+                            onClick={() => {
+                              setList(list.map(x => ({ ...x, selectedForDeactivation: false })));
+                              setOptionsMenuOpen(false);
+                            }}
+                          >
+                            Deselect All
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </th>
                 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Effective Date</th>

@@ -213,7 +213,7 @@ export function TerritoryListedDoctor() {
           }}
         >
           <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "500px", maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+            <div>
               <h2 style={{ margin: 0, fontSize: "1.25rem" }}>{view === "add" ? "Map Doctor to Territory" : "Edit Territory Mapping"}</h2>
               <button className="button button-secondary" onClick={() => setView("list")} type="button">
                 Close
@@ -228,7 +228,7 @@ export function TerritoryListedDoctor() {
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Select Patch</label>
-                <select value={form.patch} onChange={e => handlePatchChange(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+                <select className="input" value={form.patch} onChange={e => handlePatchChange(e.target.value)}>
                   {patchesList.map(p => (
                     <option key={p.name} value={p.name}>{p.name}</option>
                   ))}
@@ -237,7 +237,7 @@ export function TerritoryListedDoctor() {
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Select Doctor</label>
-                <select value={form.doctorCode} onChange={e => handleDoctorChange(e.target.value)} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+                <select className="input" value={form.doctorCode} onChange={e => handleDoctorChange(e.target.value)}>
                   {doctorsList.map(d => (
                     <option key={d.code} value={d.code}>{d.name} ({d.code})</option>
                   ))}
@@ -246,27 +246,27 @@ export function TerritoryListedDoctor() {
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Ophthalmology / Specialty</label>
-                <input readOnly value={form.specialty} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "#f3f4f6", color: "var(--muted)", cursor: "not-allowed" }} />
+                <input readOnly value={form.specialty} />
               </div>
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Category</label>
-                <input readOnly value={form.category} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "#f3f4f6", color: "var(--muted)", cursor: "not-allowed" }} />
+                <input readOnly value={form.category} />
               </div>
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Assigned Medical Representative</label>
-                <input readOnly value={form.mr} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "#f3f4f6", color: "var(--muted)", cursor: "not-allowed" }} />
+                <input readOnly value={form.mr} />
               </div>
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Headquarters (HQ)</label>
-                <input readOnly value={form.hq} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "#f3f4f6", color: "var(--muted)", cursor: "not-allowed" }} />
+                <input readOnly value={form.hq} />
               </div>
 
               <div className="field" style={{ marginBottom: "12px" }}>
                 <label style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Status</label>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+                <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
                 </select>
@@ -294,11 +294,10 @@ export function TerritoryListedDoctor() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by doctor code, name or patch..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          style={{ width: "100%", maxWidth: "360px", padding: "8px 14px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none" }}
         />
       </div>
 

@@ -47,7 +47,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ChemistCove
         </label>
         <label className="field">
           <span>Type</span>
-          <select value={form.type} onChange={e => setForm({ ...form, type: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.type} onChange={e => setForm({ ...form, type: e.target.value as any })}>
             <option value="Core">Core</option>
             <option value="Non Core">Non Core</option>
           </select>
@@ -74,7 +74,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: ChemistCove
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Pending">Pending</option>
             <option value="Visited">Visited</option>
             <option value="Missed">Missed</option>
@@ -142,19 +142,10 @@ export function ManagerChemistCoverageReport() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by chemist or MR..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

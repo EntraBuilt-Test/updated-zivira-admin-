@@ -46,7 +46,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CampReportR
       <div className="subdivision-form-card">
         <label className="field">
           <span>* Camp Date</span>
-          <input type="date" value={form.campDate} onChange={e => setForm({ ...form, campDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.campDate} onChange={e => setForm({ ...form, campDate: e.target.value })} />
         </label>
         <label className="field">
           <span>* Camp Name</span>
@@ -78,7 +78,7 @@ function ReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CampReportR
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Pending">Pending</option>
             <option value="Completed">Completed</option>
             <option value="Cancelled">Cancelled</option>
@@ -145,19 +145,10 @@ export function ManagerCampReport() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by camp, hospital, doctor or MR..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

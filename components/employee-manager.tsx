@@ -159,8 +159,8 @@ export function EmployeeManager() {
           }}
         >
           <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", minWidth: "320px", maxWidth: "440px" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "12px", marginBottom: "12px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <div>
+              <div>
                 <AlertTriangle size={18} color="#ef4444" />
                 <h3 style={{ margin: 0, fontSize: "1rem", color: "#ef4444" }}>Something went wrong</h3>
               </div>
@@ -195,7 +195,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Gender</label>
-            <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
+            <select className="input" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
               <option value="Other">Other</option>
@@ -219,7 +219,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Department</label>
-            <select value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
+            <select className="input" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
               <option value="Sales">Sales</option>
               <option value="Marketing">Marketing</option>
               <option value="Medical Affairs">Medical Affairs</option>
@@ -231,7 +231,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Designation</label>
-            <select value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })}>
+            <select className="input" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })}>
               <option value="Medical Representative">Medical Representative (MR)</option>
               <option value="Area Sales Manager">Area Sales Manager (ASM)</option>
               <option value="Regional Sales Manager">Regional Sales Manager (RSM)</option>
@@ -243,7 +243,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Division</label>
-            <select value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value })}>
+            <select className="input" value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value })}>
               <option value="Astra">Astra</option>
               <option value="Aura">Aura</option>
               <option value="Zivira">Zivira</option>
@@ -255,7 +255,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Region</label>
-            <select required value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })}>
+            <select className="input" required value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })}>
               <option value="Tamil Nadu">Tamil Nadu</option>
               <option value="Kerala">Kerala</option>
               <option value="Karnataka">Karnataka</option>
@@ -280,7 +280,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Employee Status</label>
-            <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
+            <select className="input" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
             </select>

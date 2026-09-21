@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -146,21 +147,11 @@ export function AdminBranchesDashboard({ node, path }: { node: ZiviraTreeNode; p
 <div className="flex flex-wrap items-center gap-2">
 <div className="flex items-center gap-1.5 bg-surface-subtle border border-border-subtle px-2.5 py-1 rounded-lg">
 <span className="material-symbols-outlined text-[16px] text-text-muted">category</span>
-<select className="bg-transparent text-xs text-text-secondary font-medium focus:outline-none cursor-pointer">
-<option>All Hubs &amp; Depots</option>
-<option>Super-Depot</option>
-<option>C&amp;F Agent Hub</option>
-<option>Consignment Stockist</option>
-</select>
+<ToolbarDropdown options={["All Hubs &amp; Depots", "Super-Depot", "C&amp;F Agent Hub", "Consignment Stockist"]} initialSelected={"All Hubs &amp; Depots"} />
 </div>
 <div className="flex items-center gap-1.5 bg-surface-subtle border border-border-subtle px-2.5 py-1 rounded-lg">
 <span className="material-symbols-outlined text-[16px] text-text-muted">task_alt</span>
-<select className="bg-transparent text-xs text-text-secondary font-medium focus:outline-none cursor-pointer">
-<option>All Statuses</option>
-<option>GSTR-1 Filed</option>
-<option>GSTR-3B Reconciled</option>
-<option>Audit Pending</option>
-</select>
+<ToolbarDropdown options={["All Statuses", "GSTR-1 Filed", "GSTR-3B Reconciled", "Audit Pending"]} initialSelected={"All Statuses"} />
 </div>
 <button className="h-9 px-3 bg-surface-subtle hover:bg-surface-subtle border border-border-subtle text-text-secondary rounded-lg text-xs font-semibold flex items-center gap-1 transition-colors" title="Reset Filters">
 <span className="material-symbols-outlined text-[16px]">restart_alt</span>

@@ -215,7 +215,7 @@ export function ManagerSfcUpdation() {
 
       {/* Main Settings Panel */}
       <div className="card" style={{ padding: "28px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+        <div>
           {/* Label */}
           <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--ink)", whiteSpace: "nowrap" }}>
             Fieldforce
@@ -285,7 +285,6 @@ export function ManagerSfcUpdation() {
                         setDropdownOpen(false);
                       }}
                       type="button"
-                      style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" }}
                     >
                       <span
                         style={{
@@ -339,7 +338,7 @@ export function ManagerSfcUpdation() {
       {/* Results table — only after Go is clicked */}
       {activeEmployee && (
         <div className="card" style={{ marginTop: "20px", padding: "24px", background: "var(--panel)", borderRadius: "12px", border: "1px solid var(--border)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
+          <div>
             <span
               style={{
                 display: "inline-flex",
@@ -404,19 +403,9 @@ export function ManagerSfcUpdation() {
                 <tr className="hover:bg-surface-subtle/50 transition-colors group">
                   <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px", color: "var(--muted)" }}>{activeEmployee.territory ?? "—"}</td>
                   <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px" }}>
-                    <select
+                    <select className="input"
                       value={newToTerritory}
                       onChange={(e) => setNewToTerritory(e.target.value)}
-                      style={{
-                        width: "100%",
-                        height: "30px",
-                        borderRadius: "6px",
-                        border: "1px solid var(--line)",
-                        background: "var(--panel)",
-                        color: "var(--ink)",
-                        fontSize: "13px",
-                        padding: "0 8px"
-                      }}
                     >
                       <option value="">Select To Territory</option>
                       {patchOptions.map((p) => (
@@ -444,7 +433,7 @@ export function ManagerSfcUpdation() {
                     />
                   </td>
                   <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ padding: "8px 10px" }}>
-                    <div style={{ display: "flex", gap: "6px" }}>
+                    <div>
                       <button
                         type="button"
                         onClick={handleAddRoute}

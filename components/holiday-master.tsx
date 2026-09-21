@@ -53,10 +53,9 @@ function StateHolidayForm({ row, onSave, onBack }: { row: any; onSave: (r: State
       <div className="subdivision-form-card">
         <label className="field">
           <span>State</span>
-          <select
+          <select className="input"
             value={form.state}
             onChange={e => setForm({ ...form, state: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Tamil Nadu">Tamil Nadu</option>
             <option value="Karnataka">Karnataka</option>
@@ -75,15 +74,13 @@ function StateHolidayForm({ row, onSave, onBack }: { row: any; onSave: (r: State
             type="date"
             value={form.holidayDate}
             onChange={e => setForm({ ...form, holidayDate: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           />
         </label>
         <label className="field">
           <span>Holiday Type</span>
-          <select
+          <select className="input"
             value={form.holidayType}
             onChange={e => setForm({ ...form, holidayType: e.target.value as any })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Public Holiday">Public Holiday</option>
             <option value="Restricted Holiday">Restricted Holiday</option>
@@ -92,10 +89,9 @@ function StateHolidayForm({ row, onSave, onBack }: { row: any; onSave: (r: State
         </label>
         <label className="field">
           <span>Status</span>
-          <select
+          <select className="input"
             value={form.status}
             onChange={e => setForm({ ...form, status: e.target.value as any })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
@@ -151,10 +147,9 @@ function CalendarHolidayForm({ row, onSave, onBack }: { row: any; onSave: (r: Ca
         </label>
         <label className="field">
           <span>State</span>
-          <select
+          <select className="input"
             value={form.state}
             onChange={e => setForm({ ...form, state: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Tamil Nadu">Tamil Nadu</option>
             <option value="Karnataka">Karnataka</option>
@@ -173,15 +168,13 @@ function CalendarHolidayForm({ row, onSave, onBack }: { row: any; onSave: (r: Ca
             type="date"
             value={form.holidayDate}
             onChange={e => setForm({ ...form, holidayDate: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           />
         </label>
         <label className="field">
           <span>Holiday Type</span>
-          <select
+          <select className="input"
             value={form.holidayType}
             onChange={e => setForm({ ...form, holidayType: e.target.value as any })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Public Holiday">Public Holiday</option>
             <option value="Restricted Holiday">Restricted Holiday</option>
@@ -190,10 +183,9 @@ function CalendarHolidayForm({ row, onSave, onBack }: { row: any; onSave: (r: Ca
         </label>
         <label className="field">
           <span>Status</span>
-          <select
+          <select className="input"
             value={form.status}
             onChange={e => setForm({ ...form, status: e.target.value as any })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
@@ -323,19 +315,10 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
       {isStateTab ? (
         <>
           <div style={{ marginBottom: "16px" }}>
-            <input
+            <input className="input w-full max-w-md"
               placeholder="Search by holiday name or state..."
               value={stateSearch}
               onChange={(e) => setStateSearch(e.target.value)}
-              style={{
-                width: "100%",
-                maxWidth: "360px",
-                padding: "8px 14px",
-                borderRadius: "8px",
-                border: "1px solid #e5e7eb",
-                fontSize: "14px",
-                outline: "none"
-              }}
             />
           </div>
 
@@ -460,19 +443,10 @@ export function HolidayMaster({ initialTab = "state" }: { initialTab?: "state" |
       ) : (
         <>
           <div style={{ marginBottom: "16px" }}>
-            <input
+            <input className="input w-full max-w-md"
               placeholder="Search by holiday name or state..."
               value={calSearch}
               onChange={(e) => setCalSearch(e.target.value)}
-              style={{
-                width: "100%",
-                maxWidth: "360px",
-                padding: "8px 14px",
-                borderRadius: "8px",
-                border: "1px solid #e5e7eb",
-                fontSize: "14px",
-                outline: "none"
-              }}
             />
           </div>
 

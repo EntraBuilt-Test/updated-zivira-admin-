@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -226,12 +227,7 @@ export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode;
 <button className="px-2.5 py-1 text-label-sm font-label-sm rounded-md text-text-secondary hover:text-text-primary">East Central</button>
 </div>
 {/* Performance Tier Filter */}
-<select className="h-[34px] px-2.5 rounded-lg bg-surface-canvas text-text-secondary font-label-md text-label-md focus:outline-none cursor-pointer">
-<option>All Tiers</option>
-<option>Exceeding Target (&gt;100%)</option>
-<option>On-Track (90-100%)</option>
-<option>Critical Deficit (&lt;85%)</option>
-</select>
+<ToolbarDropdown options={["All Tiers", "Exceeding Target (&gt;100%)", "On-Track (90-100%)", "Critical Deficit (&lt;85%)"]} initialSelected={"All Tiers"} />
 {/* Utility icon buttons */}
 <button className="w-[34px] h-[34px] rounded-lg bg-surface-canvas hover:bg-surface-subtle text-text-secondary flex items-center justify-center transition-colors" title="Column Settings">
 <span className="material-symbols-outlined text-[18px]">view_column</span>

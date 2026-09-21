@@ -129,10 +129,9 @@ export function ProductGroupMaster() {
           </label>
           <label className="field">
             <span>Therapy</span>
-            <select
+            <select className="input"
               value={formRow.therapyName}
               onChange={(e) => setFormRow({ ...formRow, therapyName: e.target.value })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               {therapies.map((t) => (
                 <option key={t.id} value={t.categoryName}>
@@ -151,10 +150,9 @@ export function ProductGroupMaster() {
           </label>
           <label className="field">
             <span>Status</span>
-            <select
+            <select className="input"
               value={formRow.status}
               onChange={(e) => setFormRow({ ...formRow, status: e.target.value as "ACTIVE" | "INACTIVE" })}
-              style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
             >
               <option value="ACTIVE">Active</option>
               <option value="INACTIVE">Inactive</option>
@@ -186,19 +184,10 @@ export function ProductGroupMaster() {
       </div>
       {error && <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{error}</p>}
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by molecule name or therapy..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
       <div className="subdivision-stats" style={{ marginBottom: "20px" }}>

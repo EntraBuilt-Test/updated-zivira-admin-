@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 
@@ -163,38 +164,13 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 <input className="w-full pl-8 pr-3 py-1.5 bg-surface-subtle border border-border-subtle rounded-lg text-xs placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-brand-500" placeholder="Filter by Doctor Name, Hospital, Clinic, MR..." type="text"/>
 </div>
 {/* Territory Dropdown */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium focus:ring-1 focus:ring-brand-500">
-<option>All Territories (Pan-India)</option>
-<option>Mumbai South Metro</option>
-<option>Delhi NCR South</option>
-<option>Bengaluru Central Hub</option>
-<option>Kolkata East &amp; Salt Lake</option>
-<option>Chennai Central Hub</option>
-</select>
+<ToolbarDropdown options={["All Territories (Pan-India)", "Mumbai South Metro", "Delhi NCR South", "Bengaluru Central Hub", "Kolkata East &amp; Salt Lake", "Chennai Central Hub"]} initialSelected={"All Territories (Pan-India)"} />
 {/* Specialty Dropdown */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium focus:ring-1 focus:ring-brand-500">
-<option>All Specialties (Cardio, Diabeto, Pedia...)</option>
-<option>Cardiology</option>
-<option>Endocrinology &amp; Diabetology</option>
-<option>Pediatrics</option>
-<option>Pulmonology</option>
-<option>Neurology</option>
-</select>
+<ToolbarDropdown options={["All Specialties (Cardio, Diabeto, Pedia...)", "Cardiology", "Endocrinology &amp; Diabetology", "Pediatrics", "Pulmonology", "Neurology"]} initialSelected={"All Specialties (Cardio, Diabeto, Pedia...)"} />
 {/* Tier Dropdown */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium focus:ring-1 focus:ring-brand-500">
-<option>All Tiers (Tier A+, A, B)</option>
-<option>Tier A+ (Core Focus - 4 calls/mo)</option>
-<option>Tier A (Priority - 2 calls/mo)</option>
-<option>Tier B (Standard - 1 call/mo)</option>
-</select>
+<ToolbarDropdown options={["All Tiers (Tier A+, A, B)", "Tier A+ (Core Focus - 4 calls/mo)", "Tier A (Priority - 2 calls/mo)", "Tier B (Standard - 1 call/mo)"]} initialSelected={"All Tiers (Tier A+, A, B)"} />
 {/* Visit Status Dropdown */}
-<select className="bg-surface-subtle border border-border-subtle rounded-lg px-2.5 py-1.5 text-xs text-text-secondary font-medium focus:ring-1 focus:ring-brand-500">
-<option>All Coverage Status</option>
-<option>Target Met (100%)</option>
-<option>On Track (&gt;75%)</option>
-<option>Under-visited (&lt;50%)</option>
-<option>Zero-Visit Gap (0%)</option>
-</select>
+<ToolbarDropdown options={["All Coverage Status", "Target Met (100%)", "On Track (&gt;75%)", "Under-visited (&lt;50%)", "Zero-Visit Gap (0%)"]} initialSelected={"All Coverage Status"} />
 </div>
 <button className="px-3 py-1.5 text-text-secondary hover:text-text-primary font-semibold text-xs border border-border-subtle rounded-lg hover:bg-surface-subtle transition-colors">
             Reset Filters

@@ -54,7 +54,7 @@ function CallReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CallRep
       <div className="subdivision-form-card">
         <label className="field">
           <span>* Date</span>
-          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })} />
         </label>
         <label className="field">
           <span>* Employee Name</span>
@@ -62,7 +62,7 @@ function CallReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CallRep
         </label>
         <label className="field">
           <span>HQ</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })}>
             <option value="Chennai Central HQ">Chennai Central HQ</option>
             <option value="Coimbatore HQ">Coimbatore HQ</option>
             <option value="Madurai HQ">Madurai HQ</option>
@@ -94,7 +94,7 @@ function CallReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CallRep
         </label>
         <label className="field">
           <span>Call Type</span>
-          <select value={form.callType} onChange={e => setForm({ ...form, callType: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.callType} onChange={e => setForm({ ...form, callType: e.target.value })}>
             <option value="Physical Visit">Physical Visit</option>
             <option value="Phone Call">Phone Call</option>
             <option value="CME">CME</option>
@@ -110,7 +110,7 @@ function CallReportForm({ row, onSave, onBack }: { row: any; onSave: (r: CallRep
         </label>
         <label className="field">
           <span>Next Visit Date</span>
-          <input type="date" value={form.nextVisitDate} onChange={e => setForm({ ...form, nextVisitDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.nextVisitDate} onChange={e => setForm({ ...form, nextVisitDate: e.target.value })} />
         </label>
         <button className="button" style={{ marginTop: "12px" }} onClick={() => onSave(form)} type="button" disabled={!form.employee.trim()}>
           <Check size={16} /> Save Call Report
@@ -175,19 +175,10 @@ export function DoctorCallReport() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by employee, doctor or HQ..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

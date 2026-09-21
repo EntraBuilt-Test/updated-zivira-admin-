@@ -86,10 +86,9 @@ function BrandForm({ row, onSave, onBack, saving, error }: { row: any; onSave: (
         </label>
         <label className="field">
           <span>* Division</span>
-          <select 
+          <select className="input" 
             value={form.division} 
             onChange={e => setForm({ ...form, division: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Astra">Astra</option>
             <option value="Aura">Aura</option>

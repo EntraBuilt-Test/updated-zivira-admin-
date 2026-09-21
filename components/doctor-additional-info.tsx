@@ -111,11 +111,11 @@ function InfoForm({ row, onSave, onBack }: { row: any; onSave: (r: AdditionalInf
         </label>
         <label className="field">
           <span>Date of Birth</span>
-          <input type="date" value={form.dob} onChange={e => setForm({ ...form, dob: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.dob} onChange={e => setForm({ ...form, dob: e.target.value })} />
         </label>
         <label className="field">
           <span>Anniversary Date</span>
-          <input type="date" value={form.anniversaryDate} onChange={e => setForm({ ...form, anniversaryDate: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }} />
+          <input type="date" value={form.anniversaryDate} onChange={e => setForm({ ...form, anniversaryDate: e.target.value })} />
         </label>
         <label className="field">
           <span>Remarks</span>
@@ -123,7 +123,7 @@ function InfoForm({ row, onSave, onBack }: { row: any; onSave: (r: AdditionalInf
         </label>
         <label className="field">
           <span>Address</span>
-          <div style={{ display: "flex", gap: "8px" }}>
+          <div>
             <input
               value={form.address}
               onChange={e => setForm({ ...form, address: e.target.value })}
@@ -149,7 +149,6 @@ function InfoForm({ row, onSave, onBack }: { row: any; onSave: (r: AdditionalInf
             <img
               src={form.mapImage}
               alt={`Map location for ${form.address}`}
-              style={{ width: "100%", maxWidth: "420px", borderRadius: "8px", border: "1px solid #e5e7eb" }}
             />
           </label>
         )}
@@ -216,19 +215,10 @@ export function DoctorAdditionalInfo() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by doctor name..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

@@ -45,7 +45,7 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
         </label>
         <label className="field">
           <span>Division</span>
-          <select value={form.division} onChange={e => setForm({ ...form, division: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.division} onChange={e => setForm({ ...form, division: e.target.value })}>
             <option value="Zivira">Zivira</option>
             <option value="Astra">Astra</option>
             <option value="Aura">Aura</option>
@@ -53,7 +53,7 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
         </label>
         <label className="field">
           <span>HQ (Assigned Headquarters)</span>
-          <select value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.hq} onChange={e => setForm({ ...form, hq: e.target.value })}>
             <option value="Chennai Central HQ">Chennai Central HQ</option>
             <option value="Coimbatore HQ">Coimbatore HQ</option>
             <option value="Madurai HQ">Madurai HQ</option>
@@ -61,7 +61,7 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
         </label>
         <label className="field">
           <span>Patch (Territory)</span>
-          <select value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.patch} onChange={e => setForm({ ...form, patch: e.target.value })}>
             <option value="T. Nagar">T. Nagar</option>
             <option value="Mylapore">Mylapore</option>
             <option value="Anna Nagar">Anna Nagar</option>
@@ -69,7 +69,7 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
         </label>
         <label className="field">
           <span>Medical Representative</span>
-          <select value={form.mr} onChange={e => setForm({ ...form, mr: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.mr} onChange={e => setForm({ ...form, mr: e.target.value })}>
             <option value="Rahul Sharma">Rahul Sharma</option>
             <option value="Karthik Iyer">Karthik Iyer</option>
             <option value="Vignesh Raj">Vignesh Raj</option>
@@ -77,7 +77,7 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
         </label>
         <label className="field">
           <span>Area Manager</span>
-          <select value={form.am} onChange={e => setForm({ ...form, am: e.target.value })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.am} onChange={e => setForm({ ...form, am: e.target.value })}>
             <option value="Priya Nair">Priya Nair</option>
             <option value="Meena Patel">Meena Patel</option>
             <option value="Arvind Kumar">Arvind Kumar</option>
@@ -85,7 +85,7 @@ function MappingForm({ row, onSave, onBack }: { row: any; onSave: (r: MappingRow
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
@@ -152,19 +152,10 @@ export function DoctorMapping() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by doctor or territory..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 

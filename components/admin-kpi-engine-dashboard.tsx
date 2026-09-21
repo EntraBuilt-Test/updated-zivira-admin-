@@ -65,7 +65,7 @@ export function AdminKpiEngineDashboard({ node, path }: { node: ZiviraTreeNode; 
         </div>
       {error && <p className="p-4 bg-status-danger-bg text-status-danger rounded-md text-sm border border-status-danger-bg">{error}</p>}
 
-      <h3 className="text-lg font-semibold text-text-primary" style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 10 }}><Gauge size={16} /> Manager KPIs</h3>
+      <h3 className="text-lg font-semibold text-text-primary"><Gauge size={16} /> Manager KPIs</h3>
       <div className="bg-surface-card border border-border-subtle rounded-xl overflow-x-auto shadow-sm" style={{ marginBottom: 28 }}>
         <table className="w-full text-left text-sm whitespace-nowrap border-collapse">
           <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">

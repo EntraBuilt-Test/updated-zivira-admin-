@@ -184,7 +184,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
           >
             <div className="flex items-center border-b border-border-subtle px-4 py-1">
               <span className="material-symbols-outlined text-text-muted mr-3">search</span>
-              <input
+              <input className="input w-full max-w-md"
                 ref={searchInputRef}
                 placeholder="Search command pages or modules..."
                 value={searchQuery}

@@ -50,10 +50,9 @@ function AddressForm({ row, onSave, onBack }: { row: any; onSave: (r: AddressRow
         </label>
         <label className="field">
           <span>State</span>
-          <select
+          <select className="input"
             value={form.state}
             onChange={e => setForm({ ...form, state: e.target.value })}
-            style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}
           >
             <option value="Tamil Nadu">Tamil Nadu</option>
             <option value="Karnataka">Karnataka</option>
@@ -68,7 +67,7 @@ function AddressForm({ row, onSave, onBack }: { row: any; onSave: (r: AddressRow
         </label>
         <label className="field">
           <span>Status</span>
-          <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })} style={{ width: "100%", padding: "8px 12px", borderRadius: "6px", border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)" }}>
+          <select className="input" value={form.status} onChange={e => setForm({ ...form, status: e.target.value as any })}>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
@@ -143,19 +142,10 @@ export function AddressMaster() {
       </div>
 
       <div style={{ marginBottom: "16px" }}>
-        <input
+        <input className="input w-full max-w-md"
           placeholder="Search by address, city or pin..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          style={{
-            width: "100%",
-            maxWidth: "360px",
-            padding: "8px 14px",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            fontSize: "14px",
-            outline: "none"
-          }}
         />
       </div>
 
