@@ -18,6 +18,7 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
   const [schema, setSchema] = useState<MasterSchema | null>(null);
   const [rows, setRows] = useState<MasterRecord[]>([]);
   const [dropdownOptions, setDropdownOptions] = useState<Record<string, string[]>>({});
+  const [sourceRecords, setSourceRecords] = useState<Record<string, MasterRecord[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -37,12 +38,18 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
       setSchema(schemaRes.data);
       setRows(rowsRes.data);
 
+      // Pre-fetch live records for any field sourced from another master
+      // (dropdown fields) or that computes a display value from one — e.g.
+      // HQ/Designation/Emp.Code auto-filled from the chosen SF Name, same
+      // as sanpharma.info's own SF-Name-driven approval rows.
       const sourced = schemaRes.data.fields.filter((f) => f.sourceMaster && f.sourceField);
-      const uniqueSources = Array.from(new Set(sourced.map((f) => f.sourceMaster as string)));
+      const computedSources = schemaRes.data.fields.filter((f) => f.computed).map((f) => f.computed!.sourceMaster);
+      const uniqueSources = Array.from(new Set([...sourced.map((f) => f.sourceMaster as string), ...computedSources]));
       const fetched = await Promise.all(
         uniqueSources.map((sm) => apiClient.masterRecords(sm).then((r) => [sm, r.data] as const).catch(() => [sm, []] as const))
       );
       const bySource: Record<string, MasterRecord[]> = Object.fromEntries(fetched);
+      setSourceRecords(bySource);
       const opts: Record<string, string[]> = {};
       for (const f of sourced) {
         const records = bySource[f.sourceMaster as string] ?? [];
@@ -56,6 +63,18 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  // Looks up a computed field's display value — e.g. HQ from the employee
+  // record matching the currently-selected SF Name — same lookup the
+  // generic master console uses for its own computed columns.
+  function computedValueFor(f: MasterField, row: Record<string, unknown>): string {
+    if (!f.computed) return "";
+    const currentKey = row[f.computed.fromField];
+    if (!currentKey) return "";
+    const records = sourceRecords[f.computed.sourceMaster] ?? [];
+    const match = records.find((r) => r[f.computed!.lookupField] === currentKey);
+    return match ? String(match[f.computed.displayField] ?? "") : "";
   }
 
   useEffect(() => {
@@ -134,6 +153,14 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
   }
 
   const displayFields = schema.fields.filter((f) => f.key !== "approvalStatus");
+  // Exact literal wording from sanpharma.info — not identical across every
+  // Approvals screen (see the registry comments), so it comes from the
+  // schema rather than being hardcoded here.
+  const actionColumnLabel = schema.approvalActionColumnLabel ?? "Click Here";
+  const baseLinkText = schema.approvalLinkText ?? "Click Here to Approve";
+  const linkText = schema.approvalLinkDateSuffix
+    ? `${baseLinkText} ${new Date().toLocaleString("en-US", { month: "short" })} ${new Date().getFullYear()}`
+    : baseLinkText;
   const commonStyle: React.CSSProperties = {
     width: "100%", padding: "8px 10px", borderRadius: "6px",
     border: "1px solid var(--border)", fontSize: "13px", background: "var(--panel)", color: "var(--ink)"
@@ -176,12 +203,14 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
               <h2 style={{ margin: 0, fontSize: "1.1rem" }}>{formRow.id ? "Edit" : "New"} {schema.title}</h2>
               <button onClick={() => setFormRow(null)} type="button" aria-label="Close"><X size={20} /></button>
             </div>
-            {schema.fields.map((f) => {
+            {schema.fields.filter((f) => f.key !== "approvalStatus").map((f) => {
               const opts = optionsFor(f);
               return (
                 <label key={f.key} style={{ display: "block", marginBottom: "12px" }}>
                   <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>{f.label}</span>
-                  {opts ? (
+                  {f.computed ? (
+                    <input type="text" value={computedValueFor(f, formRow)} readOnly style={{ ...commonStyle, opacity: 0.7 }} />
+                  ) : opts ? (
                     <CustomSelect
                       value={(formRow[f.key] as string | undefined) ?? ""}
                       options={opts}
@@ -246,12 +275,13 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
             <table className="w-full text-left border-collapse">
               <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
                 <tr>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">S.No</th>
                   {displayFields.map((f) => (
                     <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
                       {f.label}
                     </th>
                   ))}
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Approval</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">{actionColumnLabel}</th>
                   <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
                   <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remove</th>
                 </tr>
@@ -259,30 +289,31 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
               <tbody>
                 {visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={displayFields.length + 3} className="px-4 py-10 text-center text-text-muted text-sm">
+                    <td colSpan={displayFields.length + 4} className="px-4 py-10 text-center text-text-muted text-sm">
                       No Data found for Approval&apos;s
                     </td>
                   </tr>
                 )}
-                {visibleRows.map((row) => {
+                {visibleRows.map((row, idx) => {
                   const status = String(row.approvalStatus ?? "Pending");
                   return (
                     <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{idx + 1}</td>
                       {displayFields.map((f) => (
                         <td key={f.key} className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                          {String(row[f.key] ?? "")}
+                          {f.computed ? computedValueFor(f, row) : String(row[f.key] ?? "")}
                         </td>
                       ))}
                       <td className="px-4 py-3 text-sm whitespace-nowrap">
                         {status === "Pending" ? (
                           <div className="flex items-center gap-3">
-                            <button
+                          <button
                               type="button"
                               disabled={workingId === row.id}
                               onClick={() => act(row, "Approved")}
                               className="text-brand-primary underline underline-offset-2 font-medium hover:text-brand-primary/80 disabled:opacity-50"
                             >
-                              {workingId === row.id ? "Working…" : "Click Here to Approve"}
+                              {workingId === row.id ? "Working…" : linkText}
                             </button>
                             <button
                               type="button"
