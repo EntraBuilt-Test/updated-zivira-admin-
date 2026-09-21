@@ -309,6 +309,346 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GenericMasterTable masterKey="imsMaster" />;
   }
 
+    if (pathStr.endsWith("approvals/listed-dr-addition")) {
+    return <GenericMasterTable masterKey="approvalListedDrAddition" />;
+  }
+
+  if (pathStr.endsWith("approvals/listed-dr-deactivation")) {
+    return <GenericMasterTable masterKey="approvalListedDrDeactivation" />;
+  }
+
+  if (pathStr.endsWith("approvals/tp")) {
+    return <GenericMasterTable masterKey="approvalTp" />;
+  }
+
+  if (pathStr.endsWith("approvals/dcr")) {
+    return <GenericMasterTable masterKey="approvalDcr" />;
+  }
+
+  if (pathStr.endsWith("approvals/leave")) {
+    return <GenericMasterTable masterKey="approvalLeave" />;
+  }
+
+  if (pathStr.endsWith("activities/expense/approval-active")) {
+    return <GenericMasterTable masterKey="expenseApprovalActive" />;
+  }
+
+  if (pathStr.endsWith("activities/expense/approval-vacant-resigned")) {
+    return <GenericMasterTable masterKey="expenseApprovalVacantResigned" />;
+  }
+
+  if (pathStr.endsWith("activities/expense/analysis")) {
+    return <GenericMasterTable masterKey="activitiesExpenseAnalysis" />;
+  }
+
+  if (pathStr.endsWith("activities/expense/consolidated-view")) {
+    return <GenericMasterTable masterKey="activitiesExpenseConsolidatedView" />;
+  }
+
+  if (pathStr.endsWith("sample-dispatch/view")) {
+    return <GenericMasterTable masterKey="sampleDispatchView" />;
+  }
+
+  if (pathStr.endsWith("sample-dispatch/status")) {
+    return <GenericMasterTable masterKey="sampleDispatchStatus" />;
+  }
+
+  if (pathStr.endsWith("input-dispatch/view")) {
+    return <GenericMasterTable masterKey="inputDispatchView" />;
+  }
+
+  if (pathStr.endsWith("input-dispatch/status")) {
+    return <GenericMasterTable masterKey="inputDispatchStatus" />;
+  }
+
+  if (pathStr.endsWith("msis/view")) {
+    return <GenericMasterTable masterKey="msisView" />;
+  }
+
+  if (pathStr.endsWith("login-details/manager")) {
+    return <GenericMasterTable masterKey="loginDetailsManager" />;
+  }
+
+  if (pathStr.endsWith("login-details/fieldrepo")) {
+    return <GenericMasterTable masterKey="loginDetailsFieldrepo" />;
+  }
+
+  if (pathStr.endsWith("activities/login-into-fieldforce")) {
+    return <GenericMasterTable masterKey="loginIntoFieldforce" />;
+  }
+
+  if (pathStr.endsWith("task-management/mode-creation")) {
+    return <GenericMasterTable masterKey="taskModeCreation" />;
+  }
+
+  if (pathStr.endsWith("task-management/task-assign")) {
+    return <GenericMasterTable masterKey="taskAssign" />;
+  }
+
+  if (pathStr.endsWith("activities/activity/master-screen-creation")) {
+    return <GenericMasterTable masterKey="activityMasterScreenCreation" />;
+  }
+
+  if (pathStr.endsWith("activities/activity/status")) {
+    return <GenericMasterTable masterKey="activityStatus" />;
+  }
+
+  if (pathStr.endsWith("manager-missed-call/setup")) {
+    return <GenericMasterTable masterKey="managerMissedCallSetup" />;
+  }
+
+  if (pathStr.endsWith("manager-missed-call/view")) {
+    return <GenericMasterTable masterKey="managerMissedCallView" />;
+  }
+
+  if (pathStr.endsWith("division-options/dashboard")) {
+    return <GenericMasterTable masterKey="optionsDashboardWidget" />;
+  }
+
+  if (pathStr.endsWith("division-options/change-password")) {
+    return <GenericMasterTable masterKey="passwordChangeLog" />;
+  }
+
+  if (pathStr.endsWith("vacant-mr-login/access")) {
+    return <GenericMasterTable masterKey="vacantMrLoginAccess" />;
+  }
+
+  if (pathStr.endsWith("vacant-mr-login/permission-for-managers")) {
+    return <GenericMasterTable masterKey="vacantMrLoginPermission" />;
+  }
+
+  if (pathStr.endsWith("division-options/doctor-campaign-map")) {
+    return <GenericMasterTable masterKey="doctorCampaignMap" />;
+  }
+
+  if (pathStr.endsWith("update-delete/tp-delete")) {
+    return <GenericMasterTable masterKey="updateDeleteTpDelete" />;
+  }
+
+  if (pathStr.endsWith("update-delete/dcr-edit")) {
+    return <GenericMasterTable masterKey="updateDeleteDcrEdit" />;
+  }
+
+  if (pathStr.endsWith("update-delete/msis-edit")) {
+    return <GenericMasterTable masterKey="updateDeleteMsisEdit" />;
+  }
+
+  if (pathStr.endsWith("update-delete/mail-delete")) {
+    return <GenericMasterTable masterKey="updateDeleteMailDelete" />;
+  }
+
+  if (pathStr.endsWith("update-delete/leave-cancellation")) {
+    return <GenericMasterTable masterKey="updateDeleteLeaveCancellation" />;
+  }
+
+  if (pathStr.endsWith("update-delete/mob-app-device-id-deletion")) {
+    return <GenericMasterTable masterKey="updateDeleteMobAppDeviceIdDeletion" />;
+  }
+
+  if (pathStr.endsWith("update-delete/tp-deviation-release")) {
+    return <GenericMasterTable masterKey="updateDeleteTpDeviationRelease" />;
+  }
+
+  if (pathStr.endsWith("update-delete/drs-uni-no-generation")) {
+    return <GenericMasterTable masterKey="updateDeleteDrsUniNoGeneration" />;
+  }
+
+  if (pathStr.endsWith("update-delete/chemist-business-release")) {
+    return <GenericMasterTable masterKey="updateDeleteChemistBusinessRelease" />;
+  }
+
+  if (pathStr.endsWith("update-delete/chem-bus-month-release")) {
+    return <GenericMasterTable masterKey="updateDeleteChemBusMonthRelease" />;
+  }
+
+  if (pathStr.endsWith("update-delete/auto-mail-reports")) {
+    return <GenericMasterTable masterKey="updateDeleteAutoMailReports" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/screen-access-rights")) {
+    return <GenericMasterTable masterKey="basicSetupScreenAccessRights" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/base-level")) {
+    return <GenericMasterTable masterKey="basicSetupBaseLevel" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/managers")) {
+    return <GenericMasterTable masterKey="basicSetupManagers" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/approval-mandatory")) {
+    return <GenericMasterTable masterKey="basicSetupApprovalMandatory" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/managerwise-core-doctor-map")) {
+    return <GenericMasterTable masterKey="basicSetupManagerwiseCoreDoctorMap" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/screenwise-access")) {
+    return <GenericMasterTable masterKey="basicSetupScreenwiseAccess" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/mail-folder-creation")) {
+    return <GenericMasterTable masterKey="basicSetupMailFolderCreation" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/other-setup")) {
+    return <GenericMasterTable masterKey="basicSetupOtherSetup" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/homepage-dashboard-display")) {
+    return <GenericMasterTable masterKey="basicSetupHomepageDashboardDisplay" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/leave-setup")) {
+    return <GenericMasterTable masterKey="basicSetupLeaveSetup" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/leave-policy-setup")) {
+    return <GenericMasterTable masterKey="basicSetupLeavePolicySetup" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/device-lock")) {
+    return <GenericMasterTable masterKey="basicSetupDeviceLock" />;
+  }
+
+  if (pathStr.endsWith("basic-setup/order-booking-setup")) {
+    return <GenericMasterTable masterKey="basicSetupOrderBookingSetup" />;
+  }
+
+  if (pathStr.endsWith("app-setup/call-feedback")) {
+    return <GenericMasterTable masterKey="appSetupCallFeedback" />;
+  }
+
+  if (pathStr.endsWith("app-setup/call-remarks-templates")) {
+    return <GenericMasterTable masterKey="appSetupCallRemarksTemplates" />;
+  }
+
+  if (pathStr.endsWith("app-setup/notification-message")) {
+    return <GenericMasterTable masterKey="appSetupNotificationMessage" />;
+  }
+
+  if (pathStr.endsWith("app-setup/gps-geofence-tagg-deletion")) {
+    return <GenericMasterTable masterKey="appSetupGpsGeofenceTaggDeletion" />;
+  }
+
+  if (pathStr.endsWith("app-setup/dynamic-app-link")) {
+    return <GenericMasterTable masterKey="appSetupDynamicAppLink" />;
+  }
+
+  if (pathStr.endsWith("division-options/mail-box")) {
+    return <GenericMasterTable masterKey="mailBox" />;
+  }
+
+  if (pathStr.endsWith("customer-upload/listed-doctor")) {
+    return <GenericMasterTable masterKey="customerUploadListedDoctor" />;
+  }
+
+  if (pathStr.endsWith("customer-upload/chemist")) {
+    return <GenericMasterTable masterKey="customerUploadChemist" />;
+  }
+
+  if (pathStr.endsWith("customer-upload/sample")) {
+    return <GenericMasterTable masterKey="customerUploadSample" />;
+  }
+
+  if (pathStr.endsWith("customer-upload/input")) {
+    return <GenericMasterTable masterKey="customerUploadInput" />;
+  }
+
+  if (pathStr.endsWith("customer-upload/target")) {
+    return <GenericMasterTable masterKey="customerUploadTarget" />;
+  }
+
+  if (pathStr.endsWith("information-upload/flash-news")) {
+    return <GenericMasterTable masterKey="informationUploadFlashNews" />;
+  }
+
+  if (pathStr.endsWith("information-upload/notice-board")) {
+    return <GenericMasterTable masterKey="informationUploadNoticeBoard" />;
+  }
+
+  if (pathStr.endsWith("information-upload/quote-for-the-week")) {
+    return <GenericMasterTable masterKey="informationUploadQuoteForTheWeek" />;
+  }
+
+  if (pathStr.endsWith("information-upload/talk-to-us")) {
+    return <GenericMasterTable masterKey="informationUploadTalkToUs" />;
+  }
+
+  if (pathStr.endsWith("information-upload/file-circular-desig-wise")) {
+    return <GenericMasterTable masterKey="informationUploadFileCircularDesigWise" />;
+  }
+
+  if (pathStr.endsWith("information-upload/user-manual-upload")) {
+    return <GenericMasterTable masterKey="informationUploadUserManualUpload" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/field-force")) {
+    return <GenericMasterTable masterKey="bulkUploadFieldForce" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/stockist")) {
+    return <GenericMasterTable masterKey="bulkUploadStockist" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/product")) {
+    return <GenericMasterTable masterKey="bulkUploadProduct" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/product-rate")) {
+    return <GenericMasterTable masterKey="bulkUploadProductRate" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/slides-upload")) {
+    return <GenericMasterTable masterKey="bulkUploadSlidesUpload" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
+    return <GenericMasterTable masterKey="bulkUploadHolidayFixation" />;
+  }
+
+  if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
+    return <GenericMasterTable masterKey="bulkUploadLeaveBulkUpload" />;
+  }
+
+  if (pathStr.endsWith("division-options/transaction-upload")) {
+    return <GenericMasterTable masterKey="transactionUpload" />;
+  }
+
+  if (pathStr.endsWith("image-upload/home-page-common-for-all")) {
+    return <GenericMasterTable masterKey="imageUploadHomePageCommonForAll" />;
+  }
+
+  if (pathStr.endsWith("image-upload/home-page-fieldforcewise")) {
+    return <GenericMasterTable masterKey="imageUploadHomePageFieldforcewise" />;
+  }
+
+  if (pathStr.endsWith("division-options/leave-status")) {
+    return <GenericMasterTable masterKey="leaveStatusOptions" />;
+  }
+
+  if (pathStr.endsWith("transfers/transfer-master-details")) {
+    return <GenericMasterTable masterKey="transferMasterDetails" />;
+  }
+
+  if (pathStr.endsWith("transfers/convert-unlisted-drs-listed-drs")) {
+    return <GenericMasterTable masterKey="convertUnlistedDrsListedDrs" />;
+  }
+
+  if (pathStr.endsWith("division-options/release-missing-dates-delay")) {
+    return <GenericMasterTable masterKey="releaseMissingDatesDelay" />;
+  }
+
+  if (pathStr.endsWith("division-options/quiz")) {
+    return <GenericMasterTable masterKey="quizMaster" />;
+  }
+
+  if (pathStr.endsWith("division-options/quiz-category")) {
+    return <GenericMasterTable masterKey="quizCategory" />;
+  }
+
   if (pathStr.includes("activity/dcr") || pathStr.includes("activities/dcr")) {
     return <AdminDcrView />;
   }
