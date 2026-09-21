@@ -330,6 +330,10 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <MasterScreen masterKey="approvalLeave" />;
   }
 
+  if (pathStr.endsWith("approvals/order-booking-approval")) {
+    return <MasterScreen masterKey="approvalOrderBooking" />;
+  }
+
   if (pathStr.endsWith("activities/expense/approval-active")) {
     return <MasterScreen masterKey="expenseApprovalActive" />;
   }
@@ -366,6 +370,18 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <MasterScreen masterKey="msisView" />;
   }
 
+  if (pathStr.endsWith("leave-entitlement/entry")) {
+    return <MasterScreen masterKey="leaveEntitlementEntry" />;
+  }
+
+  if (pathStr.endsWith("leave-entitlement/view")) {
+    return <MasterScreen masterKey="leaveEntitlementView" />;
+  }
+
+  if (pathStr.endsWith("activities/audit-report")) {
+    return <MasterScreen masterKey="auditReport" />;
+  }
+
   if (pathStr.endsWith("login-details/manager")) {
     return <MasterScreen masterKey="loginDetailsManager" />;
   }
@@ -384,6 +400,10 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
   if (pathStr.endsWith("task-management/task-assign")) {
     return <GenericMasterTable masterKey="taskAssign" />;
+  }
+
+  if (pathStr.endsWith("activities/order-booking-view")) {
+    return <MasterScreen masterKey="orderBookingView" />;
   }
 
   if (pathStr.endsWith("activities/activity/master-screen-creation")) {

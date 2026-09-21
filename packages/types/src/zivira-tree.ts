@@ -177,7 +177,8 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
           node("Listed Dr Deactivation", "listed-dr-deactivation", "division"),
           node("TP", "tp", "division"),
           node("DCR", "dcr", "division"),
-          node("Leave", "leave", "division")
+          node("Leave", "leave", "division"),
+          node("Order Booking Approval", "order-booking-approval", "division")
         ]),
         node("Expense", "expense", "division", [
           node("Approval(Active)", "approval-active", "division"),
@@ -188,9 +189,12 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         node("Sample Dispatch", "sample-dispatch", "division", [node("View", "view", "division"), node("Status", "status", "division")]),
         node("Input Dispatch", "input-dispatch", "division", [node("View", "view", "division"), node("Status", "status", "division")]),
         node("MSIS", "msis", "division", [node("View", "view", "division")]),
+        node("Leave Entitlement", "leave-entitlement", "division", [node("Entry", "entry", "division"), node("View", "view", "division")]),
+        node("Audit Report", "audit-report", "division"),
         node("Login Details", "login-details", "division", [node("Manager", "manager", "division"), node("Fieldrepo", "fieldrepo", "division")]),
         node("Login Into Fieldforce", "login-into-fieldforce", "division"),
         node("Task Management", "task-management", "division", [node("Mode Creation", "mode-creation", "division"), node("Task Assign", "task-assign", "division")]),
+        node("Order Booking View", "order-booking-view", "division"),
         node("Activity", "activity", "division", [node("Master & Screen Creation", "master-screen-creation", "division"), node("Status", "status", "division")]),
         node("Manager Missed Call", "manager-missed-call", "division", [node("Setup", "setup", "division"), node("View", "view", "division")])
       ]),
