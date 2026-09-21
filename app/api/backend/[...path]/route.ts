@@ -30,7 +30,15 @@ async function handleRequest(request: NextRequest, paramsPromise: Promise<{ path
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString() ? `?${searchParams.toString()}` : "";
     
-    const backendUrl = `https://zivira-backend-7qkt.onrender.com/api/${pathString}${queryString}`;
+    // Client's Render dashboard shows the ACTUAL live backend service is
+    // "Zivira-Backend-swagger-ui" (zivira-backend-swagger-ui.onrender.com,
+    // README: "this one service is the single source of truth") — this
+    // proxy was still pointed at an older, no-longer-updated service
+    // (zivira-backend-7qkt.onrender.com), which is why new backend code
+    // (Territory Code, the Sales-tab clear-all endpoint, and any other
+    // recent fix) never showed up on the deployed admin app: every request
+    // was silently being served by the stale service instead.
+    const backendUrl = `https://zivira-backend-swagger-ui.onrender.com/api/${pathString}${queryString}`;
     
     // Create new headers, omitting Origin and Referer to bypass strict CORS on the backend
     const headers = new Headers();
