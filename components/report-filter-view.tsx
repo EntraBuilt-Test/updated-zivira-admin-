@@ -20,6 +20,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
   const [schema, setSchema] = useState<MasterSchema | null>(null);
   const [rows, setRows] = useState<MasterRecord[]>([]);
   const [dropdownOptions, setDropdownOptions] = useState<Record<string, string[]>>({});
+  const [sourceRecords, setSourceRecords] = useState<Record<string, MasterRecord[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [personFilter, setPersonFilter] = useState("");
@@ -47,11 +48,17 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
       setRows(rowsRes.data);
 
       const sourced = schemaRes.data.fields.filter((f) => f.sourceMaster && f.sourceField);
-      const uniqueSources = Array.from(new Set(sourced.map((f) => f.sourceMaster as string)));
+      // Same as ApprovalQueueTable — a `computed` field (Emp Code / HQ /
+      // Designation derived from the chosen Field Force Name) needs its
+      // sourceMaster's records fetched too, or there is nothing to look
+      // the display value up in and the column renders blank.
+      const computedSources = schemaRes.data.fields.filter((f) => f.computed).map((f) => f.computed!.sourceMaster);
+      const uniqueSources = Array.from(new Set([...sourced.map((f) => f.sourceMaster as string), ...computedSources]));
       const fetched = await Promise.all(
         uniqueSources.map((sm) => apiClient.masterRecords(sm).then((r) => [sm, r.data] as const).catch(() => [sm, []] as const))
       );
       const bySource: Record<string, MasterRecord[]> = Object.fromEntries(fetched);
+      setSourceRecords(bySource);
       const opts: Record<string, string[]> = {};
       for (const f of sourced) {
         const records = bySource[f.sourceMaster as string] ?? [];
@@ -71,6 +78,20 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [masterKey]);
+
+  // Looks up a computed field's display value (e.g. Emp Code/HQ/Designation
+  // from the employee record matching this row's Field Force / SF Name) —
+  // identical lookup to ApprovalQueueTable's, needed here too since
+  // Expense Approval (Active/Vacant-Resigned) render through this
+  // reportFilter view, not the approvalQueue one.
+  function computedValueFor(f: MasterField, row: Record<string, unknown>): string {
+    if (!f.computed) return "";
+    const currentKey = row[f.computed.fromField];
+    if (!currentKey) return "";
+    const records = sourceRecords[f.computed.sourceMaster] ?? [];
+    const match = records.find((r) => r[f.computed!.lookupField] === currentKey);
+    return match ? String(match[f.computed.displayField] ?? "") : "";
+  }
 
   const personField = schema?.fields.find((f) => f.sourceMaster && f.sourceField);
   const hasMonth = !!schema?.fields.find((f) => f.key === "month");
@@ -204,7 +225,9 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
               return (
                 <label key={f.key} style={{ display: "block", marginBottom: "12px" }}>
                   <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>{f.label}</span>
-                  {opts ? (
+                  {f.computed ? (
+                    <input type="text" value={computedValueFor(f, formRow)} readOnly style={{ ...commonStyle, opacity: 0.7 }} />
+                  ) : opts ? (
                     <CustomSelect
                       value={(formRow[f.key] as string | undefined) ?? ""}
                       options={opts}
@@ -340,7 +363,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
                   <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
                     {schema.fields.map((f) => (
                       <td key={f.key} className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                        {String(row[f.key] ?? "")}
+                        {f.computed ? computedValueFor(f, row) : String(row[f.key] ?? "")}
                       </td>
                     ))}
                     <td className="px-4 py-3">

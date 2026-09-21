@@ -26,6 +26,14 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
   const [formRow, setFormRow] = useState<Record<string, unknown> | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<MasterRecord | null>(null);
+  // sanpharma.info opens a dedicated detail page for "Click Here to
+  // Approve" (see e.g. MGR/DCR_Bulk_Approval.aspx) rather than approving
+  // inline the instant the link is clicked. We don't have a per-activity-
+  // date line-item model behind these approval rows yet, so this renders
+  // as a detail modal showing every field of the selected request (SF
+  // Name, HQ, Designation, etc.) with the same Approve/Reject actions,
+  // instead of flipping status the moment the link is clicked.
+  const [detailTarget, setDetailTarget] = useState<MasterRecord | null>(null);
 
   async function load() {
     setLoading(true);
@@ -201,6 +209,53 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
         </div>
       )}
 
+      {detailTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 65, padding: "20px" }}>
+          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", width: "460px", maxWidth: "100%", maxHeight: "85vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h2 style={{ margin: 0, fontSize: "1.1rem" }}>Request Details</h2>
+              <button onClick={() => setDetailTarget(null)} type="button" aria-label="Close"><X size={20} /></button>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
+              {displayFields.map((f) => (
+                <div key={f.key} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px", borderBottom: "1px solid var(--border)", paddingBottom: "6px" }}>
+                  <span style={{ color: "var(--muted, #666)" }}>{f.label}</span>
+                  <strong>{f.computed ? computedValueFor(f, detailTarget) || "—" : String(detailTarget[f.key] ?? "—")}</strong>
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px", paddingBottom: "6px" }}>
+                <span style={{ color: "var(--muted, #666)" }}>Approval Status</span>
+                <strong>{String(detailTarget.approvalStatus ?? "Pending")}</strong>
+              </div>
+            </div>
+            {String(detailTarget.approvalStatus ?? "Pending") === "Pending" ? (
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  className="button"
+                  style={{ flex: 1 }}
+                  type="button"
+                  disabled={workingId === detailTarget.id}
+                  onClick={async () => { await act(detailTarget, "Approved"); setDetailTarget(null); }}
+                >
+                  {workingId === detailTarget.id ? "Working..." : "Approve"}
+                </button>
+                <button
+                  className="button button-secondary"
+                  style={{ flex: 1 }}
+                  type="button"
+                  disabled={workingId === detailTarget.id}
+                  onClick={async () => { await act(detailTarget, "Rejected"); setDetailTarget(null); }}
+                >
+                  Reject
+                </button>
+              </div>
+            ) : (
+              <button className="button button-secondary" style={{ width: "100%" }} type="button" onClick={() => setDetailTarget(null)}>Close</button>
+            )}
+          </div>
+        </div>
+      )}
+
       {formRow && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 60, padding: "20px" }}>
           <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", width: "420px", maxHeight: "85vh", overflowY: "auto" }}>
@@ -315,7 +370,7 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
                           <button
                               type="button"
                               disabled={workingId === row.id}
-                              onClick={() => act(row, "Approved")}
+                              onClick={() => setDetailTarget(row)}
                               className="text-brand-primary underline underline-offset-2 font-medium hover:text-brand-primary/80 disabled:opacity-50"
                             >
                               {workingId === row.id ? "Working…" : linkText}
