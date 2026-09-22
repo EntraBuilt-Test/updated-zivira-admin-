@@ -1,5 +1,9 @@
+"use client";
+
 import type { ZiviraTreeNode } from "@zivira/types";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { applyMenuOverrides, fetchMenuOverrides, type MenuOverride } from "@/lib/menu-overrides";
 
 function Card({ node, parentPath }: { node: ZiviraTreeNode; parentPath: string[] }) {
   const path = [...parentPath, node.slug];
@@ -22,13 +26,31 @@ function Card({ node, parentPath }: { node: ZiviraTreeNode; parentPath: string[]
 }
 
 export function AdminTabGrid({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
+  // Menu Creation overrides (hide/rename/reorder) — see lib/menu-overrides.ts.
+  // Starts `null` (not yet fetched) and falls back to an empty map on any
+  // failure; both cases render the exact original `node.children`, so this
+  // is a strictly additive layer over the existing static tree.
+  const [overrides, setOverrides] = useState<Map<string, MenuOverride> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchMenuOverrides().then((map) => {
+      if (!cancelled) setOverrides(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   if (!node.children || node.children.length === 0) {
     return null;
   }
-  
+
+  const children = overrides && overrides.size ? applyMenuOverrides(node.children, path, overrides) : node.children;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
-      {node.children.map((child) => (
+      {children.map((child) => (
         <Card key={`${child.slug}-${child.title}`} node={child} parentPath={path} />
       ))}
     </div>
