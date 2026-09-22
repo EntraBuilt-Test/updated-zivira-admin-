@@ -678,7 +678,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/quiz")) {
-    return <GenericMasterTable masterKey="quizList" />;
+    return <MasterScreen masterKey="quizList" />;
   }
 
   if (pathStr.endsWith("division-options/quiz-category")) {

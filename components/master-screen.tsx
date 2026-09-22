@@ -11,6 +11,7 @@ import { LoginAsEmployeePanel } from "@/components/login-as-employee-panel";
 import { NotificationSendPanel } from "@/components/notification-send-panel";
 import { UploadPanel } from "@/components/upload-panel";
 import { MailBoxPanel } from "@/components/mail-box-panel";
+import { QuizAuthoringPanel } from "@/components/quiz-authoring-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -22,7 +23,7 @@ import { MailBoxPanel } from "@/components/mail-box-panel";
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | null
   >(null);
 
   useEffect(() => {
@@ -48,6 +49,7 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "notificationSend") return <NotificationSendPanel masterKey={masterKey} />;
   if (uiKind === "upload") return <UploadPanel masterKey={masterKey} />;
   if (uiKind === "mailBox") return <MailBoxPanel masterKey={masterKey} />;
+  if (uiKind === "quizAuthoring") return <QuizAuthoringPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

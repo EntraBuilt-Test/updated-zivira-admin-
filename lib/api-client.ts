@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload" | "mailBox"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export type MailRecord = {
@@ -327,6 +327,42 @@ export type MailRecord = {
   sentAt?: string;
   readAt?: string | null;
   status?: "Read" | "Unread";
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+// Real quiz authoring + scoring — GET/POST/PUT/DELETE /company/quiz and its
+// :id/attempts sub-resource (see quiz.routes.ts on the backend). A question
+// always carries correctOptionIndex in the admin view returned here; the
+// backend keeps a separate rep-facing shape (without it) ready for reuse
+// once a field-rep-facing "take the quiz" screen exists.
+export type QuizQuestion = {
+  questionText: string;
+  options: string[];
+  correctOptionIndex: number;
+  points: number;
+};
+
+export type QuizRecord = {
+  id: string;
+  tenantSlug?: string;
+  title: string;
+  description?: string;
+  isActive: boolean;
+  questions: QuizQuestion[];
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type QuizAttemptRecord = {
+  id: string;
+  tenantSlug?: string;
+  quizId: string;
+  employeeCode: string;
+  answers: { questionIndex: number; selectedOptionIndex: number }[];
+  score: number;
+  totalPossible: number;
+  submittedAt?: string;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -779,6 +815,44 @@ export const apiClient = {
 
   deleteMail(id: string) {
     return request<{ success: boolean }>(`/company/mail/${id}`, { method: "DELETE" });
+  },
+
+  // Real quiz authoring + scoring — /company/quiz (see quiz.routes.ts).
+  listQuizzes() {
+    return request<QuizRecord[]>("/company/quiz");
+  },
+
+  getQuiz(id: string) {
+    return request<QuizRecord>(`/company/quiz/${id}`);
+  },
+
+  createQuiz(input: { title: string; description?: string; isActive?: boolean; questions: QuizQuestion[] }) {
+    return request<QuizRecord>("/company/quiz", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  updateQuiz(id: string, input: { title?: string; description?: string; isActive?: boolean; questions?: QuizQuestion[] }) {
+    return request<QuizRecord>(`/company/quiz/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(input)
+    });
+  },
+
+  deleteQuiz(id: string) {
+    return request<{ success: boolean }>(`/company/quiz/${id}`, { method: "DELETE" });
+  },
+
+  submitQuizAttempt(id: string, input: { employeeCode: string; answers: { questionIndex: number; selectedOptionIndex: number }[] }) {
+    return request<QuizAttemptRecord>(`/company/quiz/${id}/attempts`, {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  listQuizAttempts(id: string) {
+    return request<QuizAttemptRecord[]>(`/company/quiz/${id}/attempts`);
   },
 
   // Multipart upload for any "Upload Tool" Options screen — extraFields are
