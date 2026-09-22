@@ -563,7 +563,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/mail-box")) {
-    return <GenericMasterTable masterKey="mailBoxLog" />;
+    return <MasterScreen masterKey="mailBoxLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {

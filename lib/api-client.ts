@@ -311,8 +311,25 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload" | "mailBox"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
+
+export type MailRecord = {
+  id: string;
+  tenantSlug?: string;
+  fromEmployeeCode?: string;
+  fromName?: string | null;
+  toEmployeeCode?: string;
+  toName?: string | null;
+  subject: string;
+  body?: string;
+  folder: string;
+  sentAt?: string;
+  readAt?: string | null;
+  status?: "Read" | "Unread";
+  createdAt?: string;
+  updatedAt?: string;
+};
 
 export const apiClient = {
   login(username: string, password: string) {
@@ -710,6 +727,42 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify(input)
     });
+  },
+
+  // Real internal Mail Box — POST/GET /company/mail and its :id actions
+  // (see mail.routes.ts). Folder is free text, validated server-side
+  // against the fixed system folders plus active mailFolderCreation rows.
+
+  listMail(params?: { folder?: string; search?: string; month?: string; year?: string }) {
+    const query = new URLSearchParams();
+    if (params?.folder) query.set("folder", params.folder);
+    if (params?.search) query.set("search", params.search);
+    if (params?.month) query.set("month", params.month);
+    if (params?.year) query.set("year", params.year);
+    const qs = query.toString();
+    return request<MailRecord[]>(`/company/mail${qs ? `?${qs}` : ""}`);
+  },
+
+  sendMail(input: { toEmployeeCode: string; subject: string; body?: string; folder?: string }) {
+    return request<MailRecord>("/company/mail", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  markMailRead(id: string) {
+    return request<MailRecord>(`/company/mail/${id}/read`, { method: "PATCH" });
+  },
+
+  moveMail(id: string, folder: string) {
+    return request<MailRecord>(`/company/mail/${id}/move`, {
+      method: "PATCH",
+      body: JSON.stringify({ folder })
+    });
+  },
+
+  deleteMail(id: string) {
+    return request<{ success: boolean }>(`/company/mail/${id}`, { method: "DELETE" });
   },
 
   // Multipart upload for any "Upload Tool" Options screen — extraFields are
