@@ -788,7 +788,7 @@ export const apiClient = {
 
   // ── Options screens with real custom behavior (not generic CRUD) ──────
 
-  resetFieldForcePassword(input: { employeeCode?: string; fieldForceName?: string; newPassword: string }) {
+  resetFieldForcePassword(input: { employeeCode?: string; fieldForceName?: string; oldPassword: string; newPassword: string }) {
     return request<{ success: boolean; employeeCode: string; accountsUpdated: number }>("/company/masters/optionsChangePassword/action/reset", {
       method: "POST",
       body: JSON.stringify(input)
