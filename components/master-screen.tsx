@@ -12,6 +12,7 @@ import { NotificationSendPanel } from "@/components/notification-send-panel";
 import { UploadPanel } from "@/components/upload-panel";
 import { MailBoxPanel } from "@/components/mail-box-panel";
 import { QuizAuthoringPanel } from "@/components/quiz-authoring-panel";
+import { OptionsDashboardPanel } from "@/components/options-dashboard-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -50,6 +51,7 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "upload") return <UploadPanel masterKey={masterKey} />;
   if (uiKind === "mailBox") return <MailBoxPanel masterKey={masterKey} />;
   if (uiKind === "quizAuthoring") return <QuizAuthoringPanel masterKey={masterKey} />;
+  if (uiKind === "dashboardBuilder") return <OptionsDashboardPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

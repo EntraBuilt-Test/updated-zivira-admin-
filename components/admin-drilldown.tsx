@@ -426,7 +426,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/dashboard")) {
-    return <GenericMasterTable masterKey="optionsDashboardWidget" />;
+    return <MasterScreen masterKey="optionsDashboardWidget" />;
   }
 
   if (pathStr.endsWith("division-options/change-password")) {

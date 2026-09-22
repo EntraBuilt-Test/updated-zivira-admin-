@@ -354,6 +354,34 @@ export type QuizRecord = {
   updatedAt?: string;
 };
 
+// Real dashboard-builder — /company/dashboards (see dashboard.routes.ts /
+// dashboard.model.ts). Backs the "Options > Dashboard" screen.
+export type DashboardModule = "Master KPI" | "Marketing KPI" | "Sales KPI";
+export type DashboardChartType = "pie" | "donut" | "bar" | "line" | "area" | "funnel" | "table";
+
+export type DashboardWidget = {
+  widgetName: string;
+  category: string;
+  dimension: string;
+  splitBy?: string;
+  chartType: DashboardChartType;
+};
+
+export type DashboardRecord = {
+  id: string;
+  tenantSlug?: string;
+  name: string;
+  module: DashboardModule;
+  widgets: DashboardWidget[];
+  createdBy?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type DashboardWidgetTreeNode = { category: string; dimensions: string[] };
+
+export type DashboardWidgetData = { labels: string[]; values: number[]; total: number; note?: string };
+
 export type QuizAttemptRecord = {
   id: string;
   tenantSlug?: string;
@@ -853,6 +881,48 @@ export const apiClient = {
 
   listQuizAttempts(id: string) {
     return request<QuizAttemptRecord[]>(`/company/quiz/${id}/attempts`);
+  },
+
+  // Real dashboard-builder — /company/dashboards (see dashboard.routes.ts).
+  listDashboards(module?: DashboardModule) {
+    const qs = module ? `?module=${encodeURIComponent(module)}` : "";
+    return request<DashboardRecord[]>(`/company/dashboards${qs}`);
+  },
+
+  getDashboard(id: string) {
+    return request<DashboardRecord>(`/company/dashboards/${id}`);
+  },
+
+  createDashboard(input: { name: string; module: DashboardModule }) {
+    return request<DashboardRecord>("/company/dashboards", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  deleteDashboard(id: string) {
+    return request<{ success: boolean }>(`/company/dashboards/${id}`, { method: "DELETE" });
+  },
+
+  dashboardWidgetTree() {
+    return request<DashboardWidgetTreeNode[]>("/company/dashboards/widget-tree");
+  },
+
+  dashboardWidgetData(params: { category: string; dimension: string; fieldForce?: string }) {
+    const query = new URLSearchParams({ category: params.category, dimension: params.dimension });
+    if (params.fieldForce) query.set("fieldForce", params.fieldForce);
+    return request<DashboardWidgetData>(`/company/dashboards/widget-data?${query.toString()}`);
+  },
+
+  addDashboardWidget(id: string, input: { widgetName: string; category: string; dimension: string; splitBy?: string; chartType: DashboardChartType }) {
+    return request<DashboardRecord>(`/company/dashboards/${id}/widgets`, {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  removeDashboardWidget(id: string, widgetIndex: number) {
+    return request<DashboardRecord>(`/company/dashboards/${id}/widgets/${widgetIndex}`, { method: "DELETE" });
   },
 
   // Multipart upload for any "Upload Tool" Options screen — extraFields are
