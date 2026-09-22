@@ -31,6 +31,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
   const [toMonthFilter, setToMonthFilter] = useState("");
   const [toYearFilter, setToYearFilter] = useState("");
   const [modeFilter, setModeFilter] = useState("");
+  const [atAGlance, setAtAGlance] = useState(false);
   const [applied, setApplied] = useState(false);
   const [formRow, setFormRow] = useState<Record<string, unknown> | null>(null);
   const [saving, setSaving] = useState(false);
@@ -105,6 +106,10 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
   const toYearField = schema?.fields.find((f) => f.key === "toYear");
   const modeField = schema?.fields.find((f) => f.key === "mode");
   const personOptions = personField ? dropdownOptions[`${personField.sourceMaster}.${personField.sourceField}`] ?? [] : [];
+  // sanpharma.info's Expense Consolidated View only (see registry.ts's
+  // `atAGlance` flag) — every other reportFilter screen leaves this unset
+  // and renders exactly as before.
+  const hasAtAGlance = !!schema?.atAGlance;
 
   const visibleRows = useMemo(() => {
     if (!applied) return rows;
@@ -123,6 +128,32 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
     rows, applied, personFilter, monthFilter, yearFilter, personField, hasMonth, hasYear,
     fromMonthField, fromMonthFilter, fromYearField, fromYearFilter, toMonthField, toMonthFilter, toYearField, toYearFilter, modeField, modeFilter
   ]);
+
+  // "At a Glance" summarizes the currently-filtered rows into one row per
+  // Field Force Name — entry count plus an Active/Inactive breakdown across
+  // the selected From/To Month-Year range — instead of one row per record.
+  // This is demo-scale client-side aggregation over the already
+  // date-filtered rows (no dedicated backend aggregation endpoint), which
+  // is the pragmatic choice for this admin tool's data volumes.
+  type GlanceRow = { name: string; count: number; active: number; inactive: number; fromLabel: string; toLabel: string };
+  const glanceRows: GlanceRow[] = useMemo(() => {
+    if (!hasAtAGlance) return [];
+    const groups = new Map<string, { count: number; active: number; inactive: number; fromLabel: string; toLabel: string }>();
+    for (const r of visibleRows) {
+      const name = personField ? String(r[personField.key] ?? "Unknown") : "All";
+      const g = groups.get(name) ?? { count: 0, active: 0, inactive: 0, fromLabel: "", toLabel: "" };
+      g.count += 1;
+      const status = String(r.status ?? "");
+      if (status === "Active") g.active += 1;
+      else if (status) g.inactive += 1;
+      const fromLabel = [r.fromMonth, r.fromYear].filter(Boolean).join(" ");
+      const toLabel = [r.toMonth, r.toYear].filter(Boolean).join(" ");
+      if (!g.fromLabel && fromLabel) g.fromLabel = fromLabel;
+      if (toLabel) g.toLabel = toLabel;
+      groups.set(name, g);
+    }
+    return Array.from(groups.entries()).map(([name, g]) => ({ name, ...g }));
+  }, [visibleRows, hasAtAGlance, personField]);
 
   function optionsFor(f: MasterField): string[] | null {
     if (f.options) return f.options;
@@ -259,7 +290,10 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
           <div>
             <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Report</p>
             <h2 className="text-2xl font-bold text-text-primary">{schema.title}</h2>
-            <p className="text-sm text-text-muted mt-1">Filter by {personField ? personField.label + ", " : ""}Month and Year — exactly like sanpharma.info.</p>
+            <p className="text-sm text-text-muted mt-1">
+              Filter by {personField ? personField.label + ", " : ""}
+              {fromMonthField ? "From/To Month and Year" : "Month and Year"} — exactly like sanpharma.info.
+            </p>
           </div>
           <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors" onClick={openAddForm} type="button">
             Add Entry
@@ -315,6 +349,17 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
               <CustomSelect value={modeFilter} options={modeField.options ?? []} onChange={setModeFilter} placeholder={`All ${modeField.label}`} />
             </div>
           )}
+          {hasAtAGlance && (
+            <label className="flex items-center gap-2 pb-2 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                className="rounded accent-primary w-4 h-4 cursor-pointer"
+                checked={atAGlance}
+                onChange={(e) => setAtAGlance(e.target.checked)}
+              />
+              <span className="text-sm font-medium text-text-primary">At a Glance</span>
+            </label>
+          )}
           <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-5 py-2 rounded-lg font-medium text-sm transition-colors" onClick={() => setApplied(true)} type="button">
             View
           </button>
@@ -325,6 +370,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
                 setApplied(false);
                 setPersonFilter(""); setMonthFilter(""); setYearFilter("");
                 setFromMonthFilter(""); setFromYearFilter(""); setToMonthFilter(""); setToYearFilter(""); setModeFilter("");
+                setAtAGlance(false);
               }}
               type="button"
             >
@@ -333,53 +379,89 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
           )}
           <article className="flex items-center gap-3 pl-4 ml-auto border-l border-border-subtle">
             <span className="text-sm text-text-muted">Total Records</span>
-            <strong className="text-lg font-semibold text-text-primary">{visibleRows.length}</strong>
+            <strong className="text-lg font-semibold text-text-primary">{hasAtAGlance && atAGlance ? glanceRows.length : visibleRows.length}</strong>
           </article>
         </div>
 
         <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col" style={{ maxHeight: "calc(100vh - 320px)", minHeight: "220px" }}>
           <div className="overflow-x-auto overflow-y-auto flex-1 custom-scrollbar">
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
-                <tr>
-                  {schema.fields.map((f) => (
-                    <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
-                      {f.label}
-                    </th>
-                  ))}
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remove</th>
-                </tr>
-              </thead>
-              <tbody>
-                {visibleRows.length === 0 && (
+            {hasAtAGlance && atAGlance ? (
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
                   <tr>
-                    <td colSpan={schema.fields.length + 2} className="px-4 py-10 text-center text-text-muted text-sm">
-                      No records found for the selected filters.
-                    </td>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                      {personField?.label ?? "Field Force Name"}
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">From</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">To</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Total Entries</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Active</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Inactive</th>
                   </tr>
-                )}
-                {visibleRows.map((row) => (
-                  <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
-                    {schema.fields.map((f) => (
-                      <td key={f.key} className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                        {f.computed ? computedValueFor(f, row) : String(row[f.key] ?? "")}
+                </thead>
+                <tbody>
+                  {glanceRows.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">
+                        No records found for the selected filters.
                       </td>
+                    </tr>
+                  )}
+                  {glanceRows.map((g) => (
+                    <tr key={g.name} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{g.name}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{g.fromLabel || "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{g.toLabel || "—"}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{g.count}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{g.active}</td>
+                      <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{g.inactive}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+                  <tr>
+                    {schema.fields.map((f) => (
+                      <th key={f.key} className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
+                        {f.label}
+                      </th>
                     ))}
-                    <td className="px-4 py-3">
-                      <button className="subdivision-icon-button" type="button" title="Edit" onClick={() => setFormRow({ ...row })}>
-                        <Pencil size={16} />
-                      </button>
-                    </td>
-                    <td className="px-4 py-3">
-                      <button className="subdivision-icon-button" type="button" title="Remove" onClick={() => setDeleteTarget(row)}>
-                        <Ban size={16} />
-                      </button>
-                    </td>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remove</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {visibleRows.length === 0 && (
+                    <tr>
+                      <td colSpan={schema.fields.length + 2} className="px-4 py-10 text-center text-text-muted text-sm">
+                        No records found for the selected filters.
+                      </td>
+                    </tr>
+                  )}
+                  {visibleRows.map((row) => (
+                    <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                      {schema.fields.map((f) => (
+                        <td key={f.key} className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                          {f.computed ? computedValueFor(f, row) : String(row[f.key] ?? "")}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3">
+                        <button className="subdivision-icon-button" type="button" title="Edit" onClick={() => setFormRow({ ...row })}>
+                          <Pencil size={16} />
+                        </button>
+                      </td>
+                      <td className="px-4 py-3">
+                        <button className="subdivision-icon-button" type="button" title="Remove" onClick={() => setDeleteTarget(row)}>
+                          <Ban size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </section>
