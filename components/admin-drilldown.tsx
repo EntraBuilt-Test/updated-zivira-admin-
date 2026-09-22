@@ -423,7 +423,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/change-password")) {
-    return <GenericMasterTable masterKey="passwordChangeLog" />;
+    return <GenericMasterTable masterKey="optionsChangePassword" />;
   }
 
   if (pathStr.endsWith("vacant-mr-login/access")) {
@@ -439,115 +439,123 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("update-delete/tp-delete")) {
-    return <GenericMasterTable masterKey="updateDeleteTpDelete" />;
+    return <GenericMasterTable masterKey="tpDeleteSetup" />;
   }
 
   if (pathStr.endsWith("update-delete/dcr-edit")) {
-    return <GenericMasterTable masterKey="updateDeleteDcrEdit" />;
+    return <GenericMasterTable masterKey="dcrEditSetup" />;
   }
 
   if (pathStr.endsWith("update-delete/msis-edit")) {
-    return <GenericMasterTable masterKey="updateDeleteMsisEdit" />;
+    return <GenericMasterTable masterKey="msisEditApproval" />;
   }
 
   if (pathStr.endsWith("update-delete/mail-delete")) {
-    return <GenericMasterTable masterKey="updateDeleteMailDelete" />;
+    return <GenericMasterTable masterKey="mailDeleteLog" />;
   }
 
   if (pathStr.endsWith("update-delete/leave-cancellation")) {
-    return <GenericMasterTable masterKey="updateDeleteLeaveCancellation" />;
+    return <GenericMasterTable masterKey="leaveCancellation" />;
   }
 
   if (pathStr.endsWith("update-delete/mob-app-device-id-deletion")) {
-    return <GenericMasterTable masterKey="updateDeleteMobAppDeviceIdDeletion" />;
+    return <GenericMasterTable masterKey="deviceIdDeletion" />;
   }
 
   if (pathStr.endsWith("update-delete/tp-deviation-release")) {
-    return <GenericMasterTable masterKey="updateDeleteTpDeviationRelease" />;
+    return <GenericMasterTable masterKey="tpDeviationRelease" />;
   }
 
   if (pathStr.endsWith("update-delete/drs-uni-no-generation")) {
-    return <GenericMasterTable masterKey="updateDeleteDrsUniNoGeneration" />;
+    return <GenericMasterTable masterKey="drUniqueNoGeneration" />;
   }
 
   if (pathStr.endsWith("update-delete/chemist-business-release")) {
-    return <GenericMasterTable masterKey="updateDeleteChemistBusinessRelease" />;
+    return <GenericMasterTable masterKey="chemistReleaseLock" />;
   }
 
   if (pathStr.endsWith("update-delete/chem-bus-month-release")) {
-    return <GenericMasterTable masterKey="updateDeleteChemBusMonthRelease" />;
+    return <GenericMasterTable masterKey="chemistReleaseLockMonthwise" />;
   }
 
   if (pathStr.endsWith("update-delete/auto-mail-reports")) {
-    return <GenericMasterTable masterKey="updateDeleteAutoMailReports" />;
+    return <GenericMasterTable masterKey="autoMailSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/screen-access-rights")) {
-    return <GenericMasterTable masterKey="basicSetupScreenAccessRights" />;
+    return <GenericMasterTable masterKey="screenAccessSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/base-level")) {
-    return <GenericMasterTable masterKey="basicSetupBaseLevel" />;
+    return <GenericMasterTable masterKey="baseLevelSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/managers")) {
-    return <GenericMasterTable masterKey="basicSetupManagers" />;
+    return <GenericMasterTable masterKey="managerSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/approval-mandatory")) {
-    return <GenericMasterTable masterKey="basicSetupApprovalMandatory" />;
+    return <GenericMasterTable masterKey="approvalMandatorySetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/managerwise-core-doctor-map")) {
-    return <GenericMasterTable masterKey="basicSetupManagerwiseCoreDoctorMap" />;
+    return <GenericMasterTable masterKey="managerwiseCoreDoctorMap" />;
   }
 
   if (pathStr.endsWith("basic-setup/screenwise-access")) {
-    return <GenericMasterTable masterKey="basicSetupScreenwiseAccess" />;
+    return <GenericMasterTable masterKey="screenwiseLock" />;
   }
 
   if (pathStr.endsWith("basic-setup/mail-folder-creation")) {
-    return <GenericMasterTable masterKey="basicSetupMailFolderCreation" />;
+    return <GenericMasterTable masterKey="mailFolderCreation" />;
   }
 
   if (pathStr.endsWith("basic-setup/other-setup")) {
-    return <GenericMasterTable masterKey="basicSetupOtherSetup" />;
+    return <GenericMasterTable masterKey="otherSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/homepage-dashboard-display")) {
-    return <GenericMasterTable masterKey="basicSetupHomepageDashboardDisplay" />;
+    return <GenericMasterTable masterKey="homepageDashboardDisplay" />;
   }
 
   if (pathStr.endsWith("basic-setup/leave-setup")) {
-    return <GenericMasterTable masterKey="basicSetupLeaveSetup" />;
+    return <GenericMasterTable masterKey="leaveTypeSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/leave-policy-setup")) {
-    return <GenericMasterTable masterKey="basicSetupLeavePolicySetup" />;
+    return <GenericMasterTable masterKey="leavePolicySetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/device-lock")) {
-    return <GenericMasterTable masterKey="basicSetupDeviceLock" />;
+    return <GenericMasterTable masterKey="deviceLock" />;
   }
 
   if (pathStr.endsWith("basic-setup/order-booking-setup")) {
-    return <GenericMasterTable masterKey="basicSetupOrderBookingSetup" />;
+    return <GenericMasterTable masterKey="orderBookingSetup" />;
   }
 
   if (pathStr.endsWith("app-setup/call-feedback")) {
-    return <GenericMasterTable masterKey="appSetupCallFeedback" />;
+    return <GenericMasterTable masterKey="callFeedbackCreation" />;
   }
 
   if (pathStr.endsWith("app-setup/call-remarks-templates")) {
-    return <GenericMasterTable masterKey="appSetupCallRemarksTemplates" />;
+    return <GenericMasterTable masterKey="callRemarksTemplates" />;
   }
 
   if (pathStr.endsWith("app-setup/notification-message")) {
-    return <GenericMasterTable masterKey="appSetupNotificationMessage" />;
+    return <GenericMasterTable masterKey="notificationMessage" />;
   }
 
   if (pathStr.endsWith("app-setup/gps-geofence-tagg-deletion")) {
-    return <GenericMasterTable masterKey="appSetupGpsGeofenceTaggDeletion" />;
+    return <GenericMasterTable masterKey="gpsGeoFenceAllocation" />;
+  }
+
+  if (pathStr.endsWith("app-setup/geo-tag-deletion")) {
+    return <GenericMasterTable masterKey="geoTagDeletion" />;
+  }
+
+  if (pathStr.endsWith("app-setup/menu-creation")) {
+    return <GenericMasterTable masterKey="menuCreation" />;
   }
 
   if (pathStr.endsWith("app-setup/dynamic-app-link")) {
@@ -555,79 +563,79 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/mail-box")) {
-    return <GenericMasterTable masterKey="mailBox" />;
+    return <GenericMasterTable masterKey="mailBoxLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {
-    return <GenericMasterTable masterKey="customerUploadListedDoctor" />;
+    return <GenericMasterTable masterKey="listedDoctorUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {
-    return <GenericMasterTable masterKey="customerUploadChemist" />;
+    return <GenericMasterTable masterKey="chemistUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
-    return <GenericMasterTable masterKey="customerUploadSample" />;
+    return <GenericMasterTable masterKey="sampleDespatchUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/input")) {
-    return <GenericMasterTable masterKey="customerUploadInput" />;
+    return <GenericMasterTable masterKey="inputDespatchUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/target")) {
-    return <GenericMasterTable masterKey="customerUploadTarget" />;
+    return <GenericMasterTable masterKey="targetUploadLog" />;
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
-    return <GenericMasterTable masterKey="informationUploadFlashNews" />;
+    return <GenericMasterTable masterKey="flashNewsSetup" />;
   }
 
   if (pathStr.endsWith("information-upload/notice-board")) {
-    return <GenericMasterTable masterKey="informationUploadNoticeBoard" />;
+    return <GenericMasterTable masterKey="noticeBoardSetup" />;
   }
 
   if (pathStr.endsWith("information-upload/quote-for-the-week")) {
-    return <GenericMasterTable masterKey="informationUploadQuoteForTheWeek" />;
+    return <GenericMasterTable masterKey="quoteOfTheWeek" />;
   }
 
   if (pathStr.endsWith("information-upload/talk-to-us")) {
-    return <GenericMasterTable masterKey="informationUploadTalkToUs" />;
+    return <GenericMasterTable masterKey="talkToUsSetup" />;
   }
 
   if (pathStr.endsWith("information-upload/file-circular-desig-wise")) {
-    return <GenericMasterTable masterKey="informationUploadFileCircularDesigWise" />;
+    return <GenericMasterTable masterKey="fileUploadDesignationwise" />;
   }
 
   if (pathStr.endsWith("information-upload/user-manual-upload")) {
-    return <GenericMasterTable masterKey="informationUploadUserManualUpload" />;
+    return <GenericMasterTable masterKey="userManualUpload" />;
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {
-    return <GenericMasterTable masterKey="bulkUploadFieldForce" />;
+    return <GenericMasterTable masterKey="salesforceUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/stockist")) {
-    return <GenericMasterTable masterKey="bulkUploadStockist" />;
+    return <GenericMasterTable masterKey="stockistUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product")) {
-    return <GenericMasterTable masterKey="bulkUploadProduct" />;
+    return <GenericMasterTable masterKey="productUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product-rate")) {
-    return <GenericMasterTable masterKey="bulkUploadProductRate" />;
+    return <GenericMasterTable masterKey="productRateUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
-    return <GenericMasterTable masterKey="bulkUploadSlidesUpload" />;
+    return <GenericMasterTable masterKey="slideUploadEDetailing" />;
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
-    return <GenericMasterTable masterKey="bulkUploadHolidayFixation" />;
+    return <GenericMasterTable masterKey="holidayFixationUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
-    return <GenericMasterTable masterKey="bulkUploadLeaveBulkUpload" />;
+    return <GenericMasterTable masterKey="leaveBulkUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/transaction-upload")) {
@@ -635,15 +643,15 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("image-upload/home-page-common-for-all")) {
-    return <GenericMasterTable masterKey="imageUploadHomePageCommonForAll" />;
+    return <GenericMasterTable masterKey="homepageImageUpload" />;
   }
 
   if (pathStr.endsWith("image-upload/home-page-fieldforcewise")) {
-    return <GenericMasterTable masterKey="imageUploadHomePageFieldforcewise" />;
+    return <GenericMasterTable masterKey="homepageImageFieldForcewise" />;
   }
 
   if (pathStr.endsWith("division-options/leave-status")) {
-    return <MasterScreen masterKey="leaveStatusOptions" />;
+    return <MasterScreen masterKey="leaveStatusReport" />;
   }
 
   if (pathStr.endsWith("transfers/transfer-master-details")) {
@@ -651,19 +659,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("transfers/convert-unlisted-drs-listed-drs")) {
-    return <GenericMasterTable masterKey="convertUnlistedDrsListedDrs" />;
+    return <GenericMasterTable masterKey="unlistedToListedDrConversion" />;
   }
 
   if (pathStr.endsWith("division-options/release-missing-dates-delay")) {
-    return <GenericMasterTable masterKey="releaseMissingDatesDelay" />;
+    return <GenericMasterTable masterKey="delayedRelease" />;
   }
 
   if (pathStr.endsWith("division-options/quiz")) {
-    return <GenericMasterTable masterKey="quizMaster" />;
+    return <GenericMasterTable masterKey="quizList" />;
   }
 
   if (pathStr.endsWith("division-options/quiz-category")) {
-    return <GenericMasterTable masterKey="quizCategory" />;
+    return <GenericMasterTable masterKey="quizCategoryList" />;
   }
 
   if (pathStr.includes("activity/dcr") || pathStr.includes("activities/dcr")) {
