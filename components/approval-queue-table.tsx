@@ -165,7 +165,14 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
     return <div className="p-6 text-sm text-status-danger">Could not load this screen.</div>;
   }
 
-  const displayFields = schema.fields.filter((f) => f.key !== "approvalStatus");
+  // Outer approval-queue list matches sanpharma.info's own pending-request
+  // table exactly (SF Name / HQ / Designation, etc.) -- a `detailOnly`
+  // field (e.g. the doctor-level Speciality/Category/Qualification/Class
+  // columns on Listed Dr Addition & Deactivation) only appears once the
+  // admin opens "Click Here to Approve", same as sanpharma's own detail
+  // page pattern.
+  const displayFields = schema.fields.filter((f) => f.key !== "approvalStatus" && !f.detailOnly);
+  const detailFields = schema.fields.filter((f) => f.key !== "approvalStatus");
   // Exact literal wording from sanpharma.info — not identical across every
   // Approvals screen (see the registry comments), so it comes from the
   // schema rather than being hardcoded here.
@@ -217,7 +224,7 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
               <button onClick={() => setDetailTarget(null)} type="button" aria-label="Close"><X size={20} /></button>
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "20px" }}>
-              {displayFields.map((f) => (
+              {detailFields.map((f) => (
                 <div key={f.key} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px", borderBottom: "1px solid var(--border)", paddingBottom: "6px" }}>
                   <span style={{ color: "var(--muted, #666)" }}>{f.label}</span>
                   <strong>{f.computed ? computedValueFor(f, detailTarget) || "—" : String(detailTarget[f.key] ?? "—")}</strong>
