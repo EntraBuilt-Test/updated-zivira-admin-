@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload" | "mailBox"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export type MailRecord = {
@@ -718,6 +718,13 @@ export const apiClient = {
   vacantMrLogin(input: { employeeCode: string; requestedByUserName?: string }) {
     return request<{ success: boolean; token: string; employee: { employeeCode: string; name: string; designation: string; role: string; portal: string } }>(
       "/company/masters/vacantMrLoginAccess/action/login",
+      { method: "POST", body: JSON.stringify(input) }
+    );
+  },
+
+  loginAsEmployee(input: { employeeCode: string }) {
+    return request<{ success: boolean; token: string; portalType: "manager" | "field"; employee: { employeeCode: string; name: string; designation: string; role: string; portal: string } }>(
+      "/company/masters/loginAsEmployee/action/login",
       { method: "POST", body: JSON.stringify(input) }
     );
   },
