@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export const apiClient = {
@@ -687,6 +687,51 @@ export const apiClient = {
 
   reactivateMasterRecord(key: string, id: string) {
     return request<MasterRecord>(`/company/masters/${key}/${id}/reactivate`, { method: "POST" });
+  },
+
+  // ── Options screens with real custom behavior (not generic CRUD) ──────
+
+  resetFieldForcePassword(input: { employeeCode?: string; fieldForceName?: string; newPassword: string }) {
+    return request<{ success: boolean; employeeCode: string; accountsUpdated: number }>("/company/masters/optionsChangePassword/action/reset", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  vacantMrLogin(input: { employeeCode: string; requestedByUserName?: string }) {
+    return request<{ success: boolean; token: string; employee: { employeeCode: string; name: string; designation: string; role: string; portal: string } }>(
+      "/company/masters/vacantMrLoginAccess/action/login",
+      { method: "POST", body: JSON.stringify(input) }
+    );
+  },
+
+  sendNotificationMessage(input: { id?: string; filterBy?: string; filterValue?: string; message?: string; effectiveFrom?: string; effectiveTo?: string }) {
+    return request<{ success: boolean; matched: number; notified: number }>("/company/masters/notificationMessage/action/send", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // Multipart upload for any "Upload Tool" Options screen — extraFields are
+  // any other columns that master's schema declares (month/year/division/
+  // etc.), sent as regular form fields alongside the file.
+  async uploadMasterFile(key: string, file: File, extraFields?: Record<string, string>) {
+    const token = getToken();
+    const form = new FormData();
+    form.append("file", file);
+    for (const [k, v] of Object.entries(extraFields ?? {})) {
+      if (v) form.append(k, v);
+    }
+    const response = await fetch(`${getApiBaseUrl()}/company/masters/${key}/action/upload`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: form
+    });
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload?.error?.message ?? payload?.data?.error ?? "Upload failed");
+    }
+    return payload as ApiEnvelope<{ success: boolean; recordsProcessed: number; recordsFailed: number; errors: string[]; logOnly: boolean }>;
   },
 
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────

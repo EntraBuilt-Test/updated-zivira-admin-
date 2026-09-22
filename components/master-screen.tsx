@@ -5,16 +5,23 @@ import { apiClient } from "@/lib/api-client";
 import { GenericMasterTable } from "@/components/generic-master-table";
 import { ApprovalQueueTable } from "@/components/approval-queue-table";
 import { ReportFilterView } from "@/components/report-filter-view";
+import { ChangePasswordPanel } from "@/components/change-password-panel";
+import { VacantMrLoginPanel } from "@/components/vacant-mr-login-panel";
+import { NotificationSendPanel } from "@/components/notification-send-panel";
+import { UploadPanel } from "@/components/upload-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
- * screen gets the shape that actually matches sanpharma.info: a pending
- * approval queue with a "Click Here to Approve" action, a Field Force
- * Name/Month/Year filtered report, or (the default) the generic
- * Add/Edit/Deactivate master console every other screen already uses.
+ * screen gets the shape that actually matches its real behavior: a pending
+ * approval queue, a Field Force Name/Month/Year filtered report, a real
+ * Change Password / Vacant MR Login / Notification Message action screen,
+ * a file-upload screen, or (the default) the generic Add/Edit/Deactivate
+ * master console every other screen already uses.
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
-  const [uiKind, setUiKind] = useState<"table" | "approvalQueue" | "reportFilter" | null>(null);
+  const [uiKind, setUiKind] = useState<
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload" | null
+  >(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -33,6 +40,10 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
 
   if (uiKind === "approvalQueue") return <ApprovalQueueTable masterKey={masterKey} />;
   if (uiKind === "reportFilter") return <ReportFilterView masterKey={masterKey} />;
+  if (uiKind === "changePassword") return <ChangePasswordPanel masterKey={masterKey} />;
+  if (uiKind === "vacantMrLogin") return <VacantMrLoginPanel masterKey={masterKey} />;
+  if (uiKind === "notificationSend") return <NotificationSendPanel masterKey={masterKey} />;
+  if (uiKind === "upload") return <UploadPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;
