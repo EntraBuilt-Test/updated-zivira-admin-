@@ -380,7 +380,7 @@ export type DashboardRecord = {
 
 export type DashboardWidgetTreeNode = { category: string; dimensions: string[] };
 
-export type DashboardWidgetData = { labels: string[]; values: number[]; total: number; note?: string };
+export type DashboardWidgetData = { labels: string[]; values: number[]; total: number; note?: string; fieldForceSupported?: boolean };
 
 export type QuizAttemptRecord = {
   id: string;
@@ -923,6 +923,13 @@ export const apiClient = {
 
   removeDashboardWidget(id: string, widgetIndex: number) {
     return request<DashboardRecord>(`/company/dashboards/${id}/widgets/${widgetIndex}`, { method: "DELETE" });
+  },
+
+  updateDashboardWidget(id: string, widgetIndex: number, input: { chartType?: DashboardChartType; widgetName?: string }) {
+    return request<DashboardRecord>(`/company/dashboards/${id}/widgets/${widgetIndex}`, {
+      method: "PATCH",
+      body: JSON.stringify(input)
+    });
   },
 
   // Multipart upload for any "Upload Tool" Options screen — extraFields are

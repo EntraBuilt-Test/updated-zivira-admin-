@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, Download, Plus, Search, Settings2, SlidersHorizontal, X } from "lucide-react";
+import { jsPDF } from "jspdf";
+import autoTable from "jspdf-autotable";
 import {
   apiClient,
   type DashboardChartType,
@@ -47,6 +49,22 @@ const PALETTE = ["#3b82f6", "#22c55e", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4
 
 function colorFor(i: number) {
   return PALETTE[i % PALETTE.length];
+}
+
+// Some dimensions in the widget tree already read like "State wise" (a
+// leaf label, not a bare noun like "Speciality"), so naively appending
+// " wise " to build the widget name doubles up into "State wise wise X".
+// Build names dimension-first so a dimension that already contains the
+// word "wise" isn't given a second one, and normalize any name (freshly
+// built, hand-edited, or already stored from before this fix) the same
+// way so old dashboards render correctly without a data migration.
+function buildWidgetName(dimension: string, category: string) {
+  const alreadyWise = /\bwise\b/i.test(dimension);
+  return alreadyWise ? `${dimension} ${category}` : `${dimension} wise ${category}`;
+}
+
+function displayWidgetName(name: string) {
+  return name.replace(/\bwise\s+wise\b/gi, "wise");
 }
 
 // ── Minimal inline-SVG chart primitives (no chart library in this repo's
@@ -410,7 +428,7 @@ function AddWidgetModal({
   const [expanded, setExpanded] = useState<string>(tree[0]?.category ?? "");
   const [category, setCategory] = useState<string>(tree[0]?.category ?? "");
   const [dimension, setDimension] = useState<string>(tree[0]?.dimensions[0] ?? "");
-  const [widgetName, setWidgetName] = useState(`${tree[0]?.dimensions[0] ?? ""} wise ${tree[0]?.category ?? ""}`);
+  const [widgetName, setWidgetName] = useState(buildWidgetName(tree[0]?.dimensions[0] ?? "", tree[0]?.category ?? ""));
   const [splitBy, setSplitBy] = useState("None");
   const [chartType, setChartType] = useState<DashboardChartType>("pie");
   const [preview, setPreview] = useState<DashboardWidgetData | null>(null);
@@ -446,7 +464,7 @@ function AddWidgetModal({
     setCategory(cat);
     setDimension(dim);
     setSplitBy("None");
-    setWidgetName(`${dim} wise ${cat}`);
+    setWidgetName(buildWidgetName(dim, cat));
     void loadPreview(cat, dim);
   }
 
@@ -580,6 +598,11 @@ function DashboardDetail({
   const [widgetData, setWidgetData] = useState<Record<number, DashboardWidgetData | null>>({});
   const [showAddModal, setShowAddModal] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isApplying, setIsApplying] = useState(false);
+  const [editingWidget, setEditingWidget] = useState<number | null>(null);
+  const [editChartType, setEditChartType] = useState<DashboardChartType>("pie");
+  const [savingWidget, setSavingWidget] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   async function loadAllWidgetData(fieldForce: string) {
     const entries = await Promise.all(
@@ -600,15 +623,44 @@ function DashboardDetail({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dashboard.widgets.length]);
 
-  function handleApply() {
+  async function handleApply() {
     setAppliedFieldForce(selectedFieldForce);
-    void loadAllWidgetData(selectedFieldForce);
+    setIsApplying(true);
+    try {
+      await loadAllWidgetData(selectedFieldForce);
+    } finally {
+      setIsApplying(false);
+    }
   }
 
-  function handleClear() {
+  async function handleClear() {
     setSelectedFieldForce("");
     setAppliedFieldForce("");
-    void loadAllWidgetData("");
+    setIsApplying(true);
+    try {
+      await loadAllWidgetData("");
+    } finally {
+      setIsApplying(false);
+    }
+  }
+
+  function openWidgetSettings(index: number) {
+    setEditingWidget(index === editingWidget ? null : index);
+    setEditChartType(dashboard.widgets[index].chartType);
+  }
+
+  async function handleSaveWidgetSettings(index: number) {
+    setSavingWidget(true);
+    setError(null);
+    try {
+      const res = await apiClient.updateDashboardWidget(dashboard.id, index, { chartType: editChartType });
+      onChanged(res.data);
+      setEditingWidget(null);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to update widget");
+    } finally {
+      setSavingWidget(false);
+    }
   }
 
   async function handleAddWidget(widget: DashboardWidget) {
@@ -627,23 +679,77 @@ function DashboardDetail({
     }
   }
 
+  // Real PDF export (previously a client-side JSON dump). Renders one
+  // section per widget — title, the field-force scope it was fetched under,
+  // and a label/value table with a total row. A rasterized chart snapshot
+  // per widget would be nicer, but turning the hand-rolled inline-SVG
+  // charts above into canvas images reliably (across pie/bar/line/funnel/
+  // table) is fragile in this environment, so the tabular form is used
+  // instead — it carries the same real numbers the tiles show on screen.
   function handleDownload() {
-    const payload = dashboard.widgets.map((w, i) => ({
-      widget: w.widgetName,
-      category: w.category,
-      dimension: w.dimension,
-      chartType: w.chartType,
-      data: widgetData[i] ?? { labels: [], values: [], total: 0 }
-    }));
-    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${dashboard.name.replace(/\s+/g, "_")}_widgets.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
+    setDownloading(true);
+    try {
+      const doc = new jsPDF({ unit: "pt" });
+      const pageWidth = doc.internal.pageSize.getWidth();
+
+      doc.setFontSize(16);
+      doc.text(dashboard.name, 40, 40);
+      doc.setFontSize(10);
+      doc.setTextColor(120);
+      doc.text(
+        `${dashboard.module}${appliedFieldForce ? ` — filtered by Field Force: ${appliedFieldForce}` : ""} — generated ${new Date().toLocaleString()}`,
+        40,
+        58
+      );
+      doc.setTextColor(0);
+
+      let cursorY = 80;
+
+      dashboard.widgets.forEach((w, i) => {
+        const data = widgetData[i] ?? { labels: [], values: [], total: 0 };
+        if (cursorY > doc.internal.pageSize.getHeight() - 120) {
+          doc.addPage();
+          cursorY = 40;
+        }
+
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text(displayWidgetName(w.widgetName), 40, cursorY);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9);
+        doc.setTextColor(120);
+        const scopeLine = data.fieldForceSupported === false && appliedFieldForce
+          ? `${w.category} / ${w.dimension} — chart: ${w.chartType} — not filterable by field force`
+          : `${w.category} / ${w.dimension} — chart: ${w.chartType}`;
+        doc.text(scopeLine, 40, cursorY + 13);
+        doc.setTextColor(0);
+
+        const rows = data.labels.map((label, idx) => [label, String(data.values[idx] ?? 0)]);
+        rows.push(["Total", String(data.total ?? 0)]);
+
+        autoTable(doc, {
+          startY: cursorY + 20,
+          head: [["Label", "Count"]],
+          body: rows.length ? rows : [["No data", "0"]],
+          margin: { left: 40, right: 40 },
+          styles: { fontSize: 9 },
+          headStyles: { fillColor: [37, 99, 235] },
+          didParseCell: (data2) => {
+            if (data2.row.index === rows.length - 1 && data2.section === "body") {
+              data2.cell.styles.fontStyle = "bold";
+            }
+          }
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        cursorY = (doc as any).lastAutoTable.finalY + 30;
+      });
+
+      void pageWidth;
+      doc.save(`${dashboard.name.replace(/\s+/g, "_")}-dashboard.pdf`);
+    } finally {
+      setDownloading(false);
+    }
   }
 
   return (
@@ -658,8 +764,8 @@ function DashboardDetail({
 
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 24 }}>
         <div style={{ display: "flex", gap: 10 }}>
-          <button className="button" type="button" onClick={handleDownload} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <Download size={16} /> Download
+          <button className="button" type="button" onClick={handleDownload} disabled={downloading} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <Download size={16} /> {downloading ? "Preparing…" : "Download"}
           </button>
           <button
             className="button"
@@ -675,10 +781,16 @@ function DashboardDetail({
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <span style={{ fontSize: 13, fontWeight: 600 }}>Field Force</span>
           <FieldForceDropdown employees={employees} value={selectedFieldForce} onChange={setSelectedFieldForce} />
-          <button className="button" type="button" onClick={handleApply}>Apply</button>
-          <button className="button button-secondary" type="button" onClick={handleClear}>Clear</button>
+          <button className="button" type="button" onClick={() => void handleApply()} disabled={isApplying}>{isApplying ? "Applying…" : "Apply"}</button>
+          <button className="button button-secondary" type="button" onClick={() => void handleClear()} disabled={isApplying}>Clear</button>
         </div>
       </div>
+
+      <p style={{ fontSize: 12, color: "var(--muted, #888)", marginBottom: 12 }}>
+        {appliedFieldForce
+          ? `Showing data scoped to the selected Field Force. Widgets whose data has no per-rep association are marked "Not filterable by field force" below.`
+          : `Select a Field Force and click Apply to scope every widget's data to that rep, where the underlying data supports it.`}
+      </p>
 
       {error && <p style={{ color: "#dc2626", fontSize: 13, marginBottom: 12 }}>{error}</p>}
 
@@ -689,22 +801,58 @@ function DashboardDetail({
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(360px, 1fr))", gap: 20 }}>
-          {dashboard.widgets.map((w, i) => (
-            <div key={i} style={{ background: "var(--panel, #fff)", border: "1px solid var(--border, #eee)", borderRadius: 10, padding: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <strong style={{ fontSize: 14 }}>{w.widgetName}</strong>
-                <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                  <SlidersHorizontal size={15} style={{ opacity: 0.6, cursor: "pointer" }} />
-                  <Settings2 size={15} style={{ opacity: 0.6, cursor: "pointer" }} title="Widget settings (visual only — not wired to an edit flow)" />
-                  <button type="button" onClick={() => void handleRemoveWidget(i)} title="Remove widget" style={{ background: "none", border: "none", cursor: "pointer", color: "#dc2626" }}>
-                    <X size={15} />
-                  </button>
+          {dashboard.widgets.map((w, i) => {
+            const data = widgetData[i] ?? null;
+            const notFilterable = Boolean(appliedFieldForce) && data?.fieldForceSupported === false;
+            return (
+              <div key={i} style={{ background: "var(--panel, #fff)", border: "1px solid var(--border, #eee)", borderRadius: 10, padding: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <strong style={{ fontSize: 14 }}>{displayWidgetName(w.widgetName)}</strong>
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <button
+                      type="button"
+                      onClick={() => openWidgetSettings(i)}
+                      title="Chart settings"
+                      style={{ background: "none", border: "none", padding: 0, cursor: "pointer", opacity: 0.7, display: "flex" }}
+                    >
+                      <Settings2 size={15} />
+                    </button>
+                    <button type="button" onClick={() => void handleRemoveWidget(i)} title="Remove widget" style={{ background: "none", border: "none", padding: 0, cursor: "pointer", color: "#dc2626", display: "flex" }}>
+                      <X size={15} />
+                    </button>
+                  </div>
                 </div>
+
+                {editingWidget === i && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", marginBottom: 10, padding: 8, background: "var(--brand-soft, #f5f7fb)", borderRadius: 6 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600 }}>Chart type</span>
+                    <select
+                      className="input"
+                      style={{ fontSize: 12, padding: "4px 6px" }}
+                      value={editChartType}
+                      onChange={(e) => setEditChartType(e.target.value as DashboardChartType)}
+                    >
+                      {CHART_TYPES.map((c) => (
+                        <option key={c.type} value={c.type}>{c.label}</option>
+                      ))}
+                    </select>
+                    <button className="button" type="button" disabled={savingWidget} onClick={() => void handleSaveWidgetSettings(i)} style={{ fontSize: 12, padding: "4px 10px" }}>
+                      {savingWidget ? "Saving…" : "Save"}
+                    </button>
+                    <button className="button button-secondary" type="button" onClick={() => setEditingWidget(null)} style={{ fontSize: 12, padding: "4px 10px" }}>
+                      Cancel
+                    </button>
+                  </div>
+                )}
+
+                <ChartRenderer chartType={w.chartType} data={data} />
+                {data?.note && <p style={{ fontSize: 11, color: "var(--muted, #888)", marginTop: 8 }}>Note: {data.note}</p>}
+                {notFilterable && !data?.note && (
+                  <p style={{ fontSize: 11, color: "var(--muted, #888)", marginTop: 8 }}>Not filterable by field force</p>
+                )}
               </div>
-              <ChartRenderer chartType={w.chartType} data={widgetData[i] ?? null} />
-              {widgetData[i]?.note && <p style={{ fontSize: 11, color: "var(--muted, #888)", marginTop: 8 }}>Note: {widgetData[i]!.note}</p>}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
