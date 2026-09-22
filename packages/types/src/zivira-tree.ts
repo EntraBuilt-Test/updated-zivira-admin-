@@ -177,6 +177,10 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
           node("Listed Dr Deactivation", "listed-dr-deactivation", "division"),
           node("TP", "tp", "division"),
           node("DCR", "dcr", "division"),
+          // Additional multi-date bulk-approval grid alongside the
+          // single-row "DCR" approval tab above (sanpharma.info's
+          // DCR_Bulk_Approval.aspx) — does not replace it.
+          node("DCR Bulk Approval", "dcr-bulk-approval", "division"),
           node("Leave", "leave", "division")
         ]),
         node("Expense", "expense", "division", [

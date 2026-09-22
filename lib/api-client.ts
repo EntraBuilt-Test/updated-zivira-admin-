@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "notificationSend" | "upload" | "mailBox"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export type MailRecord = {
@@ -706,6 +706,22 @@ export const apiClient = {
     return request<MasterRecord>(`/company/masters/${key}/${id}/reactivate`, { method: "POST" });
   },
 
+  // ── DCR Bulk Approval — additional view over the same `approvalDcr`
+  // master rows the single-row ApprovalQueueTable already reads/writes,
+  // grouped by field rep + month (sanpharma.info's DCR_Bulk_Approval.aspx
+  // shape). See components/dcr-bulk-approval.tsx.
+  masterBulkRecords(key: string, params: { sfName: string; month: string }) {
+    const qs = toQueryString(params);
+    return request<MasterRecord[]>(`/company/masters/${key}/bulk${qs}`);
+  },
+
+  masterBulkAction(key: string, input: { ids: string[]; status: "Approved" | "Rejected" }) {
+    return request<{ results: { id: string; ok: boolean; error?: string }[]; updatedCount: number }>(
+      `/company/masters/${key}/bulk-action`,
+      { method: "POST", body: JSON.stringify(input) }
+    );
+  },
+
   // ── Options screens with real custom behavior (not generic CRUD) ──────
 
   resetFieldForcePassword(input: { employeeCode?: string; fieldForceName?: string; newPassword: string }) {
@@ -718,13 +734,6 @@ export const apiClient = {
   vacantMrLogin(input: { employeeCode: string; requestedByUserName?: string }) {
     return request<{ success: boolean; token: string; employee: { employeeCode: string; name: string; designation: string; role: string; portal: string } }>(
       "/company/masters/vacantMrLoginAccess/action/login",
-      { method: "POST", body: JSON.stringify(input) }
-    );
-  },
-
-  loginAsEmployee(input: { employeeCode: string }) {
-    return request<{ success: boolean; token: string; portalType: "manager" | "field"; employee: { employeeCode: string; name: string; designation: string; role: string; portal: string } }>(
-      "/company/masters/loginAsEmployee/action/login",
       { method: "POST", body: JSON.stringify(input) }
     );
   },
