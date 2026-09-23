@@ -47,8 +47,8 @@ export function VacantMrPermissionPanel({ masterKey: _masterKey }: { masterKey: 
   }
 
   return (
-    <section className="flex flex-col gap-6 w-full">
-      <div>
+    <section className="flex flex-col gap-6 w-full items-center">
+      <div className="w-full" style={{ maxWidth: "760px" }}>
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Options</p>
         <h2 className="text-2xl font-bold text-text-primary">Vacant MR Login - Permission for MR</h2>
       </div>

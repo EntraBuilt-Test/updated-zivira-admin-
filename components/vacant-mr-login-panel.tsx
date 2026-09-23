@@ -76,13 +76,13 @@ export function VacantMrLoginPanel({ masterKey }: { masterKey: string }) {
   }
 
   return (
-    <section className="flex flex-col gap-6 w-full">
-      <div>
+    <section className="flex flex-col gap-6 w-full items-center">
+      <div className="w-full" style={{ maxWidth: "820px" }}>
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Options</p>
         <h2 className="text-2xl font-bold text-text-primary">Vacant MR Login - Access</h2>
       </div>
 
-      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm overflow-hidden" style={{ maxWidth: "820px" }}>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm overflow-hidden w-full" style={{ maxWidth: "820px" }}>
         <div className="grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
           <div className="border-r border-border-subtle">
             <div className="px-4 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-subtle border-b border-border-subtle">

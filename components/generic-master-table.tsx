@@ -132,7 +132,25 @@ const exportMenuOptionStyle: CSSProperties = {
  * never drift out of sync with the document because the headers come from
  * the backend's registry, not from anything hardcoded here.
  */
-export function GenericMasterTable({ masterKey, showImportButton = false }: { masterKey: string, showImportButton?: boolean }) {
+export function GenericMasterTable({
+  masterKey,
+  showImportButton = false,
+  extraFilters = []
+}: {
+  masterKey: string;
+  showImportButton?: boolean;
+  // Additional row filters applied on top of the existing column-header
+  // filters and status filter — e.g. a filter bar rendered ABOVE this table
+  // by a wrapper screen (see components/doctor-campaign-map-panel.tsx).
+  // `mode: "contains"` does a case-insensitive substring match (for a free
+  // -text filter like Doctor Name); default/"exact" matches the existing
+  // column-filter behavior (case-insensitive full-value match). `field` can
+  // be a raw stored field or a `computed` field key from this master's
+  // schema — computed values are resolved the same way the table itself
+  // already resolves them (computedValueFor), so filtering a computed
+  // column (Doctor Name, Speciality, Category, Class) works correctly.
+  extraFilters?: { field: string; value: string; mode?: "exact" | "contains" }[];
+}) {
   const [isSuperStockist, setIsSuperStockist] = useState(false);
   const [isReportingStructure, setIsReportingStructure] = useState(false);
   const [schema, setSchema] = useState<MasterSchema | null>(null);
@@ -561,9 +579,18 @@ export function GenericMasterTable({ masterKey, showImportButton = false }: { ma
         const rowStatus = String((row as any)[statusKey] || "").toUpperCase();
         if (rowStatus !== statusFilter.toUpperCase()) isMatch = false;
       }
+      for (const ef of extraFilters) {
+        if (!ef.value) continue;
+        const fieldConfig = schema?.fields.find((f) => f.key === ef.field);
+        const rawVal = fieldConfig?.computed ? computedValueFor(fieldConfig, row as Record<string, unknown>) : String((row as any)[ef.field] ?? "");
+        const rowVal = rawVal.toUpperCase();
+        const filterVal = ef.value.toUpperCase();
+        const fieldMatch = ef.mode === "contains" ? rowVal.includes(filterVal) : rowVal === filterVal;
+        if (!fieldMatch) isMatch = false;
+      }
       return isMatch;
     });
-  }, [rows, columnFilters, statusFilter, schema]);
+  }, [rows, columnFilters, statusFilter, schema, extraFilters, sourceRecords]);
 
   if (!schema && loading) {
     return (

@@ -14,6 +14,7 @@ import { UploadPanel } from "@/components/upload-panel";
 import { MailBoxPanel } from "@/components/mail-box-panel";
 import { QuizAuthoringPanel } from "@/components/quiz-authoring-panel";
 import { OptionsDashboardPanel } from "@/components/options-dashboard-panel";
+import { DoctorCampaignMapPanel } from "@/components/doctor-campaign-map-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -25,7 +26,7 @@ import { OptionsDashboardPanel } from "@/components/options-dashboard-panel";
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | null
   >(null);
 
   useEffect(() => {
@@ -54,6 +55,7 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "mailBox") return <MailBoxPanel masterKey={masterKey} />;
   if (uiKind === "quizAuthoring") return <QuizAuthoringPanel masterKey={masterKey} />;
   if (uiKind === "dashboardBuilder") return <OptionsDashboardPanel masterKey={masterKey} />;
+  if (uiKind === "doctorCampaignFilter") return <DoctorCampaignMapPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

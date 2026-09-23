@@ -442,7 +442,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/doctor-campaign-map")) {
-    return <GenericMasterTable masterKey="doctorCampaignMap" />;
+    return <MasterScreen masterKey="doctorCampaignMap" />;
   }
 
   if (pathStr.endsWith("update-delete/tp-delete")) {
