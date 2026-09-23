@@ -438,11 +438,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("vacant-mr-login/permission-for-managers")) {
-    return <GenericMasterTable masterKey="vacantMrLoginPermission" />;
-  }
-
-  if (pathStr.endsWith("vacant-mr-login/login-into-fieldforce")) {
-    return <MasterScreen masterKey="loginAsEmployee" />;
+    return <MasterScreen masterKey="vacantMrLoginPermission" />;
   }
 
   if (pathStr.endsWith("division-options/doctor-campaign-map")) {

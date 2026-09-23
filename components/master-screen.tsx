@@ -7,6 +7,7 @@ import { ApprovalQueueTable } from "@/components/approval-queue-table";
 import { ReportFilterView } from "@/components/report-filter-view";
 import { ChangePasswordPanel } from "@/components/change-password-panel";
 import { VacantMrLoginPanel } from "@/components/vacant-mr-login-panel";
+import { VacantMrPermissionPanel } from "@/components/vacant-mr-permission-panel";
 import { LoginAsEmployeePanel } from "@/components/login-as-employee-panel";
 import { NotificationSendPanel } from "@/components/notification-send-panel";
 import { UploadPanel } from "@/components/upload-panel";
@@ -24,7 +25,7 @@ import { OptionsDashboardPanel } from "@/components/options-dashboard-panel";
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | null
   >(null);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "reportFilter") return <ReportFilterView masterKey={masterKey} />;
   if (uiKind === "changePassword") return <ChangePasswordPanel masterKey={masterKey} />;
   if (uiKind === "vacantMrLogin") return <VacantMrLoginPanel masterKey={masterKey} />;
+  if (uiKind === "vacantMrPermission") return <VacantMrPermissionPanel masterKey={masterKey} />;
   if (uiKind === "loginAsEmployee") return <LoginAsEmployeePanel masterKey={masterKey} />;
   if (uiKind === "notificationSend") return <NotificationSendPanel masterKey={masterKey} />;
   if (uiKind === "upload") return <UploadPanel masterKey={masterKey} />;

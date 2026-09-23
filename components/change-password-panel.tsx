@@ -212,6 +212,15 @@ function PasswordField({
           style={{ width: "100%", paddingRight: 36 }}
           value={value}
           onChange={(e) => onChange(e.target.value)}
+          // Chrome autofills a password-type input with this domain's
+          // saved credential (the Admin's own login password) purely by
+          // field type + domain — it doesn't know this is a Change
+          // Password form for a DIFFERENT account. autoComplete=
+          // "new-password" on every field here (including Old Password)
+          // is the standard, spec-supported way to opt every field on
+          // this form out of that autofill.
+          autoComplete="new-password"
+          name={`change-password-${label.toLowerCase().replace(/\s+/g, "-")}`}
         />
         <button
           type="button"

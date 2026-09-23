@@ -1,60 +1,75 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
-import { CustomSelect } from "@/components/custom-select";
+import { autoLoginUrl } from "@/lib/portal-urls";
+
+// Standing convention for every employee's Field/Manager portal login —
+// see Zivira-Backend-swagger-ui-main/src/utils/credentials.ts:
+// username = employee code, password = this fixed value for every
+// employee, current and future. Pre-filling it here is applying that known
+// convention, not reading back anyone's actual stored password hash (which
+// stays a one-way bcrypt hash everywhere, exactly like Change Password).
+const DEFAULT_EMPLOYEE_PASSWORD = "Zivirachennai";
 
 /**
- * Real "Vacant MR Login - Access" screen. Calls POST /company/masters/
- * vacantMrLoginAccess/action/login, which is gated by an Active row in
- * Vacant MR Login - Permission for MR and, if granted, issues a REAL JWT
- * for the selected field-force employee (the same signToken() every real
- * login uses). The token is shown so Admin can use it against the Field
- * portal's API directly (e.g. paste it into Swagger's Authorize button, or
- * a "?token=" deep link) — this build does not have a separate embedded
- * Field-portal shell to auto-launch, so the token itself is the
- * deliverable, exactly like a real backend session hand-off would look.
+ * Real "Vacant MR Login - Access" screen, matching sanpharma.info's
+ * MasterFiles/Options/Vacant_MR_Access.aspx layout: a scrollable Field
+ * Force Name list on the left, and a Login panel on the right showing
+ * Password + "Login To: <selected name>" + a Login button. No table.
+ *
+ * Selecting a name auto-fills the known default password and shows
+ * "Login To". Login calls POST /company/masters/vacantMrLoginAccess/
+ * action/login, which now requires and bcrypt-verifies that password
+ * against the employee's real account before issuing a real JWT (same
+ * signToken() every login uses) gated by an Active row under Vacant MR
+ * Login - Permission for MR. On success this opens the employee's real
+ * Field or Manager portal in a new tab, already signed in as them.
  */
 export function VacantMrLoginPanel({ masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<MasterRecord[]>([]);
-  const [logRows, setLogRows] = useState<MasterRecord[]>([]);
   const [selectedCode, setSelectedCode] = useState("");
+  const [password, setPassword] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [issuedToken, setIssuedToken] = useState<string | null>(null);
-  const [issuedFor, setIssuedFor] = useState<string | null>(null);
-
-  async function load() {
-    const [empRes, logRes] = await Promise.all([
-      apiClient.masterRecords("employees"),
-      apiClient.masterRecords(masterKey)
-    ]);
-    setEmployees(empRes.data);
-    setLogRows(logRes.data);
-  }
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    load();
+    apiClient.masterRecords("employees").then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [masterKey]);
 
-  const byName = new Map(employees.map((e) => [String(e.name ?? ""), e]));
-  const employeeNames = Array.from(byName.keys()).filter(Boolean).sort();
+  const byCode = useMemo(() => new Map(employees.map((e) => [String(e.employeeCode ?? ""), e])), [employees]);
+  const sortedEmployees = useMemo(
+    () => [...employees].sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? ""))),
+    [employees]
+  );
+
+  const selected = byCode.get(selectedCode);
+
+  function selectEmployee(code: string) {
+    setSelectedCode(code);
+    setPassword(DEFAULT_EMPLOYEE_PASSWORD);
+    setError(null);
+    setSuccess(null);
+  }
 
   async function submit() {
     setError(null);
-    setIssuedToken(null);
-    const emp = byName.get(selectedCode);
-    if (!emp) { setError("Select a Field Force Name"); return; }
+    setSuccess(null);
+    if (!selected) { setError("Select a Field Force Name"); return; }
+    if (!password) { setError("Enter the password"); return; }
 
     setSaving(true);
     try {
-      const res = await apiClient.vacantMrLogin({ employeeCode: String(emp.employeeCode ?? "") });
-      setIssuedToken(res.data.token);
-      setIssuedFor(res.data.employee.name);
-      await load();
+      const res = await apiClient.vacantMrLogin({
+        employeeCode: String(selected.employeeCode ?? ""),
+        password
+      });
+      setSuccess(`Signed in as ${res.data.employee.name}. Opening their portal…`);
+      window.open(autoLoginUrl(res.data.portalType, res.data.token), "_blank", "noopener,noreferrer");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to issue vacant login");
+      setError(err instanceof Error ? err.message : "Failed to log in");
     } finally {
       setSaving(false);
     }
@@ -65,53 +80,67 @@ export function VacantMrLoginPanel({ masterKey }: { masterKey: string }) {
       <div>
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Options</p>
         <h2 className="text-2xl font-bold text-text-primary">Vacant MR Login - Access</h2>
-        <p className="text-sm text-text-muted mt-1">
-          Issues a real login session token for a field-force employee, gated by an Active row under
-          Vacant MR Login - Permission for MR.
-        </p>
       </div>
 
-      <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-col gap-4" style={{ maxWidth: "520px" }}>
-        {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
-        {issuedToken && (
-          <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2 break-all">
-            Session token issued for <strong>{issuedFor}</strong>. Use this bearer token against the Field portal API:
-            <div className="mt-2 font-mono text-xs bg-white border border-green-200 rounded p-2 select-all">{issuedToken}</div>
-          </div>
-        )}
-
-        <div>
-          <span className="block text-xs font-medium text-text-muted mb-1">Field Force Name</span>
-          <CustomSelect value={selectedCode} options={employeeNames} onChange={setSelectedCode} placeholder="Select employee" />
-        </div>
-        <button className="button" type="button" disabled={saving} onClick={submit}>
-          {saving ? "Logging in..." : "Login"}
-        </button>
-      </div>
-
-      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col">
-        <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "360px" }}>
-          <table className="w-full text-left border-collapse">
-            <thead className="bg-surface-subtle sticky top-0 z-10">
-              <tr>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Field Force Name</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Last Accessed On</th>
-                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Accessed By</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logRows.length === 0 && (
-                <tr><td colSpan={3} className="px-4 py-10 text-center text-text-muted text-sm">No vacant logins yet.</td></tr>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm overflow-hidden" style={{ maxWidth: "820px" }}>
+        <div className="grid" style={{ gridTemplateColumns: "1fr 1fr" }}>
+          <div className="border-r border-border-subtle">
+            <div className="px-4 py-2 text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-subtle border-b border-border-subtle">
+              Field Force Name
+            </div>
+            <div className="overflow-y-auto custom-scrollbar" style={{ maxHeight: "360px" }}>
+              {sortedEmployees.length === 0 && (
+                <div className="px-4 py-6 text-sm text-text-muted">No employees found.</div>
               )}
-              {logRows.map((row) => (
-                <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
-                  <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary">{row.lastAccessedOn ? new Date(String(row.lastAccessedOn)).toLocaleString() : ""}</td>
-                  <td className="px-4 py-3 text-sm text-text-primary">{String(row.accessedBy ?? "")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+              {sortedEmployees.map((e) => {
+                const code = String(e.employeeCode ?? "");
+                const active = code === selectedCode;
+                return (
+                  <div
+                    key={code}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => selectEmployee(code)}
+                    className="px-4 py-2 text-sm cursor-pointer border-b border-border-subtle/60 hover:bg-surface-subtle/60"
+                    style={active ? { background: "var(--brand-soft, #eef4ff)", fontWeight: 600 } : undefined}
+                  >
+                    {String(e.name ?? "")} - {String(e.designation ?? "")} - {String(e.territory ?? "")}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="p-5 flex flex-col gap-4">
+            <div className="text-xs font-semibold text-text-secondary uppercase tracking-wider">Login</div>
+
+            {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
+            {success && <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{success}</div>}
+
+            <div>
+              <span className="block text-xs font-medium text-text-muted mb-1">Password</span>
+              <input
+                type="password"
+                className="input"
+                style={{ width: "100%" }}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Type your own password"
+                autoComplete="new-password"
+              />
+            </div>
+
+            <div>
+              <span className="block text-xs font-medium text-text-muted mb-1">Login To</span>
+              <div className="text-sm text-text-primary font-medium">
+                {selected ? `${selected.name} - ${selected.designation} - ${selected.territory}` : "—"}
+              </div>
+            </div>
+
+            <button className="button" type="button" disabled={saving || !selected} onClick={submit}>
+              {saving ? "Logging in..." : "Login"}
+            </button>
+          </div>
         </div>
       </div>
     </section>
