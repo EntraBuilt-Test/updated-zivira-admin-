@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export type MailRecord = {
@@ -766,6 +766,13 @@ export const apiClient = {
     return request<MasterRecord>(`/company/masters/${key}/${id}/deactivate`, { method: "POST" });
   },
 
+  // Real hard delete — restricted server-side to Mobile App - Device Id
+  // Deletion and Mail Delete, the two sanpharma screens whose own UI is a
+  // literal "Delete", not a deactivate.
+  deleteMasterRecord(key: string, id: string) {
+    return request<{ success: boolean; id: string }>(`/company/masters/${key}/${id}`, { method: "DELETE" });
+  },
+
   reactivateMasterRecord(key: string, id: string) {
     return request<MasterRecord>(`/company/masters/${key}/${id}/reactivate`, { method: "POST" });
   },
@@ -829,6 +836,42 @@ export const apiClient = {
     });
   },
 
+  // Full-row DCR edit — every editable field the Admin DCR Edit screen's
+  // Edit button opens, not just Work Type (see company.routes.ts's
+  // PATCH /company/dcrs/:id).
+  updateDcr(id: string, input: Record<string, unknown>) {
+    return request<Record<string, unknown>>(`/company/dcrs/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // ── Update/Delete > Drs UNI No - Generation — real DoctorModel writes,
+  // matching sanpharma.info's Unique_Doc_Slno.aspx exactly. ──
+  drUniqueNoSummary() {
+    return request<{ total: number; allocated: number; notAllocated: number }>(
+      "/company/masters/drUniqueNoGeneration/action/summary"
+    );
+  },
+
+  drUniqueNoList() {
+    return request<Record<string, unknown>[]>("/company/masters/drUniqueNoGeneration/action/list");
+  },
+
+  drUniqueNoAllocate(mode: string) {
+    return request<{ success: boolean; mode: string; total: number; allocated: number; notAllocated: number }>(
+      "/company/masters/drUniqueNoGeneration/action/allocate",
+      { method: "POST", body: JSON.stringify({ mode }) }
+    );
+  },
+
+  drUniqueNoReset() {
+    return request<{ success: boolean; total: number; allocated: number; notAllocated: number }>(
+      "/company/masters/drUniqueNoGeneration/action/reset",
+      { method: "POST", body: JSON.stringify({}) }
+    );
+  },
+
   sendNotificationMessage(input: { id?: string; filterBy?: string; filterValue?: string; message?: string; effectiveFrom?: string; effectiveTo?: string }) {
     return request<{ success: boolean; matched: number; notified: number }>("/company/masters/notificationMessage/action/send", {
       method: "POST",
@@ -840,12 +883,13 @@ export const apiClient = {
   // (see mail.routes.ts). Folder is free text, validated server-side
   // against the fixed system folders plus active mailFolderCreation rows.
 
-  listMail(params?: { folder?: string; search?: string; month?: string; year?: string }) {
+  listMail(params?: { folder?: string; search?: string; month?: string; year?: string; toEmployeeCode?: string }) {
     const query = new URLSearchParams();
     if (params?.folder) query.set("folder", params.folder);
     if (params?.search) query.set("search", params.search);
     if (params?.month) query.set("month", params.month);
     if (params?.year) query.set("year", params.year);
+    if (params?.toEmployeeCode) query.set("toEmployeeCode", params.toEmployeeCode);
     const qs = query.toString();
     return request<MailRecord[]>(`/company/mail${qs ? `?${qs}` : ""}`);
   },

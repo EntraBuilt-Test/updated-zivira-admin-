@@ -9,6 +9,15 @@ import { CustomDatePicker } from "@/components/custom-date-picker";
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const YEARS = Array.from({ length: 2027 - 2016 + 1 }, (_, i) => String(2016 + i));
 
+// sanpharma.info's own MSIS Edit (Approval), TP Deviation - Release and
+// Chemist - Release/Lock screens are pure filter-and-view: a dropdown
+// filter row with a Go button and a results table with no Add/Edit/Remove
+// affordances at all (matching the live-crawl reference screenshots
+// exactly) — unlike the many reportFilter screens above that DO manage
+// their own records inline. Suppress the Add Entry button and the
+// Edit/Remove columns only for these specific masters.
+const READ_ONLY_REPORT_KEYS = new Set(["msisEditApproval", "tpDeviationRelease", "chemistReleaseLock"]);
+
 /**
  * Renders sanpharma.info's report-screen shape exactly: Field Force Name /
  * Month / Year dropdown filters above a results table (per the live-crawl
@@ -207,6 +216,8 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
     return <div className="p-6 text-sm text-status-danger">Could not load this screen.</div>;
   }
 
+  const isReadOnly = READ_ONLY_REPORT_KEYS.has(masterKey);
+
   const commonStyle: React.CSSProperties = {
     width: "100%", padding: "8px 10px", borderRadius: "6px",
     border: "1px solid var(--border)", fontSize: "13px", background: "var(--panel)", color: "var(--ink)"
@@ -295,9 +306,11 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
               {fromMonthField ? "From/To Month and Year" : "Month and Year"} — exactly like sanpharma.info.
             </p>
           </div>
-          <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors" onClick={openAddForm} type="button">
-            Add Entry
-          </button>
+          {!isReadOnly && (
+            <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors" onClick={openAddForm} type="button">
+              Add Entry
+            </button>
+          )}
         </div>
 
         <div className="flex flex-wrap items-end gap-4 bg-surface-card p-4 rounded-xl border border-border-subtle shadow-sm">
@@ -361,7 +374,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
             </label>
           )}
           <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-5 py-2 rounded-lg font-medium text-sm transition-colors" onClick={() => setApplied(true)} type="button">
-            View
+            Go
           </button>
           {applied && (
             <button
@@ -403,7 +416,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
                   {glanceRows.length === 0 && (
                     <tr>
                       <td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">
-                        No records found for the selected filters.
+                        No Records Found
                       </td>
                     </tr>
                   )}
@@ -428,15 +441,19 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
                         {f.label}
                       </th>
                     ))}
-                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remove</th>
+                    {!isReadOnly && (
+                      <>
+                        <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Edit</th>
+                        <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Remove</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
                   {visibleRows.length === 0 && (
                     <tr>
-                      <td colSpan={schema.fields.length + 2} className="px-4 py-10 text-center text-text-muted text-sm">
-                        No records found for the selected filters.
+                      <td colSpan={isReadOnly ? schema.fields.length : schema.fields.length + 2} className="px-4 py-10 text-center text-text-muted text-sm">
+                        No Records Found
                       </td>
                     </tr>
                   )}
@@ -447,16 +464,20 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
                           {f.computed ? computedValueFor(f, row) : String(row[f.key] ?? "")}
                         </td>
                       ))}
-                      <td className="px-4 py-3">
-                        <button className="subdivision-icon-button" type="button" title="Edit" onClick={() => setFormRow({ ...row })}>
-                          <Pencil size={16} />
-                        </button>
-                      </td>
-                      <td className="px-4 py-3">
-                        <button className="subdivision-icon-button" type="button" title="Remove" onClick={() => setDeleteTarget(row)}>
-                          <Ban size={16} />
-                        </button>
-                      </td>
+                      {!isReadOnly && (
+                        <>
+                          <td className="px-4 py-3">
+                            <button className="subdivision-icon-button" type="button" title="Edit" onClick={() => setFormRow({ ...row })}>
+                              <Pencil size={16} />
+                            </button>
+                          </td>
+                          <td className="px-4 py-3">
+                            <button className="subdivision-icon-button" type="button" title="Remove" onClick={() => setDeleteTarget(row)}>
+                              <Ban size={16} />
+                            </button>
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 </tbody>

@@ -454,35 +454,35 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("update-delete/msis-edit")) {
-    return <GenericMasterTable masterKey="msisEditApproval" />;
+    return <MasterScreen masterKey="msisEditApproval" />;
   }
 
   if (pathStr.endsWith("update-delete/mail-delete")) {
-    return <GenericMasterTable masterKey="mailDeleteLog" />;
+    return <MasterScreen masterKey="mailDeleteLog" />;
   }
 
   if (pathStr.endsWith("update-delete/leave-cancellation")) {
-    return <GenericMasterTable masterKey="leaveCancellation" />;
+    return <MasterScreen masterKey="leaveCancellation" />;
   }
 
   if (pathStr.endsWith("update-delete/mob-app-device-id-deletion")) {
-    return <GenericMasterTable masterKey="deviceIdDeletion" />;
+    return <MasterScreen masterKey="deviceIdDeletion" />;
   }
 
   if (pathStr.endsWith("update-delete/tp-deviation-release")) {
-    return <GenericMasterTable masterKey="tpDeviationRelease" />;
+    return <MasterScreen masterKey="tpDeviationRelease" />;
   }
 
   if (pathStr.endsWith("update-delete/drs-uni-no-generation")) {
-    return <GenericMasterTable masterKey="drUniqueNoGeneration" />;
+    return <MasterScreen masterKey="drUniqueNoGeneration" />;
   }
 
   if (pathStr.endsWith("update-delete/chemist-business-release")) {
-    return <GenericMasterTable masterKey="chemistReleaseLock" />;
+    return <MasterScreen masterKey="chemistReleaseLock" />;
   }
 
   if (pathStr.endsWith("update-delete/chem-bus-month-release")) {
-    return <GenericMasterTable masterKey="chemistReleaseLockMonthwise" />;
+    return <MasterScreen masterKey="chemistReleaseLockMonthwise" />;
   }
 
   if (pathStr.endsWith("update-delete/auto-mail-reports")) {

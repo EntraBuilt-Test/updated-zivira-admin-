@@ -5,17 +5,53 @@ import { apiClient, type MasterRecord } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
 const WORK_TYPES = ["Field Work", "Holiday", "Weekly Off", "Transit", "Meeting"];
+const PRESCRIPTION_INTEREST = ["HIGH", "MEDIUM", "LOW", "NONE"];
+
+type DcrDraft = {
+  workType: string;
+  visitDate: string;
+  hospitalClinic: string;
+  notes: string;
+  checkInTime: string;
+  checkOutTime: string;
+  followUpRequired: boolean;
+  followUpDate: string;
+  prescriptionInterest: string;
+};
+
+function toDraft(row: Record<string, unknown>): DcrDraft {
+  const visitDate = row.visitDate ? new Date(String(row.visitDate)) : null;
+  const followUpDate = row.followUpDate ? new Date(String(row.followUpDate)) : null;
+  return {
+    workType: String(row.workType ?? "Field Work"),
+    visitDate: visitDate && !isNaN(visitDate.getTime()) ? visitDate.toISOString().slice(0, 10) : "",
+    hospitalClinic: String(row.hospitalClinic ?? ""),
+    notes: String(row.notes ?? ""),
+    checkInTime: String(row.checkInTime ?? ""),
+    checkOutTime: String(row.checkOutTime ?? ""),
+    followUpRequired: !!row.followUpRequired,
+    followUpDate: followUpDate && !isNaN(followUpDate.getTime()) ? followUpDate.toISOString().slice(0, 10) : "",
+    prescriptionInterest: String(row.prescriptionInterest ?? "")
+  };
+}
+
+const inputStyle: React.CSSProperties = {
+  width: "100%", padding: "8px 10px", borderRadius: "6px",
+  border: "1px solid var(--border)", fontSize: "13px", background: "var(--panel)", color: "var(--ink)"
+};
 
 // Matches sanpharma.info's "Update/Delete > DCR Edit" screen: a Field Force
 // Name dropdown filter with a Go button, and a results table with an Edit
-// button per row — no Add button. Clicking Edit turns that row's Work Type
-// into a dropdown with Save/Cancel; every other row stays read-only. This
-// reads and edits REAL DCR documents (the exact DcrModel collection the
-// field-force MR's own DCR history and the manager's DCR review queue both
-// read from — see company.routes.ts GET /company/dcrs and
-// PATCH /company/dcrs/:id/work-type), not a generic-masters mirror, so an
-// edit here is genuinely reflected in every portal, and the backend
-// notifies both the MR and their reporting manager.
+// button per row — no Add button. Clicking Edit opens the FULL row for
+// editing (visit date, work type, hospital/clinic, notes, check-in/out
+// time, follow-up, prescription interest), not just Work Type — the Edit
+// button here matches the entire row, as the sanpharma screen's own Edit
+// does. This reads and edits REAL DCR documents (the exact DcrModel
+// collection the field-force MR's own DCR history and the manager's DCR
+// review queue both read from — see company.routes.ts's GET /company/dcrs
+// and PATCH /company/dcrs/:id), not a generic-masters mirror, so an edit
+// here is genuinely reflected in every portal, and the backend notifies
+// both the MR and their reporting manager with a summary of what changed.
 export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<MasterRecord[]>([]);
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
@@ -23,9 +59,9 @@ export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [draftWorkType, setDraftWorkType] = useState<string>("Field Work");
-  const [savingId, setSavingId] = useState<string | null>(null);
+  const [editingRow, setEditingRow] = useState<Record<string, unknown> | null>(null);
+  const [draft, setDraft] = useState<DcrDraft | null>(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     apiClient.masterRecords("employees").then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
@@ -40,7 +76,7 @@ export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
     setError(null);
     setSearched(true);
     setLoading(true);
-    setEditingId(null);
+    setEditingRow(null);
     try {
       const emp = employees.find((e) => String(e.name ?? "") === selectedEmployeeCode);
       const res = await apiClient.companyDcrs({
@@ -55,27 +91,40 @@ export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
     }
   }
 
-  function startEdit(id: string, currentWorkType: string) {
-    setEditingId(id);
-    setDraftWorkType(currentWorkType || "Field Work");
+  function openEdit(row: Record<string, unknown>) {
+    setEditingRow(row);
+    setDraft(toDraft(row));
     setError(null);
   }
 
-  function cancelEdit() {
-    setEditingId(null);
+  function closeEdit() {
+    setEditingRow(null);
+    setDraft(null);
   }
 
-  async function saveEdit(id: string) {
-    setSavingId(id);
+  async function saveEdit() {
+    if (!editingRow || !draft) return;
+    const id = String(editingRow.id ?? "");
+    setSaving(true);
     setError(null);
     try {
-      await apiClient.updateDcrWorkType(id, draftWorkType);
-      setRows((prev) => prev.map((r) => (r.id === id ? { ...r, workType: draftWorkType } : r)));
-      setEditingId(null);
+      const updated = await apiClient.updateDcr(id, {
+        workType: draft.workType,
+        visitDate: draft.visitDate || undefined,
+        hospitalClinic: draft.hospitalClinic || null,
+        notes: draft.notes || null,
+        checkInTime: draft.checkInTime || null,
+        checkOutTime: draft.checkOutTime || null,
+        followUpRequired: draft.followUpRequired,
+        followUpDate: draft.followUpDate || null,
+        prescriptionInterest: draft.prescriptionInterest || null
+      });
+      setRows((prev) => prev.map((r) => (String(r.id) === id ? { ...r, ...updated.data } : r)));
+      closeEdit();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update DCR");
     } finally {
-      setSavingId(null);
+      setSaving(false);
     }
   }
 
@@ -123,44 +172,99 @@ export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
                 {rows.map((row) => {
                   const id = String(row.id ?? "");
                   const dcrDate = row.visitDate ? new Date(String(row.visitDate)).toLocaleDateString() : "";
-                  const isEditing = editingId === id;
                   return (
                     <tr key={id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
                       <td className="px-4 py-3 text-sm text-text-primary">{String(row.employeeCodeName ?? row.employeeCode ?? "")}</td>
                       <td className="px-4 py-3 text-sm text-text-primary">{dcrDate}</td>
                       <td className="px-4 py-3 text-sm text-text-primary">{String(row.status ?? "")}</td>
-                      <td className="px-4 py-3 text-sm" style={{ minWidth: "200px" }}>
-                        {isEditing ? (
-                          <CustomSelect value={draftWorkType} options={WORK_TYPES} onChange={setDraftWorkType} />
-                        ) : (
-                          String(row.workType ?? "Field Work")
-                        )}
-                      </td>
+                      <td className="px-4 py-3 text-sm text-text-primary">{String(row.workType ?? "Field Work")}</td>
                       <td className="px-4 py-3 text-sm whitespace-nowrap">
-                        {isEditing ? (
-                          <div className="flex items-center gap-2">
-                            <button className="button" type="button" disabled={savingId === id} onClick={() => saveEdit(id)}>
-                              {savingId === id ? "Saving..." : "Save"}
-                            </button>
-                            <button className="button-secondary" type="button" disabled={savingId === id} onClick={cancelEdit}>
-                              Cancel
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            className="button"
-                            type="button"
-                            onClick={() => startEdit(id, String(row.workType ?? "Field Work"))}
-                          >
-                            Edit
-                          </button>
-                        )}
+                        <button className="button" type="button" onClick={() => openEdit(row)}>
+                          Edit
+                        </button>
                       </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {editingRow && draft && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 60, padding: "20px" }}>
+          <div style={{ background: "var(--panel)", borderRadius: "10px", padding: "24px", width: "480px", maxHeight: "85vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+              <h2 style={{ margin: 0, fontSize: "1.1rem" }}>Edit DCR</h2>
+              <button onClick={closeEdit} type="button" aria-label="Close">✕</button>
+            </div>
+
+            <label style={{ display: "block", marginBottom: "12px" }}>
+              <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Visit Date</span>
+              <input type="date" value={draft.visitDate} onChange={(e) => setDraft({ ...draft, visitDate: e.target.value })} style={inputStyle} />
+            </label>
+
+            <label style={{ display: "block", marginBottom: "12px" }}>
+              <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Work Type</span>
+              <CustomSelect value={draft.workType} options={WORK_TYPES} onChange={(v) => setDraft({ ...draft, workType: v })} />
+            </label>
+
+            <label style={{ display: "block", marginBottom: "12px" }}>
+              <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Hospital / Clinic</span>
+              <input type="text" value={draft.hospitalClinic} onChange={(e) => setDraft({ ...draft, hospitalClinic: e.target.value })} style={inputStyle} />
+            </label>
+
+            <label style={{ display: "block", marginBottom: "12px" }}>
+              <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Notes</span>
+              <textarea value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} style={{ ...inputStyle, minHeight: "70px" }} />
+            </label>
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              <label style={{ display: "block", marginBottom: "12px", flex: 1 }}>
+                <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Check-In Time</span>
+                <input type="time" value={draft.checkInTime} onChange={(e) => setDraft({ ...draft, checkInTime: e.target.value })} style={inputStyle} />
+              </label>
+              <label style={{ display: "block", marginBottom: "12px", flex: 1 }}>
+                <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Check-Out Time</span>
+                <input type="time" value={draft.checkOutTime} onChange={(e) => setDraft({ ...draft, checkOutTime: e.target.value })} style={inputStyle} />
+              </label>
+            </div>
+
+            <label style={{ display: "block", marginBottom: "12px" }}>
+              <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Prescription Interest</span>
+              <CustomSelect
+                value={draft.prescriptionInterest}
+                options={PRESCRIPTION_INTEREST}
+                onChange={(v) => setDraft({ ...draft, prescriptionInterest: v })}
+                placeholder="Not set"
+              />
+            </label>
+
+            <label className="flex items-center gap-2 cursor-pointer select-none" style={{ marginBottom: "16px" }}>
+              <input
+                type="checkbox"
+                checked={draft.followUpRequired}
+                onChange={(e) => setDraft({ ...draft, followUpRequired: e.target.checked })}
+              />
+              <span style={{ fontSize: "13px", fontWeight: 500 }}>Follow-Up Required</span>
+            </label>
+
+            {draft.followUpRequired && (
+              <label style={{ display: "block", marginBottom: "16px" }}>
+                <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>Follow-Up Date</span>
+                <input type="date" value={draft.followUpDate} onChange={(e) => setDraft({ ...draft, followUpDate: e.target.value })} style={inputStyle} />
+              </label>
+            )}
+
+            <div style={{ display: "flex", gap: "8px" }}>
+              <button className="button" style={{ flex: 1 }} onClick={saveEdit} type="button" disabled={saving}>
+                {saving ? "Saving..." : "Save Changes"}
+              </button>
+              <button className="button-secondary" style={{ flex: 1 }} onClick={closeEdit} type="button" disabled={saving}>
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
