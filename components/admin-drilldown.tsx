@@ -430,11 +430,11 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/change-password")) {
-    return <GenericMasterTable masterKey="optionsChangePassword" />;
+    return <MasterScreen masterKey="optionsChangePassword" />;
   }
 
   if (pathStr.endsWith("vacant-mr-login/access")) {
-    return <GenericMasterTable masterKey="vacantMrLoginAccess" />;
+    return <MasterScreen masterKey="vacantMrLoginAccess" />;
   }
 
   if (pathStr.endsWith("vacant-mr-login/permission-for-managers")) {
@@ -442,7 +442,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("vacant-mr-login/login-into-fieldforce")) {
-    return <GenericMasterTable masterKey="loginAsEmployee" />;
+    return <MasterScreen masterKey="loginAsEmployee" />;
   }
 
   if (pathStr.endsWith("division-options/doctor-campaign-map")) {
@@ -554,7 +554,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("app-setup/notification-message")) {
-    return <GenericMasterTable masterKey="notificationMessage" />;
+    return <MasterScreen masterKey="notificationMessage" />;
   }
 
   if (pathStr.endsWith("app-setup/gps-geofence-tagg-deletion")) {
@@ -578,23 +578,23 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {
-    return <GenericMasterTable masterKey="listedDoctorUploadLog" />;
+    return <MasterScreen masterKey="listedDoctorUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {
-    return <GenericMasterTable masterKey="chemistUploadLog" />;
+    return <MasterScreen masterKey="chemistUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
-    return <GenericMasterTable masterKey="sampleDespatchUploadLog" />;
+    return <MasterScreen masterKey="sampleDespatchUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/input")) {
-    return <GenericMasterTable masterKey="inputDespatchUploadLog" />;
+    return <MasterScreen masterKey="inputDespatchUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/target")) {
-    return <GenericMasterTable masterKey="targetUploadLog" />;
+    return <MasterScreen masterKey="targetUploadLog" />;
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
@@ -614,51 +614,51 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("information-upload/file-circular-desig-wise")) {
-    return <GenericMasterTable masterKey="fileUploadDesignationwise" />;
+    return <MasterScreen masterKey="fileUploadDesignationwise" />;
   }
 
   if (pathStr.endsWith("information-upload/user-manual-upload")) {
-    return <GenericMasterTable masterKey="userManualUpload" />;
+    return <MasterScreen masterKey="userManualUpload" />;
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {
-    return <GenericMasterTable masterKey="salesforceUploadLog" />;
+    return <MasterScreen masterKey="salesforceUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/stockist")) {
-    return <GenericMasterTable masterKey="stockistUploadLog" />;
+    return <MasterScreen masterKey="stockistUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product")) {
-    return <GenericMasterTable masterKey="productUploadLog" />;
+    return <MasterScreen masterKey="productUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product-rate")) {
-    return <GenericMasterTable masterKey="productRateUploadLog" />;
+    return <MasterScreen masterKey="productRateUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
-    return <GenericMasterTable masterKey="slideUploadEDetailing" />;
+    return <MasterScreen masterKey="slideUploadEDetailing" />;
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
-    return <GenericMasterTable masterKey="holidayFixationUploadLog" />;
+    return <MasterScreen masterKey="holidayFixationUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
-    return <GenericMasterTable masterKey="leaveBulkUploadLog" />;
+    return <MasterScreen masterKey="leaveBulkUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/transaction-upload")) {
-    return <GenericMasterTable masterKey="transactionUpload" />;
+    return <MasterScreen masterKey="transactionUpload" />;
   }
 
   if (pathStr.endsWith("image-upload/home-page-common-for-all")) {
-    return <GenericMasterTable masterKey="homepageImageUpload" />;
+    return <MasterScreen masterKey="homepageImageUpload" />;
   }
 
   if (pathStr.endsWith("image-upload/home-page-fieldforcewise")) {
-    return <GenericMasterTable masterKey="homepageImageFieldForcewise" />;
+    return <MasterScreen masterKey="homepageImageFieldForcewise" />;
   }
 
   if (pathStr.endsWith("division-options/leave-status")) {
