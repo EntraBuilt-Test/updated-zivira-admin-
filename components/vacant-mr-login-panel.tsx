@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
 import { autoLoginUrl } from "@/lib/portal-urls";
+import { Eye, EyeOff } from "lucide-react";
 
 // Standing convention for every employee's Field/Manager portal login —
 // see Zivira-Backend-swagger-ui-main/src/utils/credentials.ts:
@@ -33,6 +34,7 @@ export function VacantMrLoginPanel({ masterKey }: { masterKey: string }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     apiClient.masterRecords("employees").then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
@@ -119,15 +121,27 @@ export function VacantMrLoginPanel({ masterKey }: { masterKey: string }) {
 
             <div>
               <span className="block text-xs font-medium text-text-muted mb-1">Password</span>
-              <input
-                type="password"
-                className="input"
-                style={{ width: "100%" }}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Type your own password"
-                autoComplete="new-password"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  className="input"
+                  style={{ width: "100%", paddingRight: "2.25rem" }}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Type your own password"
+                  autoComplete="new-password"
+                  name="vacant-mr-login-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute inset-y-0 right-0 flex items-center px-2 text-text-muted hover:text-text-primary"
+                  tabIndex={-1}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
             </div>
 
             <div>

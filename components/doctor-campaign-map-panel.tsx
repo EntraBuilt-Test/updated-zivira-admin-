@@ -84,12 +84,20 @@ export function DoctorCampaignMapPanel({ masterKey }: { masterKey: string }) {
     setAppliedFilterValue(filterValue);
   }
 
-  const mrTerritory = employees.find((e) => e.employeeCode === appliedMrCode)?.territory;
+  // Employee.territory is actually stored HQ-formatted ("Mumbai HQ",
+  // "Chennai HQ", ...) — the same values doctorCampaignMap's own `hq`
+  // field resolves to (see registry.ts: hq -> territoryHqMaster ->
+  // headquartersName). Doctor - Campaign Map's raw `territory` field is a
+  // different vocabulary entirely ("Territory 1", "Territory 2", ...), so
+  // matching MR-selection against THAT field can never find a real row —
+  // matching against `hq` is the actual, honest join between an MR and
+  // the doctors mapped under their HQ.
+  const mrHq = employees.find((e) => e.employeeCode === appliedMrCode)?.territory;
 
   const extraFilters = useMemo(() => {
     const filters: { field: string; value: string; mode?: "exact" | "contains" }[] = [];
-    if (appliedMrCode && mrTerritory) {
-      filters.push({ field: "territory", value: String(mrTerritory), mode: "exact" });
+    if (appliedMrCode && mrHq) {
+      filters.push({ field: "hq", value: String(mrHq), mode: "exact" });
     }
     if (appliedFilterField !== "ALL" && appliedFilterValue) {
       filters.push({
@@ -99,7 +107,7 @@ export function DoctorCampaignMapPanel({ masterKey }: { masterKey: string }) {
       });
     }
     return filters;
-  }, [appliedMrCode, mrTerritory, appliedFilterField, appliedFilterValue]);
+  }, [appliedMrCode, mrHq, appliedFilterField, appliedFilterValue]);
 
   return (
     <section className="flex flex-col gap-4 w-full">

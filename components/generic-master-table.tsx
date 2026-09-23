@@ -1509,7 +1509,7 @@ export function GenericMasterTable({
             <h2 className="text-2xl font-bold text-text-primary">{schema.title}</h2>
             <p className="text-sm text-text-muted mt-1">{schema.fields.length} fields, matching the Technical Report exactly.</p>
           </div>
-          {masterKey !== "employeePersonalInfo" && (
+          {masterKey !== "employeePersonalInfo" && masterKey !== "doctorCampaignMap" && (
             <div className="flex items-center gap-3">
               <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors flex items-center gap-2 shadow-sm" onClick={openAddForm} type="button">
                 <span>Add {schema.title}</span>
