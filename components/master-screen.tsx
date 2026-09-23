@@ -22,6 +22,10 @@ import { LeaveCancellationPanel } from "@/components/leave-cancellation-panel";
 import { DeviceIdDeletionPanel } from "@/components/device-id-deletion-panel";
 import { DrUniqueNoGenerationPanel } from "@/components/dr-unique-no-generation-panel";
 import { ChemistReleaseLockMonthwisePanel } from "@/components/chemist-release-lock-monthwise-panel";
+import { AutoMailSetupPanel } from "@/components/auto-mail-setup-panel";
+import { ScreenAccessSetupPanel } from "@/components/screen-access-setup-panel";
+import { BaseLevelSetupPanel } from "@/components/base-level-setup-panel";
+import { ManagerSetupPanel } from "@/components/manager-setup-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -70,6 +74,10 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "deviceIdDeletion") return <DeviceIdDeletionPanel masterKey={masterKey} />;
   if (uiKind === "drUniqueNoGeneration") return <DrUniqueNoGenerationPanel masterKey={masterKey} />;
   if (uiKind === "chemistReleaseLockMonthwise") return <ChemistReleaseLockMonthwisePanel masterKey={masterKey} />;
+  if (uiKind === "autoMailSetup") return <AutoMailSetupPanel masterKey={masterKey} />;
+  if (uiKind === "screenAccessSetup") return <ScreenAccessSetupPanel masterKey={masterKey} />;
+  if (uiKind === "baseLevelSetup") return <BaseLevelSetupPanel masterKey={masterKey} />;
+  if (uiKind === "managerSetup") return <ManagerSetupPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

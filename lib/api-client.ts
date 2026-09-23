@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export type MailRecord = {
@@ -877,6 +877,43 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify(input)
     });
+  },
+
+  // ── Admin Settings — Base Level Setup / Manager Setup / Auto Mail Setup
+  // (Admin tab) single-document-per-tenant config blobs. ──
+  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin") {
+    return request<T | null>(`/company/masters/admin-settings/${kind}`);
+  },
+
+  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin", value: T) {
+    return request<T>(`/company/masters/admin-settings/${kind}`, {
+      method: "PUT",
+      body: JSON.stringify({ value })
+    });
+  },
+
+  // ── Auto Mail Setup — Fieldforce tab mail rules (a real, growable list,
+  // unlike the fixed 12-report Admin tab above). ──
+  listMailAutoRules() {
+    return request<Record<string, unknown>[]>("/company/masters/mail-auto-rules");
+  },
+
+  createMailAutoRule(input: Record<string, unknown>) {
+    return request<Record<string, unknown>>("/company/masters/mail-auto-rules", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  updateMailAutoRule(id: string, input: Record<string, unknown>) {
+    return request<Record<string, unknown>>(`/company/masters/mail-auto-rules/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(input)
+    });
+  },
+
+  deleteMailAutoRule(id: string) {
+    return request<{ success: boolean; id: string }>(`/company/masters/mail-auto-rules/${id}`, { method: "DELETE" });
   },
 
   // Real internal Mail Box — POST/GET /company/mail and its :id actions

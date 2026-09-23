@@ -37,10 +37,17 @@ export function MailBoxPanel({ masterKey: _masterKey }: { masterKey: string }) {
   async function loadFolders() {
     try {
       const res = await apiClient.masterRecords("mailFolderCreation");
+      // Sanpharma's own Mail Box has no default custom folders — only the
+      // fixed Inbox / Sent Mails / Viewed Mails. Placeholder demo rows
+      // seeded generically for every master ("Mail Folder Name 1", "Mail
+      // Folder Name 2", ...) never represent a real folder a user created,
+      // so they're filtered out here rather than shown as if they were.
+      const PLACEHOLDER_FOLDER = /^Mail Folder Name \d+$/i;
       const active = res.data
         .filter((r) => String(r.status ?? "Active") !== "Inactive")
         .map((r) => String(r.mailFolderName ?? ""))
-        .filter(Boolean);
+        .filter(Boolean)
+        .filter((name) => !PLACEHOLDER_FOLDER.test(name));
       setCustomFolders(active);
     } catch {
       setCustomFolders([]);

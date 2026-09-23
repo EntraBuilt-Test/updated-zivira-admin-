@@ -486,19 +486,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("update-delete/auto-mail-reports")) {
-    return <GenericMasterTable masterKey="autoMailSetup" />;
+    return <MasterScreen masterKey="autoMailSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/screen-access-rights")) {
-    return <GenericMasterTable masterKey="screenAccessSetup" />;
+    return <MasterScreen masterKey="screenAccessSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/base-level")) {
-    return <GenericMasterTable masterKey="baseLevelSetup" />;
+    return <MasterScreen masterKey="baseLevelSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/managers")) {
-    return <GenericMasterTable masterKey="managerSetup" />;
+    return <MasterScreen masterKey="managerSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/approval-mandatory")) {

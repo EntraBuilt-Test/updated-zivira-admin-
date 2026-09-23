@@ -42,6 +42,16 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
     [employees]
   );
 
+  // sanpharma's Leave Cancellation grid shows Employee Id / HQ / Designation
+  // sourced from the employee master (same "computed" lookup GenericMasterTable
+  // does for its own computed columns) — these are never stored on the leave
+  // record itself, so they're resolved here from the already-fetched employees list.
+  const employeeByName = useMemo(() => {
+    const map = new Map<string, MasterRecord>();
+    for (const e of employees) map.set(String(e.name ?? ""), e);
+    return map;
+  }, [employees]);
+
   async function go() {
     setError(null);
     setSearched(true);
@@ -171,6 +181,7 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
                   )}
                   {rows.map((row) => {
                     const isCancelled = String(row.status ?? "Active") === "Cancelled";
+                    const emp = employeeByName.get(String(row.fieldForceName ?? ""));
                     return (
                       <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
                         <td className="px-4 py-3">
@@ -181,10 +192,10 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
                             onChange={() => toggleOne(row.id)}
                           />
                         </td>
-                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.employeeId ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.employeeCode ?? row.employeeId ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
-                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.hq ?? "")}</td>
-                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.designation ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.territory ?? row.hq ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.designation ?? row.designation ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.fromDate ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.toDate ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.noOfDays ?? "")}</td>

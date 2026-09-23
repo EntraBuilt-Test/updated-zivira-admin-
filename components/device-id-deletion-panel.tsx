@@ -31,6 +31,14 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
     [employees]
   );
 
+  // HQ / Designation come from the employee master (sanpharma's own
+  // computed columns), never stored on the deviceIdDeletion record itself.
+  const employeeByName = useMemo(() => {
+    const map = new Map<string, MasterRecord>();
+    for (const e of employees) map.set(String(e.name ?? ""), e);
+    return map;
+  }, [employees]);
+
   async function go() {
     setError(null);
     setSearched(true);
@@ -104,11 +112,13 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
                 {rows.length === 0 && (
                   <tr><td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
                 )}
-                {rows.map((row) => (
+                {rows.map((row) => {
+                  const emp = employeeByName.get(String(row.fieldForceName ?? ""));
+                  return (
                   <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.hq ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.designation ?? "")}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.territory ?? row.hq ?? "")}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.designation ?? row.designation ?? "")}</td>
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.deviceId ?? "")}</td>
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.status ?? "")}</td>
                     <td className="px-4 py-3 text-sm">
@@ -117,7 +127,8 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -35,6 +35,14 @@ export function ChemistReleaseLockMonthwisePanel({ masterKey: _masterKey }: { ma
     [employees]
   );
 
+  // Designation / Emp Code come from the employee master (sanpharma's own
+  // computed columns), never stored on the chemistReleaseLockMonthwise record.
+  const employeeByName = useMemo(() => {
+    const map = new Map<string, MasterRecord>();
+    for (const e of employees) map.set(String(e.name ?? ""), e);
+    return map;
+  }, [employees]);
+
   async function go() {
     setError(null);
     setSearched(true);
@@ -127,11 +135,13 @@ export function ChemistReleaseLockMonthwisePanel({ masterKey: _masterKey }: { ma
                 {rows.length === 0 && (
                   <tr><td colSpan={7} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
                 )}
-                {rows.map((row) => (
+                {rows.map((row) => {
+                  const emp = employeeByName.get(String(row.fieldForceName ?? ""));
+                  return (
                   <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.designation ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.empCode ?? "")}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.designation ?? row.designation ?? "")}</td>
+                    <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.employeeCode ?? row.empCode ?? "")}</td>
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.month ?? "")}</td>
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.year ?? "")}</td>
                     <td className="px-4 py-3 text-sm">
@@ -147,7 +157,8 @@ export function ChemistReleaseLockMonthwisePanel({ masterKey: _masterKey }: { ma
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
