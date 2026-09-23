@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Search } from "lucide-react";
+import { ChevronDown, Search, Eye, EyeOff } from "lucide-react";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -47,6 +47,9 @@ export function ChangePasswordPanel({ masterKey: _masterKey }: { masterKey: stri
   // dropdown whose *value* prop was cleared but whose internal open/query
   // state was not, so it looked unchanged until clicked again.
   const [formResetKey, setFormResetKey] = useState(0);
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   useEffect(() => {
     apiClient.employees().then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
@@ -73,6 +76,9 @@ export function ChangePasswordPanel({ masterKey: _masterKey }: { masterKey: stri
     setConfirmPassword("");
     setError(null);
     setSuccess(null);
+    setShowOldPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
     setFormResetKey((k) => k + 1);
   }
 
@@ -113,13 +119,13 @@ export function ChangePasswordPanel({ masterKey: _masterKey }: { masterKey: stri
   }
 
   return (
-    <section className="flex flex-col gap-6 w-full">
-      <div>
+    <section className="flex flex-col gap-6 w-full items-center">
+      <div className="w-full" style={{ maxWidth: "620px" }}>
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Options</p>
         <h2 className="text-2xl font-bold text-text-primary">Password Maintenance</h2>
       </div>
 
-      <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-col gap-4" style={{ maxWidth: "620px" }}>
+      <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-col gap-4 w-full" style={{ maxWidth: "620px" }}>
         {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
         {success && <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{success}</div>}
 
@@ -140,36 +146,27 @@ export function ChangePasswordPanel({ masterKey: _masterKey }: { masterKey: stri
           </div>
         </div>
 
-        <div>
-          <span className="block text-xs font-medium text-text-muted mb-1">Old Password</span>
-          <input
-            type="password"
-            className="input"
-            style={{ width: "100%" }}
-            value={oldPassword}
-            onChange={(e) => setOldPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <span className="block text-xs font-medium text-text-muted mb-1">New Password</span>
-          <input
-            type="password"
-            className="input"
-            style={{ width: "100%" }}
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-        </div>
-        <div>
-          <span className="block text-xs font-medium text-text-muted mb-1">Confirm Password</span>
-          <input
-            type="password"
-            className="input"
-            style={{ width: "100%" }}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
+        <PasswordField
+          label="Old Password"
+          value={oldPassword}
+          onChange={setOldPassword}
+          visible={showOldPassword}
+          onToggleVisible={() => setShowOldPassword((v) => !v)}
+        />
+        <PasswordField
+          label="New Password"
+          value={newPassword}
+          onChange={setNewPassword}
+          visible={showNewPassword}
+          onToggleVisible={() => setShowNewPassword((v) => !v)}
+        />
+        <PasswordField
+          label="Confirm Password"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          visible={showConfirmPassword}
+          onToggleVisible={() => setShowConfirmPassword((v) => !v)}
+        />
 
         <div className="flex items-center gap-3">
           <button className="button" type="button" disabled={saving} onClick={submit}>
@@ -181,6 +178,55 @@ export function ChangePasswordPanel({ masterKey: _masterKey }: { masterKey: stri
         </div>
       </div>
     </section>
+  );
+}
+
+// A password input with a show/hide eye toggle. Note: this only toggles
+// visibility of what the user has TYPED in this field during this session —
+// it cannot and does not ever show someone's actual existing account
+// password. Passwords are stored as one-way bcrypt hashes (see
+// UserModel.passwordHash / auth.routes.ts), which cannot be reversed back
+// into plaintext by this app, the database, or anyone — that's the whole
+// point of hashing. There is no "reveal the current password" capability
+// possible here, by design, for every account on this platform.
+function PasswordField({
+  label,
+  value,
+  onChange,
+  visible,
+  onToggleVisible
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  visible: boolean;
+  onToggleVisible: () => void;
+}) {
+  return (
+    <div>
+      <span className="block text-xs font-medium text-text-muted mb-1">{label}</span>
+      <div style={{ position: "relative" }}>
+        <input
+          type={visible ? "text" : "password"}
+          className="input"
+          style={{ width: "100%", paddingRight: 36 }}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+        <button
+          type="button"
+          onClick={onToggleVisible}
+          aria-label={visible ? `Hide ${label}` : `Show ${label}`}
+          style={{
+            position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+            background: "transparent", border: "none", padding: 4, cursor: "pointer",
+            color: "var(--muted, #888)", display: "flex", alignItems: "center"
+          }}
+        >
+          {visible ? <EyeOff size={16} /> : <Eye size={16} />}
+        </button>
+      </div>
+    </div>
   );
 }
 
