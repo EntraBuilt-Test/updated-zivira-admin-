@@ -446,11 +446,11 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("update-delete/tp-delete")) {
-    return <GenericMasterTable masterKey="tpDeleteSetup" />;
+    return <MasterScreen masterKey="tpDeleteSetup" />;
   }
 
   if (pathStr.endsWith("update-delete/dcr-edit")) {
-    return <GenericMasterTable masterKey="dcrEditSetup" />;
+    return <MasterScreen masterKey="dcrEditSetup" />;
   }
 
   if (pathStr.endsWith("update-delete/msis-edit")) {

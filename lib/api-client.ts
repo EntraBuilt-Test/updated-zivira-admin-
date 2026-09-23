@@ -311,7 +311,7 @@ export type MasterField = {
   computed?: { fromField: string; sourceMaster: string; lookupField: string; displayField: string };
   detailOnly?: boolean;
 };
-export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
+export type MasterSchema = { key: string; title: string; fields: MasterField[]; keyFields: string[]; uiKind?: "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit"; approvalActionColumnLabel?: string; approvalLinkText?: string; approvalLinkDateSuffix?: boolean; atAGlance?: boolean };
 export type MasterRecord = { id: string; tenantSlug?: string; createdAt?: string; updatedAt?: string } & Record<string, unknown>;
 
 export type MailRecord = {
@@ -800,6 +800,33 @@ export const apiClient = {
       "/company/masters/vacantMrLoginAccess/action/login",
       { method: "POST", body: JSON.stringify(input) }
     );
+  },
+
+  // ── Update/Delete > TP Delete & DCR Edit — real TourPlan/Dcr documents,
+  // the exact same collections the field-force MR's own screens and the
+  // manager's approval queues read from, not a generic-masters mirror. ──
+
+  companyTourPlans(params: { employeeCode?: string; month?: string; status?: string } = {}) {
+    const qs = toQueryString(params);
+    return request<Record<string, unknown>[]>(`/company/tour-plans${qs}`);
+  },
+
+  deleteTourPlan(tpId: string) {
+    return request<{ deleted: boolean; tpId: string }>(`/company/tour-plans/${encodeURIComponent(tpId)}`, {
+      method: "DELETE"
+    });
+  },
+
+  companyDcrs(params: { employeeCode?: string } = {}) {
+    const qs = toQueryString(params);
+    return request<Record<string, unknown>[]>(`/company/dcrs${qs}`);
+  },
+
+  updateDcrWorkType(id: string, workType: string) {
+    return request<Record<string, unknown>>(`/company/dcrs/${id}/work-type`, {
+      method: "PATCH",
+      body: JSON.stringify({ workType })
+    });
   },
 
   sendNotificationMessage(input: { id?: string; filterBy?: string; filterValue?: string; message?: string; effectiveFrom?: string; effectiveTo?: string }) {
