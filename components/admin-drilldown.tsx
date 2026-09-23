@@ -502,7 +502,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("basic-setup/approval-mandatory")) {
-    return <GenericMasterTable masterKey="approvalMandatorySetup" />;
+    return <MasterScreen masterKey="approvalMandatorySetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/managerwise-core-doctor-map")) {

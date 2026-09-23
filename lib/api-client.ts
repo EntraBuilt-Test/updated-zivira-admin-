@@ -881,11 +881,11 @@ export const apiClient = {
 
   // ── Admin Settings — Base Level Setup / Manager Setup / Auto Mail Setup
   // (Admin tab) single-document-per-tenant config blobs. ──
-  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin") {
+  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup") {
     return request<T | null>(`/company/masters/admin-settings/${kind}`);
   },
 
-  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin", value: T) {
+  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup", value: T) {
     return request<T>(`/company/masters/admin-settings/${kind}`, {
       method: "PUT",
       body: JSON.stringify({ value })
