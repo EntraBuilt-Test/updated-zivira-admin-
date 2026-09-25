@@ -4,8 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
-const MASTER_KEY = "screenwiseLock";
+const MASTER_KEY = "deviceLock";
 const SELECT_CLEAR = "---Select Clear---";
+const TEAM_OPTIONS = ["Team"] as const;
 
 function yesNo(v: unknown): boolean {
   return String(v ?? "").toLowerCase() === "yes";
@@ -17,31 +18,27 @@ function employeeLabel(e: MasterRecord): string {
 
 type Row = {
   name: string;
-  designation: string;
   hq: string;
-  dcrLock: boolean;
-  tpLock: boolean;
-  sdpLock: boolean;
-  campaignLock: boolean;
-  doctorMapLock: boolean;
-  unlstCnt: string;
+  designation: string;
+  empCode: string;
+  stateName: string;
+  androidApp: boolean;
+  iosApp: boolean;
+  androidDetailing: boolean;
+  iosDetailing: boolean;
   existing?: MasterRecord;
 };
 
 const cell: React.CSSProperties = { border: "1px solid #94a3b8", padding: "4px 6px" };
-const head: React.CSSProperties = { ...cell, background: "#e2e8f0", fontWeight: 600, textAlign: "center" };
+const head: React.CSSProperties = { ...cell, background: "#0f2f52", color: "#fff", fontWeight: 600, textAlign: "center" };
 
-// Matches sanpharma.info's Basic Setup >> Screenwise Lock screen
-// (Screwise_Lock.aspx) exactly: a "FieldForce Name" label with a "Team"
-// dropdown (grouped by HQ/territory) and a second dropdown for the
-// specific field force member within that team, plus a "Go" button — no
-// "Add" flow. Go loads a bordered table of every field force member in the
-// selected team (or just the one picked in the second dropdown) with
-// columns S.No / FieldForce / Designation / HQ / DCR Lock / TP Lock / SDP
-// Lock / Campaign Lock / Doctor Map Lock (checkboxes) / Unlst Cnt (a
-// numeric text field) — no Log Lock or IUP Lock columns. A single bottom
-// "Save" button upserts one screenwiseLock record per row.
-export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: string }) {
+// Matches sanpharma.info's Options >> Device Lock screen (Device_Lock.aspx)
+// exactly: a fixed "Team" selector plus a FieldForce member dropdown (NAME
+// - DESIGNATION - HQ) and a Go button, then a bordered results table with
+// S.No / FieldForce Name / HQ / Designation / Emp Code / State Name /
+// Android App / IOS App / Android Detailing / IOS Detailing (checkboxes),
+// and a single Save button. Saving shows a centered confirmation popup.
+export function DeviceLockPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<MasterRecord[]>([]);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
   const [team, setTeam] = useState("Team");
@@ -50,8 +47,8 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
   const [loadingRows, setLoadingRows] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+  const [successOpen, setSuccessOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -72,31 +69,15 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
     };
   }, []);
 
-  // Matches sanpharma.info's own Screwise_Lock.aspx / Device_Lock.aspx
-  // header exactly: the first dropdown is a fixed "Team" selector (not a
-  // list of HQs), and the second dropdown lists the actual field force
-  // members (NAME - DESIGNATION - HQ) to pick from.
-  const TEAM_OPTIONS = ["Team"] as const;
-
   const memberOptions = useMemo(() => {
     return [
       SELECT_CLEAR,
-      ...[...employees]
-        .sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? "")))
-        .map(employeeLabel)
+      ...[...employees].sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? ""))).map(employeeLabel)
     ];
   }, [employees]);
 
-  function onTeamChange(v: string) {
-    setTeam(v);
-    setMember("");
-    setRows([]);
-    setSearched(false);
-  }
-
   async function go() {
     setError(null);
-    setNotice(null);
     setSearched(true);
     setLoadingRows(true);
     try {
@@ -113,14 +94,14 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
         const existing = recordsRes.data.find((r) => String(r.fieldForceName ?? "") === name);
         return {
           name,
-          designation: String(e.designation ?? ""),
           hq: String(e.territory ?? ""),
-          dcrLock: existing ? yesNo(existing.dcrLock) : false,
-          tpLock: existing ? yesNo(existing.tpLock) : false,
-          sdpLock: existing ? yesNo(existing.sdpLock) : false,
-          campaignLock: existing ? yesNo(existing.campaignLock) : false,
-          doctorMapLock: existing ? yesNo(existing.doctorMapLock) : false,
-          unlstCnt: existing ? String(existing.unlstCnt ?? "") : "",
+          designation: String(e.designation ?? ""),
+          empCode: String(e.employeeCode ?? ""),
+          stateName: String(e.state ?? ""),
+          androidApp: existing ? yesNo(existing.androidApp) : false,
+          iosApp: existing ? yesNo(existing.iosApp) : false,
+          androidDetailing: existing ? yesNo(existing.androidDetailing) : false,
+          iosDetailing: existing ? yesNo(existing.iosDetailing) : false,
           existing
         };
       });
@@ -134,28 +115,21 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
     }
   }
 
-  function toggle(name: string, key: "dcrLock" | "tpLock" | "sdpLock" | "campaignLock" | "doctorMapLock") {
+  function toggle(name: string, key: "androidApp" | "iosApp" | "androidDetailing" | "iosDetailing") {
     setRows((prev) => prev.map((r) => (r.name === name ? { ...r, [key]: !r[key] } : r)));
-  }
-
-  function setUnlstCnt(name: string, value: string) {
-    setRows((prev) => prev.map((r) => (r.name === name ? { ...r, unlstCnt: value } : r)));
   }
 
   async function save() {
     setSaving(true);
     setError(null);
-    setNotice(null);
     try {
       for (const row of rows) {
         const payload: Record<string, unknown> = {
           fieldForceName: row.name,
-          dcrLock: row.dcrLock ? "Yes" : "No",
-          tpLock: row.tpLock ? "Yes" : "No",
-          sdpLock: row.sdpLock ? "Yes" : "No",
-          campaignLock: row.campaignLock ? "Yes" : "No",
-          doctorMapLock: row.doctorMapLock ? "Yes" : "No",
-          unlstCnt: row.unlstCnt
+          androidApp: row.androidApp ? "Yes" : "No",
+          iosApp: row.iosApp ? "Yes" : "No",
+          androidDetailing: row.androidDetailing ? "Yes" : "No",
+          iosDetailing: row.iosDetailing ? "Yes" : "No"
         };
         if (row.existing) {
           await apiClient.updateMasterRecord(MASTER_KEY, row.existing.id, payload);
@@ -163,10 +137,10 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
           await apiClient.createMasterRecord(MASTER_KEY, payload);
         }
       }
-      setNotice("Screenwise Lock settings saved successfully.");
+      setSuccessOpen(true);
       await go();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save Screenwise Lock");
+      setError(err instanceof Error ? err.message : "Failed to save Device Lock");
     } finally {
       setSaving(false);
     }
@@ -175,18 +149,18 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
   return (
     <div className="space-y-4">
       <div className="card p-4">
-        <h2 className="text-lg font-semibold mb-4">Screenwise Lock</h2>
+        <h2 className="text-lg font-semibold mb-4">Device Lock</h2>
         <div className="flex flex-wrap items-end gap-3">
           <div className="min-w-[160px]">
             <label className="block text-sm font-medium mb-1">FieldForce Name</label>
-            <CustomSelect value={team} options={[...TEAM_OPTIONS]} onChange={onTeamChange} placeholder="Team" />
+            <CustomSelect value={team} options={[...TEAM_OPTIONS]} onChange={setTeam} placeholder="Team" />
           </div>
           <div className="min-w-[280px]">
             <CustomSelect
               value={member || SELECT_CLEAR}
               options={memberOptions}
               onChange={(v) => setMember(v === SELECT_CLEAR ? "" : v)}
-              placeholder={SELECT_CLEAR}
+              placeholder={loadingEmployees ? "Loading..." : SELECT_CLEAR}
             />
           </div>
           <button
@@ -209,18 +183,19 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
       </div>
 
       {error && <div className="card p-3 text-sm text-red-600">{error}</div>}
-      {notice && <div className="card p-3 text-sm text-green-700">{notice}</div>}
 
       {searched && (
         <div className="card p-4 overflow-x-auto">
           <table style={{ borderCollapse: "collapse", width: "100%" }} className="text-sm">
             <thead>
               <tr>
-                {["S.No", "FieldForce", "Designation", "HQ", "DCR Lock", "TP Lock", "SDP Lock", "Campaign Lock", "Doctor Map Lock", "Unlst Cnt"].map((h) => (
-                  <th key={h} style={head}>
-                    {h}
-                  </th>
-                ))}
+                {["S.No", "FieldForce Name", "HQ", "Designation", "Emp Code", "State Name", "Andorid App", "IOS App", "Andorid Detailing", "IOS Detailing"].map(
+                  (h) => (
+                    <th key={h} style={head}>
+                      {h}
+                    </th>
+                  )
+                )}
               </tr>
             </thead>
             <tbody>
@@ -235,29 +210,21 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
                   <tr key={row.name}>
                     <td style={{ ...cell, textAlign: "center" }}>{i + 1}</td>
                     <td style={cell}>{row.name}</td>
-                    <td style={cell}>{row.designation}</td>
                     <td style={cell}>{row.hq}</td>
+                    <td style={cell}>{row.designation}</td>
+                    <td style={cell}>{row.empCode}</td>
+                    <td style={cell}>{row.stateName}</td>
                     <td style={{ ...cell, textAlign: "center" }}>
-                      <input type="checkbox" checked={row.dcrLock} onChange={() => toggle(row.name, "dcrLock")} />
+                      <input type="checkbox" checked={row.androidApp} onChange={() => toggle(row.name, "androidApp")} />
                     </td>
                     <td style={{ ...cell, textAlign: "center" }}>
-                      <input type="checkbox" checked={row.tpLock} onChange={() => toggle(row.name, "tpLock")} />
+                      <input type="checkbox" checked={row.iosApp} onChange={() => toggle(row.name, "iosApp")} />
                     </td>
                     <td style={{ ...cell, textAlign: "center" }}>
-                      <input type="checkbox" checked={row.sdpLock} onChange={() => toggle(row.name, "sdpLock")} />
+                      <input type="checkbox" checked={row.androidDetailing} onChange={() => toggle(row.name, "androidDetailing")} />
                     </td>
                     <td style={{ ...cell, textAlign: "center" }}>
-                      <input type="checkbox" checked={row.campaignLock} onChange={() => toggle(row.name, "campaignLock")} />
-                    </td>
-                    <td style={{ ...cell, textAlign: "center" }}>
-                      <input type="checkbox" checked={row.doctorMapLock} onChange={() => toggle(row.name, "doctorMapLock")} />
-                    </td>
-                    <td style={cell}>
-                      <input
-                        style={{ border: "1px solid #94a3b8", borderRadius: 3, padding: "2px 6px", width: 70 }}
-                        value={row.unlstCnt}
-                        onChange={(e) => setUnlstCnt(row.name, e.target.value)}
-                      />
+                      <input type="checkbox" checked={row.iosDetailing} onChange={() => toggle(row.name, "iosDetailing")} />
                     </td>
                   </tr>
                 ))
@@ -281,6 +248,47 @@ export function ScreenwiseLockPanel({ masterKey: _masterKey }: { masterKey: stri
               }}
             >
               {saving ? "Saving..." : "Save"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {successOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.35)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 100
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 8,
+              padding: "24px 28px",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+              maxWidth: 360,
+              textAlign: "center"
+            }}
+          >
+            <p className="text-sm mb-4">Device Lock settings saved successfully</p>
+            <button
+              onClick={() => setSuccessOpen(false)}
+              style={{
+                border: "1px solid #1d4ed8",
+                borderRadius: 6,
+                background: "#2563eb",
+                color: "#fff",
+                fontWeight: 600,
+                padding: "6px 24px",
+                cursor: "pointer"
+              }}
+            >
+              OK
             </button>
           </div>
         </div>

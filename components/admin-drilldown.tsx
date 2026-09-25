@@ -514,27 +514,27 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("basic-setup/mail-folder-creation")) {
-    return <GenericMasterTable masterKey="mailFolderCreation" />;
+    return <MasterScreen masterKey="mailFolderCreation" />;
   }
 
   if (pathStr.endsWith("basic-setup/other-setup")) {
-    return <GenericMasterTable masterKey="otherSetup" />;
+    return <MasterScreen masterKey="otherSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/homepage-dashboard-display")) {
-    return <GenericMasterTable masterKey="homepageDashboardDisplay" />;
+    return <MasterScreen masterKey="homepageDashboardDisplay" />;
   }
 
   if (pathStr.endsWith("basic-setup/leave-setup")) {
-    return <GenericMasterTable masterKey="leaveTypeSetup" />;
+    return <MasterScreen masterKey="leaveTypeSetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/leave-policy-setup")) {
-    return <GenericMasterTable masterKey="leavePolicySetup" />;
+    return <MasterScreen masterKey="leavePolicySetup" />;
   }
 
   if (pathStr.endsWith("basic-setup/device-lock")) {
-    return <GenericMasterTable masterKey="deviceLock" />;
+    return <MasterScreen masterKey="deviceLock" />;
   }
 
   if (pathStr.endsWith("basic-setup/order-booking-setup")) {

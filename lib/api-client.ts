@@ -881,11 +881,11 @@ export const apiClient = {
 
   // ── Admin Settings — Base Level Setup / Manager Setup / Auto Mail Setup
   // (Admin tab) single-document-per-tenant config blobs. ──
-  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup") {
+  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup") {
     return request<T | null>(`/company/masters/admin-settings/${kind}`);
   },
 
-  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup", value: T) {
+  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup", value: T) {
     return request<T>(`/company/masters/admin-settings/${kind}`, {
       method: "PUT",
       body: JSON.stringify({ value })
@@ -951,6 +951,18 @@ export const apiClient = {
 
   deleteMail(id: string) {
     return request<{ success: boolean }>(`/company/mail/${id}`, { method: "DELETE" });
+  },
+
+  // Mail Folder Creation's "Transfer Mail Folder" flow (mail.routes.ts).
+  mailTransferPreview(from: string) {
+    return request<{ count: number }>(`/company/mail/transfer-preview?from=${encodeURIComponent(from)}`);
+  },
+
+  mailTransfer(input: { from: string; to: string; deleteAfterTransfer?: boolean }) {
+    return request<{ moved: number }>("/company/mail/transfer", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
   },
 
   // Real quiz authoring + scoring — /company/quiz (see quiz.routes.ts).

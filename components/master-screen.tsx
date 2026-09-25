@@ -29,6 +29,12 @@ import { ManagerSetupPanel } from "@/components/manager-setup-panel";
 import { ApprovalMandatorySetupPanel } from "@/components/approval-mandatory-setup-panel";
 import { ManagerwiseCoreDoctorMapPanel } from "@/components/managerwise-core-doctor-map-panel";
 import { ScreenwiseLockPanel } from "@/components/screenwise-lock-panel";
+import { MailFolderCreationPanel } from "@/components/mail-folder-creation-panel";
+import { OtherSetupPanel } from "@/components/other-setup-panel";
+import { HomepageDashboardDisplayPanel } from "@/components/homepage-dashboard-display-panel";
+import { LeaveSetupPanel } from "@/components/leave-setup-panel";
+import { LeavePolicySetupPanel } from "@/components/leave-policy-setup-panel";
+import { DeviceLockPanel } from "@/components/device-lock-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -40,7 +46,7 @@ import { ScreenwiseLockPanel } from "@/components/screenwise-lock-panel";
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | null
   >(null);
 
   useEffect(() => {
@@ -84,6 +90,12 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "approvalMandatorySetup") return <ApprovalMandatorySetupPanel masterKey={masterKey} />;
   if (uiKind === "managerwiseCoreDoctorMap") return <ManagerwiseCoreDoctorMapPanel masterKey={masterKey} />;
   if (uiKind === "screenwiseLock") return <ScreenwiseLockPanel masterKey={masterKey} />;
+  if (uiKind === "mailFolderCreation") return <MailFolderCreationPanel masterKey={masterKey} />;
+  if (uiKind === "otherSetup") return <OtherSetupPanel masterKey={masterKey} />;
+  if (uiKind === "homepageDashboardDisplay") return <HomepageDashboardDisplayPanel masterKey={masterKey} />;
+  if (uiKind === "leaveTypeSetup") return <LeaveSetupPanel masterKey={masterKey} />;
+  if (uiKind === "leavePolicySetup") return <LeavePolicySetupPanel masterKey={masterKey} />;
+  if (uiKind === "deviceLock") return <DeviceLockPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;
