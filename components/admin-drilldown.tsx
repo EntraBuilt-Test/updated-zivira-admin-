@@ -510,7 +510,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("basic-setup/screenwise-access")) {
-    return <GenericMasterTable masterKey="screenwiseLock" />;
+    return <MasterScreen masterKey="screenwiseLock" />;
   }
 
   if (pathStr.endsWith("basic-setup/mail-folder-creation")) {

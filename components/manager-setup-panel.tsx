@@ -3,15 +3,19 @@
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import {
-  SectionBox,
-  FieldRow,
+  TwoColumnBox,
+  SubSectionLabel,
+  CompactFieldRow,
+  NeededRadio,
   YesNoRadio,
+  YesNoCheckboxPair,
   TextField,
   SelectField,
   DcrMatrixTable,
   emptyDcrMatrix,
   emptyDcrMatrixDesignations,
   TourPlanSetupTable,
+  TourPlanApprovalList,
   emptyTourPlanTable,
   type DcrMatrix,
   type DcrMatrixDesignations,
@@ -20,27 +24,35 @@ import {
 
 const CONFIG_KIND = "managerSetup";
 
-const WORKING_AREA_OPTIONS = ["Territory", "Clusters", "Patches", "Hospital", "Work Area"] as const;
+const WORKING_AREA_OPTIONS = [
+  "Clusters", "Hospital", "Patches", "Permanent Journey Plan", "Route Plan", "Schedule",
+  "Std. Daywise Plan", "Std. Tour Plan", "Std. Work Plan", "Sub Area", "Territory", "Work Area"
+] as const;
 const DOCTOR_LISTING_DISPLAY_OPTIONS = ["None", "SVL No", "Speciality", "Category", "Class", "Campaign"] as const;
+const PRODUCTWISE_UPDATION_OPTIONS = ["Rx", "POB", "None"] as const;
 const MANAGER_DESIGNATIONS = ["BH", "RBM", "ABM", "ZBM", "BRM", "NBM", "Sr ABM", "MH", "SM"] as const;
 const DESIGNATION_MULTISELECT_OPTIONS = [
   "ALL", "ABM", "BE", "BH", "BRM", "MH", "NBM", "RBM", "Sr BE", "ZBM", "Sr ABM", "SM"
 ] as const;
 
 // Matches sanpharma.info's Basic Setup >> Manager Setup screen
-// (AdminSetupMGR.aspx) exactly: same section layout as Base Level Setup,
-// EXCEPT Plan Setup has no "Doctor with Multiple Plan(s) Allowed" field (it
-// starts directly at Working Area Name), the Doctors listing display radio
-// includes an extra "Campaign" option, and the Tour Plan Setup table is
-// keyed by the 9 manager designations (BH/RBM/ABM/ZBM/BRM/NBM/Sr ABM/MH/SM)
-// instead of BE/Sr BE. Persisted via CompanyConfigModel the same way as the
-// other single-document admin screens in this app.
+// (AdminSetupMGR.aspx) exactly: the same two-column bordered box layout as
+// Base Level Setup, EXCEPT Plan Setup has no "Doctor with Multiple Plan(s)
+// Allowed" field (starts directly at Working Area Name), the Doctors
+// listing display dropdown includes an extra "Campaign" option, and the
+// Tour Plan Setup table/approval list are keyed by the 9 manager
+// designations (BH/RBM/ABM/ZBM/BRM/NBM/Sr ABM/MH/SM) instead of BE/Sr BE.
+// Persisted via CompanyConfigModel the same way as the other
+// single-document admin screens in this app.
 type ManagerSettings = {
   workingAreaName: string;
   noOfTerritorySelectionInTp: string;
 
   noOfListedDoctorsAllowedForDcrEntry: string;
+  noOfChemistsAllowedForDcrEntry: string;
+  noOfStockistsAllowedForDcrEntry: string;
   noOfUnlistedDoctorsAllowedForDcrEntry: string;
+  noOfHospitalsAllowedForDcrEntry: string;
   doctorsListingDisplayInDcrEntry: string;
   displayPatchwiseDoctorsInDcr: string;
   selectionInDcrListedDoctorMandatory: string;
@@ -57,6 +69,21 @@ type ManagerSettings = {
   tpBasedDcr: string;
   tpBasedDcrWithDeviationReason: string;
   tpBasedDcrWithManagerApprovalNeeded: string;
+
+  noOfCharactersAllowedForRemarks: string;
+  maximumProductSelectionAllowedForDcrEntry: string;
+  noOfProductsSelectionMandatoryForDcrEntry: string;
+  isSessionMandatoryInDcrEntry: string;
+  isTimeMandatoryInDcrEntry: string;
+  afterProductSelectionQtyValue0: string;
+  productwiseFeedbackSelectionNeeded: string;
+  productwiseUpdation: string;
+  listedDoctorwisePobUpdationMandatory: string;
+  chemistwisePobUpdationMandatory: string;
+  isDoctorwiseRemarksMandatory: string;
+  allowToEnterNewChemistInDcrEntry: string;
+  allowToEnterNewUnlistedDrInDcrEntry: string;
+  halfDayWorkEntryNeeded: string;
 
   noOfListedDoctorsAllowedForEntryInMaster: string;
   noOfUnlistedDoctorsAllowedForEntryInMaster: string;
@@ -83,14 +110,17 @@ function emptySettings(): ManagerSettings {
     noOfTerritorySelectionInTp: "",
 
     noOfListedDoctorsAllowedForDcrEntry: "",
+    noOfChemistsAllowedForDcrEntry: "",
+    noOfStockistsAllowedForDcrEntry: "",
     noOfUnlistedDoctorsAllowedForDcrEntry: "",
+    noOfHospitalsAllowedForDcrEntry: "",
     doctorsListingDisplayInDcrEntry: "",
     displayPatchwiseDoctorsInDcr: "No",
     selectionInDcrListedDoctorMandatory: "No",
 
-    dcrApprovalNeeded: "No",
+    dcrApprovalNeeded: "Needed",
 
-    dcrDelayedSystem: "No",
+    dcrDelayedSystem: "Needed",
     weekOffHolidayCalculatedInDelayed: "No",
     noOfDaysAllowedForDelay: "",
 
@@ -100,6 +130,21 @@ function emptySettings(): ManagerSettings {
     tpBasedDcr: "No",
     tpBasedDcrWithDeviationReason: "No",
     tpBasedDcrWithManagerApprovalNeeded: "No",
+
+    noOfCharactersAllowedForRemarks: "",
+    maximumProductSelectionAllowedForDcrEntry: "",
+    noOfProductsSelectionMandatoryForDcrEntry: "",
+    isSessionMandatoryInDcrEntry: "No",
+    isTimeMandatoryInDcrEntry: "No",
+    afterProductSelectionQtyValue0: "No",
+    productwiseFeedbackSelectionNeeded: "No",
+    productwiseUpdation: "None",
+    listedDoctorwisePobUpdationMandatory: "No",
+    chemistwisePobUpdationMandatory: "No",
+    isDoctorwiseRemarksMandatory: "No",
+    allowToEnterNewChemistInDcrEntry: "No",
+    allowToEnterNewUnlistedDrInDcrEntry: "No",
+    halfDayWorkEntryNeeded: "No",
 
     noOfListedDoctorsAllowedForEntryInMaster: "",
     noOfUnlistedDoctorsAllowedForEntryInMaster: "",
@@ -112,7 +157,7 @@ function emptySettings(): ManagerSettings {
     noOfStockistsAllowedForEntry: "",
 
     tourPlan: emptyTourPlanTable(MANAGER_DESIGNATIONS),
-    tourPlanBasedSystem: "Tour Plan Based System (Approval Mandatory)",
+    tourPlanBasedSystem: "Tour Plan Based System( Approval Mandatory)",
 
     entryMode: emptyDcrMatrix(),
     entryModeDesignations: emptyDcrMatrixDesignations(),
@@ -186,131 +231,188 @@ export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string
       {error && <div className="card p-3 text-sm text-red-600">{error}</div>}
       {notice && <div className="card p-3 text-sm text-green-700">{notice}</div>}
 
-      <SectionBox title="Plan Setup">
-        <FieldRow label="Working Area Name">
-          <SelectField value={settings.workingAreaName} onChange={(v) => set("workingAreaName", v)} options={WORKING_AREA_OPTIONS} />
-        </FieldRow>
-        <FieldRow label="No of Territory Selection in TP">
-          <TextField value={settings.noOfTerritorySelectionInTp} onChange={(v) => set("noOfTerritorySelectionInTp", v)} type="number" />
-        </FieldRow>
-      </SectionBox>
+      <TwoColumnBox
+        left={
+          <>
+            <SubSectionLabel first>PLAN SETUP</SubSectionLabel>
+            <CompactFieldRow label="Working Area Name">
+              <SelectField value={settings.workingAreaName} onChange={(v) => set("workingAreaName", v)} options={WORKING_AREA_OPTIONS} placeholder="---Select---" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No of Territory Selection in TP">
+              <TextField value={settings.noOfTerritorySelectionInTp} onChange={(v) => set("noOfTerritorySelectionInTp", v)} type="number" />
+            </CompactFieldRow>
 
-      <SectionBox title="DCR Setup">
-        <FieldRow label="No. of Listed Doctors Allowed For DCR Entry">
-          <TextField value={settings.noOfListedDoctorsAllowedForDcrEntry} onChange={(v) => set("noOfListedDoctorsAllowedForDcrEntry", v)} type="number" />
-        </FieldRow>
-        <FieldRow label="No. of Unlisted Doctors Allowed For DCR Entry">
-          <TextField value={settings.noOfUnlistedDoctorsAllowedForDcrEntry} onChange={(v) => set("noOfUnlistedDoctorsAllowedForDcrEntry", v)} type="number" />
-        </FieldRow>
-        <FieldRow label="Doctors listing display in DCR Entry">
-          <YesNoRadio
-            name="doctorsListingDisplayInDcrEntry"
-            value={settings.doctorsListingDisplayInDcrEntry}
-            onChange={(v) => set("doctorsListingDisplayInDcrEntry", v)}
-            options={DOCTOR_LISTING_DISPLAY_OPTIONS}
+            <SubSectionLabel>DCR SETUP</SubSectionLabel>
+            <CompactFieldRow label="No.of Listed Doctors Allowed For DCR Entry">
+              <TextField value={settings.noOfListedDoctorsAllowedForDcrEntry} onChange={(v) => set("noOfListedDoctorsAllowedForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No.of Chemists Allowed For DCR Entry">
+              <TextField value={settings.noOfChemistsAllowedForDcrEntry} onChange={(v) => set("noOfChemistsAllowedForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No.of Stockists Allowed For DCR Entry">
+              <TextField value={settings.noOfStockistsAllowedForDcrEntry} onChange={(v) => set("noOfStockistsAllowedForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No.of UnListed Doctors Allowed For DCR Entry">
+              <TextField value={settings.noOfUnlistedDoctorsAllowedForDcrEntry} onChange={(v) => set("noOfUnlistedDoctorsAllowedForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No.of Hospitals Allowed For DCR Entry">
+              <TextField value={settings.noOfHospitalsAllowedForDcrEntry} onChange={(v) => set("noOfHospitalsAllowedForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="Doctors listing display in DCR Entry">
+              <SelectField value={settings.doctorsListingDisplayInDcrEntry} onChange={(v) => set("doctorsListingDisplayInDcrEntry", v)} options={DOCTOR_LISTING_DISPLAY_OPTIONS} placeholder="---Select---" />
+            </CompactFieldRow>
+            <CompactFieldRow label="Display Patchwise Doctors in DCR">
+              <YesNoRadio name="displayPatchwiseDoctorsInDcr" value={settings.displayPatchwiseDoctorsInDcr} onChange={(v) => set("displayPatchwiseDoctorsInDcr", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Selection in DCR - Listed Doctor as Mandatory">
+              <YesNoRadio name="selectionInDcrListedDoctorMandatory" value={settings.selectionInDcrListedDoctorMandatory} onChange={(v) => set("selectionInDcrListedDoctorMandatory", v)} />
+            </CompactFieldRow>
+
+            <SubSectionLabel>DCR APPROVAL SYSTEM</SubSectionLabel>
+            <CompactFieldRow label="DCR Approval">
+              <NeededRadio name="dcrApprovalNeeded" value={settings.dcrApprovalNeeded} onChange={(v) => set("dcrApprovalNeeded", v)} />
+            </CompactFieldRow>
+
+            <SubSectionLabel>DCR DELAYED SYSTEM</SubSectionLabel>
+            <CompactFieldRow label="DCR Delayed System">
+              <NeededRadio name="dcrDelayedSystem" value={settings.dcrDelayedSystem} onChange={(v) => set("dcrDelayedSystem", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Week Off/Holiday Calculated in Delayed">
+              <YesNoRadio name="weekOffHolidayCalculatedInDelayed" value={settings.weekOffHolidayCalculatedInDelayed} onChange={(v) => set("weekOffHolidayCalculatedInDelayed", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="No.of Days Allowed for Delay">
+              <TextField value={settings.noOfDaysAllowedForDelay} onChange={(v) => set("noOfDaysAllowedForDelay", v)} type="number" />
+            </CompactFieldRow>
+
+            <SubSectionLabel>DCR AUTO POST</SubSectionLabel>
+            <CompactFieldRow label="Holiday">
+              <YesNoRadio name="dcrAutoPostHoliday" value={settings.dcrAutoPostHoliday} onChange={(v) => set("dcrAutoPostHoliday", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Week Off">
+              <YesNoRadio name="dcrAutoPostWeekOff" value={settings.dcrAutoPostWeekOff} onChange={(v) => set("dcrAutoPostWeekOff", v)} />
+            </CompactFieldRow>
+
+            <SubSectionLabel>DCR BASED ON TP</SubSectionLabel>
+            <CompactFieldRow label="TP Based DCR">
+              <YesNoRadio name="tpBasedDcr" value={settings.tpBasedDcr} onChange={(v) => set("tpBasedDcr", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="TP Based DCR with Deviation Reason">
+              <YesNoRadio name="tpBasedDcrWithDeviationReason" value={settings.tpBasedDcrWithDeviationReason} onChange={(v) => set("tpBasedDcrWithDeviationReason", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="TP Based DCR with Manager Approval Needed">
+              <YesNoRadio name="tpBasedDcrWithManagerApprovalNeeded" value={settings.tpBasedDcrWithManagerApprovalNeeded} onChange={(v) => set("tpBasedDcrWithManagerApprovalNeeded", v)} />
+            </CompactFieldRow>
+          </>
+        }
+        right={
+          <>
+            <SubSectionLabel first>DCR - ENTRY SETUP</SubSectionLabel>
+            <CompactFieldRow label="No.of Characters Allowed For Remarks">
+              <TextField value={settings.noOfCharactersAllowedForRemarks} onChange={(v) => set("noOfCharactersAllowedForRemarks", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="Maximum Product Selection Allowed For DCR Entry">
+              <TextField value={settings.maximumProductSelectionAllowedForDcrEntry} onChange={(v) => set("maximumProductSelectionAllowedForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No. of Products Selection Mandatory For DCR Entry">
+              <TextField value={settings.noOfProductsSelectionMandatoryForDcrEntry} onChange={(v) => set("noOfProductsSelectionMandatoryForDcrEntry", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="Is Session Mandatory in DCR Entry">
+              <YesNoRadio name="isSessionMandatoryInDcrEntry" value={settings.isSessionMandatoryInDcrEntry} onChange={(v) => set("isSessionMandatoryInDcrEntry", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Is Time Mandatory in DCR Entry">
+              <YesNoRadio name="isTimeMandatoryInDcrEntry" value={settings.isTimeMandatoryInDcrEntry} onChange={(v) => set("isTimeMandatoryInDcrEntry", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="After Product Selection Qty Value 0">
+              <YesNoRadio name="afterProductSelectionQtyValue0" value={settings.afterProductSelectionQtyValue0} onChange={(v) => set("afterProductSelectionQtyValue0", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Productwise Feedback Selection in DCR Entry Needed">
+              <YesNoRadio name="productwiseFeedbackSelectionNeeded" value={settings.productwiseFeedbackSelectionNeeded} onChange={(v) => set("productwiseFeedbackSelectionNeeded", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Productwise Updation">
+              <YesNoRadio name="productwiseUpdation" value={settings.productwiseUpdation} onChange={(v) => set("productwiseUpdation", v)} options={PRODUCTWISE_UPDATION_OPTIONS} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Listed Doctorwise POB Updation is Mandatory in DCR">
+              <YesNoRadio name="listedDoctorwisePobUpdationMandatory" value={settings.listedDoctorwisePobUpdationMandatory} onChange={(v) => set("listedDoctorwisePobUpdationMandatory", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Chemistwise POB Updation is Mandatory in DCR">
+              <YesNoRadio name="chemistwisePobUpdationMandatory" value={settings.chemistwisePobUpdationMandatory} onChange={(v) => set("chemistwisePobUpdationMandatory", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Is Doctor-wise Remarks Mandatory">
+              <YesNoRadio name="isDoctorwiseRemarksMandatory" value={settings.isDoctorwiseRemarksMandatory} onChange={(v) => set("isDoctorwiseRemarksMandatory", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Allow to Enter New Chemist in DCR Entry">
+              <YesNoRadio name="allowToEnterNewChemistInDcrEntry" value={settings.allowToEnterNewChemistInDcrEntry} onChange={(v) => set("allowToEnterNewChemistInDcrEntry", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Allow to Enter New Un-Listed Dr in DCR Entry">
+              <YesNoRadio name="allowToEnterNewUnlistedDrInDcrEntry" value={settings.allowToEnterNewUnlistedDrInDcrEntry} onChange={(v) => set("allowToEnterNewUnlistedDrInDcrEntry", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Half day Work Entry Needed">
+              <YesNoRadio name="halfDayWorkEntryNeeded" value={settings.halfDayWorkEntryNeeded} onChange={(v) => set("halfDayWorkEntryNeeded", v)} />
+            </CompactFieldRow>
+
+            <SubSectionLabel>DOCTOR SETUP</SubSectionLabel>
+            <CompactFieldRow label="No.of Listed Doctors Allowed For Entry in Master">
+              <TextField value={settings.noOfListedDoctorsAllowedForEntryInMaster} onChange={(v) => set("noOfListedDoctorsAllowedForEntryInMaster", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="No.of Unlisted Doctors Allowed For Entry in Master">
+              <TextField value={settings.noOfUnlistedDoctorsAllowedForEntryInMaster} onChange={(v) => set("noOfUnlistedDoctorsAllowedForEntryInMaster", v)} type="number" />
+            </CompactFieldRow>
+            <CompactFieldRow label="Listed Doctor Approval Needed">
+              <YesNoRadio name="listedDoctorApprovalNeeded" value={settings.listedDoctorApprovalNeeded} onChange={(v) => set("listedDoctorApprovalNeeded", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Listed Doctor Deactivation Approval Needed">
+              <YesNoRadio name="deactivationApprovalNeeded" value={settings.deactivationApprovalNeeded} onChange={(v) => set("deactivationApprovalNeeded", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Listed Doctor Add against Deact Approval Needed">
+              <YesNoRadio name="addAgainstDeactApprovalNeeded" value={settings.addAgainstDeactApprovalNeeded} onChange={(v) => set("addAgainstDeactApprovalNeeded", v)} />
+            </CompactFieldRow>
+            <CompactFieldRow label="Listed Doctor Product Tag-Prioritywise Needed">
+              <YesNoRadio name="productTagPrioritywiseNeeded" value={settings.productTagPrioritywiseNeeded} onChange={(v) => set("productTagPrioritywiseNeeded", v)} />
+            </CompactFieldRow>
+
+            <SubSectionLabel>CHEMISTS SETUP</SubSectionLabel>
+            <CompactFieldRow label="No.of Chemists Allowed For Entry">
+              <TextField value={settings.noOfChemistsAllowedForEntry} onChange={(v) => set("noOfChemistsAllowedForEntry", v)} type="number" />
+            </CompactFieldRow>
+
+            <SubSectionLabel>STOCKISTS SETUP</SubSectionLabel>
+            <CompactFieldRow label="No.of Stockists Allowed For Entry">
+              <TextField value={settings.noOfStockistsAllowedForEntry} onChange={(v) => set("noOfStockistsAllowedForEntry", v)} type="number" />
+            </CompactFieldRow>
+          </>
+        }
+      />
+
+      <div style={{ fontWeight: 700, fontSize: 14, margin: "10px 0 6px" }}>Tour Plan Setup</div>
+      <TwoColumnBox
+        left={
+          <TourPlanSetupTable
+            designations={MANAGER_DESIGNATIONS}
+            table={settings.tourPlan}
+            onChange={(d, patch) => set("tourPlan", { ...settings.tourPlan, [d]: { ...settings.tourPlan[d], ...patch } })}
           />
-        </FieldRow>
-        <FieldRow label="Display Patchwise Doctors in DCR">
-          <YesNoRadio name="displayPatchwiseDoctorsInDcr" value={settings.displayPatchwiseDoctorsInDcr} onChange={(v) => set("displayPatchwiseDoctorsInDcr", v)} />
-        </FieldRow>
-        <FieldRow label="Selection in DCR - Listed Doctor as Mandatory">
-          <YesNoRadio name="selectionInDcrListedDoctorMandatory" value={settings.selectionInDcrListedDoctorMandatory} onChange={(v) => set("selectionInDcrListedDoctorMandatory", v)} />
-        </FieldRow>
-      </SectionBox>
+        }
+        right={
+          <div className="space-y-3">
+            <div style={{ fontWeight: 700, fontSize: 12.5 }}>Tour Plan</div>
+            <YesNoRadio
+              name="tourPlanBasedSystem"
+              value={settings.tourPlanBasedSystem}
+              onChange={(v) => set("tourPlanBasedSystem", v)}
+              options={["Tour Plan Based System( Approval Mandatory)", "Without Tour Plan Based System"]}
+            />
+            <TourPlanApprovalList
+              designations={MANAGER_DESIGNATIONS}
+              table={settings.tourPlan}
+              onChange={(d, patch) => set("tourPlan", { ...settings.tourPlan, [d]: { ...settings.tourPlan[d], ...patch } })}
+            />
+          </div>
+        }
+      />
 
-      <SectionBox title="DCR Approval System">
-        <FieldRow label="DCR Approval Needed">
-          <YesNoRadio name="dcrApprovalNeeded" value={settings.dcrApprovalNeeded} onChange={(v) => set("dcrApprovalNeeded", v)} />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="DCR Delayed System">
-        <FieldRow label="DCR Delayed System">
-          <YesNoRadio name="dcrDelayedSystem" value={settings.dcrDelayedSystem} onChange={(v) => set("dcrDelayedSystem", v)} />
-        </FieldRow>
-        <FieldRow label="Week Off/Holiday Calculated in Delayed">
-          <YesNoRadio name="weekOffHolidayCalculatedInDelayed" value={settings.weekOffHolidayCalculatedInDelayed} onChange={(v) => set("weekOffHolidayCalculatedInDelayed", v)} />
-        </FieldRow>
-        <FieldRow label="No. of Days Allowed for Delay">
-          <TextField value={settings.noOfDaysAllowedForDelay} onChange={(v) => set("noOfDaysAllowedForDelay", v)} type="number" />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="DCR Auto Post">
-        <FieldRow label="Holiday">
-          <YesNoRadio name="dcrAutoPostHoliday" value={settings.dcrAutoPostHoliday} onChange={(v) => set("dcrAutoPostHoliday", v)} />
-        </FieldRow>
-        <FieldRow label="Week Off">
-          <YesNoRadio name="dcrAutoPostWeekOff" value={settings.dcrAutoPostWeekOff} onChange={(v) => set("dcrAutoPostWeekOff", v)} />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="DCR Based on TP">
-        <FieldRow label="TP Based DCR">
-          <YesNoRadio name="tpBasedDcr" value={settings.tpBasedDcr} onChange={(v) => set("tpBasedDcr", v)} />
-        </FieldRow>
-        <FieldRow label="TP Based DCR with Deviation Reason">
-          <YesNoRadio name="tpBasedDcrWithDeviationReason" value={settings.tpBasedDcrWithDeviationReason} onChange={(v) => set("tpBasedDcrWithDeviationReason", v)} />
-        </FieldRow>
-        <FieldRow label="TP Based DCR with Manager Approval Needed">
-          <YesNoRadio name="tpBasedDcrWithManagerApprovalNeeded" value={settings.tpBasedDcrWithManagerApprovalNeeded} onChange={(v) => set("tpBasedDcrWithManagerApprovalNeeded", v)} />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="Doctor Setup">
-        <FieldRow label="No. of Listed Doctors Allowed For Entry in Master">
-          <TextField value={settings.noOfListedDoctorsAllowedForEntryInMaster} onChange={(v) => set("noOfListedDoctorsAllowedForEntryInMaster", v)} type="number" />
-        </FieldRow>
-        <FieldRow label="No. of Unlisted Doctors Allowed For Entry in Master">
-          <TextField value={settings.noOfUnlistedDoctorsAllowedForEntryInMaster} onChange={(v) => set("noOfUnlistedDoctorsAllowedForEntryInMaster", v)} type="number" />
-        </FieldRow>
-        <FieldRow label="Listed Doctor Approval Needed">
-          <YesNoRadio name="listedDoctorApprovalNeeded" value={settings.listedDoctorApprovalNeeded} onChange={(v) => set("listedDoctorApprovalNeeded", v)} />
-        </FieldRow>
-        <FieldRow label="Deactivation Approval Needed">
-          <YesNoRadio name="deactivationApprovalNeeded" value={settings.deactivationApprovalNeeded} onChange={(v) => set("deactivationApprovalNeeded", v)} />
-        </FieldRow>
-        <FieldRow label="Add Against Deactivation Approval Needed">
-          <YesNoRadio name="addAgainstDeactApprovalNeeded" value={settings.addAgainstDeactApprovalNeeded} onChange={(v) => set("addAgainstDeactApprovalNeeded", v)} />
-        </FieldRow>
-        <FieldRow label="Product Tag Prioritywise Needed">
-          <YesNoRadio name="productTagPrioritywiseNeeded" value={settings.productTagPrioritywiseNeeded} onChange={(v) => set("productTagPrioritywiseNeeded", v)} />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="Chemists Setup">
-        <FieldRow label="No. of Chemists Allowed For Entry">
-          <TextField value={settings.noOfChemistsAllowedForEntry} onChange={(v) => set("noOfChemistsAllowedForEntry", v)} type="number" />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="Stockists Setup">
-        <FieldRow label="No. of Stockists Allowed For Entry">
-          <TextField value={settings.noOfStockistsAllowedForEntry} onChange={(v) => set("noOfStockistsAllowedForEntry", v)} type="number" />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="Tour Plan Setup">
-        <TourPlanSetupTable
-          designations={MANAGER_DESIGNATIONS}
-          table={settings.tourPlan}
-          onChange={(d, patch) => set("tourPlan", { ...settings.tourPlan, [d]: { ...settings.tourPlan[d], ...patch } })}
-        />
-      </SectionBox>
-
-      <SectionBox title="Tour Plan">
-        <FieldRow label="">
-          <YesNoRadio
-            name="tourPlanBasedSystem"
-            value={settings.tourPlanBasedSystem}
-            onChange={(v) => set("tourPlanBasedSystem", v)}
-            options={["Tour Plan Based System (Approval Mandatory)", "Without Tour Plan Based System"]}
-          />
-        </FieldRow>
-      </SectionBox>
-
-      <SectionBox title="Additional Setup (Baselevel & Managers)">
-        <div className="space-y-4">
+      <div style={{ fontWeight: 700, fontSize: 14, margin: "10px 0 6px" }}>Additional Setup (Baselevel &amp; Managers)</div>
+      <div className="grid gap-4" style={{ gridTemplateColumns: "1fr 1fr" }}>
+        <div className="card p-3">
           <DcrMatrixTable
             title="DCR SETUP - Entry Mode"
             matrix={settings.entryMode}
@@ -321,6 +423,8 @@ export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string
             onDesignationChange={(row, d) => set("entryModeDesignations", { ...settings.entryModeDesignations, [row]: d })}
             designationOptions={DESIGNATION_MULTISELECT_OPTIONS}
           />
+        </div>
+        <div className="card p-3">
           <DcrMatrixTable
             title="DCR SETUP - Display Mode"
             matrix={settings.displayMode}
@@ -332,9 +436,9 @@ export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string
             designationOptions={DESIGNATION_MULTISELECT_OPTIONS}
           />
         </div>
-      </SectionBox>
+      </div>
 
-      <div className="flex gap-3">
+      <div className="flex gap-3 pt-2">
         <button
           onClick={save}
           disabled={saving}

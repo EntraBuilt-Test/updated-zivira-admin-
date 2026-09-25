@@ -28,6 +28,86 @@ export function SectionBox({ title, children }: { title: string; children: React
   );
 }
 
+// The outer two-column bordered box sanpharma's Base Level / Manager Setup
+// screens are built from: one continuous box with a vertical divider, the
+// left column holding Plan/DCR/Approval/Delayed/Auto-Post/Based-on-TP
+// setup and the right column holding DCR-Entry/Doctor/Chemists/Stockists
+// setup. `left`/`right` are arrays of subsections rendered top to bottom.
+export function TwoColumnBox({ left, right }: { left: ReactNode; right: ReactNode }) {
+  return (
+    <div
+      style={{
+        border: `1px solid ${BORDER}`,
+        marginBottom: 14,
+        display: "grid",
+        gridTemplateColumns: "1fr 1fr",
+        background: "#eef4fb"
+      }}
+    >
+      <div style={{ padding: "10px 14px", borderRight: `1px solid ${BORDER}` }}>{left}</div>
+      <div style={{ padding: "10px 14px" }}>{right}</div>
+    </div>
+  );
+}
+
+// A subsection label inside a TwoColumnBox column -- matches sanpharma's
+// "PLAN SETUP" / "DCR SETUP" style: bold text on a light highlight, with
+// some space above to separate it from the previous subsection.
+export function SubSectionLabel({ children, first }: { children: ReactNode; first?: boolean }) {
+  return (
+    <div
+      style={{
+        background: "#bfdbfe",
+        color: "#1e3a5f",
+        fontWeight: 700,
+        fontSize: 12,
+        padding: "4px 8px",
+        marginTop: first ? 0 : 16,
+        marginBottom: 8
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// A compact label/field row for use inside a TwoColumnBox column (no
+// bottom border, tighter than FieldRow, and a shorter label width so two
+// columns of content stay legible side by side).
+export function CompactFieldRow({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 8, padding: "5px 0" }}>
+      <label style={{ width: 260, flexShrink: 0, fontSize: 12.5 }}>{label}</label>
+      <div style={{ flex: 1, minWidth: 120 }}>{children}</div>
+    </div>
+  );
+}
+
+// "Needed" / "Not Needed" radio choice -- sanpharma's DCR Approval System /
+// DCR Delayed System sections use this wording instead of Yes/No.
+export function NeededRadio({ value, onChange, name }: { value: string; onChange: (v: string) => void; name: string }) {
+  return <YesNoRadio value={value} onChange={onChange} name={name} options={["Needed", "Not Needed"]} />;
+}
+
+// Two independent-looking checkboxes (No / Yes) that behave like a single
+// boolean choice -- matches sanpharma's per-designation "Approval Needed"
+// controls in the Tour Plan box, which render as checkboxes rather than
+// radio buttons but still only ever have one of the two checked.
+export function YesNoCheckboxPair({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <div className="flex items-center gap-3">
+      <label className="flex items-center gap-1 text-xs">
+        <input type="checkbox" checked={!value} onChange={() => onChange(false)} />
+        No
+      </label>
+      <label className="flex items-center gap-1 text-xs">
+        <input type="checkbox" checked={value} onChange={() => onChange(true)} />
+        Yes
+      </label>
+    </div>
+  );
+}
+
 export function FieldRow({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div
@@ -298,8 +378,12 @@ export function TourPlanSetupTable({
 }) {
   const cell: React.CSSProperties = { border: `1px solid ${BORDER}`, padding: "4px 6px" };
   const head: React.CSSProperties = { ...cell, background: "#e2e8f0", fontWeight: 600, textAlign: "center" };
+  const dateOptions = Array.from({ length: 20 }, (_, n) => 12 + n);
   return (
     <div className="overflow-x-auto">
+      <div style={{ fontWeight: 700, fontSize: 12.5, color: "#b91c1c", marginBottom: 8, textDecoration: "underline" }}>
+        TP has to be submitted in between days
+      </div>
       <table style={{ borderCollapse: "collapse", width: "100%" }} className="text-sm">
         <thead>
           <tr>
@@ -307,7 +391,6 @@ export function TourPlanSetupTable({
             <th style={head}>Designation</th>
             <th style={head}>Tp Start Date</th>
             <th style={head}>Tp End Date</th>
-            <th style={head}>Approval Needed</th>
           </tr>
         </thead>
         <tbody>
@@ -316,16 +399,16 @@ export function TourPlanSetupTable({
             return (
               <tr key={d}>
                 <td style={{ ...cell, textAlign: "center" }}>{i + 1}</td>
-                <td style={cell}>{d}</td>
+                <td style={{ ...cell, fontWeight: 600, color: "#b91c1c" }}>{d}</td>
                 <td style={cell}>
                   <select
                     style={{ border: `1px solid ${BORDER}`, borderRadius: 3, padding: "2px 4px", width: "100%" }}
                     value={row.startDate}
                     onChange={(e) => onChange(d, { startDate: e.target.value })}
                   >
-                    <option value="">Select</option>
+                    <option value="">---Select---</option>
                     <option value="0">0</option>
-                    {Array.from({ length: 20 }, (_, n) => 12 + n).map((n) => (
+                    {dateOptions.map((n) => (
                       <option key={n} value={String(n)}>
                         {n}
                       </option>
@@ -338,42 +421,50 @@ export function TourPlanSetupTable({
                     value={row.endDate}
                     onChange={(e) => onChange(d, { endDate: e.target.value })}
                   >
-                    <option value="">Select</option>
+                    <option value="">---Select---</option>
                     <option value="0">0</option>
-                    {Array.from({ length: 20 }, (_, n) => 12 + n).map((n) => (
+                    {dateOptions.map((n) => (
                       <option key={n} value={String(n)}>
                         {n}
                       </option>
                     ))}
                   </select>
                 </td>
-                <td style={{ ...cell, textAlign: "center" }}>
-                  <div className="flex justify-center gap-3">
-                    <label className="flex items-center gap-1 text-xs">
-                      <input
-                        type="radio"
-                        name={`approval-${d}`}
-                        checked={!row.approvalNeeded}
-                        onChange={() => onChange(d, { approvalNeeded: false })}
-                      />
-                      No
-                    </label>
-                    <label className="flex items-center gap-1 text-xs">
-                      <input
-                        type="radio"
-                        name={`approval-${d}`}
-                        checked={row.approvalNeeded}
-                        onChange={() => onChange(d, { approvalNeeded: true })}
-                      />
-                      Yes
-                    </label>
-                  </div>
-                </td>
               </tr>
             );
           })}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+// The "Tour Plan" box that sits beside the TP-submission-days table:
+// the Tour Plan Based System / Without Tour Plan Based System radio choice,
+// followed by one "Approval Needed for <Designation>" row per designation
+// (rendered as the same No/Yes checkbox pair sanpharma uses).
+export function TourPlanApprovalList({
+  designations,
+  table,
+  onChange
+}: {
+  designations: readonly string[];
+  table: TourPlanTable;
+  onChange: (designation: string, patch: Partial<TourPlanRow>) => void;
+}) {
+  return (
+    <div className="space-y-2">
+      {designations.map((d) => {
+        const row = table[d] ?? { startDate: "", endDate: "", approvalNeeded: false };
+        return (
+          <div key={d} className="flex items-center gap-3 text-sm">
+            <span>
+              Approval Needed for <strong style={{ color: "#b91c1c" }}>{d}</strong>
+            </span>
+            <YesNoCheckboxPair value={row.approvalNeeded} onChange={(v) => onChange(d, { approvalNeeded: v })} />
+          </div>
+        );
+      })}
     </div>
   );
 }
