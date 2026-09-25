@@ -166,61 +166,29 @@ export function MailFolderCreationPanel({ masterKey: _masterKey }: { masterKey: 
 
           {error && <div className="text-sm text-red-600 mb-3">{error}</div>}
 
-          <div className="space-y-3" style={{ maxWidth: 420 }}>
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium" style={{ width: 180 }}>
-                Change From Folder
+          <div className="mx-auto" style={{ maxWidth: 420 }}>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium" style={{ width: 180 }}>
+                  Change From Folder
+                </label>
+                <CustomSelect value={fromFolder || "--Select--"} options={["--Select--", ...folderOptions]} onChange={(v) => setFromFolder(v === "--Select--" ? "" : v)} placeholder="--Select--" />
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm font-medium" style={{ width: 180 }}>
+                  Change To Folder
+                </label>
+                <CustomSelect value={toFolder || "--Select--"} options={["--Select--", ...folderOptions]} onChange={(v) => setToFolder(v === "--Select--" ? "" : v)} placeholder="--Select--" />
+              </div>
+              <label className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={deleteAfterTransfer} onChange={(e) => setDeleteAfterTransfer(e.target.checked)} />
+                'Delete' After Transfer
               </label>
-              <CustomSelect value={fromFolder || "--Select--"} options={["--Select--", ...folderOptions]} onChange={(v) => setFromFolder(v === "--Select--" ? "" : v)} placeholder="--Select--" />
-            </div>
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium" style={{ width: 180 }}>
-                Change To Folder
-              </label>
-              <CustomSelect value={toFolder || "--Select--"} options={["--Select--", ...folderOptions]} onChange={(v) => setToFolder(v === "--Select--" ? "" : v)} placeholder="--Select--" />
-            </div>
-            <label className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={deleteAfterTransfer} onChange={(e) => setDeleteAfterTransfer(e.target.checked)} />
-              'Delete' After Transfer
-            </label>
 
-            <button
-              onClick={transferMail}
-              disabled={transferring || !fromFolder || !toFolder || fromFolder === toFolder}
-              style={{
-                border: "1px solid #94a3b8",
-                borderRadius: 6,
-                background: "#e0f2fe",
-                padding: "8px 20px",
-                fontWeight: 600,
-                cursor: "pointer"
-              }}
-            >
-              Transfer - Mail
-            </button>
-          </div>
-
-          {previewCount !== null && (
-            <div className="mt-6" style={{ maxWidth: 420 }}>
-              <table style={{ borderCollapse: "collapse", width: "100%" }} className="text-sm">
-                <thead>
-                  <tr>
-                    <th colSpan={2} style={head}>
-                      Transaction Available
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td style={cell}>No. of moved mails available</td>
-                    <td style={{ ...cell, textAlign: "center", color: "#dc2626", fontWeight: 700 }}>{previewCount}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div className="flex justify-center mt-4">
+              <div className="flex justify-center">
                 <button
-                  onClick={confirmTransfer}
-                  disabled={transferring}
+                  onClick={transferMail}
+                  disabled={transferring || !fromFolder || !toFolder || fromFolder === toFolder}
                   style={{
                     border: "1px solid #94a3b8",
                     borderRadius: 6,
@@ -230,11 +198,47 @@ export function MailFolderCreationPanel({ masterKey: _masterKey }: { masterKey: 
                     cursor: "pointer"
                   }}
                 >
-                  Confirm to Transfer
+                  Transfer - Mail
                 </button>
               </div>
             </div>
-          )}
+
+            {previewCount !== null && (
+              <div className="mt-6">
+                <table style={{ borderCollapse: "collapse", width: "100%" }} className="text-sm">
+                  <thead>
+                    <tr>
+                      <th colSpan={2} style={head}>
+                        Transaction Available
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={cell}>No. of moved mails available</td>
+                      <td style={{ ...cell, textAlign: "center", color: "#dc2626", fontWeight: 700 }}>{previewCount}</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="flex justify-center mt-4">
+                  <button
+                    onClick={confirmTransfer}
+                    disabled={transferring}
+                    style={{
+                      border: "1px solid #94a3b8",
+                      borderRadius: 6,
+                      background: "#e0f2fe",
+                      padding: "8px 20px",
+                      fontWeight: 600,
+                      cursor: "pointer"
+                    }}
+                  >
+                    Confirm to Transfer
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {successOpen && (

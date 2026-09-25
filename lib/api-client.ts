@@ -872,7 +872,7 @@ export const apiClient = {
     );
   },
 
-  sendNotificationMessage(input: { id?: string; filterBy?: string; filterValue?: string; message?: string; effectiveFrom?: string; effectiveTo?: string }) {
+  sendNotificationMessage(input: { id?: string; filterBy?: string; filterValue?: string; filterValues?: string[]; message?: string; effectiveFrom?: string; effectiveTo?: string }) {
     return request<{ success: boolean; matched: number; notified: number }>("/company/masters/notificationMessage/action/send", {
       method: "POST",
       body: JSON.stringify(input)
@@ -881,11 +881,11 @@ export const apiClient = {
 
   // ── Admin Settings — Base Level Setup / Manager Setup / Auto Mail Setup
   // (Admin tab) single-document-per-tenant config blobs. ──
-  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup") {
+  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "orderBookingCommon") {
     return request<T | null>(`/company/masters/admin-settings/${kind}`);
   },
 
-  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup", value: T) {
+  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "orderBookingCommon", value: T) {
     return request<T>(`/company/masters/admin-settings/${kind}`, {
       method: "PUT",
       body: JSON.stringify({ value })

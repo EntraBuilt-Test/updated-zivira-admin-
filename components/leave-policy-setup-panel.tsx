@@ -252,7 +252,7 @@ export function LeavePolicySetupPanel({ masterKey: _masterKey }: { masterKey: st
       {notice && <div className="card p-3 text-sm text-green-700">{notice}</div>}
 
       {loadedType === "Common" && (
-        <div className="card p-4" style={{ maxWidth: 720 }}>
+        <div className="card mx-auto" style={{ maxWidth: 720, border: "1px solid #94a3b8", padding: 20 }}>
           <div style={row}>
             <label style={label}>Calender Year</label>
             <div className="flex gap-4">
@@ -330,7 +330,7 @@ export function LeavePolicySetupPanel({ masterKey: _masterKey }: { masterKey: st
       )}
 
       {loadedType && loadedType !== "Common" && (
-        <div className="card p-4" style={{ maxWidth: 780 }}>
+        <div className="card mx-auto" style={{ maxWidth: 780, border: "1px solid #94a3b8", padding: 20 }}>
           <div style={row}>
             <label style={label}>Maximum Continuous days</label>
             <input

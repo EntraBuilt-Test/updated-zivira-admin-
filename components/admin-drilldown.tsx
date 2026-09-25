@@ -17,6 +17,11 @@ import { TerritoryBulkDeactivation } from "@/components/territory-bulk-deactivat
 import { ListedDoctorMaster } from "@/components/listed-doctor-master";
 import { UnlistedDoctorMaster } from "@/components/unlisted-doctor-master";
 import { DcrBulkApproval } from "@/components/dcr-bulk-approval";
+import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
+import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
+import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
+import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
+import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
@@ -538,15 +543,15 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("basic-setup/order-booking-setup")) {
-    return <GenericMasterTable masterKey="orderBookingSetup" />;
+    return <OrderBookingSetupPanel masterKey="orderBookingSetup" />;
   }
 
   if (pathStr.endsWith("app-setup/call-feedback")) {
-    return <GenericMasterTable masterKey="callFeedbackCreation" />;
+    return <CallFeedbackCreationPanel masterKey="callFeedbackCreation" />;
   }
 
   if (pathStr.endsWith("app-setup/call-remarks-templates")) {
-    return <GenericMasterTable masterKey="callRemarksTemplates" />;
+    return <CallRemarksTemplatesPanel masterKey="callRemarksTemplates" />;
   }
 
   if (pathStr.endsWith("app-setup/notification-message")) {
@@ -554,19 +559,15 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("app-setup/gps-geofence-tagg-deletion")) {
-    return <GenericMasterTable masterKey="gpsGeoFenceAllocation" />;
+    return <GpsGeoFencePanel initialMode="allocation" />;
   }
 
   if (pathStr.endsWith("app-setup/geo-tag-deletion")) {
-    return <GenericMasterTable masterKey="geoTagDeletion" />;
-  }
-
-  if (pathStr.endsWith("app-setup/menu-creation")) {
-    return <GenericMasterTable masterKey="menuCreation" />;
+    return <GpsGeoFencePanel initialMode="geoTag" />;
   }
 
   if (pathStr.endsWith("app-setup/dynamic-app-link")) {
-    return <GenericMasterTable masterKey="appSetupDynamicAppLink" />;
+    return <DynamicAppLinkPanel masterKey="appSetupDynamicAppLink" />;
   }
 
   if (pathStr.endsWith("division-options/mail-box")) {
