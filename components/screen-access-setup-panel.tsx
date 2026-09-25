@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useMemo, useState, type CSSProperties } from "react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
-import { CustomSelect } from "@/components/custom-select";
 
 const MASTER_KEY = "screenAccessSetup";
 const ENTITY_TYPES = ["Listed Doctor", "UnListed Doctor", "Chemist", "Territory", "Hospital"] as const;
@@ -43,108 +42,123 @@ function yesNo(v: unknown): boolean {
   return String(v ?? "").toLowerCase() === "yes";
 }
 
-// Matches sanpharma.info's Basic Setup >> Setup For Screen Access screen:
-// a single "Field Force Name" dropdown (format "NAME - DESIGNATION - HQ")
-// + Go button, no Add button. Selecting a name and clicking Go loads that
-// employee's Designation/HQ plus a permissions grid — one row per entity
-// type (Listed Doctor / UnListed Doctor / Chemist / Territory / Hospital),
-// each with Add / Edit / Deact. / View / React. checkboxes, and a
-// Name Change column that only appears on the Listed Doctor row. Save
-// upserts one screenAccessSetup record per (fieldForceName, entityType).
+type Row = {
+  name: string;
+  designation: string;
+  hq: string;
+  grid: Grid;
+  existing: MasterRecord[];
+};
+
+const cellBorder: CSSProperties = { border: "1px solid #94a3b8", padding: "4px 6px" };
+const headBorder: CSSProperties = { ...cellBorder, background: "#e2e8f0", fontWeight: 600, textAlign: "center" };
+
+// Matches sanpharma.info's Basic Setup >> Setup For Screen Access screen
+// (SetupScreen.aspx) exactly: a "FieldForce Name" text filter + Go button
+// (no separate Add flow), and — unlike a single-employee summary — ONE
+// bordered table listing every matching field force member as its own row:
+// Field Force Name / Designation / HQ as the first three columns, followed
+// by five grouped column-header spans (Listed Doctor / UnListed Doctor /
+// Chemist / Territory / Hospital), each containing its own Add / Edit /
+// Deact. / View / React. sub-columns. "NameChg." appears exactly once, as
+// a sixth sub-column under the Listed Doctor group only. Save upserts one
+// screenAccessSetup record per (fieldForceName, entityType) for every row
+// on screen at once.
 export function ScreenAccessSetupPanel({ masterKey: _masterKey }: { masterKey: string }) {
-  const [employees, setEmployees] = useState<MasterRecord[]>([]);
-  const [fieldForceName, setFieldForceName] = useState("");
+  const [filterText, setFilterText] = useState("");
+  const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
-  const [existingRecords, setExistingRecords] = useState<MasterRecord[]>([]);
-  const [grid, setGrid] = useState<Grid>(emptyGrid());
-
-  useEffect(() => {
-    apiClient.masterRecords("employees").then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
-  }, []);
-
-  const employeeOptions = useMemo(
-    () =>
-      [...employees]
-        .sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? "")))
-        .map((e) => ({
-          name: String(e.name ?? ""),
-          label: `${String(e.name ?? "")} - ${String(e.designation ?? "")} - ${String(e.territory ?? "")}`
-        })),
-    [employees]
-  );
-
-  const selectedEmployee = useMemo(
-    () => employees.find((e) => String(e.name ?? "") === fieldForceName),
-    [employees, fieldForceName]
-  );
 
   async function go() {
-    if (!fieldForceName) return;
     setError(null);
     setNotice(null);
     setSearched(true);
     setLoading(true);
     try {
-      const res = await apiClient.masterRecords(MASTER_KEY);
-      const rowsForName = res.data.filter((r) => String(r.fieldForceName ?? "") === fieldForceName);
-      setExistingRecords(rowsForName);
-      const next = emptyGrid();
-      for (const r of rowsForName) {
-        const et = String(r.entityType ?? "") as EntityType;
-        if (!ENTITY_TYPES.includes(et)) continue;
-        for (const pk of PERMISSION_KEYS) {
-          next[et][pk] = yesNo(r[PERMISSION_FIELD[pk]]);
+      const [employeesRes, recordsRes] = await Promise.all([
+        apiClient.masterRecords("employees"),
+        apiClient.masterRecords(MASTER_KEY)
+      ]);
+
+      const needle = filterText.trim().toLowerCase();
+      const matching = employeesRes.data
+        .filter((e) => !needle || String(e.name ?? "").toLowerCase().includes(needle))
+        .sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? "")));
+
+      const nextRows: Row[] = matching.map((e) => {
+        const name = String(e.name ?? "");
+        const existing = recordsRes.data.filter((r) => String(r.fieldForceName ?? "") === name);
+        const grid = emptyGrid();
+        for (const r of existing) {
+          const et = String(r.entityType ?? "") as EntityType;
+          if (!ENTITY_TYPES.includes(et)) continue;
+          for (const pk of PERMISSION_KEYS) grid[et][pk] = yesNo(r[PERMISSION_FIELD[pk]]);
+          if (et === "Listed Doctor") grid[et].nameChg = yesNo(r.nameChg);
         }
-        if (et === "Listed Doctor") next[et].nameChg = yesNo(r.nameChg);
-      }
-      setGrid(next);
+        return {
+          name,
+          designation: String(e.designation ?? ""),
+          hq: String(e.territory ?? ""),
+          grid,
+          existing
+        };
+      });
+
+      setRows(nextRows);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load records");
-      setExistingRecords([]);
-      setGrid(emptyGrid());
+      setRows([]);
     } finally {
       setLoading(false);
     }
   }
 
-  function toggle(et: EntityType, pk: PermissionKey) {
-    setGrid((prev) => ({ ...prev, [et]: { ...prev[et], [pk]: !prev[et][pk] } }));
+  function toggle(rowName: string, et: EntityType, pk: PermissionKey) {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.name === rowName ? { ...r, grid: { ...r.grid, [et]: { ...r.grid[et], [pk]: !r.grid[et][pk] } } } : r
+      )
+    );
   }
 
-  function toggleNameChg() {
-    setGrid((prev) => ({
-      ...prev,
-      "Listed Doctor": { ...prev["Listed Doctor"], nameChg: !prev["Listed Doctor"].nameChg }
-    }));
+  function toggleNameChg(rowName: string) {
+    setRows((prev) =>
+      prev.map((r) =>
+        r.name === rowName
+          ? { ...r, grid: { ...r.grid, "Listed Doctor": { ...r.grid["Listed Doctor"], nameChg: !r.grid["Listed Doctor"].nameChg } } }
+          : r
+      )
+    );
   }
 
   async function save() {
-    if (!fieldForceName) return;
     setSaving(true);
     setError(null);
     setNotice(null);
     try {
-      for (const et of ENTITY_TYPES) {
-        const existing = existingRecords.find((r) => String(r.entityType ?? "") === et);
-        const payload: Record<string, unknown> = {
-          fieldForceName,
-          entityType: et,
-          add: grid[et].add ? "Yes" : "No",
-          edit: grid[et].edit ? "Yes" : "No",
-          delete: grid[et].deactivate ? "Yes" : "No",
-          view: grid[et].view ? "Yes" : "No",
-          reactivate: grid[et].reactivate ? "Yes" : "No"
-        };
-        if (et === "Listed Doctor") payload.nameChg = grid[et].nameChg ? "Yes" : "No";
+      for (const row of rows) {
+        for (const et of ENTITY_TYPES) {
+          const existing = row.existing.find((r) => String(r.entityType ?? "") === et);
+          const payload: Record<string, unknown> = {
+            fieldForceName: row.name,
+            entityType: et,
+            add: row.grid[et].add ? "Yes" : "No",
+            edit: row.grid[et].edit ? "Yes" : "No",
+            delete: row.grid[et].deactivate ? "Yes" : "No",
+            view: row.grid[et].view ? "Yes" : "No",
+            reactivate: row.grid[et].reactivate ? "Yes" : "No"
+          };
+          if (et === "Listed Doctor") payload.nameChg = row.grid[et].nameChg ? "Yes" : "No";
 
-        if (existing) {
-          await apiClient.updateMasterRecord(MASTER_KEY, existing.id, payload);
-        } else {
-          await apiClient.createMasterRecord(MASTER_KEY, payload);
+          if (existing) {
+            await apiClient.updateMasterRecord(MASTER_KEY, existing.id, payload);
+          } else {
+            await apiClient.createMasterRecord(MASTER_KEY, payload);
+          }
         }
       }
       setNotice("Screen access permissions saved successfully.");
@@ -157,31 +171,39 @@ export function ScreenAccessSetupPanel({ masterKey: _masterKey }: { masterKey: s
   }
 
   function clear() {
-    setGrid(emptyGrid());
+    setRows((prev) => prev.map((r) => ({ ...r, grid: emptyGrid() })));
   }
+
+  const colCount = useMemo(() => 3 + ENTITY_TYPES.length * (PERMISSION_KEYS.length + 1) - 4, []);
 
   return (
     <div className="space-y-4">
       <div className="card p-4">
         <h2 className="text-lg font-semibold mb-4">Setup For Screen Access</h2>
         <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-[280px]">
-            <label className="block text-sm font-medium mb-1">Field Force Name</label>
-            <CustomSelect
-              value={
-                fieldForceName
-                  ? employeeOptions.find((o) => o.name === fieldForceName)?.label ?? fieldForceName
-                  : ""
-              }
-              options={employeeOptions.map((o) => o.label)}
-              onChange={(label) => {
-                const match = employeeOptions.find((o) => o.label === label);
-                setFieldForceName(match ? match.name : "");
-              }}
-              placeholder="Select Field Force Name"
+          <div className="min-w-[240px]">
+            <label className="block text-sm font-medium mb-1">FieldForce Name</label>
+            <input
+              className="input"
+              value={filterText}
+              onChange={(e) => setFilterText(e.target.value)}
+              placeholder="Type a name to filter, or leave blank for all"
             />
           </div>
-          <button className="btn btn-primary" onClick={go} disabled={!fieldForceName || loading}>
+          <button
+            onClick={go}
+            disabled={loading}
+            style={{
+              border: "1px solid #1d4ed8",
+              borderRadius: 6,
+              background: "#2563eb",
+              color: "#fff",
+              fontWeight: 600,
+              padding: "8px 20px",
+              cursor: loading ? "default" : "pointer",
+              opacity: loading ? 0.7 : 1
+            }}
+          >
             {loading ? "Loading..." : "Go"}
           </button>
         </div>
@@ -192,57 +214,100 @@ export function ScreenAccessSetupPanel({ masterKey: _masterKey }: { masterKey: s
 
       {searched && (
         <div className="card p-4 overflow-x-auto">
-          <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
-            <div>
-              <span className="font-medium">Field Force Name: </span>
-              {fieldForceName || "-"}
-            </div>
-            <div>
-              <span className="font-medium">Designation: </span>
-              {String(selectedEmployee?.designation ?? "-")}
-            </div>
-            <div>
-              <span className="font-medium">HQ: </span>
-              {String(selectedEmployee?.territory ?? "-")}
-            </div>
-          </div>
-
-          <table className="w-full text-sm border-collapse">
+          <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }} className="text-sm">
             <thead>
-              <tr className="border-b bg-gray-50">
-                <th className="text-left p-2">Entity Type</th>
-                {PERMISSION_KEYS.map((pk) => (
-                  <th key={pk} className="text-center p-2">
-                    {PERMISSION_LABEL[pk]}
+              <tr>
+                <th style={headBorder} rowSpan={2}>Field Force Name</th>
+                <th style={headBorder} rowSpan={2}>Designation</th>
+                <th style={headBorder} rowSpan={2}>HQ</th>
+                {ENTITY_TYPES.map((et) => (
+                  <th key={et} style={headBorder} colSpan={et === "Listed Doctor" ? PERMISSION_KEYS.length + 1 : PERMISSION_KEYS.length}>
+                    {et}
                   </th>
                 ))}
-                <th className="text-center p-2">NameChg.</th>
+              </tr>
+              <tr>
+                {ENTITY_TYPES.map((et) => (
+                  <Fragment key={et}>
+                    {PERMISSION_KEYS.map((pk) => (
+                      <th key={`${et}-${pk}`} style={headBorder}>{PERMISSION_LABEL[pk]}</th>
+                    ))}
+                    {et === "Listed Doctor" && <th style={headBorder}>NameChg.</th>}
+                  </Fragment>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {ENTITY_TYPES.map((et) => (
-                <tr key={et} className="border-b">
-                  <td className="p-2">{et}</td>
-                  {PERMISSION_KEYS.map((pk) => (
-                    <td key={pk} className="text-center p-2">
-                      <input type="checkbox" checked={grid[et][pk]} onChange={() => toggle(et, pk)} />
-                    </td>
-                  ))}
-                  <td className="text-center p-2">
-                    {et === "Listed Doctor" ? (
-                      <input type="checkbox" checked={!!grid[et].nameChg} onChange={toggleNameChg} />
-                    ) : null}
+              {rows.length === 0 ? (
+                <tr>
+                  <td style={cellBorder} colSpan={colCount + 4} className="text-center text-gray-500 py-4">
+                    No field force members found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                rows.map((row) => (
+                  <tr key={row.name}>
+                    <td style={cellBorder}>{row.name}</td>
+                    <td style={cellBorder}>{row.designation}</td>
+                    <td style={cellBorder}>{row.hq}</td>
+                    {ENTITY_TYPES.map((et) => (
+                      <Fragment key={`${row.name}-${et}`}>
+                        {PERMISSION_KEYS.map((pk) => (
+                          <td key={`${row.name}-${et}-${pk}`} style={{ ...cellBorder, textAlign: "center" }}>
+                            <input
+                              type="checkbox"
+                              checked={row.grid[et][pk]}
+                              onChange={() => toggle(row.name, et, pk)}
+                            />
+                          </td>
+                        ))}
+                        {et === "Listed Doctor" && (
+                          <td style={{ ...cellBorder, textAlign: "center" }}>
+                            <input
+                              type="checkbox"
+                              checked={!!row.grid[et].nameChg}
+                              onChange={() => toggleNameChg(row.name)}
+                            />
+                          </td>
+                        )}
+                      </Fragment>
+                    ))}
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
 
           <div className="flex gap-3 mt-4">
-            <button className="btn btn-primary" onClick={save} disabled={saving}>
+            <button
+              onClick={save}
+              disabled={saving || rows.length === 0}
+              style={{
+                border: "1px solid #1d4ed8",
+                borderRadius: 6,
+                background: "#2563eb",
+                color: "#fff",
+                fontWeight: 600,
+                padding: "8px 20px",
+                cursor: saving ? "default" : "pointer",
+                opacity: saving ? 0.7 : 1
+              }}
+            >
               {saving ? "Saving..." : "Save"}
             </button>
-            <button className="btn btn-secondary" onClick={clear} disabled={saving}>
+            <button
+              onClick={clear}
+              disabled={saving || rows.length === 0}
+              style={{
+                border: "1px solid #94a3b8",
+                borderRadius: 6,
+                background: "#fff",
+                color: "#111827",
+                fontWeight: 600,
+                padding: "8px 20px",
+                cursor: saving ? "default" : "pointer"
+              }}
+            >
               Clear
             </button>
           </div>

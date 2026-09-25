@@ -506,7 +506,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("basic-setup/managerwise-core-doctor-map")) {
-    return <GenericMasterTable masterKey="managerwiseCoreDoctorMap" />;
+    return <MasterScreen masterKey="managerwiseCoreDoctorMap" />;
   }
 
   if (pathStr.endsWith("basic-setup/screenwise-access")) {

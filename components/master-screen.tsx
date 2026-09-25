@@ -27,6 +27,7 @@ import { ScreenAccessSetupPanel } from "@/components/screen-access-setup-panel";
 import { BaseLevelSetupPanel } from "@/components/base-level-setup-panel";
 import { ManagerSetupPanel } from "@/components/manager-setup-panel";
 import { ApprovalMandatorySetupPanel } from "@/components/approval-mandatory-setup-panel";
+import { ManagerwiseCoreDoctorMapPanel } from "@/components/managerwise-core-doctor-map-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -38,7 +39,7 @@ import { ApprovalMandatorySetupPanel } from "@/components/approval-mandatory-set
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | null
   >(null);
 
   useEffect(() => {
@@ -80,6 +81,7 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "baseLevelSetup") return <BaseLevelSetupPanel masterKey={masterKey} />;
   if (uiKind === "managerSetup") return <ManagerSetupPanel masterKey={masterKey} />;
   if (uiKind === "approvalMandatorySetup") return <ApprovalMandatorySetupPanel masterKey={masterKey} />;
+  if (uiKind === "managerwiseCoreDoctorMap") return <ManagerwiseCoreDoctorMapPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

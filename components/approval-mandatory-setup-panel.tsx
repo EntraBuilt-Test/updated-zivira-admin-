@@ -98,20 +98,35 @@ export function ApprovalMandatorySetupPanel({ masterKey: _masterKey }: { masterK
       {error && <div className="card p-3 text-sm text-red-600">{error}</div>}
       {notice && <div className="card p-3 text-sm text-green-700">{notice}</div>}
 
-      <div className="card p-4" style={{ maxWidth: 420 }}>
-        <div className="border rounded p-3 space-y-2">
-          {TRANSACTION_TYPES.map((t) => (
-            <label key={t} className="flex items-center gap-2 text-sm">
-              <input type="checkbox" checked={checks[t]} onChange={() => toggle(t)} />
-              {t}
-            </label>
-          ))}
-        </div>
+      <div className="flex justify-center">
+        <div className="card p-4" style={{ maxWidth: 420, width: "100%" }}>
+          <div className="border rounded p-3 space-y-2">
+            {TRANSACTION_TYPES.map((t) => (
+              <label key={t} className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={checks[t]} onChange={() => toggle(t)} />
+                {t}
+              </label>
+            ))}
+          </div>
 
-        <div className="mt-4">
-          <button className="btn btn-primary" onClick={update} disabled={saving}>
-            {saving ? "Updating..." : "Update"}
-          </button>
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={update}
+              disabled={saving}
+              style={{
+                border: "1px solid #1d4ed8",
+                borderRadius: 6,
+                background: "#2563eb",
+                color: "#fff",
+                fontWeight: 600,
+                padding: "8px 24px",
+                cursor: saving ? "default" : "pointer",
+                opacity: saving ? 0.7 : 1
+              }}
+            >
+              {saving ? "Updating..." : "Update"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

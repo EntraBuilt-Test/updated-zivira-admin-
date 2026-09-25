@@ -1,98 +1,132 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import {
-  SectionCard,
+  SectionBox,
   FieldRow,
   YesNoRadio,
   TextField,
   SelectField,
   DcrMatrixTable,
   emptyDcrMatrix,
+  emptyDcrMatrixDesignations,
   TourPlanSetupTable,
   emptyTourPlanTable,
   type DcrMatrix,
-  type DcrMatrixRow,
-  type DcrMatrixColumn,
+  type DcrMatrixDesignations,
   type TourPlanTable
 } from "@/components/admin-setup-shared";
 
 const CONFIG_KIND = "managerSetup";
-const MANAGER_DESIGNATIONS = ["BH", "RBM", "ABM", "ZBM", "BRM", "NBM", "Sr ABM", "MH", "SM"] as const;
 
+const WORKING_AREA_OPTIONS = ["Territory", "Clusters", "Patches", "Hospital", "Work Area"] as const;
+const DOCTOR_LISTING_DISPLAY_OPTIONS = ["None", "SVL No", "Speciality", "Category", "Class", "Campaign"] as const;
+const MANAGER_DESIGNATIONS = ["BH", "RBM", "ABM", "ZBM", "BRM", "NBM", "Sr ABM", "MH", "SM"] as const;
+const DESIGNATION_MULTISELECT_OPTIONS = [
+  "ALL", "ABM", "BE", "BH", "BRM", "MH", "NBM", "RBM", "Sr BE", "ZBM", "Sr ABM", "SM"
+] as const;
+
+// Matches sanpharma.info's Basic Setup >> Manager Setup screen
+// (AdminSetupMGR.aspx) exactly: same section layout as Base Level Setup,
+// EXCEPT Plan Setup has no "Doctor with Multiple Plan(s) Allowed" field (it
+// starts directly at Working Area Name), the Doctors listing display radio
+// includes an extra "Campaign" option, and the Tour Plan Setup table is
+// keyed by the 9 manager designations (BH/RBM/ABM/ZBM/BRM/NBM/Sr ABM/MH/SM)
+// instead of BE/Sr BE. Persisted via CompanyConfigModel the same way as the
+// other single-document admin screens in this app.
 type ManagerSettings = {
-  planSetup: { planType: string; planningDays: string; planApproval: string };
-  dcrSetup: { dcrEditableDays: string; dcrSubmissionType: string; allowBackdatedDcr: string };
-  dcrApprovalSystem: { approvalRequired: string; approvalLevels: string; autoApproveAfterDays: string };
-  dcrDelayedSystem: { delayedAfterDays: string; delayedAction: string };
-  dcrEntrySetup: { entryMode: string; maxCallsPerDay: string; mandatoryRemarks: string };
-  doctorSetup: { doctorApprovalRequired: string; doctorCategoryMandatory: string };
-  chemistsSetup: { chemistApprovalRequired: string; chemistCategoryMandatory: string };
-  stockistsSetup: { stockistApprovalRequired: string };
-  dcrAutoPost: { autoPostEnabled: string; autoPostTime: string };
-  dcrBasedOnTp: { restrictToTpEntities: string };
-  tourPlanSetup: { tourPlanBasedSystem: string; table: TourPlanTable };
-  additionalSetup: { entryMode: DcrMatrix; displayMode: DcrMatrix; designation: string };
+  workingAreaName: string;
+  noOfTerritorySelectionInTp: string;
+
+  noOfListedDoctorsAllowedForDcrEntry: string;
+  noOfUnlistedDoctorsAllowedForDcrEntry: string;
+  doctorsListingDisplayInDcrEntry: string;
+  displayPatchwiseDoctorsInDcr: string;
+  selectionInDcrListedDoctorMandatory: string;
+
+  dcrApprovalNeeded: string;
+
+  dcrDelayedSystem: string;
+  weekOffHolidayCalculatedInDelayed: string;
+  noOfDaysAllowedForDelay: string;
+
+  dcrAutoPostHoliday: string;
+  dcrAutoPostWeekOff: string;
+
+  tpBasedDcr: string;
+  tpBasedDcrWithDeviationReason: string;
+  tpBasedDcrWithManagerApprovalNeeded: string;
+
+  noOfListedDoctorsAllowedForEntryInMaster: string;
+  noOfUnlistedDoctorsAllowedForEntryInMaster: string;
+  listedDoctorApprovalNeeded: string;
+  deactivationApprovalNeeded: string;
+  addAgainstDeactApprovalNeeded: string;
+  productTagPrioritywiseNeeded: string;
+
+  noOfChemistsAllowedForEntry: string;
+  noOfStockistsAllowedForEntry: string;
+
+  tourPlan: TourPlanTable;
+  tourPlanBasedSystem: string;
+
+  entryMode: DcrMatrix;
+  entryModeDesignations: DcrMatrixDesignations;
+  displayMode: DcrMatrix;
+  displayModeDesignations: DcrMatrixDesignations;
 };
 
 function emptySettings(): ManagerSettings {
   return {
-    planSetup: { planType: "", planningDays: "", planApproval: "No" },
-    dcrSetup: { dcrEditableDays: "", dcrSubmissionType: "", allowBackdatedDcr: "No" },
-    dcrApprovalSystem: { approvalRequired: "No", approvalLevels: "", autoApproveAfterDays: "" },
-    dcrDelayedSystem: { delayedAfterDays: "", delayedAction: "" },
-    dcrEntrySetup: { entryMode: "", maxCallsPerDay: "", mandatoryRemarks: "No" },
-    doctorSetup: { doctorApprovalRequired: "No", doctorCategoryMandatory: "No" },
-    chemistsSetup: { chemistApprovalRequired: "No", chemistCategoryMandatory: "No" },
-    stockistsSetup: { stockistApprovalRequired: "No" },
-    dcrAutoPost: { autoPostEnabled: "No", autoPostTime: "" },
-    dcrBasedOnTp: { restrictToTpEntities: "No" },
-    tourPlanSetup: { tourPlanBasedSystem: "Designation Wise", table: emptyTourPlanTable(MANAGER_DESIGNATIONS) },
-    additionalSetup: { entryMode: emptyDcrMatrix(), displayMode: emptyDcrMatrix(), designation: "" }
+    workingAreaName: "",
+    noOfTerritorySelectionInTp: "",
+
+    noOfListedDoctorsAllowedForDcrEntry: "",
+    noOfUnlistedDoctorsAllowedForDcrEntry: "",
+    doctorsListingDisplayInDcrEntry: "",
+    displayPatchwiseDoctorsInDcr: "No",
+    selectionInDcrListedDoctorMandatory: "No",
+
+    dcrApprovalNeeded: "No",
+
+    dcrDelayedSystem: "No",
+    weekOffHolidayCalculatedInDelayed: "No",
+    noOfDaysAllowedForDelay: "",
+
+    dcrAutoPostHoliday: "No",
+    dcrAutoPostWeekOff: "No",
+
+    tpBasedDcr: "No",
+    tpBasedDcrWithDeviationReason: "No",
+    tpBasedDcrWithManagerApprovalNeeded: "No",
+
+    noOfListedDoctorsAllowedForEntryInMaster: "",
+    noOfUnlistedDoctorsAllowedForEntryInMaster: "",
+    listedDoctorApprovalNeeded: "No",
+    deactivationApprovalNeeded: "No",
+    addAgainstDeactApprovalNeeded: "No",
+    productTagPrioritywiseNeeded: "No",
+
+    noOfChemistsAllowedForEntry: "",
+    noOfStockistsAllowedForEntry: "",
+
+    tourPlan: emptyTourPlanTable(MANAGER_DESIGNATIONS),
+    tourPlanBasedSystem: "Tour Plan Based System (Approval Mandatory)",
+
+    entryMode: emptyDcrMatrix(),
+    entryModeDesignations: emptyDcrMatrixDesignations(),
+    displayMode: emptyDcrMatrix(),
+    displayModeDesignations: emptyDcrMatrixDesignations()
   };
 }
 
 function mergeSettings(loaded: unknown): ManagerSettings {
   const base = emptySettings();
   if (!loaded || typeof loaded !== "object") return base;
-  const l = loaded as Partial<ManagerSettings>;
-  return {
-    planSetup: { ...base.planSetup, ...(l.planSetup ?? {}) },
-    dcrSetup: { ...base.dcrSetup, ...(l.dcrSetup ?? {}) },
-    dcrApprovalSystem: { ...base.dcrApprovalSystem, ...(l.dcrApprovalSystem ?? {}) },
-    dcrDelayedSystem: { ...base.dcrDelayedSystem, ...(l.dcrDelayedSystem ?? {}) },
-    dcrEntrySetup: { ...base.dcrEntrySetup, ...(l.dcrEntrySetup ?? {}) },
-    doctorSetup: { ...base.doctorSetup, ...(l.doctorSetup ?? {}) },
-    chemistsSetup: { ...base.chemistsSetup, ...(l.chemistsSetup ?? {}) },
-    stockistsSetup: { ...base.stockistsSetup, ...(l.stockistsSetup ?? {}) },
-    dcrAutoPost: { ...base.dcrAutoPost, ...(l.dcrAutoPost ?? {}) },
-    dcrBasedOnTp: { ...base.dcrBasedOnTp, ...(l.dcrBasedOnTp ?? {}) },
-    tourPlanSetup: {
-      tourPlanBasedSystem: l.tourPlanSetup?.tourPlanBasedSystem ?? base.tourPlanSetup.tourPlanBasedSystem,
-      table: { ...base.tourPlanSetup.table, ...(l.tourPlanSetup?.table ?? {}) }
-    },
-    additionalSetup: {
-      entryMode: { ...base.additionalSetup.entryMode, ...(l.additionalSetup?.entryMode ?? {}) },
-      displayMode: { ...base.additionalSetup.displayMode, ...(l.additionalSetup?.displayMode ?? {}) },
-      designation: l.additionalSetup?.designation ?? ""
-    }
-  };
+  return { ...base, ...(loaded as Partial<ManagerSettings>) };
 }
 
-// Matches sanpharma.info's Basic Setup >> Manager Setup screen: the same
-// single long configuration form (no table, no "Add" button) covering
-// Plan Setup, DCR Setup, DCR Approval System, DCR Delayed System, DCR -
-// Entry Setup, Doctor Setup, Chemists Setup, Stockists Setup, DCR Auto
-// Post, DCR Based on TP, Tour Plan Setup (BE / Sr BE start/end day-of-month
-// + a Tour Plan Based System choice + per-designation Approval Needed),
-// and Additional Setup's DCR Entry Mode / Display Mode matrices, ending in
-// a single Save / Clear pair. Persisted as one JSON blob via
-// CompanyConfigModel under adminSettings:baseLevelSetup (getAdminSetting /
-// saveAdminSetting), matching every other single-document admin screen in
-// this app rather than forcing it into the generic masters list shape.
-// Tour Plan Setup here is keyed by manager designations (BH / RBM / ABM /
-// ZBM / BRM / NBM / Sr ABM / MH / SM) instead of field-force designations.
 export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [settings, setSettings] = useState<ManagerSettings>(emptySettings());
   const [loading, setLoading] = useState(true);
@@ -119,33 +153,8 @@ export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string
     };
   }, []);
 
-  const managerDesignations = useMemo(() => MANAGER_DESIGNATIONS, []);
-
-  function patch<K extends keyof ManagerSettings>(section: K, values: Partial<ManagerSettings[K]>) {
-    setSettings((prev) => ({ ...prev, [section]: { ...prev[section], ...values } }));
-  }
-
-  function toggleMatrix(kind: "entryMode" | "displayMode", row: DcrMatrixRow, col: DcrMatrixColumn) {
-    setSettings((prev) => ({
-      ...prev,
-      additionalSetup: {
-        ...prev.additionalSetup,
-        [kind]: {
-          ...prev.additionalSetup[kind],
-          [row]: { ...prev.additionalSetup[kind][row], [col]: !prev.additionalSetup[kind][row][col] }
-        }
-      }
-    }));
-  }
-
-  function setTourPlanRow(designation: string, rowPatch: Partial<TourPlanTable[string]>) {
-    setSettings((prev) => ({
-      ...prev,
-      tourPlanSetup: {
-        ...prev.tourPlanSetup,
-        table: { ...prev.tourPlanSetup.table, [designation]: { ...prev.tourPlanSetup.table[designation], ...rowPatch } }
-      }
-    }));
+  function set<K extends keyof ManagerSettings>(key: K, value: ManagerSettings[K]) {
+    setSettings((prev) => ({ ...prev, [key]: value }));
   }
 
   async function save() {
@@ -164,14 +173,12 @@ export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string
 
   function clear() {
     setSettings(emptySettings());
-    setNotice(null);
-    setError(null);
   }
 
   if (loading) return <div className="card p-4 text-sm">Loading Manager Setup...</div>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <div className="card p-4">
         <h2 className="text-lg font-semibold">Manager Setup</h2>
       </div>
@@ -179,152 +186,184 @@ export function ManagerSetupPanel({ masterKey: _masterKey }: { masterKey: string
       {error && <div className="card p-3 text-sm text-red-600">{error}</div>}
       {notice && <div className="card p-3 text-sm text-green-700">{notice}</div>}
 
-      <SectionCard title="Plan Setup">
-        <FieldRow label="Plan Type">
-          <SelectField
-            value={settings.planSetup.planType}
-            onChange={(v) => patch("planSetup", { planType: v })}
-            options={["Monthly", "Weekly", "Fortnightly"]}
+      <SectionBox title="Plan Setup">
+        <FieldRow label="Working Area Name">
+          <SelectField value={settings.workingAreaName} onChange={(v) => set("workingAreaName", v)} options={WORKING_AREA_OPTIONS} />
+        </FieldRow>
+        <FieldRow label="No of Territory Selection in TP">
+          <TextField value={settings.noOfTerritorySelectionInTp} onChange={(v) => set("noOfTerritorySelectionInTp", v)} type="number" />
+        </FieldRow>
+      </SectionBox>
+
+      <SectionBox title="DCR Setup">
+        <FieldRow label="No. of Listed Doctors Allowed For DCR Entry">
+          <TextField value={settings.noOfListedDoctorsAllowedForDcrEntry} onChange={(v) => set("noOfListedDoctorsAllowedForDcrEntry", v)} type="number" />
+        </FieldRow>
+        <FieldRow label="No. of Unlisted Doctors Allowed For DCR Entry">
+          <TextField value={settings.noOfUnlistedDoctorsAllowedForDcrEntry} onChange={(v) => set("noOfUnlistedDoctorsAllowedForDcrEntry", v)} type="number" />
+        </FieldRow>
+        <FieldRow label="Doctors listing display in DCR Entry">
+          <YesNoRadio
+            name="doctorsListingDisplayInDcrEntry"
+            value={settings.doctorsListingDisplayInDcrEntry}
+            onChange={(v) => set("doctorsListingDisplayInDcrEntry", v)}
+            options={DOCTOR_LISTING_DISPLAY_OPTIONS}
           />
         </FieldRow>
-        <FieldRow label="Planning Days (before month start)">
-          <TextField value={settings.planSetup.planningDays} onChange={(v) => patch("planSetup", { planningDays: v })} type="number" />
+        <FieldRow label="Display Patchwise Doctors in DCR">
+          <YesNoRadio name="displayPatchwiseDoctorsInDcr" value={settings.displayPatchwiseDoctorsInDcr} onChange={(v) => set("displayPatchwiseDoctorsInDcr", v)} />
         </FieldRow>
-        <FieldRow label="Plan Approval Required">
-          <YesNoRadio name="planApproval" value={settings.planSetup.planApproval} onChange={(v) => patch("planSetup", { planApproval: v })} />
+        <FieldRow label="Selection in DCR - Listed Doctor as Mandatory">
+          <YesNoRadio name="selectionInDcrListedDoctorMandatory" value={settings.selectionInDcrListedDoctorMandatory} onChange={(v) => set("selectionInDcrListedDoctorMandatory", v)} />
         </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="DCR Setup">
-        <FieldRow label="DCR Editable For (days)">
-          <TextField value={settings.dcrSetup.dcrEditableDays} onChange={(v) => patch("dcrSetup", { dcrEditableDays: v })} type="number" />
+      <SectionBox title="DCR Approval System">
+        <FieldRow label="DCR Approval Needed">
+          <YesNoRadio name="dcrApprovalNeeded" value={settings.dcrApprovalNeeded} onChange={(v) => set("dcrApprovalNeeded", v)} />
         </FieldRow>
-        <FieldRow label="DCR Submission Type">
-          <SelectField
-            value={settings.dcrSetup.dcrSubmissionType}
-            onChange={(v) => patch("dcrSetup", { dcrSubmissionType: v })}
-            options={["Daily", "Tour Plan Based"]}
-          />
-        </FieldRow>
-        <FieldRow label="Allow Backdated DCR">
-          <YesNoRadio name="allowBackdatedDcr" value={settings.dcrSetup.allowBackdatedDcr} onChange={(v) => patch("dcrSetup", { allowBackdatedDcr: v })} />
-        </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="DCR Approval System">
-        <FieldRow label="Approval Required">
-          <YesNoRadio name="dcrApprovalRequired" value={settings.dcrApprovalSystem.approvalRequired} onChange={(v) => patch("dcrApprovalSystem", { approvalRequired: v })} />
+      <SectionBox title="DCR Delayed System">
+        <FieldRow label="DCR Delayed System">
+          <YesNoRadio name="dcrDelayedSystem" value={settings.dcrDelayedSystem} onChange={(v) => set("dcrDelayedSystem", v)} />
         </FieldRow>
-        <FieldRow label="Approval Levels">
-          <TextField value={settings.dcrApprovalSystem.approvalLevels} onChange={(v) => patch("dcrApprovalSystem", { approvalLevels: v })} type="number" />
+        <FieldRow label="Week Off/Holiday Calculated in Delayed">
+          <YesNoRadio name="weekOffHolidayCalculatedInDelayed" value={settings.weekOffHolidayCalculatedInDelayed} onChange={(v) => set("weekOffHolidayCalculatedInDelayed", v)} />
         </FieldRow>
-        <FieldRow label="Auto-Approve After (days)">
-          <TextField value={settings.dcrApprovalSystem.autoApproveAfterDays} onChange={(v) => patch("dcrApprovalSystem", { autoApproveAfterDays: v })} type="number" />
+        <FieldRow label="No. of Days Allowed for Delay">
+          <TextField value={settings.noOfDaysAllowedForDelay} onChange={(v) => set("noOfDaysAllowedForDelay", v)} type="number" />
         </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="DCR Delayed System">
-        <FieldRow label="Mark Delayed After (days)">
-          <TextField value={settings.dcrDelayedSystem.delayedAfterDays} onChange={(v) => patch("dcrDelayedSystem", { delayedAfterDays: v })} type="number" />
+      <SectionBox title="DCR Auto Post">
+        <FieldRow label="Holiday">
+          <YesNoRadio name="dcrAutoPostHoliday" value={settings.dcrAutoPostHoliday} onChange={(v) => set("dcrAutoPostHoliday", v)} />
         </FieldRow>
-        <FieldRow label="Delayed Action">
-          <SelectField
-            value={settings.dcrDelayedSystem.delayedAction}
-            onChange={(v) => patch("dcrDelayedSystem", { delayedAction: v })}
-            options={["Notify Manager", "Block New Entry", "None"]}
-          />
+        <FieldRow label="Week Off">
+          <YesNoRadio name="dcrAutoPostWeekOff" value={settings.dcrAutoPostWeekOff} onChange={(v) => set("dcrAutoPostWeekOff", v)} />
         </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="DCR - Entry Setup">
-        <FieldRow label="Entry Mode">
-          <SelectField
-            value={settings.dcrEntrySetup.entryMode}
-            onChange={(v) => patch("dcrEntrySetup", { entryMode: v })}
-            options={["Web", "Mobile", "Both"]}
-          />
+      <SectionBox title="DCR Based on TP">
+        <FieldRow label="TP Based DCR">
+          <YesNoRadio name="tpBasedDcr" value={settings.tpBasedDcr} onChange={(v) => set("tpBasedDcr", v)} />
         </FieldRow>
-        <FieldRow label="Max Calls Per Day">
-          <TextField value={settings.dcrEntrySetup.maxCallsPerDay} onChange={(v) => patch("dcrEntrySetup", { maxCallsPerDay: v })} type="number" />
+        <FieldRow label="TP Based DCR with Deviation Reason">
+          <YesNoRadio name="tpBasedDcrWithDeviationReason" value={settings.tpBasedDcrWithDeviationReason} onChange={(v) => set("tpBasedDcrWithDeviationReason", v)} />
         </FieldRow>
-        <FieldRow label="Mandatory Remarks">
-          <YesNoRadio name="mandatoryRemarks" value={settings.dcrEntrySetup.mandatoryRemarks} onChange={(v) => patch("dcrEntrySetup", { mandatoryRemarks: v })} />
+        <FieldRow label="TP Based DCR with Manager Approval Needed">
+          <YesNoRadio name="tpBasedDcrWithManagerApprovalNeeded" value={settings.tpBasedDcrWithManagerApprovalNeeded} onChange={(v) => set("tpBasedDcrWithManagerApprovalNeeded", v)} />
         </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="Doctor Setup">
-        <FieldRow label="Doctor Addition Approval Required">
-          <YesNoRadio name="doctorApprovalRequired" value={settings.doctorSetup.doctorApprovalRequired} onChange={(v) => patch("doctorSetup", { doctorApprovalRequired: v })} />
+      <SectionBox title="Doctor Setup">
+        <FieldRow label="No. of Listed Doctors Allowed For Entry in Master">
+          <TextField value={settings.noOfListedDoctorsAllowedForEntryInMaster} onChange={(v) => set("noOfListedDoctorsAllowedForEntryInMaster", v)} type="number" />
         </FieldRow>
-        <FieldRow label="Doctor Category Mandatory">
-          <YesNoRadio name="doctorCategoryMandatory" value={settings.doctorSetup.doctorCategoryMandatory} onChange={(v) => patch("doctorSetup", { doctorCategoryMandatory: v })} />
+        <FieldRow label="No. of Unlisted Doctors Allowed For Entry in Master">
+          <TextField value={settings.noOfUnlistedDoctorsAllowedForEntryInMaster} onChange={(v) => set("noOfUnlistedDoctorsAllowedForEntryInMaster", v)} type="number" />
         </FieldRow>
-      </SectionCard>
+        <FieldRow label="Listed Doctor Approval Needed">
+          <YesNoRadio name="listedDoctorApprovalNeeded" value={settings.listedDoctorApprovalNeeded} onChange={(v) => set("listedDoctorApprovalNeeded", v)} />
+        </FieldRow>
+        <FieldRow label="Deactivation Approval Needed">
+          <YesNoRadio name="deactivationApprovalNeeded" value={settings.deactivationApprovalNeeded} onChange={(v) => set("deactivationApprovalNeeded", v)} />
+        </FieldRow>
+        <FieldRow label="Add Against Deactivation Approval Needed">
+          <YesNoRadio name="addAgainstDeactApprovalNeeded" value={settings.addAgainstDeactApprovalNeeded} onChange={(v) => set("addAgainstDeactApprovalNeeded", v)} />
+        </FieldRow>
+        <FieldRow label="Product Tag Prioritywise Needed">
+          <YesNoRadio name="productTagPrioritywiseNeeded" value={settings.productTagPrioritywiseNeeded} onChange={(v) => set("productTagPrioritywiseNeeded", v)} />
+        </FieldRow>
+      </SectionBox>
 
-      <SectionCard title="Chemists Setup">
-        <FieldRow label="Chemist Addition Approval Required">
-          <YesNoRadio name="chemistApprovalRequired" value={settings.chemistsSetup.chemistApprovalRequired} onChange={(v) => patch("chemistsSetup", { chemistApprovalRequired: v })} />
+      <SectionBox title="Chemists Setup">
+        <FieldRow label="No. of Chemists Allowed For Entry">
+          <TextField value={settings.noOfChemistsAllowedForEntry} onChange={(v) => set("noOfChemistsAllowedForEntry", v)} type="number" />
         </FieldRow>
-        <FieldRow label="Chemist Category Mandatory">
-          <YesNoRadio name="chemistCategoryMandatory" value={settings.chemistsSetup.chemistCategoryMandatory} onChange={(v) => patch("chemistsSetup", { chemistCategoryMandatory: v })} />
-        </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="Stockists Setup">
-        <FieldRow label="Stockist Addition Approval Required">
-          <YesNoRadio name="stockistApprovalRequired" value={settings.stockistsSetup.stockistApprovalRequired} onChange={(v) => patch("stockistsSetup", { stockistApprovalRequired: v })} />
+      <SectionBox title="Stockists Setup">
+        <FieldRow label="No. of Stockists Allowed For Entry">
+          <TextField value={settings.noOfStockistsAllowedForEntry} onChange={(v) => set("noOfStockistsAllowedForEntry", v)} type="number" />
         </FieldRow>
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="DCR Auto Post">
-        <FieldRow label="Auto Post Enabled">
-          <YesNoRadio name="autoPostEnabled" value={settings.dcrAutoPost.autoPostEnabled} onChange={(v) => patch("dcrAutoPost", { autoPostEnabled: v })} />
-        </FieldRow>
-        <FieldRow label="Auto Post Time">
-          <TextField value={settings.dcrAutoPost.autoPostTime} onChange={(v) => patch("dcrAutoPost", { autoPostTime: v })} type="time" />
-        </FieldRow>
-      </SectionCard>
-
-      <SectionCard title="DCR Based on TP">
-        <FieldRow label="Restrict DCR to Planned Entities Only">
-          <YesNoRadio name="restrictToTpEntities" value={settings.dcrBasedOnTp.restrictToTpEntities} onChange={(v) => patch("dcrBasedOnTp", { restrictToTpEntities: v })} />
-        </FieldRow>
-      </SectionCard>
-
-      <SectionCard title="Tour Plan Setup">
-        <FieldRow label="Tour Plan Based System">
-          <SelectField
-            value={settings.tourPlanSetup.tourPlanBasedSystem}
-            onChange={(v) => patch("tourPlanSetup", { tourPlanBasedSystem: v })}
-            options={["Designation Wise", "Common For All"]}
-          />
-        </FieldRow>
+      <SectionBox title="Tour Plan Setup">
         <TourPlanSetupTable
-          designations={managerDesignations}
-          table={settings.tourPlanSetup.table}
-          onChange={setTourPlanRow}
+          designations={MANAGER_DESIGNATIONS}
+          table={settings.tourPlan}
+          onChange={(d, patch) => set("tourPlan", { ...settings.tourPlan, [d]: { ...settings.tourPlan[d], ...patch } })}
         />
-      </SectionCard>
+      </SectionBox>
 
-      <SectionCard title="Additional Setup (Baselevel & Managers)">
-        <FieldRow label="Designation">
-          <SelectField
-            value={settings.additionalSetup.designation}
-            onChange={(v) =>
-              setSettings((prev) => ({ ...prev, additionalSetup: { ...prev.additionalSetup, designation: v } }))
-            }
-            options={[...MANAGER_DESIGNATIONS]}
+      <SectionBox title="Tour Plan">
+        <FieldRow label="">
+          <YesNoRadio
+            name="tourPlanBasedSystem"
+            value={settings.tourPlanBasedSystem}
+            onChange={(v) => set("tourPlanBasedSystem", v)}
+            options={["Tour Plan Based System (Approval Mandatory)", "Without Tour Plan Based System"]}
           />
         </FieldRow>
-        <DcrMatrixTable title="DCR SETUP - Entry Mode" matrix={settings.additionalSetup.entryMode} onToggle={(row, col) => toggleMatrix("entryMode", row, col)} />
-        <DcrMatrixTable title="DCR SETUP - Display Mode" matrix={settings.additionalSetup.displayMode} onToggle={(row, col) => toggleMatrix("displayMode", row, col)} />
-      </SectionCard>
+      </SectionBox>
+
+      <SectionBox title="Additional Setup (Baselevel & Managers)">
+        <div className="space-y-4">
+          <DcrMatrixTable
+            title="DCR SETUP - Entry Mode"
+            matrix={settings.entryMode}
+            onToggle={(row, col) =>
+              set("entryMode", { ...settings.entryMode, [row]: { ...settings.entryMode[row], [col]: !settings.entryMode[row][col] } })
+            }
+            rowDesignations={settings.entryModeDesignations}
+            onDesignationChange={(row, d) => set("entryModeDesignations", { ...settings.entryModeDesignations, [row]: d })}
+            designationOptions={DESIGNATION_MULTISELECT_OPTIONS}
+          />
+          <DcrMatrixTable
+            title="DCR SETUP - Display Mode"
+            matrix={settings.displayMode}
+            onToggle={(row, col) =>
+              set("displayMode", { ...settings.displayMode, [row]: { ...settings.displayMode[row], [col]: !settings.displayMode[row][col] } })
+            }
+            rowDesignations={settings.displayModeDesignations}
+            onDesignationChange={(row, d) => set("displayModeDesignations", { ...settings.displayModeDesignations, [row]: d })}
+            designationOptions={DESIGNATION_MULTISELECT_OPTIONS}
+          />
+        </div>
+      </SectionBox>
 
       <div className="flex gap-3">
-        <button className="btn btn-primary" onClick={save} disabled={saving}>
+        <button
+          onClick={save}
+          disabled={saving}
+          style={{
+            border: "1px solid #1d4ed8",
+            borderRadius: 6,
+            background: "#2563eb",
+            color: "#fff",
+            fontWeight: 600,
+            padding: "8px 24px",
+            cursor: saving ? "default" : "pointer",
+            opacity: saving ? 0.7 : 1
+          }}
+        >
           {saving ? "Saving..." : "Save"}
         </button>
-        <button className="btn btn-secondary" onClick={clear} disabled={saving}>
+        <button
+          onClick={clear}
+          disabled={saving}
+          style={{
+            border: "1px solid #94a3b8",
+            borderRadius: 6,
+            background: "#fff",
+            color: "#111827",
+            fontWeight: 600,
+            padding: "8px 24px",
+            cursor: saving ? "default" : "pointer"
+          }}
+        >
           Clear
         </button>
       </div>
