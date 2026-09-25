@@ -75,7 +75,8 @@ export function UserManualUploadPanel({ masterKey: _masterKey }: { masterKey: st
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex justify-center">
+      <div className="space-y-4" style={{ maxWidth: 640, width: "100%" }}>
       <div className="card p-4">
         <h2 className="text-lg font-semibold mb-4">User Manual Upload</h2>
 
@@ -141,6 +142,7 @@ export function UserManualUploadPanel({ masterKey: _masterKey }: { masterKey: st
           </table>
         </div>
       )}
+      </div>
     </div>
   );
 }

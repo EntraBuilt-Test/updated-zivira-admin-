@@ -47,7 +47,8 @@ export function TalkToUsPanel() {
   if (loading) return <div className="card p-4 text-sm">Loading Talk to Us...</div>;
 
   return (
-    <div className="card p-4">
+    <div className="flex justify-center">
+      <div className="card p-4" style={{ maxWidth: 680, width: "100%" }}>
       <h2 className="text-lg font-semibold mb-4">Talk To Us</h2>
 
       {error && <div className="text-sm text-red-600 mb-3">{error}</div>}
@@ -70,6 +71,7 @@ export function TalkToUsPanel() {
       >
         {saving ? "Saving..." : "Save"}
       </button>
+      </div>
     </div>
   );
 }

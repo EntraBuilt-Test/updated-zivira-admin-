@@ -73,7 +73,8 @@ export function FlashNewsPanel() {
   if (loading) return <div className="card p-4 text-sm">Loading Flash News...</div>;
 
   return (
-    <div className="card p-4">
+    <div className="flex justify-center">
+      <div className="card p-4" style={{ maxWidth: 640, width: "100%" }}>
       <h2 className="text-lg font-semibold mb-4">Flash News - Creation Page</h2>
 
       {error && <div className="text-sm text-red-600 mb-3">{error}</div>}
@@ -108,6 +109,7 @@ export function FlashNewsPanel() {
         <button onClick={clear} style={{ border: "1px solid #94a3b8", borderRadius: 4, padding: "6px 16px", background: "#e5e7eb", fontWeight: 600 }}>
           Clear
         </button>
+      </div>
       </div>
     </div>
   );

@@ -32,6 +32,12 @@ import { QuoteOfTheWeekPanel } from "@/components/quote-of-week-panel";
 import { TalkToUsPanel } from "@/components/talk-to-us-panel";
 import { FileUploadDesignationwisePanel } from "@/components/file-upload-designationwise-panel";
 import { UserManualUploadPanel } from "@/components/user-manual-upload-panel";
+import { SalesforceUploadPanel } from "@/components/salesforce-upload-panel";
+import { StockistUploadPanel } from "@/components/stockist-upload-panel";
+import { ProductUploadPanel } from "@/components/product-upload-panel";
+import { ProductRateUploadPanel } from "@/components/product-rate-upload-panel";
+import { HolidayFixationUploadPanel } from "@/components/holiday-fixation-upload-panel";
+import { LeaveUploadPanel } from "@/components/leave-upload-panel";
 import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
@@ -626,19 +632,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {
-    return <MasterScreen masterKey="salesforceUploadLog" />;
+    return <SalesforceUploadPanel masterKey="salesforceUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/stockist")) {
-    return <MasterScreen masterKey="stockistUploadLog" />;
+    return <StockistUploadPanel masterKey="stockistUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product")) {
-    return <MasterScreen masterKey="productUploadLog" />;
+    return <ProductUploadPanel masterKey="productUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product-rate")) {
-    return <MasterScreen masterKey="productRateUploadLog" />;
+    return <ProductRateUploadPanel masterKey="productRateUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
@@ -646,11 +652,11 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
-    return <MasterScreen masterKey="holidayFixationUploadLog" />;
+    return <HolidayFixationUploadPanel masterKey="holidayFixationUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
-    return <MasterScreen masterKey="leaveBulkUploadLog" />;
+    return <LeaveUploadPanel masterKey="leaveBulkUploadLog" />;
   }
 
   if (pathStr.endsWith("division-options/transaction-upload")) {

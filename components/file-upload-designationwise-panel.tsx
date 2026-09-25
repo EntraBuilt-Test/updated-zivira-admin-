@@ -92,7 +92,8 @@ export function FileUploadDesignationwisePanel({ masterKey: _masterKey }: { mast
   }
 
   return (
-    <div className="space-y-4">
+    <div className="flex justify-center">
+      <div className="space-y-4" style={{ maxWidth: 720, width: "100%" }}>
       <div className="card p-4">
         <h2 className="text-lg font-semibold mb-4">File Upload</h2>
 
@@ -175,6 +176,7 @@ export function FileUploadDesignationwisePanel({ masterKey: _masterKey }: { mast
             </tbody>
           </table>
         )}
+      </div>
       </div>
     </div>
   );

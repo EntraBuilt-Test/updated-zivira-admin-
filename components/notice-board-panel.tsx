@@ -67,7 +67,8 @@ export function NoticeBoardPanel() {
   if (loading) return <div className="card p-4 text-sm">Loading Notice Board...</div>;
 
   return (
-    <div className="card p-4">
+    <div className="flex justify-center">
+      <div className="card p-4" style={{ maxWidth: 680, width: "100%" }}>
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Notice Board</h2>
         <button onClick={load} className="text-sm text-blue-700 underline">
@@ -121,6 +122,7 @@ export function NoticeBoardPanel() {
         <button onClick={clear} style={{ border: "1px solid #94a3b8", borderRadius: 4, padding: "6px 16px", background: "#e5e7eb", fontWeight: 600 }}>
           Clear
         </button>
+      </div>
       </div>
     </div>
   );
