@@ -21,6 +21,17 @@ import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
 import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
 import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
 import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
+import { ListedDoctorUploadPanel } from "@/components/listed-doctor-upload-panel";
+import { ChemistUploadPanel } from "@/components/chemist-upload-panel";
+import { SampleDespatchUploadPanel } from "@/components/sample-despatch-upload-panel";
+import { InputDespatchUploadPanel } from "@/components/input-despatch-upload-panel";
+import { TargetUploadPanel } from "@/components/target-upload-panel";
+import { FlashNewsPanel } from "@/components/flash-news-panel";
+import { NoticeBoardPanel } from "@/components/notice-board-panel";
+import { QuoteOfTheWeekPanel } from "@/components/quote-of-week-panel";
+import { TalkToUsPanel } from "@/components/talk-to-us-panel";
+import { FileUploadDesignationwisePanel } from "@/components/file-upload-designationwise-panel";
+import { UserManualUploadPanel } from "@/components/user-manual-upload-panel";
 import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
@@ -562,10 +573,6 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GpsGeoFencePanel initialMode="allocation" />;
   }
 
-  if (pathStr.endsWith("app-setup/geo-tag-deletion")) {
-    return <GpsGeoFencePanel initialMode="geoTag" />;
-  }
-
   if (pathStr.endsWith("app-setup/dynamic-app-link")) {
     return <DynamicAppLinkPanel masterKey="appSetupDynamicAppLink" />;
   }
@@ -575,47 +582,47 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {
-    return <MasterScreen masterKey="listedDoctorUploadLog" />;
+    return <ListedDoctorUploadPanel masterKey="listedDoctorUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {
-    return <MasterScreen masterKey="chemistUploadLog" />;
+    return <ChemistUploadPanel masterKey="chemistUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
-    return <MasterScreen masterKey="sampleDespatchUploadLog" />;
+    return <SampleDespatchUploadPanel masterKey="sampleDespatchUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/input")) {
-    return <MasterScreen masterKey="inputDespatchUploadLog" />;
+    return <InputDespatchUploadPanel masterKey="inputDespatchUploadLog" />;
   }
 
   if (pathStr.endsWith("customer-upload/target")) {
-    return <MasterScreen masterKey="targetUploadLog" />;
+    return <TargetUploadPanel masterKey="targetUploadLog" />;
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
-    return <GenericMasterTable masterKey="flashNewsSetup" />;
+    return <FlashNewsPanel />;
   }
 
   if (pathStr.endsWith("information-upload/notice-board")) {
-    return <GenericMasterTable masterKey="noticeBoardSetup" />;
+    return <NoticeBoardPanel />;
   }
 
   if (pathStr.endsWith("information-upload/quote-for-the-week")) {
-    return <GenericMasterTable masterKey="quoteOfTheWeek" />;
+    return <QuoteOfTheWeekPanel />;
   }
 
   if (pathStr.endsWith("information-upload/talk-to-us")) {
-    return <GenericMasterTable masterKey="talkToUsSetup" />;
+    return <TalkToUsPanel />;
   }
 
   if (pathStr.endsWith("information-upload/file-circular-desig-wise")) {
-    return <MasterScreen masterKey="fileUploadDesignationwise" />;
+    return <FileUploadDesignationwisePanel masterKey="fileUploadDesignationwise" />;
   }
 
   if (pathStr.endsWith("information-upload/user-manual-upload")) {
-    return <MasterScreen masterKey="userManualUpload" />;
+    return <UserManualUploadPanel masterKey="userManualUpload" />;
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {

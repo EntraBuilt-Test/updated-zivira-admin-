@@ -881,11 +881,11 @@ export const apiClient = {
 
   // ── Admin Settings — Base Level Setup / Manager Setup / Auto Mail Setup
   // (Admin tab) single-document-per-tenant config blobs. ──
-  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "orderBookingCommon") {
+  getAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "orderBookingCommon" | "flashNews" | "noticeBoard" | "quoteOfTheWeek" | "talkToUs") {
     return request<T | null>(`/company/masters/admin-settings/${kind}`);
   },
 
-  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "orderBookingCommon", value: T) {
+  saveAdminSetting<T = unknown>(kind: "baseLevelSetup" | "managerSetup" | "autoMailSetupAdmin" | "approvalMandatorySetup" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "orderBookingCommon" | "flashNews" | "noticeBoard" | "quoteOfTheWeek" | "talkToUs", value: T) {
     return request<T>(`/company/masters/admin-settings/${kind}`, {
       method: "PUT",
       body: JSON.stringify({ value })
@@ -1072,6 +1072,27 @@ export const apiClient = {
       throw new Error(payload?.error?.message ?? payload?.data?.error ?? "Upload failed");
     }
     return payload as ApiEnvelope<{ success: boolean; recordsProcessed: number; recordsFailed: number; errors: string[]; logOnly: boolean }>;
+  },
+
+  // Downloads the exact original file for the upload-log masters that keep
+  // one (File Upload (Designation-wise), User Manual Upload) — auth is a
+  // Bearer header, not a cookie, so a plain <a href> can't be used; fetch
+  // the bytes ourselves and trigger a save via an object URL.
+  async downloadMasterFile(key: string, id: string, fileName: string) {
+    const token = getToken();
+    const response = await fetch(`${getApiBaseUrl()}/company/masters/${key}/${id}/download`, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+    });
+    if (!response.ok) throw new Error("Download failed");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName || "download";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   },
 
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────
