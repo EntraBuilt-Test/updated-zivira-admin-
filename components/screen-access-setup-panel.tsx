@@ -1,9 +1,16 @@
 "use client";
 
-import { Fragment, useMemo, useState, type CSSProperties } from "react";
+import { Fragment, useEffect, useMemo, useState, type CSSProperties } from "react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
+import { CustomSelect } from "@/components/custom-select";
 
 const MASTER_KEY = "screenAccessSetup";
+const SELECT_CLEAR = "---Select Clear---";
+const ADMIN_OPTION = "admin";
+
+function employeeLabel(e: MasterRecord): string {
+  return `${String(e.name ?? "")} - ${String(e.designation ?? "")} - ${String(e.territory ?? "")}`;
+}
 const ENTITY_TYPES = ["Listed Doctor", "UnListed Doctor", "Chemist", "Territory", "Hospital"] as const;
 type EntityType = (typeof ENTITY_TYPES)[number];
 const PERMISSION_KEYS = ["add", "edit", "deactivate", "view", "reactivate"] as const;
@@ -65,13 +72,26 @@ const headBorder: CSSProperties = { ...cellBorder, background: "#e2e8f0", fontWe
 // screenAccessSetup record per (fieldForceName, entityType) for every row
 // on screen at once.
 export function ScreenAccessSetupPanel({ masterKey: _masterKey }: { masterKey: string }) {
-  const [filterText, setFilterText] = useState("");
+  const [employees, setEmployees] = useState<MasterRecord[]>([]);
+  const [filterName, setFilterName] = useState("");
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+
+  useEffect(() => {
+    apiClient
+      .masterRecords("employees")
+      .then((res) => setEmployees(res.data))
+      .catch(() => setEmployees([]));
+  }, []);
+
+  const employeeOptions = useMemo(
+    () => [SELECT_CLEAR, ADMIN_OPTION, ...[...employees].sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? ""))).map(employeeLabel)],
+    [employees]
+  );
 
   async function go() {
     setError(null);
@@ -84,9 +104,12 @@ export function ScreenAccessSetupPanel({ masterKey: _masterKey }: { masterKey: s
         apiClient.masterRecords(MASTER_KEY)
       ]);
 
-      const needle = filterText.trim().toLowerCase();
+      const selectedName =
+        filterName && filterName !== SELECT_CLEAR && filterName !== ADMIN_OPTION
+          ? employeesRes.data.find((e) => employeeLabel(e) === filterName)?.name
+          : undefined;
       const matching = employeesRes.data
-        .filter((e) => !needle || String(e.name ?? "").toLowerCase().includes(needle))
+        .filter((e) => !selectedName || String(e.name ?? "") === selectedName)
         .sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? "")));
 
       const nextRows: Row[] = matching.map((e) => {
@@ -181,13 +204,13 @@ export function ScreenAccessSetupPanel({ masterKey: _masterKey }: { masterKey: s
       <div className="card p-4">
         <h2 className="text-lg font-semibold mb-4">Setup For Screen Access</h2>
         <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-[240px]">
+          <div className="min-w-[280px]">
             <label className="block text-sm font-medium mb-1">FieldForce Name</label>
-            <input
-              className="input"
-              value={filterText}
-              onChange={(e) => setFilterText(e.target.value)}
-              placeholder="Type a name to filter, or leave blank for all"
+            <CustomSelect
+              value={filterName || SELECT_CLEAR}
+              options={employeeOptions}
+              onChange={(label) => setFilterName(label === SELECT_CLEAR ? "" : label)}
+              placeholder={SELECT_CLEAR}
             />
           </div>
           <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -52,6 +52,28 @@ export function ManagerwiseCoreDoctorMapPanel({ masterKey: _masterKey }: { maste
   const [searched, setSearched] = useState(false);
   const [successOpen, setSuccessOpen] = useState(false);
 
+  // Prefetch employees as soon as the panel mounts so the Manager dropdown
+  // is already populated the first time it's opened, instead of only
+  // fetching (and feeling slow) on the first pick.
+  useEffect(() => {
+    let cancelled = false;
+    setLoadingEmployees(true);
+    apiClient
+      .masterRecords("employees")
+      .then((res) => {
+        if (!cancelled) setEmployees(res.data);
+      })
+      .catch(() => {
+        if (!cancelled) setEmployees([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoadingEmployees(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   async function ensureEmployees(): Promise<MasterRecord[]> {
     if (employees) return employees;
     setLoadingEmployees(true);
@@ -81,9 +103,11 @@ export function ManagerwiseCoreDoctorMapPanel({ masterKey: _masterKey }: { maste
     if (managerName === ADMIN_OPTION) {
       return [...list].sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? ""))).map(employeeLabel);
     }
-    const managerNm = managerRecord ? String(managerRecord.name ?? "") : "";
+    // employees.reportingManager stores the manager's employeeCode (e.g.
+    // "ABM-001"), not their name -- join on employeeCode, not name.
+    const managerCode = managerRecord ? String(managerRecord.employeeCode ?? "") : "";
     return list
-      .filter((e) => String(e.reportingManager ?? "") === managerNm)
+      .filter((e) => managerCode && String(e.reportingManager ?? "") === managerCode)
       .sort((a, b) => String(a.name ?? "").localeCompare(String(b.name ?? "")))
       .map(employeeLabel);
   }, [employees, managerName, managerRecord]);
