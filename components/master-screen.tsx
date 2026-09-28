@@ -35,6 +35,7 @@ import { HomepageDashboardDisplayPanel } from "@/components/homepage-dashboard-d
 import { LeaveSetupPanel } from "@/components/leave-setup-panel";
 import { LeavePolicySetupPanel } from "@/components/leave-policy-setup-panel";
 import { DeviceLockPanel } from "@/components/device-lock-panel";
+import { CoverageAnalysis2Panel } from "@/components/coverage-analysis-2-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -46,7 +47,7 @@ import { DeviceLockPanel } from "@/components/device-lock-panel";
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | "coverageAnalysis2" | null
   >(null);
 
   useEffect(() => {
@@ -96,6 +97,7 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "leaveTypeSetup") return <LeaveSetupPanel masterKey={masterKey} />;
   if (uiKind === "leavePolicySetup") return <LeavePolicySetupPanel masterKey={masterKey} />;
   if (uiKind === "deviceLock") return <DeviceLockPanel masterKey={masterKey} />;
+  if (uiKind === "coverageAnalysis2") return <CoverageAnalysis2Panel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

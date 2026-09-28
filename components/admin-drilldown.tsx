@@ -16,7 +16,6 @@ import { ManagerWorkTypeAllowance } from "@/components/manager-work-type-allowan
 import { TerritoryBulkDeactivation } from "@/components/territory-bulk-deactivation";
 import { ListedDoctorMaster } from "@/components/listed-doctor-master";
 import { UnlistedDoctorMaster } from "@/components/unlisted-doctor-master";
-import { DcrBulkApproval } from "@/components/dcr-bulk-approval";
 import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
 import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
 import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
@@ -354,12 +353,6 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
   if (pathStr.endsWith("approvals/dcr")) {
     return <MasterScreen masterKey="approvalDcr" />;
-  }
-
-  // Additional multi-date bulk-approval grid alongside the single-row
-  // "DCR" approval tab above — does not replace it.
-  if (pathStr.endsWith("approvals/dcr-bulk-approval")) {
-    return <DcrBulkApproval />;
   }
 
   if (pathStr.endsWith("approvals/leave")) {
