@@ -12,6 +12,15 @@ import { CustomSelect } from "@/components/custom-select";
 const MODE_OPTIONS = ["MR", "MGR", "MR & MGR"];
 const FOR_OPTIONS = ["Common Activity", "Doctors", "Chemists", "Stockists", "Unlisted Doctors", "Hospitals", "CIP"];
 const ACTIVITY_FOR_OPTIONS = ["---Select---", "DCR", "TP", "TP/DCR"];
+// Round 10 item 1 — Parameter Types that need a backing master/list source
+// for their options (the old "Master Lookup" string no longer exists in the
+// real 19-item list below, so the Select Master field's visibility/payload
+// must key off these instead).
+const MASTER_BACKED_TYPES = [
+  "Combo Box - Single", "Combo Box - Multiple",
+  "Customized Tables - Single", "Customized Tables - Multiple",
+  "Table Type - Row wise"
+];
 // Exact list from sanpharma.info's Activity - Add Parameter screen (Round 9
 // item 2 screenshot reference).
 const PARAMETER_TYPES = [
@@ -276,7 +285,7 @@ function AddParameterTab() {
       captionOrder: Number(captionOrder) || 1,
       mandatory: mandatory === "Yes",
       parameterType,
-      selectMaster: parameterType === "Master Lookup" ? (selectMaster || null) : null,
+      selectMaster: MASTER_BACKED_TYPES.includes(parameterType) ? (selectMaster || null) : null,
       tableGroup: tableGroup || null,
       activityFor
     };
@@ -372,7 +381,7 @@ function AddParameterTab() {
             <span className="block text-xs font-medium text-text-muted mb-1">Parameter Type</span>
             <CustomSelect value={parameterType} options={PARAMETER_TYPES} onChange={setParameterType} />
           </div>
-          {parameterType === "Master Lookup" && (
+          {MASTER_BACKED_TYPES.includes(parameterType) && (
             <div style={{ minWidth: 200 }}>
               <span className="block text-xs font-medium text-text-muted mb-1">Select Master</span>
               <CustomSelect value={selectMaster} options={masters} onChange={setSelectMaster} placeholder="Select master" />

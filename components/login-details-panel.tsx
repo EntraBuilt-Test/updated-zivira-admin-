@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -42,6 +42,14 @@ type NotLoginRow = {
 
 export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  // Round 10 item 3 — Field Force Name was only ever populated after the
+  // panel's own View/Search action ran, so the dropdown showed nothing
+  // until then (and never, if that action is gated behind another required
+  // field). Prefetch on mount like every other populated dropdown does.
+  useEffect(() => {
+    apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
+  }, []);
+
   const [fieldForceName, setFieldForceName] = useState("admin");
   const [from, setFrom] = useState(() => {
     const d = new Date(); d.setDate(d.getDate() - 3);

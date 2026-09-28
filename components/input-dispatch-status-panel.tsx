@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import * as XLSX from "xlsx";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
@@ -26,6 +26,14 @@ type Row = { inputName: string; ob: number; despatchQty: number; issuedQty: numb
 
 export function InputDispatchStatusPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  // Round 10 item 3 — Field Force Name was only ever populated after the
+  // panel's own View/Search action ran, so the dropdown showed nothing
+  // until then (and never, if that action is gated behind another required
+  // field). Prefetch on mount like every other populated dropdown does.
+  useEffect(() => {
+    apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
+  }, []);
+
   const [selectedName, setSelectedName] = useState("");
   const [fromMonth, setFromMonth] = useState(MONTHS[new Date().getMonth()]);
   const [fromYear, setFromYear] = useState(String(new Date().getFullYear()));

@@ -42,6 +42,11 @@ export function ActivityStatusPanel({ masterKey: _masterKey }: { masterKey: stri
 
   useEffect(() => {
     apiClient.activityList().then((res) => setActivities(res.data as unknown as { id: string; shortName: string; name: string }[])).catch(() => {});
+    // Round 10 item 2 fix — Field Force Name was only ever populated inside
+    // view(), so the dropdown showed nothing until after a first (blocked,
+    // since View requires an Activity) click. Fetch it on mount like
+    // Activity Name does, so it's populated immediately.
+    apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
   }, []);
 
   const activityLabel = (a: { shortName: string; name: string }) => `${a.shortName} - ${a.name}`;
@@ -51,7 +56,7 @@ export function ActivityStatusPanel({ masterKey: _masterKey }: { masterKey: stri
     setLoading(true);
     try {
       const [empRes, res] = await Promise.all([
-        employees.length ? Promise.resolve({ data: employees }) : apiClient.employees(),
+        apiClient.employees(),
         apiClient.activityStatusList({
           activityId,
           fieldForceName: selectedName ? selectedName.split(" - ")[0] : ""
