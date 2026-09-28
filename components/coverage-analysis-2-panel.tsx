@@ -16,15 +16,17 @@ import { CustomSelect } from "@/components/custom-select";
 // TC / DW / Met / Seen / Coverage / Cal Avg / Amt / Amt/Call(in Rs)
 // sub-columns, plus Print/Excel/Close actions above the table.
 //
-// This app has no real per-territory-type call/coverage tracking backing
-// TC/DW/Met/Seen/Coverage/Cal Avg/Amt/Amt-per-call yet (that would need a
-// full DCR call-log aggregation this round doesn't build) — those always
-// show "-" here, exactly like sanpharma shows "-" for its own genuinely
-// empty cells, rather than inventing numbers. Every other column is a real
-// field: employee code, DOJ (Employee.joinDate), designation, HQ
-// (Employee.territory), and First/Second Level Manager resolved from the
-// real employee hierarchy (reportingManager, and that manager's own
-// reportingManager).
+// Round 8 items 1 & 2: TC/DW/Met/Seen/Coverage/Cal Avg are now real,
+// computed server-side (GET /company/masters/coverageAnalysis2/action/list)
+// from real DcrModel visit rows grouped by the doctor's real territoryType
+// (Doctor.territoryType — HQ/EX/OS). Amt/Amt-per-call still show "-" — no
+// model attributes an expense line item to a specific territory-type bucket
+// of calls, so that figure genuinely doesn't exist yet; showing "-" there
+// (never a fabricated number) matches how sanpharma itself shows a dash for
+// a cell it has no data for. Every other column is a real field: employee
+// code, DOJ (Employee.joinDate), designation, HQ (Employee.territory), and
+// First/Second Level Manager resolved from the real employee hierarchy
+// (reportingManager, and that manager's own reportingManager).
 const MONTHS = [
   "January", "February", "March", "April", "May", "June",
   "July", "August", "September", "October", "November", "December"
@@ -40,9 +42,45 @@ function employeeLabel(e: Employee): string {
   return `${e.name} - ${e.designation} - ${e.territory}`;
 }
 
+type TerritoryMetrics = {
+  tc: number | string;
+  dw: number | string;
+  met: number | string;
+  seen: number | string;
+  coverage: number | string;
+  calAvg: number | string;
+  amt: number | string;
+  amtPerCall: number | string;
+};
+
+type ReportRow = {
+  empCode: string;
+  doj: string | null;
+  fieldForceName: string;
+  designation: string;
+  hq: string;
+  firstLevelManager: string;
+  secondLevelManager: string;
+  noOfFwd: number | string;
+  noOfFwdExp: number | string;
+  ttlDrs: number | string;
+  territoryTypes: Record<string, TerritoryMetrics>;
+};
+
+const METRIC_KEY_BY_LABEL: Record<(typeof METRIC_COLS)[number], keyof TerritoryMetrics> = {
+  TC: "tc",
+  DW: "dw",
+  Met: "met",
+  Seen: "seen",
+  Coverage: "coverage",
+  "Cal Avg": "calAvg",
+  Amt: "amt",
+  "Amt/Call(in Rs)": "amtPerCall"
+};
+
 export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [reportRows, setReportRows] = useState<ReportRow[]>([]);
   const [selectedName, setSelectedName] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(MONTHS[new Date().getMonth()]);
   const [selectedYear, setSelectedYear] = useState(String(new Date().getFullYear()));
@@ -55,22 +93,22 @@ export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: s
     return [String(y - 1), String(y), String(y + 1)];
   }, []);
 
-  async function ensureEmployees() {
-    if (loaded) return employees;
-    const res = await apiClient.employees();
-    setEmployees(res.data);
-    setLoaded(true);
-    return res.data;
-  }
-
   async function go() {
     setError(null);
     setLoading(true);
     try {
-      await ensureEmployees();
+      const [empRes, reportRes] = await Promise.all([
+        employees.length ? Promise.resolve({ data: employees }) : apiClient.employees(),
+        apiClient.coverageAnalysis2({
+          month: MONTHS.indexOf(selectedMonth) + 1,
+          year: Number(selectedYear)
+        })
+      ]);
+      setEmployees(empRes.data);
+      setReportRows(reportRes.data as unknown as ReportRow[]);
       setSearched(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load Field Force data");
+      setError(err instanceof Error ? err.message : "Failed to load Coverage Analysis 2 data");
     } finally {
       setLoading(false);
     }
@@ -83,35 +121,28 @@ export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: s
     setSearched(false);
   }
 
-  const byCode = useMemo(() => new Map(employees.map((e) => [e.employeeCode, e])), [employees]);
-
   const rows = useMemo(() => {
     if (!searched) return [];
     const matching = selectedName
-      ? employees.filter((e) => employeeLabel(e) === selectedName)
-      : employees;
-    return [...matching].sort((a, b) => a.name.localeCompare(b.name));
-  }, [searched, selectedName, employees]);
+      ? reportRows.filter((r) => {
+          const emp = employees.find((e) => e.employeeCode === r.empCode);
+          return emp ? employeeLabel(emp) === selectedName : false;
+        })
+      : reportRows;
+    return [...matching].sort((a, b) => a.fieldForceName.localeCompare(b.fieldForceName));
+  }, [searched, selectedName, reportRows, employees]);
 
-  function firstLevelManager(e: Employee): string {
-    if (!e.reportingManager) return "-";
-    const mgr = byCode.get(e.reportingManager);
-    return mgr ? mgr.name : e.reportingManager;
-  }
-
-  function secondLevelManager(e: Employee): string {
-    if (!e.reportingManager) return "-";
-    const mgr = byCode.get(e.reportingManager);
-    if (!mgr?.reportingManager) return "-";
-    const mgr2 = byCode.get(mgr.reportingManager);
-    return mgr2 ? mgr2.name : mgr.reportingManager;
-  }
-
-  function doj(e: Employee): string {
-    if (!e.joinDate) return "-";
-    const d = new Date(e.joinDate);
+  function doj(r: ReportRow): string {
+    if (!r.doj) return "-";
+    const d = new Date(r.doj);
     if (Number.isNaN(d.getTime())) return "-";
     return d.toLocaleDateString("en-GB").replace(/\//g, "-");
+  }
+
+  function metric(r: ReportRow, t: (typeof TERRITORY_TYPES)[number], m: (typeof METRIC_COLS)[number]): string {
+    const v = r.territoryTypes?.[t]?.[METRIC_KEY_BY_LABEL[m]];
+    if (v === undefined || v === null || v === "") return "-";
+    return m === "Coverage" && typeof v === "number" ? `${v}%` : String(v);
   }
 
   function exportExcel() {
@@ -120,10 +151,10 @@ export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: s
       "First Level Manager", "Second Level Manager", "No Of FWD", "No Of FWD Exp", "Ttl Drs",
       ...TERRITORY_TYPES.flatMap((t) => METRIC_COLS.map((m) => `${t} ${m}`))
     ];
-    const body = rows.map((e, i) => [
-      i + 1, e.employeeCode, doj(e), e.name, e.designation, e.territory,
-      firstLevelManager(e), secondLevelManager(e), "-", "-", "-",
-      ...TERRITORY_TYPES.flatMap(() => METRIC_COLS.map(() => "-"))
+    const body = rows.map((r, i) => [
+      i + 1, r.empCode, doj(r), r.fieldForceName, r.designation, r.hq,
+      r.firstLevelManager, r.secondLevelManager, r.noOfFwd, r.noOfFwdExp, r.ttlDrs,
+      ...TERRITORY_TYPES.flatMap((t) => METRIC_COLS.map((m) => metric(r, t, m)))
     ]);
     const ws = XLSX.utils.aoa_to_sheet([header1, ...body]);
     const wb = XLSX.utils.book_new();
@@ -222,21 +253,23 @@ export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: s
                     </td>
                   </tr>
                 )}
-                {rows.map((e, i) => (
-                  <tr key={e.id}>
+                {rows.map((r, i) => (
+                  <tr key={r.empCode}>
                     <td style={cell}>{i + 1}</td>
-                    <td style={cell}>{e.employeeCode}</td>
-                    <td style={cell}>{doj(e)}</td>
-                    <td style={{ ...cell, fontWeight: 600 }}>{e.name}</td>
-                    <td style={cell}>{e.designation}</td>
-                    <td style={cell}>{e.territory}</td>
-                    <td style={cell}>{firstLevelManager(e)}</td>
-                    <td style={cell}>{secondLevelManager(e)}</td>
-                    <td style={cell}>-</td>
-                    <td style={cell}>-</td>
-                    <td style={cell}>-</td>
+                    <td style={cell}>{r.empCode}</td>
+                    <td style={cell}>{doj(r)}</td>
+                    <td style={{ ...cell, fontWeight: 600 }}>{r.fieldForceName}</td>
+                    <td style={cell}>{r.designation}</td>
+                    <td style={cell}>{r.hq}</td>
+                    <td style={cell}>{r.firstLevelManager}</td>
+                    <td style={cell}>{r.secondLevelManager}</td>
+                    <td style={cell}>{r.noOfFwd}</td>
+                    <td style={cell}>{r.noOfFwdExp}</td>
+                    <td style={cell}>{r.ttlDrs}</td>
                     {TERRITORY_TYPES.flatMap((t) =>
-                      METRIC_COLS.map((m) => <td key={`${e.id}-${t}-${m}`} style={cell}>-</td>)
+                      METRIC_COLS.map((m) => (
+                        <td key={`${r.empCode}-${t}-${m}`} style={cell}>{metric(r, t, m)}</td>
+                      ))
                     )}
                   </tr>
                 ))}

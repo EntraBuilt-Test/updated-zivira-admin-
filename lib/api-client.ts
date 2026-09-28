@@ -1246,6 +1246,15 @@ export const apiClient = {
     return request<Record<string, unknown>[]>(`/company/masters/leaveStatusReport/action/list${qs}`);
   },
 
+  // ── Coverage Analysis 2 (Round 8 items 1 & 2) ──────────────────────────
+  coverageAnalysis2(params: { month?: number; year?: number }) {
+    const qs = toQueryString({
+      month: params.month !== undefined ? String(params.month) : undefined,
+      year: params.year !== undefined ? String(params.year) : undefined
+    });
+    return request<Record<string, unknown>[]>(`/company/masters/coverageAnalysis2/action/list${qs}`);
+  },
+
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────
   branches() {
     return request<CompanyBranch[]>("/company/branches");
