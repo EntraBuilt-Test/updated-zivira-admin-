@@ -45,6 +45,19 @@ function dedupeSorted(items: (string | null | undefined)[]): string[] {
   );
 }
 
+// The Subdivision master stores ten specific groups ("Aura ENT", "Astra
+// Pain Care", "Zivira Ophthalmology", ...), but Slide Upload's Sub Division
+// filter — like ProductBrand.division / Employee.division elsewhere in the
+// app — only ever takes the three root division names. Taking each
+// subdivisionName's first word and de-duplicating gives exactly those
+// three (Astra / Aura / Zivira) instead of the full ten-entry list, and
+// crucially makes this value match ProductBrand.division exactly so Brand
+// (and Product) really do cascade instead of silently falling back to the
+// unfiltered list.
+function rootDivisions(rawSubdivisionNames: string[]): string[] {
+  return dedupeSorted(rawSubdivisionNames.map((s) => s.trim().split(/\s+/)[0]));
+}
+
 export function SlideUploadEDetailingPanel() {
   const [tab, setTab] = useState<SubTab>("upload");
   const [subDivisions, setSubDivisions] = useState<string[]>([]);
@@ -53,7 +66,7 @@ export function SlideUploadEDetailingPanel() {
   useEffect(() => {
     apiClient
       .subdivisions()
-      .then((r) => setSubDivisions(dedupeSorted(r.data.map((s) => s.subdivisionName))))
+      .then((r) => setSubDivisions(rootDivisions(r.data.map((s) => s.subdivisionName))))
       .catch(() => {});
     apiClient
       .productBrands()
@@ -205,35 +218,33 @@ function UploadTab({ subDivisions, allBrands }: { subDivisions: string[]; allBra
 
       {readyForExtras && (
         <>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", width: "100%" }}>
-            <Row label="Product">
-              <CustomSelect
-                value={product}
-                options={products}
-                onChange={setProduct}
-                placeholder="Nothing selected"
-                style={{ width: 190 }}
-              />
-            </Row>
-            <Row label="Speciality">
-              <CustomSelect
-                value={speciality}
-                options={SPECIALITY_OPTIONS}
-                onChange={setSpeciality}
-                placeholder="Nothing selected"
-                style={{ width: 190 }}
-              />
-            </Row>
-            <Row label="Therapy">
-              <CustomSelect
-                value={therapy}
-                options={THERAPY_OPTIONS}
-                onChange={setTherapy}
-                placeholder="Nothing selected"
-                style={{ width: 190 }}
-              />
-            </Row>
-          </div>
+          <Row label="Product">
+            <CustomSelect
+              value={product}
+              options={products}
+              onChange={setProduct}
+              placeholder="Nothing selected"
+              style={{ width: 260 }}
+            />
+          </Row>
+          <Row label="Speciality">
+            <CustomSelect
+              value={speciality}
+              options={SPECIALITY_OPTIONS}
+              onChange={setSpeciality}
+              placeholder="Nothing selected"
+              style={{ width: 260 }}
+            />
+          </Row>
+          <Row label="Therapy">
+            <CustomSelect
+              value={therapy}
+              options={THERAPY_OPTIONS}
+              onChange={setTherapy}
+              placeholder="Nothing selected"
+              style={{ width: 260 }}
+            />
+          </Row>
 
           <div style={{ width: "100%", maxWidth: 520, border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden" }}>
             <div style={{ background: "#374151", color: "#fff", padding: "10px 16px" }}>

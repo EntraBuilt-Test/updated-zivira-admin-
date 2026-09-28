@@ -22,6 +22,7 @@ export function HomepageFieldForcewisePanel() {
   const [showTable, setShowTable] = useState(false);
   const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
 
   useEffect(() => {
     apiClient.employees().then((r) => setEmployees(r.data)).catch(() => {});
@@ -52,10 +53,13 @@ export function HomepageFieldForcewisePanel() {
     const file = pendingFiles[emp.id];
     if (!file) return;
     setBusyId(emp.id);
+    setErr(null);
     try {
       await apiClient.uploadMasterFile(MASTER_KEY, file, { fieldForceName: emp.name });
       setPendingFiles((prev) => ({ ...prev, [emp.id]: null }));
       await refreshUploads();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Upload failed");
     } finally {
       setBusyId(null);
     }
@@ -63,9 +67,12 @@ export function HomepageFieldForcewisePanel() {
 
   async function remove(recordId: string) {
     setBusyId(recordId);
+    setErr(null);
     try {
       await apiClient.deleteMasterRecord(MASTER_KEY, recordId);
       await refreshUploads();
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Remove failed");
     } finally {
       setBusyId(null);
     }
@@ -80,7 +87,7 @@ export function HomepageFieldForcewisePanel() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 16, alignItems: "flex-end", marginTop: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 16, alignItems: "flex-end", justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
         <div className="field" style={{ minWidth: 260 }}>
           <label>Filter By Manager</label>
           <CustomSelect
@@ -91,6 +98,8 @@ export function HomepageFieldForcewisePanel() {
         </div>
         <button className="button" type="button" onClick={go} disabled={!managerName}>Go</button>
       </div>
+
+      {err && <div style={{ color: "#ef4444", fontSize: 13, marginTop: 12, textAlign: "center" }}>{err}</div>}
 
       {showTable && (
         <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto">

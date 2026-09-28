@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { apiClient } from "@/lib/api-client";
+import { useEffect, useState } from "react";
+import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
 // Matches sanpharma.info's MasterFiles/Options/Delayed_Release.aspx
@@ -20,7 +20,12 @@ export function DelayedReleasePanel() {
   const [year, setYear] = useState(String(now.getFullYear()));
   const [month, setMonth] = useState(MONTHS[now.getMonth()]);
   const [fieldForceName, setFieldForceName] = useState("");
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [rows, setRows] = useState<any[]>([]);
+
+  useEffect(() => {
+    apiClient.employees().then((r) => setEmployees(r.data)).catch(() => {});
+  }, []);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [searched, setSearched] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -69,12 +74,17 @@ export function DelayedReleasePanel() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 16, alignItems: "flex-end", marginTop: 16, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 16, alignItems: "flex-end", justifyContent: "center", marginTop: 16, flexWrap: "wrap" }}>
         <div className="field"><label>Year</label><CustomSelect value={year} options={YEARS} onChange={setYear} /></div>
         <div className="field"><label>Month</label><CustomSelect value={month} options={MONTHS} onChange={setMonth} /></div>
         <div className="field" style={{ minWidth: 220 }}>
           <label>FieldForce Name</label>
-          <input className="input" value={fieldForceName} onChange={(e) => setFieldForceName(e.target.value)} placeholder="Leave blank for all" />
+          <CustomSelect
+            value={fieldForceName}
+            options={["-- All --", ...employees.map((e: any) => e.name)]}
+            onChange={(v) => setFieldForceName(v === "-- All --" ? "" : v)}
+            placeholder="-- All --"
+          />
         </div>
         <button className="button" type="button" onClick={view}>Go</button>
       </div>

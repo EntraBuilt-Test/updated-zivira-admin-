@@ -117,16 +117,17 @@ export function TransferMasterDetailsPanel() {
   }
 
   return (
-    <section className="subdivision-console">
-      <div className="subdivision-head">
-        <div>
-          <p className="subdivision-eyebrow">Options</p>
-          <h2>Transfer Master Details</h2>
+    <section className="subdivision-console" style={{ display: "flex", justifyContent: "center" }}>
+      <div style={{ width: "100%", maxWidth: 980 }}>
+        <div className="subdivision-head" style={{ textAlign: "center", justifyContent: "center" }}>
+          <div>
+            <p className="subdivision-eyebrow">Options</p>
+            <h2>Transfer Master Details</h2>
+          </div>
         </div>
-      </div>
 
-      <div className="card" style={{ marginTop: 16 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12, marginBottom: 20 }}>
+        <div className="card" style={{ marginTop: 16, border: "1px solid var(--border)" }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", flexWrap: "wrap", gap: 24, marginBottom: 20 }}>
           <div style={{ display: "flex", gap: 24 }}>
             {(["Listed Doctor", "Chemist"] as EntityType[]).map((t) => (
               <label key={t} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
@@ -143,9 +144,9 @@ export function TransferMasterDetailsPanel() {
           </div>
         </div>
 
-        {notice && <div style={{ marginBottom: 12, fontSize: 13, color: notice.includes("failed") || notice.includes("Failed") ? "#ef4444" : "#10b981" }}>{notice}</div>}
+        {notice && <div style={{ marginBottom: 12, fontSize: 13, textAlign: "center", color: notice.includes("failed") || notice.includes("Failed") ? "#ef4444" : "#10b981" }}>{notice}</div>}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, maxWidth: 720, marginLeft: "auto", marginRight: "auto" }}>
           <div>
             <div className="field"><label>Transfer From</label>
               <CustomSelect value={fromEmp} options={["---Select---", ...employees.map(empLabel)]} onChange={(v) => setFromEmp(v === "---Select---" ? "" : v)} />
@@ -165,7 +166,7 @@ export function TransferMasterDetailsPanel() {
         </div>
 
         {!readyToTransfer && (
-          <p style={{ color: "#ef4444", marginTop: 24, fontWeight: 500 }}>
+          <p style={{ color: "#ef4444", marginTop: 24, fontWeight: 500, textAlign: "center" }}>
             {!fromEmp ? "Please Select the Transfer From" : !fromTerritory ? "Please Select the Transfer From Territory" : !toEmp ? "Please Select the Transfer To" : "Please Select the Transfer To Territory"}
           </p>
         )}
@@ -256,6 +257,7 @@ export function TransferMasterDetailsPanel() {
             </div>
           </div>
         )}
+        </div>
       </div>
     </section>
   );
