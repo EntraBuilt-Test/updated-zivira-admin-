@@ -23,6 +23,7 @@ export function HomepageFieldForcewisePanel() {
   const [pendingFiles, setPendingFiles] = useState<Record<string, File | null>>({});
   const [busyId, setBusyId] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [goBusy, setGoBusy] = useState(false);
 
   useEffect(() => {
     apiClient.employees().then((r) => setEmployees(r.data)).catch(() => {});
@@ -40,9 +41,26 @@ export function HomepageFieldForcewisePanel() {
     setRows(res.data);
   }
 
+  // The Go button previously had no error handling at all: if
+  // apiClient.masterRecords() ever rejected (a network hiccup, an expired
+  // session, …) the whole handler threw, setShowTable(true) never ran, and
+  // clicking Go looked like it silently did nothing. It now always ends in
+  // a visible outcome — the table, or a real error message — and shows a
+  // busy state while the request is in flight so a slow response doesn't
+  // look like a dead button either.
   async function go() {
-    await refreshUploads();
-    setShowTable(true);
+    if (!managerName || goBusy) return;
+    setGoBusy(true);
+    setErr(null);
+    try {
+      await refreshUploads();
+      setShowTable(true);
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not load field force uploads");
+      setShowTable(false);
+    } finally {
+      setGoBusy(false);
+    }
   }
 
   function fileFor(name: string) {
@@ -96,7 +114,7 @@ export function HomepageFieldForcewisePanel() {
             onChange={(v) => { setManagerName(v === "---Select---" ? "" : v); setShowTable(false); }}
           />
         </div>
-        <button className="button" type="button" onClick={go} disabled={!managerName}>Go</button>
+        <button className="button" type="button" onClick={go} disabled={!managerName || goBusy}>{goBusy ? "..." : "Go"}</button>
       </div>
 
       {err && <div style={{ color: "#ef4444", fontSize: 13, marginTop: 12, textAlign: "center" }}>{err}</div>}

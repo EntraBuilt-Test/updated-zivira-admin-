@@ -19,19 +19,30 @@ export function UnlistedToListedConversionPanel() {
   const [showTable, setShowTable] = useState(false);
   const [checked, setChecked] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState(false);
+  const [goBusy, setGoBusy] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     apiClient.employees().then((r) => setEmployees(r.data)).catch(() => {});
   }, []);
 
+  // Previously had no error handling: a failed request just threw, never
+  // reached setShowTable(true), and clicking Go looked completely dead.
   async function go() {
-    if (!fieldForceName) return;
-    const res = await apiClient.unlistedConversionCandidates(fieldForceName);
-    setRows(res.data);
-    setChecked({});
-    setShowTable(true);
+    if (!fieldForceName || goBusy) return;
+    setGoBusy(true);
     setNotice(null);
+    try {
+      const res = await apiClient.unlistedConversionCandidates(fieldForceName);
+      setRows(res.data);
+      setChecked({});
+      setShowTable(true);
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : "Could not load unlisted doctors for this field force");
+      setShowTable(false);
+    } finally {
+      setGoBusy(false);
+    }
   }
 
   const allChecked = rows.length > 0 && rows.every((r) => checked[r.id]);
@@ -75,7 +86,7 @@ export function UnlistedToListedConversionPanel() {
             onChange={(v) => { setFieldForceName(v === "---Select---" ? "" : v); setShowTable(false); }}
           />
         </div>
-        <button className="button" type="button" onClick={go} disabled={!fieldForceName}>Go</button>
+        <button className="button" type="button" onClick={go} disabled={!fieldForceName || goBusy}>{goBusy ? "..." : "Go"}</button>
       </div>
 
       {notice && <div style={{ marginTop: 12, fontSize: 13, color: notice.includes("failed") || notice.includes("Failed") ? "#ef4444" : "#10b981" }}>{notice}</div>}

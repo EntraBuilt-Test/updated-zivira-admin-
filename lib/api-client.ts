@@ -350,6 +350,15 @@ export type QuizRecord = {
   description?: string;
   isActive: boolean;
   questions: QuizQuestion[];
+  category?: string | null;
+  effectiveDate?: string | null;
+  month?: string | null;
+  year?: string | null;
+  processFromDate?: string | null;
+  processToDate?: string | null;
+  uploadedFileName?: string | null;
+  uploadedMimeType?: string | null;
+  processed?: boolean;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -981,7 +990,22 @@ export const apiClient = {
     });
   },
 
-  updateQuiz(id: string, input: { title?: string; description?: string; isActive?: boolean; questions?: QuizQuestion[] }) {
+  updateQuiz(
+    id: string,
+    input: {
+      title?: string;
+      description?: string;
+      isActive?: boolean;
+      questions?: QuizQuestion[];
+      category?: string | null;
+      effectiveDate?: string | null;
+      month?: string | null;
+      year?: string | null;
+      processFromDate?: string | null;
+      processToDate?: string | null;
+      processed?: boolean;
+    }
+  ) {
     return request<QuizRecord>(`/company/quiz/${id}`, {
       method: "PUT",
       body: JSON.stringify(input)
@@ -990,6 +1014,62 @@ export const apiClient = {
 
   deleteQuiz(id: string) {
     return request<{ success: boolean }>(`/company/quiz/${id}`, { method: "DELETE" });
+  },
+
+  // sanpharma's "Online Quiz - Title Creation": Quiz Title + Category +
+  // Effective Date + Month + Year, plus an optional questions workbook.
+  // Multipart so the file (when chosen) rides along with the metadata in
+  // one Save, same shape as uploadMasterFile.
+  async createQuizTitle(input: { title: string; category?: string; effectiveDate?: string; month?: string; year?: string }, file?: File | null) {
+    const token = getToken();
+    const form = new FormData();
+    form.append("title", input.title);
+    if (input.category) form.append("category", input.category);
+    if (input.effectiveDate) form.append("effectiveDate", input.effectiveDate);
+    if (input.month) form.append("month", input.month);
+    if (input.year) form.append("year", input.year);
+    if (file) form.append("file", file);
+    const response = await fetch(`${getApiBaseUrl()}/company/quiz`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: form
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload?.error?.message ?? "Could not save the quiz");
+    return payload as ApiEnvelope<QuizRecord>;
+  },
+
+  // sanpharma's per-row "Upload Questions" — replaces this quiz's real
+  // question set from an uploaded workbook.
+  async uploadQuizQuestions(id: string, file: File) {
+    const token = getToken();
+    const form = new FormData();
+    form.append("file", file);
+    const response = await fetch(`${getApiBaseUrl()}/company/quiz/${id}/questions/upload`, {
+      method: "POST",
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+      body: form
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload?.error?.message ?? "Could not upload questions");
+    return payload as ApiEnvelope<QuizRecord>;
+  },
+
+  async downloadQuizFile(id: string, fileName: string) {
+    const token = getToken();
+    const response = await fetch(`${getApiBaseUrl()}/company/quiz/${id}/download`, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+    });
+    if (!response.ok) throw new Error("Download failed");
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName || "download";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
   },
 
   submitQuizAttempt(id: string, input: { employeeCode: string; answers: { questionIndex: number; selectedOptionIndex: number }[] }) {
