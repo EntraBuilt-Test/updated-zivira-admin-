@@ -1255,6 +1255,91 @@ export const apiClient = {
     return request<Record<string, unknown>[]>(`/company/masters/coverageAnalysis2/action/list${qs}`);
   },
 
+  // ── Round 8 item 8 — Leave Entitlement Entry ───────────────────────────
+  leaveEntitlementGrid(year: string) {
+    return request<Record<string, unknown>[]>(`/company/masters/leaveEntitlementEntry/action/grid${toQueryString({ year })}`);
+  },
+  leaveEntitlementSubmit(input: { year: string; rows: { employeeCode: string; cl: number; pl: number; sl: number; lop: number }[] }) {
+    return request<{ success: boolean; saved: number }>("/company/masters/leaveEntitlementEntry/action/submit", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // ── Round 8 item 9 — Leave Status / Entitlement View ───────────────────
+  leaveEntitlementView(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/leaveEntitlementView/action/list${toQueryString(params)}`);
+  },
+
+  // ── Round 8 items 3-6 — Sample / Input Despatch View & Status ──────────
+  sampleDispatchView(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/sampleDispatchView/action/list${toQueryString(params)}`);
+  },
+  sampleDispatchStatus(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/sampleDispatchStatus/action/list${toQueryString(params)}`);
+  },
+  inputDispatchView(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/inputDispatchView/action/list${toQueryString(params)}`);
+  },
+  inputDispatchStatus(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/inputDispatchStatus/action/list${toQueryString(params)}`);
+  },
+
+  // ── Round 8 item 7 — MSIS View ──────────────────────────────────────────
+  msisView(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; mode?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/msisView/action/list${toQueryString(params)}`);
+  },
+
+  // ── Round 8 item 10 — Login Details ────────────────────────────────────
+  loginDetails(params: { fieldForceName?: string; from?: string; to?: string; withoutVacant?: string; notLoginDays?: string; mode?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/loginDetails/action/list${toQueryString(params)}`);
+  },
+
+  // ── Round 8 items 11-12 — Activity Master + Parameters ─────────────────
+  activityList() {
+    return request<Record<string, unknown>[]>("/company/masters/activityMaster/action/list");
+  },
+  createActivity(input: { shortName: string; name: string; mode: string; activityFor: string[] }) {
+    return request<Record<string, unknown>>("/company/masters/activityMaster/action/create", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+  updateActivity(id: string, input: Partial<{ shortName: string; name: string; mode: string; activityFor: string[] }>) {
+    return request<Record<string, unknown>>(`/company/masters/activityMaster/action/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(input)
+    });
+  },
+  deactivateActivity(id: string) {
+    return request<Record<string, unknown>>(`/company/masters/activityMaster/action/${id}/deactivate`, { method: "POST" });
+  },
+  activityParameterList(activityId?: string) {
+    const qs = activityId ? toQueryString({ activityId }) : "";
+    return request<Record<string, unknown>[]>(`/company/masters/activityParameter/action/list${qs}`);
+  },
+  createActivityParameter(input: Record<string, unknown>) {
+    return request<Record<string, unknown>>("/company/masters/activityParameter/action/create", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+  updateActivityParameter(id: string, input: Record<string, unknown>) {
+    return request<Record<string, unknown>>(`/company/masters/activityParameter/action/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(input)
+    });
+  },
+  deactivateActivityParameter(id: string) {
+    return request<Record<string, unknown>>(`/company/masters/activityParameter/action/${id}/deactivate`, { method: "POST" });
+  },
+  reorderActivityParameters(orders: { id: string; existingOrder: number }[]) {
+    return request<{ success: boolean }>("/company/masters/activityParameter/action/reorder", {
+      method: "POST",
+      body: JSON.stringify({ orders })
+    });
+  },
+
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────
   branches() {
     return request<CompanyBranch[]>("/company/branches");

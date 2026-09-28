@@ -36,6 +36,15 @@ import { LeaveSetupPanel } from "@/components/leave-setup-panel";
 import { LeavePolicySetupPanel } from "@/components/leave-policy-setup-panel";
 import { DeviceLockPanel } from "@/components/device-lock-panel";
 import { CoverageAnalysis2Panel } from "@/components/coverage-analysis-2-panel";
+import { LeaveEntitlementPanel } from "@/components/leave-entitlement-panel";
+import { LeaveStatusViewPanel } from "@/components/leave-status-view-panel";
+import { SampleDispatchViewPanel } from "@/components/sample-dispatch-view-panel";
+import { SampleDispatchStatusPanel } from "@/components/sample-dispatch-status-panel";
+import { InputDispatchViewPanel } from "@/components/input-dispatch-view-panel";
+import { InputDispatchStatusPanel } from "@/components/input-dispatch-status-panel";
+import { MsisViewPanel } from "@/components/msis-view-panel";
+import { LoginDetailsPanel } from "@/components/login-details-panel";
+import { ActivityMasterPanel } from "@/components/activity-master-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -47,7 +56,7 @@ import { CoverageAnalysis2Panel } from "@/components/coverage-analysis-2-panel";
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | "coverageAnalysis2" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | "coverageAnalysis2" | "leaveEntitlement" | "leaveStatusView" | "sampleDispatchView" | "sampleDispatchStatus" | "inputDispatchView" | "inputDispatchStatus" | "msisView" | "loginDetails" | "activityMaster" | null
   >(null);
 
   useEffect(() => {
@@ -98,6 +107,15 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "leavePolicySetup") return <LeavePolicySetupPanel masterKey={masterKey} />;
   if (uiKind === "deviceLock") return <DeviceLockPanel masterKey={masterKey} />;
   if (uiKind === "coverageAnalysis2") return <CoverageAnalysis2Panel masterKey={masterKey} />;
+  if (uiKind === "leaveEntitlement") return <LeaveEntitlementPanel masterKey={masterKey} />;
+  if (uiKind === "leaveStatusView") return <LeaveStatusViewPanel masterKey={masterKey} />;
+  if (uiKind === "sampleDispatchView") return <SampleDispatchViewPanel masterKey={masterKey} />;
+  if (uiKind === "sampleDispatchStatus") return <SampleDispatchStatusPanel masterKey={masterKey} />;
+  if (uiKind === "inputDispatchView") return <InputDispatchViewPanel masterKey={masterKey} />;
+  if (uiKind === "inputDispatchStatus") return <InputDispatchStatusPanel masterKey={masterKey} />;
+  if (uiKind === "msisView") return <MsisViewPanel masterKey={masterKey} />;
+  if (uiKind === "loginDetails") return <LoginDetailsPanel masterKey={masterKey} />;
+  if (uiKind === "activityMaster") return <ActivityMasterPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;
