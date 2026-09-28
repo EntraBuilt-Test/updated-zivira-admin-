@@ -39,6 +39,13 @@ import { ProductRateUploadPanel } from "@/components/product-rate-upload-panel";
 import { HolidayFixationUploadPanel } from "@/components/holiday-fixation-upload-panel";
 import { LeaveUploadPanel } from "@/components/leave-upload-panel";
 import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
+import { SlideUploadEDetailingPanel } from "@/components/slide-upload-edetailing-panel";
+import { HomepageImageUploadPanel } from "@/components/homepage-image-upload-panel";
+import { HomepageFieldForcewisePanel } from "@/components/homepage-fieldforcewise-panel";
+import { LeaveStatusPanel } from "@/components/leave-status-panel";
+import { TransferMasterDetailsPanel } from "@/components/transfer-master-details-panel";
+import { UnlistedToListedConversionPanel } from "@/components/unlisted-to-listed-conversion-panel";
+import { DelayedReleasePanel } from "@/components/delayed-release-panel";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
@@ -648,7 +655,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
-    return <MasterScreen masterKey="slideUploadEDetailing" />;
+    return <SlideUploadEDetailingPanel />;
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
@@ -664,27 +671,27 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("image-upload/home-page-common-for-all")) {
-    return <MasterScreen masterKey="homepageImageUpload" />;
+    return <HomepageImageUploadPanel />;
   }
 
   if (pathStr.endsWith("image-upload/home-page-fieldforcewise")) {
-    return <MasterScreen masterKey="homepageImageFieldForcewise" />;
+    return <HomepageFieldForcewisePanel />;
   }
 
   if (pathStr.endsWith("division-options/leave-status")) {
-    return <MasterScreen masterKey="leaveStatusReport" />;
+    return <LeaveStatusPanel />;
   }
 
   if (pathStr.endsWith("transfers/transfer-master-details")) {
-    return <GenericMasterTable masterKey="transferMasterDetails" />;
+    return <TransferMasterDetailsPanel />;
   }
 
   if (pathStr.endsWith("transfers/convert-unlisted-drs-listed-drs")) {
-    return <GenericMasterTable masterKey="unlistedToListedDrConversion" />;
+    return <UnlistedToListedConversionPanel />;
   }
 
   if (pathStr.endsWith("division-options/release-missing-dates-delay")) {
-    return <GenericMasterTable masterKey="delayedRelease" />;
+    return <DelayedReleasePanel />;
   }
 
   if (pathStr.endsWith("division-options/quiz")) {

@@ -1095,6 +1095,77 @@ export const apiClient = {
     URL.revokeObjectURL(url);
   },
 
+  // ── Slide Upload - E-Detailing > Priority tab ──────────────────────────
+  slidePriorityList(type: "Brand" | "Product" | "Speciality" | "Therapy", subDivision: string) {
+    const qs = toQueryString({ type, subDivision });
+    return request<{ item: string; priority: number }[]>(`/company/masters/slideUploadEDetailing/action/priority-list${qs}`);
+  },
+
+  saveSlidePriority(input: { type: "Brand" | "Product" | "Speciality" | "Therapy"; subDivision: string; item: string; priority: number }) {
+    return request<{ success: boolean }>("/company/masters/slideUploadEDetailing/action/priority", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // ── Transfer Master Details ─────────────────────────────────────────────
+  transferTerritories(entityType: "Listed Doctor" | "Chemist", employeeCode: string) {
+    const qs = toQueryString({ entityType, employeeCode });
+    return request<string[]>(`/company/masters/transferMasterDetails/action/territories${qs}`);
+  },
+
+  transferCandidates(entityType: "Listed Doctor" | "Chemist", employeeCode: string, territory: string) {
+    const qs = toQueryString({ entityType, employeeCode, territory });
+    return request<Record<string, unknown>[]>(`/company/masters/transferMasterDetails/action/candidates${qs}`);
+  },
+
+  transferMasterRecords(input: {
+    entityType: "Listed Doctor" | "Chemist";
+    ids: string[];
+    fromEmployeeName: string;
+    fromTerritory: string;
+    toEmployeeCode: string;
+    toEmployeeName: string;
+    toTerritory: string;
+  }) {
+    return request<{ success: boolean; movedCount: number }>("/company/masters/transferMasterDetails/action/transfer", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // ── Unlisted Drs Convert To Listed Drs ─────────────────────────────────
+  unlistedConversionCandidates(fieldForceName: string) {
+    const qs = toQueryString({ fieldForceName });
+    return request<Record<string, unknown>[]>(`/company/masters/unlistedToListedDrConversion/action/list${qs}`);
+  },
+
+  convertUnlistedDoctors(ids: string[]) {
+    return request<{ success: boolean; converted: number }>("/company/masters/unlistedToListedDrConversion/action/convert", {
+      method: "POST",
+      body: JSON.stringify({ ids })
+    });
+  },
+
+  // ── Delayed Release ──────────────────────────────────────────────────────
+  delayedReleaseList(params: { month?: string; fieldForceName?: string }) {
+    const qs = toQueryString(params);
+    return request<Record<string, unknown>[]>(`/company/masters/delayedRelease/action/list${qs}`);
+  },
+
+  releaseDelayed(input: { employeeCodes: string[]; month?: string }) {
+    return request<{ success: boolean; releasedCount: number }>("/company/masters/delayedRelease/action/release", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // ── Leave Status ──────────────────────────────────────────────────────
+  leaveStatusList(params: { fieldForceName?: string; fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string }) {
+    const qs = toQueryString(params);
+    return request<Record<string, unknown>[]>(`/company/masters/leaveStatusReport/action/list${qs}`);
+  },
+
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────
   branches() {
     return request<CompanyBranch[]>("/company/branches");
