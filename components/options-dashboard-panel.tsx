@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronRight, Download, Plus, Search, Settings2, SlidersHorizontal, X } from "lucide-react";
 import { jsPDF } from "jspdf";
+import html2canvas from "html2canvas";
 import autoTable from "jspdf-autotable";
 import {
   apiClient,
@@ -603,6 +604,7 @@ function DashboardDetail({
   const [editChartType, setEditChartType] = useState<DashboardChartType>("pie");
   const [savingWidget, setSavingWidget] = useState(false);
   const [downloading, setDownloading] = useState(false);
+  const widgetRefs = useRef<Record<number, HTMLDivElement | null>>({});
 
   async function loadAllWidgetData(fieldForce: string) {
     const entries = await Promise.all(
@@ -679,73 +681,113 @@ function DashboardDetail({
     }
   }
 
-  // Real PDF export (previously a client-side JSON dump). Renders one
-  // section per widget — title, the field-force scope it was fetched under,
-  // and a label/value table with a total row. A rasterized chart snapshot
-  // per widget would be nicer, but turning the hand-rolled inline-SVG
-  // charts above into canvas images reliably (across pie/bar/line/funnel/
-  // table) is fragile in this environment, so the tabular form is used
-  // instead — it carries the same real numbers the tiles show on screen.
-  function handleDownload() {
+  // Real visual PDF export: rasterizes each widget's actual on-screen DOM
+  // (title + rendered chart + notes) via html2canvas and lays the resulting
+  // images into the PDF in the same order/arrangement as the screen, so the
+  // download shows the exact charts and numbers the user is looking at —
+  // not just a data table. A tabular fallback (label/value + total) is used
+  // for any single widget whose capture fails, so the export never goes
+  // blank for the rest of the dashboard.
+  async function handleDownload() {
     setDownloading(true);
     try {
       const doc = new jsPDF({ unit: "pt" });
       const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 40;
 
       doc.setFontSize(16);
-      doc.text(dashboard.name, 40, 40);
+      doc.text(dashboard.name, margin, 40);
       doc.setFontSize(10);
       doc.setTextColor(120);
       doc.text(
-        `${dashboard.module}${appliedFieldForce ? ` — filtered by Field Force: ${appliedFieldForce}` : ""} — generated ${new Date().toLocaleString()}`,
-        40,
+        `Home / ${dashboard.module} / ${dashboard.name}${appliedFieldForce ? ` — filtered by Field Force: ${appliedFieldForce}` : ""} — generated ${new Date().toLocaleString()}`,
+        margin,
         58
       );
       doc.setTextColor(0);
 
       let cursorY = 80;
+      const usableWidth = pageWidth - margin * 2;
 
-      dashboard.widgets.forEach((w, i) => {
+      for (let i = 0; i < dashboard.widgets.length; i++) {
+        const w = dashboard.widgets[i];
         const data = widgetData[i] ?? { labels: [], values: [], total: 0 };
-        if (cursorY > doc.internal.pageSize.getHeight() - 120) {
-          doc.addPage();
-          cursorY = 40;
+        const el = widgetRefs.current[i];
+
+        let imageDrawn = false;
+        if (el) {
+          try {
+            const canvas = await html2canvas(el, {
+              backgroundColor: "#ffffff",
+              scale: 2,
+              logging: false
+            });
+            const imgData = canvas.toDataURL("image/png");
+            const imgHeight = (canvas.height * usableWidth) / canvas.width;
+
+            if (cursorY + imgHeight + 20 > pageHeight - margin && cursorY > 80) {
+              doc.addPage();
+              cursorY = 40;
+            }
+            if (imgHeight > pageHeight - 80) {
+              // Widget taller than a page: shrink to fit on its own page.
+              doc.addPage();
+              cursorY = 40;
+              const maxHeight = pageHeight - 80;
+              const scaledWidth = (canvas.width * maxHeight) / canvas.height;
+              doc.addImage(imgData, "PNG", margin, cursorY, Math.min(scaledWidth, usableWidth), maxHeight);
+              cursorY += maxHeight + 20;
+            } else {
+              doc.addImage(imgData, "PNG", margin, cursorY, usableWidth, imgHeight);
+              cursorY += imgHeight + 20;
+            }
+            imageDrawn = true;
+          } catch {
+            imageDrawn = false;
+          }
         }
 
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        doc.text(displayWidgetName(w.widgetName), 40, cursorY);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(9);
-        doc.setTextColor(120);
-        const scopeLine = data.fieldForceSupported === false && appliedFieldForce
-          ? `${w.category} / ${w.dimension} — chart: ${w.chartType} — not filterable by field force`
-          : `${w.category} / ${w.dimension} — chart: ${w.chartType}`;
-        doc.text(scopeLine, 40, cursorY + 13);
-        doc.setTextColor(0);
-
-        const rows = data.labels.map((label, idx) => [label, String(data.values[idx] ?? 0)]);
-        rows.push(["Total", String(data.total ?? 0)]);
-
-        autoTable(doc, {
-          startY: cursorY + 20,
-          head: [["Label", "Count"]],
-          body: rows.length ? rows : [["No data", "0"]],
-          margin: { left: 40, right: 40 },
-          styles: { fontSize: 9 },
-          headStyles: { fillColor: [37, 99, 235] },
-          didParseCell: (data2) => {
-            if (data2.row.index === rows.length - 1 && data2.section === "body") {
-              data2.cell.styles.fontStyle = "bold";
-            }
+        if (!imageDrawn) {
+          if (cursorY > pageHeight - 120) {
+            doc.addPage();
+            cursorY = 40;
           }
-        });
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        cursorY = (doc as any).lastAutoTable.finalY + 30;
-      });
+          doc.setFontSize(12);
+          doc.setFont("helvetica", "bold");
+          doc.text(displayWidgetName(w.widgetName), margin, cursorY);
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+          doc.setTextColor(120);
+          const scopeLine = data.fieldForceSupported === false && appliedFieldForce
+            ? `${w.category} / ${w.dimension} — chart: ${w.chartType} — not filterable by field force`
+            : `${w.category} / ${w.dimension} — chart: ${w.chartType}`;
+          doc.text(scopeLine, margin, cursorY + 13);
+          doc.setTextColor(0);
 
-      void pageWidth;
+          const rows = data.labels.map((label, idx) => [label, String(data.values[idx] ?? 0)]);
+          rows.push(["Total", String(data.total ?? 0)]);
+
+          autoTable(doc, {
+            startY: cursorY + 20,
+            head: [["Label", "Count"]],
+            body: rows.length ? rows : [["No data", "0"]],
+            margin: { left: margin, right: margin },
+            styles: { fontSize: 9 },
+            headStyles: { fillColor: [37, 99, 235] },
+            didParseCell: (data2) => {
+              if (data2.row.index === rows.length - 1 && data2.section === "body") {
+                data2.cell.styles.fontStyle = "bold";
+              }
+            }
+          });
+
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          cursorY = (doc as any).lastAutoTable.finalY + 30;
+        }
+      }
+
       doc.save(`${dashboard.name.replace(/\s+/g, "_")}-dashboard.pdf`);
     } finally {
       setDownloading(false);
@@ -764,7 +806,7 @@ function DashboardDetail({
 
       <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 24 }}>
         <div style={{ display: "flex", gap: 10 }}>
-          <button className="button" type="button" onClick={handleDownload} disabled={downloading} style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <button className="button" type="button" onClick={() => void handleDownload()} disabled={downloading} style={{ display: "flex", alignItems: "center", gap: 6 }}>
             <Download size={16} /> {downloading ? "Preparing…" : "Download"}
           </button>
           <button
@@ -805,7 +847,13 @@ function DashboardDetail({
             const data = widgetData[i] ?? null;
             const notFilterable = Boolean(appliedFieldForce) && data?.fieldForceSupported === false;
             return (
-              <div key={i} style={{ background: "var(--panel, #fff)", border: "1px solid var(--border, #eee)", borderRadius: 10, padding: 16 }}>
+              <div
+                key={i}
+                ref={(el) => {
+                  widgetRefs.current[i] = el;
+                }}
+                style={{ background: "var(--panel, #fff)", border: "1px solid var(--border, #eee)", borderRadius: 10, padding: 16 }}
+              >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <strong style={{ fontSize: 14 }}>{displayWidgetName(w.widgetName)}</strong>
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
