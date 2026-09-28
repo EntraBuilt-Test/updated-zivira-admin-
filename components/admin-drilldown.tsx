@@ -62,15 +62,28 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <TerritoryBulkDeactivation />;
   }
 
-  if (pathStr.endsWith("listed-doctor")) {
+  // BUG FIX: these three used to be bare `pathStr.endsWith("listed-doctor"
+  // / "unlisted-doctor" / "chemist")` with no path-segment boundary, so they
+  // also matched "division-options/customer-upload/listed-doctor" and
+  // ".../customer-upload/chemist" — both of which end in the same literal
+  // suffix — and, because these checks run EARLIER in this if-chain than
+  // the dedicated "customer-upload/listed-doctor"/"customer-upload/chemist"
+  // checks further down (which render ListedDoctorUploadPanel/
+  // ChemistUploadPanel, the sanpharma-matching upload tools), they won the
+  // match first and rendered this generic Master table+Add-button screen
+  // instead — on the live site, every time, regardless of deploy freshness.
+  // Restricting these to "division-master" paths (their real, intended
+  // parent section) stops them from ever intercepting a customer-upload
+  // path again.
+  if (pathStr.includes("division-master") && pathStr.endsWith("listed-doctor")) {
     return <ListedDoctorMaster />;
   }
 
-  if (pathStr.endsWith("unlisted-doctor")) {
+  if (pathStr.includes("division-master") && pathStr.endsWith("unlisted-doctor")) {
     return <UnlistedDoctorMaster />;
   }
 
-  if (pathStr.endsWith("chemist")) {
+  if (pathStr.includes("division-master") && pathStr.endsWith("chemist")) {
     return <ChemistMaster />;
   }
 
