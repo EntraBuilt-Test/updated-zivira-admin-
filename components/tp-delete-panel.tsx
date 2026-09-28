@@ -22,7 +22,8 @@ export function TpDeletePanel({ masterKey: _masterKey }: { masterKey: string }) 
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Record<string, boolean>>({});
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     apiClient.masterRecords("employees").then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
@@ -58,6 +59,7 @@ export function TpDeletePanel({ masterKey: _masterKey }: { masterKey: string }) 
         month
       });
       setRows(res.data);
+      setSelected({});
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load Tour Plans");
       setRows([]);
@@ -66,18 +68,46 @@ export function TpDeletePanel({ masterKey: _masterKey }: { masterKey: string }) 
     }
   }
 
-  async function handleDelete(tpId: string) {
-    if (!window.confirm(`Delete Tour Plan ${tpId}? This also removes it from the field force and manager portals, and notifies both.`)) return;
-    setDeletingId(tpId);
-    setError(null);
-    try {
-      await apiClient.deleteTourPlan(tpId);
-      setRows((prev) => prev.filter((r) => r.tpId !== tpId));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete Tour Plan");
-    } finally {
-      setDeletingId(null);
+  const selectedIds = Object.keys(selected).filter((id) => selected[id]);
+  const allSelected = rows.length > 0 && selectedIds.length === rows.length;
+
+  function toggleAll(checked: boolean) {
+    if (!checked) {
+      setSelected({});
+      return;
     }
+    const next: Record<string, boolean> = {};
+    for (const row of rows) next[String(row.tpId ?? "")] = true;
+    setSelected(next);
+  }
+
+  function toggleOne(tpId: string, checked: boolean) {
+    setSelected((prev) => ({ ...prev, [tpId]: checked }));
+  }
+
+  // Matches sanpharma's layout: checkboxes per row, a single "TP Delete"
+  // button below the table that deletes every checked row in one action —
+  // not a per-row Delete button. Reuses the same real DELETE
+  // /company/tour-plans/:tpId the earlier per-row delete used, so each
+  // checked TP is still genuinely removed (and both portals notified) —
+  // just triggered once per checked row instead of showing a button per row.
+  async function handleBulkDelete() {
+    if (!selectedIds.length) return;
+    if (!window.confirm(`Delete ${selectedIds.length} selected Tour Plan(s)? This also removes them from the field force and manager portals, and notifies both.`)) return;
+    setDeleting(true);
+    setError(null);
+    const failed: string[] = [];
+    for (const tpId of selectedIds) {
+      try {
+        await apiClient.deleteTourPlan(tpId);
+      } catch {
+        failed.push(tpId);
+      }
+    }
+    setRows((prev) => prev.filter((r) => !selectedIds.includes(String(r.tpId ?? "")) || failed.includes(String(r.tpId ?? ""))));
+    setSelected({});
+    setDeleting(false);
+    if (failed.length) setError(`Failed to delete: ${failed.join(", ")}`);
   }
 
   return (
@@ -113,48 +143,72 @@ export function TpDeletePanel({ masterKey: _masterKey }: { masterKey: string }) 
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
 
       {searched && (
-        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col">
-          <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface-subtle sticky top-0 z-10">
-                <tr>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">TP ID</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Field Force Name</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Month</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Assigned Manager</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 && (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
-                )}
-                {rows.map((row) => {
-                  const tpId = String(row.tpId ?? "");
-                  return (
-                    <tr key={tpId} className="border-b border-border-subtle hover:bg-surface-subtle/60">
-                      <td className="px-4 py-3 text-sm text-text-primary">{tpId}</td>
-                      <td className="px-4 py-3 text-sm text-text-primary">{String(row.employeeName ?? "")}</td>
-                      <td className="px-4 py-3 text-sm text-text-primary">{String(row.month ?? "")}</td>
-                      <td className="px-4 py-3 text-sm text-text-primary">{String(row.status ?? "")}</td>
-                      <td className="px-4 py-3 text-sm text-text-primary">{String(row.assignedManagerName ?? row.assignedManager ?? "")}</td>
-                      <td className="px-4 py-3 text-sm">
-                        <button
-                          className="button"
-                          type="button"
-                          disabled={deletingId === tpId}
-                          onClick={() => handleDelete(tpId)}
-                        >
-                          {deletingId === tpId ? "Deleting..." : "Delete"}
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+        <div className="flex flex-col gap-4">
+          <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col">
+            <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10">
+                  <tr>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        onChange={(e) => toggleAll(e.target.checked)}
+                        aria-label="Select all"
+                      />
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Field Force</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Designation</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">HQ</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Tour Month</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Tour Year</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Last Month TP</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.length === 0 && (
+                    <tr><td colSpan={7} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
+                  )}
+                  {rows.map((row) => {
+                    const tpId = String(row.tpId ?? "");
+                    const month = String(row.month ?? "");
+                    const [tourYear, tourMonthNum] = month.split("-");
+                    return (
+                      <tr key={tpId} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                        <td className="px-4 py-3 text-sm">
+                          <input
+                            type="checkbox"
+                            checked={Boolean(selected[tpId])}
+                            onChange={(e) => toggleOne(tpId, e.target.checked)}
+                            aria-label={`Select ${tpId}`}
+                          />
+                        </td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.employeeName ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.employeeDesignation ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.employeeHQ ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{tourMonthNum ? String(Number(tourMonthNum)) : ""}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{tourYear ?? ""}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.lastMonthTP ?? "")}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
+
+          {rows.length > 0 && (
+            <div>
+              <button
+                className="button"
+                type="button"
+                disabled={!selectedIds.length || deleting}
+                onClick={() => void handleBulkDelete()}
+              >
+                {deleting ? "Deleting..." : "TP Delete"}
+              </button>
+            </div>
+          )}
         </div>
       )}
     </section>

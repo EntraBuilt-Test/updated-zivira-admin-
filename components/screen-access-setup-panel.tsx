@@ -11,7 +11,16 @@ const ADMIN_OPTION = "admin";
 function employeeLabel(e: MasterRecord): string {
   return `${String(e.name ?? "")} - ${String(e.designation ?? "")} - ${String(e.territory ?? "")}`;
 }
-const ENTITY_TYPES = ["Listed Doctor", "UnListed Doctor", "Chemist", "Territory", "Hospital"] as const;
+// BUG FIX: this used to say "UnListed Doctor" (capital L) — the backend's
+// screenAccessSetup master (src/masters/registry.ts) validates entityType
+// against the enum ["Listed Doctor", "Unlisted Doctor", ...] (lowercase l).
+// That mismatch made every Save of the UnListed Doctor column fail its
+// entityType validation with "Entity Type must be one of: Listed Doctor,
+// Unlisted Doctor, Chemist, Territory, Hospital" — and since `existing` is
+// looked up by exact entityType string match too, the mismatch also meant
+// this row's checkboxes could never be found back on reload even before
+// hitting Save. The literal string now matches the backend's enum exactly.
+const ENTITY_TYPES = ["Listed Doctor", "Unlisted Doctor", "Chemist", "Territory", "Hospital"] as const;
 type EntityType = (typeof ENTITY_TYPES)[number];
 const PERMISSION_KEYS = ["add", "edit", "deactivate", "view", "reactivate"] as const;
 type PermissionKey = (typeof PERMISSION_KEYS)[number];

@@ -75,7 +75,43 @@
   .button-secondary {
     @apply border border-border-subtle bg-surface-subtle text-text-primary shadow-none hover:bg-border-subtle;
   }
-  
+
+  /* BUG FIX (item 9 — Leave Status "Click Here to View" popup, and every
+     other screen using className="card"): this class was used across 63
+     component files but was NEVER DEFINED anywhere in this stylesheet, so
+     every "card" rendered with no background, no border and no padding at
+     all. Most of the time that's invisible (a card sitting on the plain
+     page background looks fine either way), but a MODAL card sitting over
+     a dimmed backdrop with a real table behind it has nothing opaque behind
+     its own text, so the text visually blends into/overlaps the table
+     showing through — exactly the "transparent, unreadable" popup reported.
+     Giving .card a real solid background/border/shadow here fixes every
+     one of those 63 usages at once, not just Leave Status. */
+  .card {
+    @apply bg-surface-card border border-border-subtle rounded-xl shadow-sm;
+  }
+
+  /* Item 5 — every native <input type="file"> under the Options menu's
+     upload/tool panels (Dynamic App Link, Listed Doctor Upload, Chemist
+     Upload, Home Page Image Upload, Quiz Title Creation, etc.) rendered its
+     "Choose File / No file chosen" control as plain unstyled browser text,
+     not a button — the native control has no className hook of its own, so
+     this is one shared, global rule (not a one-off per page) that styles
+     every file input's built-in file-selector button to match the app's
+     real ".button" look, in both WebKit/Blink and Firefox. Applies
+     automatically to every current and future <input type="file"> with no
+     per-page change needed. */
+  input[type="file"] {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+  input[type="file"]::file-selector-button,
+  input[type="file"]::-webkit-file-upload-button {
+    @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors bg-brand-primary text-white shadow-sm border border-brand-primary hover:bg-brand-primary/90;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
   .form-grid {
     @apply grid grid-cols-1 md:grid-cols-2 gap-6;
   }

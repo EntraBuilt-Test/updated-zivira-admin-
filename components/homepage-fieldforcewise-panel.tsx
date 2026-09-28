@@ -130,6 +130,7 @@ export function HomepageFieldForcewisePanel() {
                 <th className="px-4 py-2 text-xs font-semibold uppercase">FilePath</th>
                 <th className="px-4 py-2 text-xs font-semibold uppercase">Uploaded File</th>
                 <th className="px-4 py-2 text-xs font-semibold uppercase">FileName</th>
+                <th className="px-4 py-2 text-xs font-semibold uppercase">Download</th>
                 <th className="px-4 py-2 text-xs font-semibold uppercase">Remove</th>
               </tr>
             </thead>
@@ -152,6 +153,17 @@ export function HomepageFieldForcewisePanel() {
                     <td className="px-4 py-2 text-sm">{existing?.fileName || "-"}</td>
                     <td className="px-4 py-2 text-sm">
                       {existing ? (
+                        <button
+                          type="button"
+                          className="text-sm text-blue-700 underline"
+                          onClick={() => apiClient.downloadMasterFile(MASTER_KEY, existing.id, String(existing.fileName ?? "download"))}
+                        >
+                          Download
+                        </button>
+                      ) : "-"}
+                    </td>
+                    <td className="px-4 py-2 text-sm">
+                      {existing ? (
                         <a href="#" onClick={(e) => { e.preventDefault(); remove(existing.id); }} style={{ color: "#ef4444", textDecoration: "underline", cursor: "pointer" }}>
                           Remove Image
                         </a>
@@ -161,7 +173,7 @@ export function HomepageFieldForcewisePanel() {
                 );
               })}
               {team.length === 0 && (
-                <tr><td colSpan={7} className="px-4 py-6 text-center text-sm" style={{ color: "var(--muted)" }}>No field force found under this manager</td></tr>
+                <tr><td colSpan={8} className="px-4 py-6 text-center text-sm" style={{ color: "var(--muted)" }}>No field force found under this manager</td></tr>
               )}
             </tbody>
           </table>
