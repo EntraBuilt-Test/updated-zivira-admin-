@@ -404,6 +404,16 @@ export type QuizAttemptRecord = {
   updatedAt?: string;
 };
 
+// Round 9 item 1 — shared employee-list cache backing apiClient.employees()
+// (see its definition below for why). 30s is long enough that navigating
+// between screens/dropdowns in normal use feels instant, short enough that
+// a genuinely new employee shows up on the next natural page load.
+const EMPLOYEES_CACHE_TTL_MS = 30_000;
+let employeesCache: { promise: Promise<ApiEnvelope<Employee[]>>; at: number } | null = null;
+export function invalidateEmployeesCache() {
+  employeesCache = null;
+}
+
 export const apiClient = {
   login(username: string, password: string) {
     return request<{ token: string }>("/auth/login", {
@@ -416,14 +426,37 @@ export const apiClient = {
     return request<CompanyDashboard>("/company/dashboard");
   },
 
+  // Round 9 item 1 — every FieldForce/employee-name dropdown across the app
+  // (16+ separate components) called this directly with zero caching, so
+  // opening ANY dropdown re-fetched and re-hydrated the entire employee list
+  // from Mongo every single time, even seconds after the same list was just
+  // fetched elsewhere on the same page. This module-level cache (with
+  // in-flight request de-duplication, so two dropdowns opened at once don't
+  // fire two requests) makes every dropdown after the first one instant,
+  // with no call-site changes needed anywhere. `invalidateEmployeesCache()`
+  // is called after any write that changes the employee list so a stale
+  // list is never shown after an edit.
   employees() {
-    return request<Employee[]>("/company/employees");
+    const now = Date.now();
+    if (employeesCache && now - employeesCache.at < EMPLOYEES_CACHE_TTL_MS) {
+      return employeesCache.promise;
+    }
+    const promise = request<Employee[]>("/company/employees").catch((err) => {
+      // Don't cache a failed fetch — let the next caller retry for real.
+      employeesCache = null;
+      throw err;
+    });
+    employeesCache = { promise, at: now };
+    return promise;
   },
 
   createEmployee(input: Omit<Employee, "id" | "tenantSlug" | "createdAt" | "updatedAt">) {
     return request<Employee>("/company/employees", {
       method: "POST",
       body: JSON.stringify(input)
+    }).then((res) => {
+      invalidateEmployeesCache();
+      return res;
     });
   },
 
@@ -1338,6 +1371,40 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify({ orders })
     });
+  },
+
+  // ── Round 9 item 2 tab 3 — Customized Master ───────────────────────────
+  customizedMasterList() {
+    return request<{ id: string; name: string; rows: { id: string; shortName: string; name: string; active: boolean }[] }[]>(
+      "/company/masters/customizedMaster/action/list"
+    );
+  },
+  createCustomizedMaster(name: string) {
+    return request<{ id: string; name: string; rows: unknown[] }>("/company/masters/customizedMaster/action/create", {
+      method: "POST",
+      body: JSON.stringify({ name })
+    });
+  },
+  saveCustomizedMasterRows(id: string, rows: { id?: string; shortName: string; name: string; active: boolean }[]) {
+    return request<{ id: string; name: string; rows: unknown[] }>(`/company/masters/customizedMaster/action/${id}/rows`, {
+      method: "PUT",
+      body: JSON.stringify({ rows })
+    });
+  },
+  deactivateCustomizedMasterRow(id: string, rowId: string) {
+    return request<{ id: string; name: string; rows: unknown[] }>(`/company/masters/customizedMaster/action/${id}/rows/${rowId}/deactivate`, {
+      method: "POST"
+    });
+  },
+
+  // ── Round 9 item 3 — Activity Status ────────────────────────────────────
+  activityStatusList(params: { activityId?: string; fieldForceName?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/activityStatus/action/list${toQueryString(params)}`);
+  },
+
+  // ── Round 9 item 4 — Manager Missed Call View ──────────────────────────
+  managerMissedCallView(params: { fieldForceName?: string; month?: string; year?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/managerMissedCallView/action/list${toQueryString(params)}`);
   },
 
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────

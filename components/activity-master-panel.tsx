@@ -9,11 +9,17 @@ import { CustomSelect } from "@/components/custom-select";
 // collections and full CRUD routes (masters-actions.routes.ts). Every row
 // shown here is a real persisted document; Edit/Preview/Deactivate and the
 // Existing/New Order reorder all write back through real endpoints.
-const MODE_OPTIONS = ["Common Activity", "Doctors", "Chemist", "Stockist", "Unlisted Doctors", "Hospital", "CIP"];
-const FOR_OPTIONS = MODE_OPTIONS;
+const MODE_OPTIONS = ["MR", "MGR", "MR & MGR"];
+const FOR_OPTIONS = ["Common Activity", "Doctors", "Chemists", "Stockists", "Unlisted Doctors", "Hospitals", "CIP"];
+const ACTIVITY_FOR_OPTIONS = ["---Select---", "DCR", "TP", "TP/DCR"];
+// Exact list from sanpharma.info's Activity - Add Parameter screen (Round 9
+// item 2 screenshot reference).
 const PARAMETER_TYPES = [
-  "Text Box", "Text Area", "Number", "Date", "Dropdown", "Checkbox",
-  "Radio Button", "Master Lookup", "File Upload"
+  "Label", "Text Box - Characters", "Text box - Numeric", "Text Area", "Date",
+  "Date Range", "Time", "Time Range", "Combo Box - Single", "Combo Box - Multiple",
+  "Upload", "Currency", "Customized Tables - Single", "Customized Tables - Multiple",
+  "Table Type - Row wise", "Date with Time", "Date with Time Range", "Geo Location",
+  "Currency Converter"
 ];
 
 const cell: React.CSSProperties = { border: "1px solid #94a3b8", padding: "6px 8px", textAlign: "center", fontSize: 12 };
@@ -145,8 +151,8 @@ function CreateActivityTab() {
               </div>
             )}
           </div>
-          <button className="button" type="button" onClick={submit}>{editingId ? "Submit" : "Add"}</button>
-          {editingId && <button className="button button-secondary" type="button" onClick={resetForm}>Cancel</button>}
+          <button className="button" type="button" onClick={submit}>{editingId ? "Submit" : "Create"}</button>
+          <button className="button button-secondary" type="button" onClick={resetForm}>Reset</button>
         </div>
         {error && <div className="text-sm text-red-600">{error}</div>}
       </div>
@@ -216,7 +222,7 @@ function AddParameterTab() {
   const [parameterType, setParameterType] = useState(PARAMETER_TYPES[0]);
   const [selectMaster, setSelectMaster] = useState("");
   const [tableGroup, setTableGroup] = useState("");
-  const [activityFor, setActivityFor] = useState(FOR_OPTIONS[0]);
+  const [activityFor, setActivityFor] = useState(ACTIVITY_FOR_OPTIONS[0]);
   const [orderEdits, setOrderEdits] = useState<Record<string, string>>({});
 
   async function loadAll() {
@@ -255,7 +261,7 @@ function AddParameterTab() {
     setParameterType(PARAMETER_TYPES[0]);
     setSelectMaster("");
     setTableGroup("");
-    setActivityFor(FOR_OPTIONS[0]);
+    setActivityFor(ACTIVITY_FOR_OPTIONS[0]);
   }
 
   async function submit() {
@@ -295,7 +301,7 @@ function AddParameterTab() {
     setParameterType(p.parameterType);
     setSelectMaster(p.selectMaster || "");
     setTableGroup(p.tableGroup || "");
-    setActivityFor(p.activityFor || FOR_OPTIONS[0]);
+    setActivityFor(p.activityFor || ACTIVITY_FOR_OPTIONS[0]);
   }
 
   async function deactivate(id: string) {
@@ -307,16 +313,26 @@ function AddParameterTab() {
     }
   }
 
-  async function saveOrder() {
-    const orders = parameters
-      .map((p) => ({ id: p.id, existingOrder: Number(orderEdits[p.id]) }))
-      .filter((o) => Number.isFinite(o.existingOrder));
+  // "Generate - Sl No" — commits whatever New Order values are typed (or,
+  // for any left blank, the row's current position) as the real persisted
+  // existingOrder, matching the sanpharma reference's exact button.
+  async function generateSlNo() {
+    const orders = parameters.map((p, i) => ({
+      id: p.id,
+      existingOrder: orderEdits[p.id] && orderEdits[p.id].trim() ? Number(orderEdits[p.id]) : i + 1
+    })).filter((o) => Number.isFinite(o.existingOrder));
     try {
       await apiClient.reorderActivityParameters(orders);
       await loadParameters(activityId);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save order");
     }
+  }
+
+  // "Clear" — discards unsaved New Order edits, reverting the inputs back
+  // to each row's real persisted existingOrder (no server write).
+  function clearOrderEdits() {
+    setOrderEdits(Object.fromEntries(parameters.map((p) => [p.id, String(p.existingOrder)])));
   }
 
   const activityLabel = (a: Activity) => `${a.shortName} - ${a.name}`;
@@ -368,19 +384,16 @@ function AddParameterTab() {
           </div>
           <div style={{ minWidth: 180 }}>
             <span className="block text-xs font-medium text-text-muted mb-1">Activity For</span>
-            <CustomSelect value={activityFor} options={FOR_OPTIONS} onChange={setActivityFor} />
+            <CustomSelect value={activityFor} options={ACTIVITY_FOR_OPTIONS} onChange={setActivityFor} />
           </div>
-          <button className="button" type="button" onClick={submit}>{editingId ? "Submit" : "Add"}</button>
-          {editingId && <button className="button button-secondary" type="button" onClick={resetForm}>Cancel</button>}
+          <button className="button" type="button" onClick={submit}>{editingId ? "Submit" : "Submit"}</button>
+          <button className="button button-secondary" type="button" onClick={resetForm}>Reset</button>
         </div>
         {error && <div className="text-sm text-red-600">{error}</div>}
       </div>
 
       <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 overflow-x-auto">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-lg font-bold">Parameters</h3>
-          <button className="button button-secondary" type="button" onClick={saveOrder} disabled={!parameters.length}>Save Order</button>
-        </div>
+        <h3 className="text-lg font-bold mb-3">{activities.find((a) => a.id === activityId)?.name || "--Select Activity--"}</h3>
         <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
           <thead>
             <tr>
@@ -426,7 +439,171 @@ function AddParameterTab() {
             ))}
           </tbody>
         </table>
+        <div className="flex gap-2 mt-3">
+          <button className="button" type="button" onClick={generateSlNo} disabled={!parameters.length}>Generate - Sl No</button>
+          <button className="button button-secondary" type="button" onClick={clearOrderEdits} disabled={!parameters.length}>Clear</button>
+        </div>
       </div>
+    </div>
+  );
+}
+
+type CustomizedMasterRow = { id?: string; shortName: string; name: string; active: boolean };
+type CustomizedMaster = { id: string; name: string; rows: CustomizedMasterRow[] };
+
+function CustomizedMasterTab() {
+  const [masters, setMasters] = useState<CustomizedMaster[]>([]);
+  const [newName, setNewName] = useState("");
+  const [selectedId, setSelectedId] = useState("");
+  const [rows, setRows] = useState<CustomizedMasterRow[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  async function load(selectAfter?: string) {
+    try {
+      const res = await apiClient.customizedMasterList();
+      const list = res.data as unknown as CustomizedMaster[];
+      setMasters(list);
+      const target = selectAfter ? list.find((m) => m.id === selectAfter) : list.find((m) => m.id === selectedId);
+      if (target) {
+        setSelectedId(target.id);
+        setRows(target.rows.length ? target.rows : [{ shortName: "", name: "", active: true }]);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load Customized Masters");
+    }
+  }
+
+  useEffect(() => { load(); }, []);
+
+  async function create() {
+    setError(null);
+    if (!newName.trim()) return;
+    try {
+      const res = await apiClient.createCustomizedMaster(newName.trim());
+      setNewName("");
+      await load((res.data as unknown as CustomizedMaster).id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create Customized Master");
+    }
+  }
+
+  function selectMaster(id: string) {
+    const m = masters.find((mm) => mm.id === id);
+    setSelectedId(id);
+    setRows(m ? (m.rows.length ? m.rows : [{ shortName: "", name: "", active: true }]) : []);
+  }
+
+  function updateRow(i: number, field: "shortName" | "name", value: string) {
+    setRows((prev) => prev.map((r, idx) => (idx === i ? { ...r, [field]: value } : r)));
+  }
+
+  function addRow() {
+    setRows((prev) => [...prev, { shortName: "", name: "", active: true }]);
+  }
+
+  async function deactivateRow(i: number) {
+    const row = rows[i];
+    if (row.id) {
+      try {
+        await apiClient.deactivateCustomizedMasterRow(selectedId, row.id);
+        await load(selectedId);
+        return;
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to deactivate row");
+        return;
+      }
+    }
+    setRows((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  async function save() {
+    if (!selectedId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await apiClient.saveCustomizedMasterRows(selectedId, rows);
+      await load(selectedId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function clear() {
+    const m = masters.find((mm) => mm.id === selectedId);
+    setRows(m ? (m.rows.length ? m.rows : [{ shortName: "", name: "", active: true }]) : []);
+  }
+
+  const selected = masters.find((m) => m.id === selectedId);
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-wrap items-end gap-3">
+        <div>
+          <span className="block text-xs font-medium text-text-muted mb-1">Customized Master Name</span>
+          <input className="input" value={newName} onChange={(e) => setNewName(e.target.value)} />
+        </div>
+        <button className="button" type="button" onClick={create}>Create</button>
+        <div style={{ minWidth: 220 }}>
+          <span className="block text-xs font-medium text-text-muted mb-1">Select Customized Master</span>
+          <CustomSelect value={selected?.name || ""} options={masters.map((m) => m.name)} onChange={(name) => {
+            const m = masters.find((mm) => mm.name === name);
+            if (m) selectMaster(m.id);
+          }} placeholder="Select" />
+        </div>
+      </div>
+
+      {error && <div className="text-sm text-red-600">{error}</div>}
+
+      {selected && (
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 flex flex-col gap-3">
+          <h3 className="text-lg font-bold">{selected.name}</h3>
+          <div className="overflow-x-auto">
+            <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
+              <thead>
+                <tr>
+                  <th style={head}>Sl No</th>
+                  <th style={head}>Short Name</th>
+                  <th style={head}>Name</th>
+                  <th style={head}>Deactivate</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r, i) => (
+                  <tr key={r.id || `new-${i}`}>
+                    <td style={cell}>{i + 1}</td>
+                    <td style={cell}>
+                      <input className="input" style={{ minWidth: 140 }} value={r.shortName} onChange={(e) => updateRow(i, "shortName", e.target.value)} disabled={!r.active} />
+                    </td>
+                    <td style={cell}>
+                      <input className="input" style={{ minWidth: 200 }} value={r.name} onChange={(e) => updateRow(i, "name", e.target.value)} disabled={!r.active} />
+                    </td>
+                    <td style={cell}>
+                      {r.active ? (
+                        <button className="button button-secondary" type="button" onClick={() => deactivateRow(i)}>Deactivate</button>
+                      ) : (
+                        "Inactive"
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <td style={cell} colSpan={3}>
+                    <button className="button button-secondary" type="button" onClick={addRow}>Add New Row</button>
+                  </td>
+                  <td style={cell} />
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="flex gap-2">
+            <button className="button" type="button" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+            <button className="button button-secondary" type="button" onClick={clear}>Clear</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -460,12 +637,7 @@ export function ActivityMasterPanel({ masterKey: _masterKey }: { masterKey: stri
 
       {tab === "create" && <CreateActivityTab />}
       {tab === "parameter" && <AddParameterTab />}
-      {tab === "customized" && (
-        <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm text-sm text-text-muted">
-          Customized Master — no real distinct data source/spec was provided for this sub-tab this round;
-          left as a placeholder rather than fabricating its content.
-        </div>
-      )}
+      {tab === "customized" && <CustomizedMasterTab />}
     </section>
   );
 }

@@ -444,8 +444,15 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <MasterScreen masterKey="orderBookingView" />;
   }
 
+  // Round 9 item 2 — this hardcoded GenericMasterTable branch ran BEFORE
+  // MasterScreen ever got a chance, so the real 3-tab ActivityMasterPanel
+  // built in Round 8 (wired via registry.ts's uiKind: "activityMaster")
+  // was never actually reachable from this route — the live site kept
+  // showing the old generic mock table/Add-modal no matter what the panel
+  // itself did. Routing through MasterScreen (which reads the real uiKind
+  // from the backend schema) is the actual fix.
   if (pathStr.endsWith("activities/activity/master-screen-creation")) {
-    return <GenericMasterTable masterKey="activityMasterScreenCreation" />;
+    return <MasterScreen masterKey="activityMasterScreenCreation" />;
   }
 
   if (pathStr.endsWith("activities/activity/status")) {
