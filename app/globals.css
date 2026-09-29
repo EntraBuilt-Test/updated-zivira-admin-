@@ -86,9 +86,18 @@
      its own text, so the text visually blends into/overlaps the table
      showing through — exactly the "transparent, unreadable" popup reported.
      Giving .card a real solid background/border/shadow here fixes every
-     one of those 63 usages at once, not just Leave Status. */
+     one of those 63 usages at once, not just Leave Status.
+
+     Round 13 item 2 — that earlier fix still left .card with NO padding at
+     all, so a modal built as a bare `<div className="card">` (Leave Status'
+     "Leave Application Detail" popup, Quiz Authoring's preview popup) had
+     its background/border/shadow but the text sat flush against the card's
+     own edges with no breathing room, reading as "raw left-dumped text"
+     rather than a real dialog. Every ad-hoc modal elsewhere in the app that
+     builds its own box with inline styles already used 24px padding — match
+     that here so every .card-based modal gets the same real padding too. */
   .card {
-    @apply bg-surface-card border border-border-subtle rounded-xl shadow-sm;
+    @apply bg-surface-card border border-border-subtle rounded-xl shadow-sm p-6;
   }
 
   /* Item 5 — every native <input type="file"> under the Options menu's

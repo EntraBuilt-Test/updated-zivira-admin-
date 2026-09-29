@@ -150,7 +150,16 @@ export function HomepageFieldForcewisePanel() {
                         {busyId === emp.id ? "..." : "Upload"}
                       </button>
                     </td>
-                    <td className="px-4 py-2 text-sm">{existing?.fileName || "-"}</td>
+                    {/* Round 13 item 3 — this used to only read the persisted
+                        upload record's fileName, which stays "-" until
+                        Upload is actually clicked and the request round-
+                        trips; the FilePath column's native file input
+                        already shows the chosen filename immediately via
+                        the browser's own control, so mirror that same
+                        client-side selection here the instant a file is
+                        chosen, falling back to the persisted name once one
+                        exists on the server. */}
+                    <td className="px-4 py-2 text-sm">{pendingFiles[emp.id]?.name || existing?.fileName || "-"}</td>
                     <td className="px-4 py-2 text-sm">
                       {existing ? (
                         <button
