@@ -52,10 +52,21 @@ const inputStyle: React.CSSProperties = {
 // and PATCH /company/dcrs/:id), not a generic-masters mirror, so an edit
 // here is genuinely reflected in every portal, and the backend notifies
 // both the MR and their reporting manager with a summary of what changed.
+const MONTHS = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+const YEARS = Array.from({ length: 6 }, (_, i) => String(new Date().getFullYear() - 3 + i));
+
 export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<MasterRecord[]>([]);
   const [rows, setRows] = useState<Record<string, unknown>[]>([]);
   const [selectedEmployeeCode, setSelectedEmployeeCode] = useState("");
+  // Round 12 item 3 — sanpharma's real DCR Edit search form gates results
+  // behind FieldForce Name + Month + Year + Go (they never loaded
+  // immediately on employee pick before this).
+  const [month, setMonth] = useState(MONTHS[new Date().getMonth()]);
+  const [year, setYear] = useState(String(new Date().getFullYear()));
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,8 +90,10 @@ export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
     setEditingRow(null);
     try {
       const emp = employees.find((e) => String(e.name ?? "") === selectedEmployeeCode);
+      const monthStr = `${year}-${String(MONTHS.indexOf(month) + 1).padStart(2, "0")}`;
       const res = await apiClient.companyDcrs({
-        employeeCode: emp ? String(emp.employeeCode ?? "") : undefined
+        employeeCode: emp ? String(emp.employeeCode ?? "") : undefined,
+        month: monthStr
       });
       setRows(res.data);
     } catch (err) {
@@ -144,6 +157,14 @@ export function DcrEditPanel({ masterKey: _masterKey }: { masterKey: string }) {
             onChange={setSelectedEmployeeCode}
             placeholder="All"
           />
+        </div>
+        <div style={{ minWidth: "140px" }}>
+          <span className="block text-xs font-medium text-text-muted mb-1">Month</span>
+          <CustomSelect value={month} options={MONTHS} onChange={setMonth} />
+        </div>
+        <div style={{ minWidth: "120px" }}>
+          <span className="block text-xs font-medium text-text-muted mb-1">Year</span>
+          <CustomSelect value={year} options={YEARS} onChange={setYear} />
         </div>
         <button className="button" type="button" onClick={go} disabled={loading}>
           {loading ? "Searching..." : "Go"}

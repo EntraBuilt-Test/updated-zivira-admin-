@@ -866,7 +866,7 @@ export const apiClient = {
     });
   },
 
-  companyDcrs(params: { employeeCode?: string } = {}) {
+  companyDcrs(params: { employeeCode?: string; month?: string } = {}) {
     const qs = toQueryString(params);
     return request<Record<string, unknown>[]>(`/company/dcrs${qs}`);
   },
@@ -1408,8 +1408,11 @@ export const apiClient = {
   },
 
   // ── Round 11 item 1 — Expense Consolidated View ────────────────────────
-  expenseConsolidatedView(params: { month?: string; year?: string }) {
+  expenseConsolidatedView(params: { month?: string; year?: string; employeeCode?: string }) {
     return request<Record<string, unknown>[]>(`/company/masters/expenseConsolidatedView/action/list${toQueryString(params)}`);
+  },
+  expenseConsolidatedViewAtAGlance(params: { fromMonth?: string; fromYear?: string; toMonth?: string; toYear?: string; employeeCode?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/expenseConsolidatedView/action/atAGlance${toQueryString(params)}`);
   },
 
   // ── Round 11 item 5 — Task Management System ───────────────────────────
@@ -1419,6 +1422,23 @@ export const apiClient = {
   createTask(input: { modeOfTask: string; priority: string; assignedToEmployeeCode: string; deadlineFrom?: string | null; deadlineTo?: string | null; description: string }) {
     return request<Record<string, unknown>>("/company/masters/task/action/create", {
       method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
+  // ── Round 12 item 9 — Task Mode Creation (backs the Mode of Task dropdown) ──
+  taskModeList() {
+    return request<Record<string, unknown>[]>(`/company/masters/taskMode/action/list`);
+  },
+  createTaskMode(input: { shortName: string; taskName: string }) {
+    return request<Record<string, unknown>>("/company/masters/taskMode/action/create", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+  updateTaskMode(id: string, input: { shortName: string; taskName: string }) {
+    return request<Record<string, unknown>>(`/company/masters/taskMode/action/${encodeURIComponent(id)}`, {
+      method: "PATCH",
       body: JSON.stringify(input)
     });
   },

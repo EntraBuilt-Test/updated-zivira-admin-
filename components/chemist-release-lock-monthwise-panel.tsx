@@ -37,9 +37,16 @@ export function ChemistReleaseLockMonthwisePanel({ masterKey: _masterKey }: { ma
 
   // Designation / Emp Code come from the employee master (sanpharma's own
   // computed columns), never stored on the chemistReleaseLockMonthwise record.
+  // Round 12 item 7 — some rows' fieldForceName failed to join against the
+  // employee master purely on case/whitespace (e.g. a trailing space from
+  // upload/seed data), leaving Designation/Emp Code blank even though the
+  // employee genuinely exists. Normalize both sides of the join.
+  function normalizeName(v: string): string {
+    return v.trim().toLowerCase().replace(/\s+/g, " ");
+  }
   const employeeByName = useMemo(() => {
     const map = new Map<string, MasterRecord>();
-    for (const e of employees) map.set(String(e.name ?? ""), e);
+    for (const e of employees) map.set(normalizeName(String(e.name ?? "")), e);
     return map;
   }, [employees]);
 
@@ -136,7 +143,7 @@ export function ChemistReleaseLockMonthwisePanel({ masterKey: _masterKey }: { ma
                   <tr><td colSpan={7} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
                 )}
                 {rows.map((row) => {
-                  const emp = employeeByName.get(String(row.fieldForceName ?? ""));
+                  const emp = employeeByName.get(normalizeName(String(row.fieldForceName ?? "")));
                   return (
                   <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
                     <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>

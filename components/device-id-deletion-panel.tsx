@@ -20,7 +20,8 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     apiClient.masterRecords("employees").then((res) => setEmployees(res.data)).catch(() => setEmployees([]));
@@ -33,9 +34,16 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
 
   // HQ / Designation come from the employee master (sanpharma's own
   // computed columns), never stored on the deviceIdDeletion record itself.
+  // Round 12 item 5 — the row's stored fieldForceName can differ from the
+  // real Employee.name by case/whitespace only, which silently dropped the
+  // row from both this lookup and the Go-button filter below even though
+  // the employee genuinely exists — normalize both sides of the match.
+  function normalizeName(v: string): string {
+    return v.trim().toLowerCase().replace(/\s+/g, " ");
+  }
   const employeeByName = useMemo(() => {
     const map = new Map<string, MasterRecord>();
-    for (const e of employees) map.set(String(e.name ?? ""), e);
+    for (const e of employees) map.set(normalizeName(String(e.name ?? "")), e);
     return map;
   }, [employees]);
 
@@ -46,8 +54,11 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
     try {
       const res = await apiClient.masterRecords(MASTER_KEY);
       const all = res.data;
-      const filtered = fieldForceName ? all.filter((r) => String(r.fieldForceName ?? "") === fieldForceName) : all;
+      const filtered = fieldForceName
+        ? all.filter((r) => normalizeName(String(r.fieldForceName ?? "")) === normalizeName(fieldForceName))
+        : all;
       setRows(filtered);
+      setSelected(new Set());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load records");
       setRows([]);
@@ -56,17 +67,37 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
     }
   }
 
-  async function handleDelete(id: string) {
-    if (!window.confirm("Delete this device id record permanently?")) return;
-    setDeletingId(id);
+  const allSelected = rows.length > 0 && rows.every((r) => selected.has(r.id));
+
+  function toggleAll() {
+    setSelected(allSelected ? new Set() : new Set(rows.map((r) => r.id)));
+  }
+
+  function toggleOne(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  async function handleDelete() {
+    if (selected.size === 0) return;
+    if (!window.confirm(`Delete ${selected.size} selected device id record(s) permanently?`)) return;
+    setDeleting(true);
     setError(null);
     try {
-      await apiClient.deleteMasterRecord(MASTER_KEY, id);
-      setRows((prev) => prev.filter((r) => r.id !== id));
+      const ids = Array.from(selected);
+      for (const id of ids) {
+        await apiClient.deleteMasterRecord(MASTER_KEY, id);
+      }
+      setRows((prev) => prev.filter((r) => !selected.has(r.id)));
+      setSelected(new Set());
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete record");
+      setError(err instanceof Error ? err.message : "Failed to delete record(s)");
     } finally {
-      setDeletingId(null);
+      setDeleting(false);
     }
   }
 
@@ -79,7 +110,7 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
 
       <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-wrap items-end gap-3 w-full">
         <div style={{ minWidth: "240px" }}>
-          <span className="block text-xs font-medium text-text-muted mb-1">Field Force Name</span>
+          <span className="block text-xs font-medium text-text-muted mb-1">FieldForce Name</span>
           <CustomSelect
             value={fieldForceName}
             options={employeeOptions.map((e) => String(e.name ?? ""))}
@@ -95,44 +126,51 @@ export function DeviceIdDeletionPanel({ masterKey: _masterKey }: { masterKey: st
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
 
       {searched && (
-        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col">
-          <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
-            <table className="w-full text-left border-collapse">
-              <thead className="bg-surface-subtle sticky top-0 z-10">
-                <tr>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Field Force Name</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">HQ</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Designation</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Device Id</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 && (
-                  <tr><td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
-                )}
-                {rows.map((row) => {
-                  const emp = employeeByName.get(String(row.fieldForceName ?? ""));
-                  return (
-                  <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.territory ?? row.hq ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.designation ?? row.designation ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.deviceId ?? "")}</td>
-                    <td className="px-4 py-3 text-sm text-text-primary">{String(row.status ?? "")}</td>
-                    <td className="px-4 py-3 text-sm">
-                      <button className="button-secondary" type="button" disabled={deletingId === row.id} onClick={() => handleDelete(row.id)}>
-                        {deletingId === row.id ? "Deleting..." : "Delete"}
-                      </button>
-                    </td>
+        <>
+          <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col">
+            <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
+              <table className="w-full text-left border-collapse">
+                <thead className="bg-surface-subtle sticky top-0 z-10">
+                  <tr>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">S.No</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">
+                      <input type="checkbox" checked={allSelected} onChange={toggleAll} disabled={rows.length === 0} />
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Employee Id</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">FieldForce Name</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">HQ</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Designation</th>
                   </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {rows.length === 0 && (
+                    <tr><td colSpan={6} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
+                  )}
+                  {rows.map((row, idx) => {
+                    const emp = employeeByName.get(normalizeName(String(row.fieldForceName ?? "")));
+                    return (
+                      <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                        <td className="px-4 py-3 text-sm text-text-primary">{idx + 1}</td>
+                        <td className="px-4 py-3">
+                          <input type="checkbox" checked={selected.has(row.id)} onChange={() => toggleOne(row.id)} />
+                        </td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.employeeCode ?? row.employeeId ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.territory ?? row.hq ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.designation ?? row.designation ?? "")}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+          <div className="flex items-center justify-end">
+            <button className="button" type="button" disabled={deleting || selected.size === 0} onClick={handleDelete}>
+              {deleting ? "Deleting..." : `Delete${selected.size ? ` (${selected.size})` : ""}`}
+            </button>
+          </div>
+        </>
       )}
     </section>
   );

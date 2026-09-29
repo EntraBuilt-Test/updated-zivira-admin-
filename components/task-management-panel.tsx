@@ -10,12 +10,33 @@ import { CustomSelect } from "@/components/custom-select";
 // Charts are real, lightweight inline SVG (no charting lib is installed in
 // this project yet) driven by real per-status counts — genuinely zero/empty
 // when no tasks exist, never a fabricated placeholder number.
-const MODE_OF_TASK_OPTIONS = [
+// Round 12 item 9 — fallback only, used if the real TaskMode master (Mode
+// Creation tab, seeded with these exact same rows on first use) can't be
+// reached; the real dropdown is driven by useModeOfTaskOptions() below.
+const FALLBACK_MODE_OF_TASK_OPTIONS = [
   "Allowance Variance", "Call Adherance", "Campaign Doctors", "Chemist Based", "Chemist Call Average",
   "Chemist Master Updation", "Chemist POB", "Core Doctors", "Coverage", "Delayed Reports",
   "Device ID Maintenance", "Digital Detailing", "Doctor Based", "Doctor Call Average", "Doctor Coverage",
   "Doctor Master Updation", "Doctor POB", "Doctor wise Call Feedback", "Fare Calculation"
 ];
+
+// Round 12 item 9 — Mode of Task options now come from the real, editable
+// TaskMode master (Task Management > Mode Creation), not a hardcoded list.
+function useModeOfTaskOptions(): string[] {
+  const [options, setOptions] = useState<string[]>(FALLBACK_MODE_OF_TASK_OPTIONS);
+  useEffect(() => {
+    apiClient
+      .taskModeList()
+      .then((res) => {
+        const names = (res.data as unknown as { taskName?: string }[])
+          .map((m) => String(m.taskName ?? ""))
+          .filter(Boolean);
+        if (names.length) setOptions(names);
+      })
+      .catch(() => {});
+  }, []);
+  return options;
+}
 
 const HOME_STATUSES = ["New", "Pending", "Completed", "Closed", "ReOpen", "Hold"] as const;
 const STATUS_TAB_STATUSES = ["New", "Pending", "Completed", "Closed", "ReOpen", "Hold", "Cancel"] as const;
@@ -194,6 +215,7 @@ function HomeTab() {
 }
 
 function AssignTab() {
+  const modeOfTaskOptions = useModeOfTaskOptions();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [modeOfTask, setModeOfTask] = useState("");
   const [priority, setPriority] = useState("");
@@ -243,7 +265,7 @@ function AssignTab() {
       <div className="grid grid-cols-2 gap-4">
         <div>
           <span className="block text-xs font-medium text-text-muted mb-1">Mode of Task</span>
-          <CustomSelect value={modeOfTask} options={MODE_OF_TASK_OPTIONS} onChange={setModeOfTask} placeholder="---Select---" />
+          <CustomSelect value={modeOfTask} options={modeOfTaskOptions} onChange={setModeOfTask} placeholder="---Select---" />
         </div>
         <div>
           <span className="block text-xs font-medium text-text-muted mb-1">Priority</span>
@@ -279,6 +301,7 @@ const cell: React.CSSProperties = { border: "1px solid #94a3b8", padding: "6px 8
 const head: React.CSSProperties = { ...cell, background: "#0e7490", color: "#fff", fontWeight: 600 };
 
 function StatusTab() {
+  const modeOfTaskOptions = useModeOfTaskOptions();
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [fieldForce, setFieldForce] = useState("Team Task (ALL)");
   const [priority, setPriority] = useState("ALL");
@@ -327,7 +350,7 @@ function StatusTab() {
         </div>
         <div style={{ minWidth: 220 }}>
           <span className="block text-xs font-medium text-text-muted mb-1">Mode of Task</span>
-          <CustomSelect value={modeOfTask} options={["ALL", ...MODE_OF_TASK_OPTIONS]} onChange={setModeOfTask} />
+          <CustomSelect value={modeOfTask} options={["ALL", ...modeOfTaskOptions]} onChange={setModeOfTask} />
         </div>
         <button className="button" type="button" onClick={go} disabled={loading}>{loading ? "Loading..." : "Go"}</button>
       </div>
@@ -452,13 +475,145 @@ function TrackTab() {
   );
 }
 
-export function TaskManagementPanel({ masterKey: _masterKey }: { masterKey: string }) {
+type TaskMode = { id: string; shortName: string; taskName: string };
+
+// Round 12 item 9 — sanpharma's real "Mode Of Task" CRUD screen: Short
+// Name + Task Name inputs, Submit/Reset, and a table of every mode with an
+// Edit action. This is the real data source behind the "Mode of Task"
+// dropdown used throughout Task Assign (see useModeOfTaskOptions above) —
+// restoring the screen that the Round 11 build replaced.
+function ModeCreationTab() {
+  const [modes, setModes] = useState<TaskMode[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [shortName, setShortName] = useState("");
+  const [taskName, setTaskName] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  function load() {
+    setLoading(true);
+    apiClient
+      .taskModeList()
+      .then((res) => setModes(res.data as unknown as TaskMode[]))
+      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load Mode Of Task list"))
+      .finally(() => setLoading(false));
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  function reset() {
+    setShortName("");
+    setTaskName("");
+    setEditingId(null);
+  }
+
+  function startEdit(mode: TaskMode) {
+    setEditingId(mode.id);
+    setShortName(mode.shortName);
+    setTaskName(mode.taskName);
+  }
+
+  async function submit() {
+    if (!shortName.trim() || !taskName.trim()) {
+      setError("Short Name and Task Name are both required.");
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      if (editingId) {
+        await apiClient.updateTaskMode(editingId, { shortName: shortName.trim(), taskName: taskName.trim() });
+      } else {
+        await apiClient.createTaskMode({ shortName: shortName.trim(), taskName: taskName.trim() });
+      }
+      reset();
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to save Mode Of Task");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div>
+        <h3 className="text-lg font-bold text-text-primary">Mode Of Task</h3>
+      </div>
+
+      <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-wrap items-end gap-3 w-full">
+        <div style={{ minWidth: 200 }}>
+          <span className="block text-xs font-medium text-text-muted mb-1">Short Name</span>
+          <input
+            className="border border-border-subtle rounded-lg px-3 py-2 text-sm w-full"
+            value={shortName}
+            onChange={(e) => setShortName(e.target.value)}
+          />
+        </div>
+        <div style={{ minWidth: 260 }}>
+          <span className="block text-xs font-medium text-text-muted mb-1">Task Name</span>
+          <input
+            className="border border-border-subtle rounded-lg px-3 py-2 text-sm w-full"
+            value={taskName}
+            onChange={(e) => setTaskName(e.target.value)}
+          />
+        </div>
+        <button className="button" type="button" onClick={submit} disabled={saving}>
+          {saving ? "Saving..." : editingId ? "Update" : "Submit"}
+        </button>
+        <button className="button-secondary" type="button" onClick={reset} disabled={saving}>
+          Reset
+        </button>
+      </div>
+
+      {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
+
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col">
+        <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10">
+              <tr>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">S.No</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Short Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Task Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {!loading && modes.length === 0 && (
+                <tr><td colSpan={4} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
+              )}
+              {modes.map((m, idx) => (
+                <tr key={m.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                  <td className="px-4 py-3 text-sm text-text-primary">{idx + 1}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary">{m.shortName}</td>
+                  <td className="px-4 py-3 text-sm text-text-primary">{m.taskName}</td>
+                  <td className="px-4 py-3 text-sm">
+                    <button className="button-secondary" type="button" onClick={() => startEdit(m)}>Edit</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Round 11 item 5's original self-contained Home/Assign/Status/Track system
+// — kept fully intact, now nested as the "Task Assign" tab alongside the
+// new "Mode Creation" tab (Round 12 item 9) rather than being the whole
+// Task Management screen.
+function TaskAssignSystem() {
   const [tab, setTab] = useState<"home" | "assign" | "status" | "track">("home");
 
   return (
     <section className="flex flex-col gap-6 w-full">
       <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-2xl font-bold text-text-primary">Task Management System</h2>
         <div className="flex gap-2 border-b border-border-subtle">
           {[
             { key: "home", label: "Home" },
@@ -482,6 +637,36 @@ export function TaskManagementPanel({ masterKey: _masterKey }: { masterKey: stri
       {tab === "assign" && <AssignTab />}
       {tab === "status" && <StatusTab />}
       {tab === "track" && <TrackTab />}
+    </section>
+  );
+}
+
+export function TaskManagementPanel({ masterKey: _masterKey }: { masterKey: string }) {
+  const [topTab, setTopTab] = useState<"modeCreation" | "taskAssign">("taskAssign");
+
+  return (
+    <section className="flex flex-col gap-6 w-full">
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <h2 className="text-2xl font-bold text-text-primary">Task Management</h2>
+        <div className="flex gap-2 border-b border-border-subtle">
+          {[
+            { key: "modeCreation", label: "Mode Creation" },
+            { key: "taskAssign", label: "Task Assign" }
+          ].map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              className={`px-4 py-2 text-sm font-medium ${topTab === t.key ? "border-b-2 border-brand-primary text-brand-primary" : "text-text-muted"}`}
+              onClick={() => setTopTab(t.key as typeof topTab)}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {topTab === "modeCreation" && <ModeCreationTab />}
+      {topTab === "taskAssign" && <TaskAssignSystem />}
     </section>
   );
 }

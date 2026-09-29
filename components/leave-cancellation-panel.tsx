@@ -161,29 +161,34 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
               <table className="w-full text-left border-collapse">
                 <thead className="bg-surface-subtle sticky top-0 z-10">
                   <tr>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">S.No</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">
-                      <input type="checkbox" checked={allSelected} onChange={toggleAll} disabled={cancellableRows.length === 0} />
+                      <span className="flex items-center gap-1">
+                        <input type="checkbox" checked={allSelected} onChange={toggleAll} disabled={cancellableRows.length === 0} />
+                        Cancel All
+                      </span>
                     </th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Employee Id</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Field Force Name</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">FieldForce Name</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">HQ</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Designation</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Leave Applied Date</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">From Date</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">To Date</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">No of Days</th>
                     <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Approved By</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Status</th>
                   </tr>
                 </thead>
                 <tbody>
                   {rows.length === 0 && (
-                    <tr><td colSpan={10} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
+                    <tr><td colSpan={11} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
                   )}
-                  {rows.map((row) => {
+                  {rows.map((row, idx) => {
                     const isCancelled = String(row.status ?? "Active") === "Cancelled";
                     const emp = employeeByName.get(String(row.fieldForceName ?? ""));
                     return (
                       <tr key={row.id} className="border-b border-border-subtle hover:bg-surface-subtle/60">
+                        <td className="px-4 py-3 text-sm text-text-primary">{idx + 1}</td>
                         <td className="px-4 py-3">
                           <input
                             type="checkbox"
@@ -191,16 +196,17 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
                             disabled={isCancelled}
                             onChange={() => toggleOne(row.id)}
                           />
+                          {isCancelled ? <span className="ml-2 text-xs text-text-muted">(Cancelled)</span> : null}
                         </td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.employeeCode ?? row.employeeId ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.territory ?? row.hq ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.designation ?? row.designation ?? "")}</td>
+                        <td className="px-4 py-3 text-sm text-text-primary">{String(row.leaveAppliedDate ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.fromDate ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.toDate ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.noOfDays ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.approvedBy ?? "")}</td>
-                        <td className="px-4 py-3 text-sm text-text-primary">{isCancelled ? "Cancelled" : "Active"}</td>
                       </tr>
                     );
                   })}
