@@ -277,9 +277,18 @@ function AssignTab() {
         </div>
         <div>
           <span className="block text-xs font-medium text-text-muted mb-1">Deadline</span>
-          <div className="flex gap-2">
-            <input className="input" type="date" value={deadlineFrom} onChange={(e) => setDeadlineFrom(e.target.value)} />
-            <input className="input" type="date" value={deadlineTo} onChange={(e) => setDeadlineTo(e.target.value)} />
+          {/* Round 15 — .input is `w-full`, and two `w-full` inputs in a plain
+              flex row both try to claim 100% of the row's width with no
+              min-width:0 to let them actually shrink below their native
+              date-input content size, so the second one overflowed straight
+              past the card's right edge. flex-1 + min-w-0 makes them share
+              the row's real width instead of each demanding it in full;
+              flex-wrap is a safety net so they stack instead of overflowing
+              if the column ever gets narrower than both can hold (small
+              screens / a sidebar reflow) rather than clipping again. */}
+          <div className="flex flex-wrap gap-2">
+            <input className="input flex-1 min-w-0" type="date" value={deadlineFrom} onChange={(e) => setDeadlineFrom(e.target.value)} />
+            <input className="input flex-1 min-w-0" type="date" value={deadlineTo} onChange={(e) => setDeadlineTo(e.target.value)} />
           </div>
         </div>
       </div>
