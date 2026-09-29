@@ -190,7 +190,11 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         node("MSIS", "msis", "division", [node("View", "view", "division")]),
         node("Leave Entitlement", "leave-entitlement", "division", [node("Entry", "entry", "division"), node("View", "view", "division")]),
         node("Audit Report", "audit-report", "division"),
-        node("Login Details", "login-details", "division", [node("Manager", "manager", "division"), node("Fieldrepo", "fieldrepo", "division")]),
+        // Round 11 item 4 — sanpharma has ONE Login Details screen, not
+        // separate Manager/Fieldrepo pages; the two child nodes made this
+        // render a generic parent-listing page with "Ready module"
+        // placeholder cards instead of ever reaching the real panel.
+        node("Login Details", "login-details", "division"),
         node("Login Into Fieldforce", "login-into-fieldforce", "division"),
         node("Task Management", "task-management", "division", [node("Mode Creation", "mode-creation", "division"), node("Task Assign", "task-assign", "division")]),
         node("Order Booking View", "order-booking-view", "division"),

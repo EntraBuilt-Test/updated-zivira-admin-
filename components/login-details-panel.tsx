@@ -4,12 +4,15 @@ import { useEffect, useState } from "react";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
-// Round 8 item 10 — real Login Details / "Not Login Details" report, from
-// LoginEventModel rows recorded on every successful login going forward
-// (see auth.routes.ts / login-event.model.ts). An employee with no recorded
-// login shows a real blank "-" rather than a fabricated date.
+// Round 8 item 10 / Round 11 item 4 — real Login Details / "Not Login
+// Details" report from real LoginEventModel rows. Two genuinely different
+// result tables (List mode vs Not-Login mode), matching sanpharma's
+// Login_Details.aspx exactly, including its "Filed Force Name" label typo.
 const cell: React.CSSProperties = { border: "1px solid #94a3b8", padding: "6px 8px", textAlign: "center", fontSize: 12 };
 const head: React.CSSProperties = { ...cell, background: "#0e7490", color: "#fff", fontWeight: 600 };
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const YEARS = Array.from({ length: 6 }, (_, i) => String(new Date().getFullYear() - 3 + i));
 
 function employeeLabel(e: Employee): string {
   return `${e.name} - ${e.designation} - ${e.territory}`;
@@ -26,12 +29,13 @@ function fmtDateTime(v: string | null): string {
   if (!v) return "-";
   const d = new Date(v);
   if (Number.isNaN(d.getTime())) return "-";
-  return `${d.toLocaleDateString("en-GB").replace(/\//g, "-")} ${d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`;
+  return `${d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })} ${d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
 }
 
 type ListRow = {
   empCode: string; joiningDate: string | null; fieldForceName: string; designation: string; hq: string;
-  firstLevelManager: string; secondLevelManager: string; loginTimestamps: string[];
+  reportingTo: string; loginTimestamps: string[]; lastDcrDate: string | null; lastLoginDate: string | null;
+  daysBetweenLastDcrAndLogin: number | null;
 };
 
 type NotLoginRow = {
@@ -42,27 +46,21 @@ type NotLoginRow = {
 
 export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string }) {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  // Round 10 item 3 — Field Force Name was only ever populated after the
-  // panel's own View/Search action ran, so the dropdown showed nothing
-  // until then (and never, if that action is gated behind another required
-  // field). Prefetch on mount like every other populated dropdown does.
-  useEffect(() => {
-    apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
-  }, []);
-
   const [fieldForceName, setFieldForceName] = useState("admin");
-  const [from, setFrom] = useState(() => {
-    const d = new Date(); d.setDate(d.getDate() - 3);
-    return d.toISOString().slice(0, 10);
-  });
-  const [to, setTo] = useState(() => new Date().toISOString().slice(0, 10));
-  const [withoutVacant, setWithoutVacant] = useState(false);
-  const [notLoginEnabled, setNotLoginEnabled] = useState(true);
+  const [month, setMonth] = useState(MONTHS[new Date().getMonth()]);
+  const [year, setYear] = useState(String(new Date().getFullYear()));
+  const [withoutVacant, setWithoutVacant] = useState(true);
+  const [notLoginEnabled, setNotLoginEnabled] = useState(false);
   const [notLoginDays, setNotLoginDays] = useState("4");
   const [listRows, setListRows] = useState<ListRow[] | null>(null);
   const [notLoginRows, setNotLoginRows] = useState<NotLoginRow[] | null>(null);
+  const [range, setRange] = useState<{ from: string; to: string } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
+  }, []);
 
   async function view() {
     setError(null);
@@ -70,19 +68,35 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
     setListRows(null);
     setNotLoginRows(null);
     try {
-      const empRes = employees.length ? { data: employees } : await apiClient.employees();
-      setEmployees(empRes.data);
-      const params = {
-        fieldForceName: fieldForceName === "admin" ? "" : fieldForceName.split(" - ")[0],
-        from,
-        to,
-        withoutVacant: String(withoutVacant)
-      };
+      const fieldForce = fieldForceName === "admin" ? "" : fieldForceName.split(" - ")[0];
       if (notLoginEnabled) {
-        const res = await apiClient.loginDetails({ ...params, notLoginDays, mode: "notlogin" });
+        const to = new Date();
+        const from = new Date();
+        from.setDate(from.getDate() - (Number(notLoginDays) || 0));
+        const fromIso = from.toISOString().slice(0, 10);
+        const toIso = to.toISOString().slice(0, 10);
+        setRange({ from: fromIso, to: toIso });
+        const res = await apiClient.loginDetails({
+          fieldForceName: fieldForce,
+          from: fromIso,
+          to: toIso,
+          withoutVacant: String(withoutVacant),
+          notLoginDays,
+          mode: "notlogin"
+        });
         setNotLoginRows(res.data as unknown as NotLoginRow[]);
       } else {
-        const res = await apiClient.loginDetails({ ...params, mode: "list" });
+        const monthIdx = MONTHS.indexOf(month);
+        const fromIso = new Date(Date.UTC(Number(year), monthIdx, 1)).toISOString().slice(0, 10);
+        const toIso = new Date(Date.UTC(Number(year), monthIdx + 1, 0)).toISOString().slice(0, 10);
+        setRange({ from: fromIso, to: toIso });
+        const res = await apiClient.loginDetails({
+          fieldForceName: fieldForce,
+          from: fromIso,
+          to: toIso,
+          withoutVacant: String(withoutVacant),
+          mode: "list"
+        });
         setListRows(res.data as unknown as ListRow[]);
       }
     } catch (err) {
@@ -110,22 +124,38 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
               placeholder="admin"
             />
           </div>
-          <div>
-            <span className="block text-xs font-medium text-text-muted mb-1">*From</span>
-            <input className="input" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
+          <div style={{ minWidth: 100 }}>
+            <span className="block text-xs font-medium text-text-muted mb-1">Month</span>
+            <CustomSelect value={month} options={MONTHS} onChange={setMonth} />
           </div>
-          <div>
-            <span className="block text-xs font-medium text-text-muted mb-1">*To</span>
-            <input className="input" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
+          <div style={{ minWidth: 100 }}>
+            <span className="block text-xs font-medium text-text-muted mb-1">Year</span>
+            <CustomSelect value={year} options={YEARS} onChange={setYear} />
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-4">
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={withoutVacant} onChange={(e) => setWithoutVacant(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={withoutVacant}
+              onChange={(e) => {
+                // Round 11 item 4 — sanpharma treats these two like radio
+                // buttons: only one applies to a given View.
+                setWithoutVacant(e.target.checked);
+                if (e.target.checked) setNotLoginEnabled(false);
+              }}
+            />
             Without Vacant
           </label>
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={notLoginEnabled} onChange={(e) => setNotLoginEnabled(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={notLoginEnabled}
+              onChange={(e) => {
+                setNotLoginEnabled(e.target.checked);
+                if (e.target.checked) setWithoutVacant(false);
+              }}
+            />
             Whoever Not login more than....
             <input
               className="input"
@@ -146,7 +176,8 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
 
       {listRows && (
         <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 overflow-x-auto">
-          <h3 className="text-lg font-bold mb-3">Login Details ({from} to {to})</h3>
+          <h3 className="text-lg font-bold mb-1">Login Details For the Month Of - {month} {year}</h3>
+          <p className="text-sm font-medium text-text-muted mb-3">Field Force Name : {fieldForceName}</p>
           <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
             <thead>
               <tr>
@@ -156,28 +187,30 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
                 <th style={head}>FieldForce Name</th>
                 <th style={head}>Designation</th>
                 <th style={head}>HQ</th>
-                <th style={head}>First Level Manager</th>
-                <th style={head}>Second Level Manager</th>
-                <th style={head}>Login Timestamps</th>
+                <th style={head}>Reporting to</th>
+                <th style={head}>Login Date(MM/DD/YY)</th>
+                <th style={head}>Last DCR Date</th>
+                <th style={head}>Last Login Date</th>
+                <th style={head}>No. of days b/w Last DCR date and Login date</th>
               </tr>
             </thead>
             <tbody>
-              {listRows.length === 0 && <tr><td style={cell} colSpan={9}>No Records Found</td></tr>}
+              {listRows.length === 0 && <tr><td style={cell} colSpan={11}>No Records Found</td></tr>}
               {listRows.map((r, i) => (
-                <tr key={r.empCode}>
+                <tr key={r.empCode} style={{ background: i % 2 === 0 ? "#fff7ed" : "#fef3c7" }}>
                   <td style={cell}>{i + 1}</td>
                   <td style={cell}>{r.empCode}</td>
                   <td style={cell}>{fmtDate(r.joiningDate)}</td>
                   <td style={{ ...cell, fontWeight: 600 }}>{r.fieldForceName}</td>
                   <td style={cell}>{r.designation}</td>
                   <td style={cell}>{r.hq}</td>
-                  <td style={cell}>{r.firstLevelManager}</td>
-                  <td style={cell}>{r.secondLevelManager}</td>
-                  <td style={{ ...cell, textAlign: "left" }}>
-                    {r.loginTimestamps.length
-                      ? r.loginTimestamps.map((t) => fmtDateTime(t)).join(", ")
-                      : "-"}
+                  <td style={cell}>{r.reportingTo}</td>
+                  <td style={{ ...cell, textAlign: "left", whiteSpace: "pre-line" }}>
+                    {r.loginTimestamps.length ? r.loginTimestamps.map((t) => fmtDateTime(t)).join("\n") : "-"}
                   </td>
+                  <td style={cell}>{fmtDate(r.lastDcrDate)}</td>
+                  <td style={cell}>{fmtDate(r.lastLoginDate)}</td>
+                  <td style={cell}>{r.daysBetweenLastDcrAndLogin ?? "-"}</td>
                 </tr>
               ))}
             </tbody>
@@ -187,7 +220,10 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
 
       {notLoginRows && (
         <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 overflow-x-auto">
-          <h3 className="text-lg font-bold mb-3">Not - Login Details (Duration Between {from} and {to})</h3>
+          <h3 className="text-lg font-bold mb-1">
+            Not - Login Details (Duration Between {range ? fmtDate(range.from) : ""} and {range ? fmtDate(range.to) : ""})
+          </h3>
+          <p className="text-xs text-red-600 font-medium mb-3">* Yellow Color Indicates, Whoever Not login in between Selected Dates</p>
           <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
             <thead>
               <tr>
@@ -206,7 +242,10 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
             </thead>
             <tbody>
               {notLoginRows.length === 0 && <tr><td style={cell} colSpan={11}>No Records Found</td></tr>}
-              {notLoginRows.map((r, i) => (
+              {notLoginRows
+                .slice()
+                .sort((a, b) => b.durationOfWoLoginDays - a.durationOfWoLoginDays)
+                .map((r, i) => (
                 <tr key={r.empCode} style={r.highlight ? { background: "#fef9c3" } : undefined}>
                   <td style={cell}>{i + 1}</td>
                   <td style={cell}>{r.empCode}</td>
@@ -223,7 +262,6 @@ export function LoginDetailsPanel({ masterKey: _masterKey }: { masterKey: string
               ))}
             </tbody>
           </table>
-          <p className="text-xs text-text-muted mt-2">* Yellow Color Indicates more than double the threshold days without login.</p>
         </div>
       )}
     </section>

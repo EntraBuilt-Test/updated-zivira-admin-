@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { apiClient } from "@/lib/api-client";
+import { useEffect, useState } from "react";
+import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
 // Round 8 item 8 — real editable Leave Entitlement grid, matching
@@ -44,7 +44,15 @@ function fmtDate(v: string | null): string {
   return d.toLocaleDateString("en-GB").replace(/\//g, "-");
 }
 
+function employeeLabel(e: Employee): string {
+  return `${e.name} - ${e.designation} - ${e.territory}`;
+}
+
 export function LeaveEntitlementPanel({ masterKey: _masterKey }: { masterKey: string }) {
+  // Round 11 item 3 — sanpharma's real screen is a per-employee search form
+  // (Fieldforce Name + Year + View), not an all-employees grid up front.
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [fieldForceName, setFieldForceName] = useState("");
   const [year, setYear] = useState(String(new Date().getFullYear()));
   const [rows, setRows] = useState<GridRow[]>([]);
   const [edits, setEdits] = useState<Record<string, { cl: string; pl: string; sl: string; lop: string }>>({});
@@ -54,13 +62,22 @@ export function LeaveEntitlementPanel({ masterKey: _masterKey }: { masterKey: st
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
+  useEffect(() => {
+    apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
+  }, []);
+
   async function load() {
     setError(null);
     setMessage(null);
     setLoading(true);
     try {
       const res = await apiClient.leaveEntitlementGrid(year);
-      const data = res.data as unknown as GridRow[];
+      const selectedCode = fieldForceName ? fieldForceName.split(" - ")[0] : "";
+      const allRows = res.data as unknown as GridRow[];
+      const data = selectedCode
+        ? allRows.filter((r) => employees.find((e) => e.employeeCode === r.employeeCode)?.name === selectedCode
+            || r.fieldForceName === selectedCode)
+        : allRows;
       setRows(data);
       setEdits(
         Object.fromEntries(
@@ -115,12 +132,21 @@ export function LeaveEntitlementPanel({ masterKey: _masterKey }: { masterKey: st
       </div>
 
       <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-wrap items-end gap-3 w-full">
+        <div style={{ minWidth: "260px" }}>
+          <span className="block text-xs font-medium text-text-muted mb-1">Fieldforce Name</span>
+          <CustomSelect
+            value={fieldForceName}
+            options={employees.map(employeeLabel)}
+            onChange={setFieldForceName}
+            placeholder="Select employee"
+          />
+        </div>
         <div style={{ minWidth: "140px" }}>
           <span className="block text-xs font-medium text-text-muted mb-1">Year</span>
           <CustomSelect value={year} options={yearOptions} onChange={setYear} placeholder="Year" />
         </div>
-        <button className="button" type="button" onClick={load} disabled={loading}>
-          {loading ? "Loading..." : "Load"}
+        <button className="button" type="button" onClick={load} disabled={loading || !fieldForceName}>
+          {loading ? "Loading..." : "View"}
         </button>
         {loaded && (
           <button className="button button-secondary" type="button" onClick={finalSubmit} disabled={saving}>

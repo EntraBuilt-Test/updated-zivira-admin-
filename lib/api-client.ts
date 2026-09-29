@@ -1407,6 +1407,22 @@ export const apiClient = {
     return request<Record<string, unknown>[]>(`/company/masters/managerMissedCallView/action/list${toQueryString(params)}`);
   },
 
+  // ── Round 11 item 1 — Expense Consolidated View ────────────────────────
+  expenseConsolidatedView(params: { month?: string; year?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/expenseConsolidatedView/action/list${toQueryString(params)}`);
+  },
+
+  // ── Round 11 item 5 — Task Management System ───────────────────────────
+  taskList(params: { assignedToEmployeeCode?: string; assignedByMe?: string; priority?: string; modeOfTask?: string; month?: string; year?: string }) {
+    return request<Record<string, unknown>[]>(`/company/masters/task/action/list${toQueryString(params)}`);
+  },
+  createTask(input: { modeOfTask: string; priority: string; assignedToEmployeeCode: string; deadlineFrom?: string | null; deadlineTo?: string | null; description: string }) {
+    return request<Record<string, unknown>>("/company/masters/task/action/create", {
+      method: "POST",
+      body: JSON.stringify(input)
+    });
+  },
+
   // ── PRD 12.5 — GST Multi-Branch: Admin "Branches & GST" tab ────────────
   branches() {
     return request<CompanyBranch[]>("/company/branches");

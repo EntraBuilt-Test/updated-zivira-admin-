@@ -47,6 +47,8 @@ import { LoginDetailsPanel } from "@/components/login-details-panel";
 import { ActivityMasterPanel } from "@/components/activity-master-panel";
 import { ActivityStatusPanel } from "@/components/activity-status-panel";
 import { ManagerMissedCallViewPanel } from "@/components/manager-missed-call-view-panel";
+import { ExpenseConsolidatedViewPanel } from "@/components/expense-consolidated-view-panel";
+import { TaskManagementPanel } from "@/components/task-management-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -58,7 +60,7 @@ import { ManagerMissedCallViewPanel } from "@/components/manager-missed-call-vie
  */
 export function MasterScreen({ masterKey }: { masterKey: string }) {
   const [uiKind, setUiKind] = useState<
-    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | "coverageAnalysis2" | "leaveEntitlement" | "leaveStatusView" | "sampleDispatchView" | "sampleDispatchStatus" | "inputDispatchView" | "inputDispatchStatus" | "msisView" | "loginDetails" | "activityMaster" | "activityStatusReport" | "managerMissedCallReport" | null
+    "table" | "approvalQueue" | "reportFilter" | "changePassword" | "vacantMrLogin" | "vacantMrPermission" | "loginAsEmployee" | "notificationSend" | "upload" | "mailBox" | "quizAuthoring" | "dashboardBuilder" | "doctorCampaignFilter" | "tpDelete" | "dcrEdit" | "mailDelete" | "leaveCancellation" | "deviceIdDeletion" | "drUniqueNoGeneration" | "chemistReleaseLockMonthwise" | "autoMailSetup" | "screenAccessSetup" | "baseLevelSetup" | "managerSetup" | "approvalMandatorySetup" | "managerwiseCoreDoctorMap" | "screenwiseLock" | "mailFolderCreation" | "otherSetup" | "homepageDashboardDisplay" | "leaveTypeSetup" | "leavePolicySetup" | "deviceLock" | "coverageAnalysis2" | "leaveEntitlement" | "leaveStatusView" | "sampleDispatchView" | "sampleDispatchStatus" | "inputDispatchView" | "inputDispatchStatus" | "msisView" | "loginDetails" | "activityMaster" | "activityStatusReport" | "managerMissedCallReport" | "expenseConsolidatedView" | "taskManagement" | null
   >(null);
 
   useEffect(() => {
@@ -120,6 +122,8 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "activityMaster") return <ActivityMasterPanel masterKey={masterKey} />;
   if (uiKind === "activityStatusReport") return <ActivityStatusPanel masterKey={masterKey} />;
   if (uiKind === "managerMissedCallReport") return <ManagerMissedCallViewPanel masterKey={masterKey} />;
+  if (uiKind === "expenseConsolidatedView") return <ExpenseConsolidatedViewPanel masterKey={masterKey} />;
+  if (uiKind === "taskManagement") return <TaskManagementPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

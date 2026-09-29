@@ -420,12 +420,10 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <MasterScreen masterKey="auditReport" />;
   }
 
-  if (pathStr.endsWith("login-details/manager")) {
+  // Round 11 item 4 — collapsed into sanpharma's single real Login Details
+  // screen (the tree node no longer has Manager/Fieldrepo children).
+  if (pathStr.endsWith("login-details")) {
     return <MasterScreen masterKey="loginDetailsManager" />;
-  }
-
-  if (pathStr.endsWith("login-details/fieldrepo")) {
-    return <MasterScreen masterKey="loginDetailsFieldrepo" />;
   }
 
   if (pathStr.endsWith("activities/login-into-fieldforce")) {
@@ -436,8 +434,12 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GenericMasterTable masterKey="taskModeCreation" />;
   }
 
-  if (pathStr.endsWith("task-management/task-assign")) {
-    return <GenericMasterTable masterKey="taskAssign" />;
+  // Round 11 item 5 — replaced the generic mock table with sanpharma's real,
+  // self-contained 4-tab Task Management System (own Home/Assign/Status/
+  // Track nav); reachable from both the parent node and its Task Assign
+  // child since sanpharma's whole app lives behind this one entry point.
+  if (pathStr.endsWith("task-management/task-assign") || pathStr.endsWith("division-navigation-tabs/activities/task-management")) {
+    return <MasterScreen masterKey="taskManagementSystem" />;
   }
 
   if (pathStr.endsWith("activities/order-booking-view")) {

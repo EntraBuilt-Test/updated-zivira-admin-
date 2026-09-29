@@ -25,6 +25,7 @@ function employeeLabel(e: Employee): string {
 }
 
 type Row = {
+  pack: string;
   productName: string;
   rate: number | string;
   hqSalesQty: number; hqSalesVal: number | string;
@@ -143,6 +144,7 @@ export function MsisViewPanel({ masterKey: _masterKey }: { masterKey: string }) 
                     <tr>
                       <th style={head} rowSpan={2}>S.No</th>
                       <th style={head} rowSpan={2}>Product Name</th>
+                      <th style={head} rowSpan={2}>Pack</th>
                       <th style={head} rowSpan={2}>Rate</th>
                       <th style={head} colSpan={2}>HQ Sales</th>
                       <th style={head} colSpan={2}>Less Infiltration</th>
@@ -161,26 +163,33 @@ export function MsisViewPanel({ masterKey: _masterKey }: { masterKey: string }) 
                   </>
                 ) : (
                   <tr>
-                    <th style={head} rowSpan={2}>S.No</th>
-                    <th style={head} rowSpan={2}>Product Name</th>
-                    <th style={head} rowSpan={2}>Rate</th>
-                    <th style={head} colSpan={2}>HQ Sales</th>
-                    <th style={head} colSpan={2}>Total Sales</th>
+                    <th style={head} rowSpan={3}>S.No</th>
+                    <th style={head} rowSpan={3}>Product Name</th>
+                    <th style={head} rowSpan={3}>Pack</th>
+                    <th style={head} rowSpan={3}>Rate</th>
+                    <th style={head} colSpan={4}>{fromMonth} - {fromYear}</th>
                   </tr>
                 )}
                 {mode === "Periodically" && (
-                  <tr>
-                    <th style={head}>Qty</th><th style={head}>Val</th>
-                    <th style={head}>Qty</th><th style={head}>Val</th>
-                  </tr>
+                  <>
+                    <tr>
+                      <th style={head} colSpan={2}>HQ-Sales</th>
+                      <th style={head} colSpan={2}>Total-Sales</th>
+                    </tr>
+                    <tr>
+                      <th style={head}>Qty</th><th style={head}>Val</th>
+                      <th style={head}>Qty</th><th style={head}>Val</th>
+                    </tr>
+                  </>
                 )}
               </thead>
               <tbody>
-                {rows.length === 0 && <tr><td style={cell} colSpan={mode === "Monthwise" ? 13 : 7}>No Records Found</td></tr>}
+                {rows.length === 0 && <tr><td style={cell} colSpan={mode === "Monthwise" ? 14 : 8}>No Records Found</td></tr>}
                 {rows.map((r, i) => (
                   <tr key={r.productName}>
                     <td style={cell}>{i + 1}</td>
                     <td style={{ ...cell, fontWeight: 600 }}>{r.productName}</td>
+                    <td style={cell}>{r.pack}</td>
                     <td style={cell}>{r.rate}</td>
                     <td style={cell}>{r.hqSalesQty}</td>
                     <td style={cell}>{r.hqSalesVal}</td>
@@ -198,6 +207,15 @@ export function MsisViewPanel({ masterKey: _masterKey }: { masterKey: string }) 
                     <td style={cell}>{r.totalSalesVal}</td>
                   </tr>
                 ))}
+                {rows.length > 0 && mode === "Periodically" && (
+                  <tr>
+                    <td style={{ ...head, textAlign: "right" }} colSpan={4}>Grand Total:</td>
+                    <td style={head}>{rows.reduce((s, r) => s + (Number(r.hqSalesQty) || 0), 0)}</td>
+                    <td style={head}>{rows.reduce((s, r) => s + (Number(r.hqSalesVal) || 0), 0)}</td>
+                    <td style={head}>{rows.reduce((s, r) => s + (Number(r.totalSalesQty) || 0), 0)}</td>
+                    <td style={head}>{rows.reduce((s, r) => s + (Number(r.totalSalesVal) || 0), 0)}</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
