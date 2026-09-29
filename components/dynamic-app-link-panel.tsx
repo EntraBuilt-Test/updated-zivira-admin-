@@ -165,7 +165,14 @@ export function DynamicAppLinkPanel({ masterKey: _masterKey }: { masterKey: stri
           </button>
         </div>
 
-        {rows.length > 0 && (
+        {/* Round 17 item 3 — this master's own seed data included several
+            blank-menuName rows left over from the generic seeder's earlier
+            (pre-real-data) pass, which rendered as mostly-empty rows above
+            the two genuine entries an admin actually created. Per this
+            screen's own documented behavior ("once at least one link has
+            been saved... table appears"), only rows that actually carry a
+            real menu name belong here — never a placeholder/blank slot. */}
+        {rows.filter((r) => r.menuName && r.menuName.trim()).length > 0 && (
           <div className="flex justify-center">
             <table style={{ borderCollapse: "collapse" }} className="text-sm">
               <thead>
@@ -178,7 +185,7 @@ export function DynamicAppLinkPanel({ masterKey: _masterKey }: { masterKey: stri
                 </tr>
               </thead>
               <tbody>
-                {rows.map((row, i) => (
+                {rows.filter((r) => r.menuName && r.menuName.trim()).map((row, i) => (
                   <tr key={row.id}>
                     <td style={{ ...cell, textAlign: "center" }}>{i + 1}</td>
                     <td style={cell}>{row.menuType}</td>
