@@ -48,7 +48,6 @@ import { ActivityMasterPanel } from "@/components/activity-master-panel";
 import { ActivityStatusPanel } from "@/components/activity-status-panel";
 import { ManagerMissedCallViewPanel } from "@/components/manager-missed-call-view-panel";
 import { ExpenseConsolidatedViewPanel } from "@/components/expense-consolidated-view-panel";
-import { TaskManagementPanel } from "@/components/task-management-panel";
 
 /**
  * Looks up a master's uiKind before rendering, so each Activities/Options
@@ -123,7 +122,6 @@ export function MasterScreen({ masterKey }: { masterKey: string }) {
   if (uiKind === "activityStatusReport") return <ActivityStatusPanel masterKey={masterKey} />;
   if (uiKind === "managerMissedCallReport") return <ManagerMissedCallViewPanel masterKey={masterKey} />;
   if (uiKind === "expenseConsolidatedView") return <ExpenseConsolidatedViewPanel masterKey={masterKey} />;
-  if (uiKind === "taskManagement") return <TaskManagementPanel masterKey={masterKey} />;
   // Default ("table" or still loading) — the existing generic console, so
   // there's no flash of an empty state while the schema request is in flight.
   return <GenericMasterTable masterKey={masterKey} />;

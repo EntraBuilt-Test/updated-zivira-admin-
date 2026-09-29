@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GenericMasterTable } from "@/components/generic-master-table";
 import { MasterScreen } from "@/components/master-screen";
 import { AdminTabGrid } from "@/components/admin-tab-grid";
+import { TaskModeCreationPage, TaskAssignSystemPage } from "@/components/task-management-panel";
 import { AdminDcrView } from "@/components/admin-dcr-view";
 import { ExpenseMaster } from "@/components/expense-master";
 import { EmployeeManager } from "@/components/employee-manager";
@@ -430,16 +431,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GenericMasterTable masterKey="loginIntoFieldforce" />;
   }
 
+  // Round 14 — Task Management is now a landing page with two tile cards
+  // (Mode Creation / Task Assign), matching the Activity landing page's own
+  // Master & Screen Creation / Status pattern, rather than an in-page tab
+  // switch. The parent "task-management" path is deliberately left
+  // unmatched here so it falls through to the generic AdminTabGrid render
+  // further down (same fallback the Activity page itself relies on) —
+  // each child now gets its own dedicated route/component instead.
   if (pathStr.endsWith("task-management/mode-creation")) {
-    return <GenericMasterTable masterKey="taskModeCreation" />;
+    return <TaskModeCreationPage />;
   }
 
-  // Round 11 item 5 — replaced the generic mock table with sanpharma's real,
-  // self-contained 4-tab Task Management System (own Home/Assign/Status/
-  // Track nav); reachable from both the parent node and its Task Assign
-  // child since sanpharma's whole app lives behind this one entry point.
-  if (pathStr.endsWith("task-management/task-assign") || pathStr.endsWith("division-navigation-tabs/activities/task-management")) {
-    return <MasterScreen masterKey="taskManagementSystem" />;
+  if (pathStr.endsWith("task-management/task-assign")) {
+    return <TaskAssignSystemPage />;
   }
 
   if (pathStr.endsWith("activities/order-booking-view")) {

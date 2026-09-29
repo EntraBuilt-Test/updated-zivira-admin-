@@ -641,32 +641,34 @@ function TaskAssignSystem() {
   );
 }
 
-export function TaskManagementPanel({ masterKey: _masterKey }: { masterKey: string }) {
-  const [topTab, setTopTab] = useState<"modeCreation" | "taskAssign">("taskAssign");
-
+// Round 14 — Task Management is now a landing page (two "Ready module"
+// tile cards, matching the Activity landing page's own Master & Screen
+// Creation / Status pattern via AdminTabGrid, wired in admin-drilldown.tsx)
+// rather than an in-page tab switch. Mode Creation and Task Assign are each
+// their own route/page now — these two exports are what those routes
+// render, each just a thin page header wrapped around the exact same
+// content the old tabs held. No functionality lost, just re-hung under
+// separate URLs instead of client-side tab state.
+export function TaskModeCreationPage() {
   return (
     <section className="flex flex-col gap-6 w-full">
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <h2 className="text-2xl font-bold text-text-primary">Task Management</h2>
-        <div className="flex gap-2 border-b border-border-subtle">
-          {[
-            { key: "modeCreation", label: "Mode Creation" },
-            { key: "taskAssign", label: "Task Assign" }
-          ].map((t) => (
-            <button
-              key={t.key}
-              type="button"
-              className={`px-4 py-2 text-sm font-medium ${topTab === t.key ? "border-b-2 border-brand-primary text-brand-primary" : "text-text-muted"}`}
-              onClick={() => setTopTab(t.key as typeof topTab)}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+      <div>
+        <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Task Management</p>
+        <h2 className="text-2xl font-bold text-text-primary">Mode Creation</h2>
       </div>
+      <ModeCreationTab />
+    </section>
+  );
+}
 
-      {topTab === "modeCreation" && <ModeCreationTab />}
-      {topTab === "taskAssign" && <TaskAssignSystem />}
+export function TaskAssignSystemPage() {
+  return (
+    <section className="flex flex-col gap-6 w-full">
+      <div>
+        <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Task Management</p>
+        <h2 className="text-2xl font-bold text-text-primary">Task Assign</h2>
+      </div>
+      <TaskAssignSystem />
     </section>
   );
 }
