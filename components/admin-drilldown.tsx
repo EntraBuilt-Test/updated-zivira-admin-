@@ -165,6 +165,12 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GenericMasterTable masterKey="inputMaster" />;
   }
 
+  // Phase 1 of the "Call Manager" reference build — the admin-authored
+  // Campaign catalog field reps pick from in Campaign Planning.
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/campaign-master") {
+    return <GenericMasterTable masterKey="campaignMaster" />;
+  }
+
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor/stockist-master") {
     return <GenericMasterTable masterKey="doctorStockistCombined" />;
   }
@@ -279,6 +285,14 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
   if (pathStr.includes("daily-mr-work/market-survey")) {
     return <GenericMasterTable masterKey="marketSurveyEntry" />;
+  }
+
+  // Phase 1 of the "Call Manager" reference build — admin visibility into
+  // every real CampaignVisitModel row a field rep plans via Campaign
+  // Planning (mirrored into campaignVisitEntry, same write-through pattern
+  // as Camp/Market Survey above).
+  if (pathStr.includes("daily-mr-work/campaign")) {
+    return <GenericMasterTable masterKey="campaignVisitEntry" />;
   }
 
   if (pathStr.includes("manager-activity-report/attendance-report")) {

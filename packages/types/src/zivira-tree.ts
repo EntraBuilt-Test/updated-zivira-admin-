@@ -118,6 +118,10 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
           node("Chemist Mapping", "chemist-mapping", "division")
         ]),
         node("Input", "input", "division"),
+        // Phase 1 of the "Call Manager" reference build — the admin-
+        // authored Campaign catalog (name, brand/product focus, start/end
+        // date, status) a field rep picks from in Campaign Planning.
+        node("Campaign", "campaign-master", "division"),
         node("Territory Bulk Activation/Deactivation", "field-force-entries", "division", [
           node("Patch Name", "territory", "division"),
           node("Territory - Listed Doctor", "territory-listed-doctor", "division"),

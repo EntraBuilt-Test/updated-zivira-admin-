@@ -25,7 +25,13 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
             { title: "Expense", slug: "expense" },
             { title: "Leaves", slug: "leaves" },
             { title: "Camp", slug: "camp" },
-            { title: "Market Survey", slug: "market-survey" }
+            { title: "Market Survey", slug: "market-survey" },
+            // Phase 1 of the "Call Manager" reference build — admin
+            // visibility into every real CampaignVisitModel row a field
+            // rep plans via Campaign Planning, mirrored into the
+            // campaignVisitEntry generic master the same way Camp/Market
+            // Survey already are.
+            { title: "Campaign", slug: "campaign" }
           ]
         };
       } else {
@@ -36,7 +42,8 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
           expense: "Expense",
           leaves: "Leaves",
           camp: "Camp",
-          "market-survey": "Market Survey"
+          "market-survey": "Market Survey",
+          campaign: "Campaign"
         };
         node = {
           title: titleMap[lastPart] || lastPart,
