@@ -377,6 +377,44 @@ export function AdminMastersDashboard() {
             </div>
           </div>
 
+          {/* Post-launch fix — the "Call Manager" reference build's real
+              Campaign master (campaignMaster, GenericMasterTable, added to
+              the division-master tree in Phase 1) never got a tile here,
+              so there was no discoverable path to it from the actual live
+              sidebar's "Masters" entry — only from a hand-typed URL. This
+              tile fixes that; no fabricated live count is shown since this
+              dashboard has no real data-fetching wired into it for any
+              tile (all the "N Items"/"100% Online" badges elsewhere on
+              this page are static placeholder text, not live figures). */}
+          <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center group-hover:scale-105 transition-transform">
+                    <span className="material-symbols-outlined text-[20px]">campaign</span>
+                  </div>
+                  <div>
+                    <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Campaign</h3>
+                    <span className="font-label-sm text-[11px] text-text-muted">Ready module</span>
+                  </div>
+                </div>
+              </div>
+              <p className="font-body-sm text-body-sm text-text-secondary">Author the campaign catalog (name, brand focus, dates, status) field reps pick from in Campaign Planning.</p>
+              <div className="flex items-center gap-2 pt-1">
+                <span className="px-2 py-0.5 rounded bg-surface-subtle text-text-primary font-label-sm text-[11px] font-semibold">Field Rep Campaign Planning</span>
+              </div>
+            </div>
+            <div className="pt-4 border-t border-border-subtle flex items-center justify-between mt-4">
+              <Link className="text-primary hover:text-brand-primary-hover font-label-md text-label-md font-semibold flex items-center gap-1 group-hover:underline" href="/admin/workspace/division-dashboard/division-navigation-tabs/division-master/campaign-master">
+                <span className="">Campaign Master</span>
+                <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+              </Link>
+              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
+                <span className="material-symbols-outlined text-[16px]">more_vert</span>
+              </button>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
