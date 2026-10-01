@@ -285,6 +285,26 @@ export type DcrRecord = Omit<DcrExtended, "doctorId" | "samplesGiven" | "inputsG
 // backing the Activities dashboard's "E-Detailing VA Session Metrics"
 // panel (GET /company/edetailing-summary). Deliberately has no
 // duration/engagement field -- none is ever recorded.
+export type ChemistCallToday = {
+  id: string;
+  employeeCode: string;
+  employeeName: string;
+  chemistName: string;
+  visitDate: string;
+  pob: { productName: string; qty: number }[];
+};
+
+export type DispatchToday = {
+  id: string;
+  employeeCode: string;
+  employeeName: string;
+  type: "INPUT" | "SAMPLE";
+  dispatchDate: string;
+  status: "Pending" | "Received";
+  itemCount: number;
+  totalQty: number;
+};
+
 export type EdetailingSummary = {
   downloadsToday: number;
   downloadsThisWeek: number;
@@ -482,6 +502,16 @@ export const apiClient = {
   // Item A (post-launch robustness round)
   edetailingSummary() {
     return request<EdetailingSummary>("/company/edetailing-summary");
+  },
+
+  // Item 4 (post-launch robustness round) -- real backing for the
+  // Activities dashboard's "Chemist Orders & POB" / "Sample / Promo
+  // Dispatches" tabs.
+  chemistCallsToday() {
+    return request<ChemistCallToday[]>("/company/chemist-calls-today");
+  },
+  dispatchesToday() {
+    return request<DispatchToday[]>("/company/dispatches-today");
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app

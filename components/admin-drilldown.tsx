@@ -347,8 +347,20 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GenericMasterTable masterKey="managerTravelApproval" />;
   }
 
+  // Coordinator follow-up round (Item 2) -- this menu item used to point at
+  // "expenseApproval", a completely separate generic-master collection
+  // that NOTHING in the real submit/approve/reject/delete expense-claim
+  // flow ever writes to (confirmed via a full grep of the backend routes).
+  // The real, live-updated collection is "expenseApprovalActive" (written
+  // by mirrorExpenseApprovalRow on submit and reversed on delete), already
+  // reachable from a second menu entry elsewhere in this tree -- this was
+  // the split-collection bug Item 2 reported ("doesn't show matching
+  // data"): the admin was looking at the wrong, permanently-empty master.
+  // Routed through MasterScreen (not GenericMasterTable) so it renders via
+  // the same ReportFilterView the other "Expense Approval (Active)" entry
+  // uses, matching expenseApprovalActive's real uiKind.
   if (pathStr.endsWith("expense-approval")) {
-    return <GenericMasterTable masterKey="expenseApproval" />;
+    return <MasterScreen masterKey="expenseApprovalActive" />;
   }
 
   if (pathStr.endsWith("manager-expense/reports")) {

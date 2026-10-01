@@ -2,18 +2,23 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown } from "lucide-react";
 
-export function ZoneDropdown() {
+// Coordinator follow-up round (Item 4) -- this used to hold its own
+// `selected` state that was never read by anything: picking a region
+// changed the button's label and nothing else anywhere on the page. Now a
+// controlled component: the caller owns the selected value and the real
+// option list (real employee territories, not fixed fake zone names), and
+// actually filters the Activities dashboard's data by it.
+export function ZoneDropdown({
+  value,
+  options,
+  onChange
+}: {
+  value: string;
+  options: string[];
+  onChange: (next: string) => void;
+}) {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("All Zones / West Hub");
   const ref = useRef<HTMLDivElement>(null);
-
-  const options = [
-    "All Zones / West Hub",
-    "North Territory - Delhi HQ",
-    "West Zone - Mumbai & Pune",
-    "South Sector - Bangalore",
-    "East Region - Kolkata Hub",
-  ];
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -36,7 +41,7 @@ export function ZoneDropdown() {
           public
         </span>
         <span className="font-label-md text-label-md text-text-primary whitespace-nowrap">
-          {selected}
+          {value}
         </span>
         <ChevronDown
           size={16}
@@ -45,15 +50,15 @@ export function ZoneDropdown() {
       </button>
 
       {open && (
-        <div className="absolute top-[calc(100%+8px)] left-0 z-50 min-w-[240px] bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-[calc(100%+8px)] left-0 z-50 min-w-[240px] max-h-80 overflow-y-auto bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
           {options.map((opt) => {
-            const isSelected = opt === selected;
+            const isSelected = opt === value;
             return (
               <button
                 key={opt}
                 type="button"
                 onClick={() => {
-                  setSelected(opt);
+                  onChange(opt);
                   setOpen(false);
                 }}
                 className={`w-full text-left px-4 py-2.5 text-sm transition-colors ${isSelected ? "bg-brand-primary/10 text-[#b43403] font-medium" : "text-text-secondary hover:bg-surface-subtle hover:text-text-primary"}`}
