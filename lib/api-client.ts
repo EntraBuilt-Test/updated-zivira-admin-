@@ -414,6 +414,18 @@ export function invalidateEmployeesCache() {
   employeesCache = null;
 }
 
+export type AuditLogEntry = {
+  id: string;
+  module: string;
+  entityName: string;
+  entityType: string;
+  changeType: string;
+  action: string;
+  updatedBy: string;
+  timestamp: string;
+  metadata: Record<string, unknown> | null;
+};
+
 export type ActivitiesSummary = {
   date: string;
   totalCallsLoggedToday: number;
@@ -1206,6 +1218,41 @@ export const apiClient = {
       throw new Error(payload?.error?.message ?? payload?.data?.error ?? "Upload failed");
     }
     return payload as ApiEnvelope<{ success: boolean; recordsProcessed: number; recordsFailed: number; errors: string[]; logOnly: boolean }>;
+  },
+
+  // Round F item 4 — real audit trail for the Masters page's "Recent
+  // Master Modifications & Audit Trail" section.
+  async auditLog(params: { search?: string; module?: string; page?: number; pageSize?: number }) {
+    const qs = toQueryString({
+      search: params.search || undefined,
+      module: params.module && params.module !== "All Modules" ? params.module : undefined,
+      page: params.page !== undefined ? String(params.page) : undefined,
+      pageSize: params.pageSize !== undefined ? String(params.pageSize) : undefined
+    });
+    const token = getToken();
+    const response = await fetch(`${getApiBaseUrl()}/company/audit-log${qs}`, {
+      headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+    });
+    const payload = await response.json();
+    if (!response.ok) throw new Error(payload?.error?.message ?? "Unable to load audit log");
+    return payload as { data: AuditLogEntry[]; total: number; page: number; pageSize: number };
+  },
+
+  auditLogModules() {
+    return request<string[]>("/company/audit-log/modules");
+  },
+
+  async auditLogExportBlob(params: { search?: string; module?: string }) {
+    const token = getToken();
+    const qs = toQueryString({
+      search: params.search || undefined,
+      module: params.module && params.module !== "All Modules" ? params.module : undefined
+    });
+    const response = await fetch(`${getApiBaseUrl()}/company/audit-log/export${qs}`, {
+      headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
+    });
+    if (!response.ok) throw new Error("Export failed");
+    return response.blob();
   },
 
   // Downloads the exact original file for the upload-log masters that keep

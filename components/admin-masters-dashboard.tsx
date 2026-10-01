@@ -1,17 +1,110 @@
 "use client";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { AddFieldForceModal } from "./add-field-force-modal";
+import { apiClient, type AuditLogEntry } from "@/lib/api-client";
+
+// Round F item 4 — real category for each of the 12 tiles below, used by
+// the "Territory & Field (4)" / "Commercial & Products (4)" / "Financial &
+// Compliance (4)" filter tabs, which previously had no onClick at all.
+type MasterCategory = "Territory & Field" | "Commercial & Products" | "Financial & Compliance";
+const TILE_CATEGORY: Record<string, MasterCategory> = {
+  subdivision: "Territory & Field",
+  "field-force": "Territory & Field",
+  customer: "Territory & Field",
+  "territory-bulk": "Territory & Field",
+  product: "Commercial & Products",
+  input: "Commercial & Products",
+  campaign: "Commercial & Products",
+  sales: "Commercial & Products",
+  "stockist-details": "Financial & Compliance",
+  "expense-setup": "Financial & Compliance",
+  "manager-expense": "Financial & Compliance",
+  "personal-information": "Financial & Compliance"
+};
 
 export function AdminMastersDashboard() {
+  const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [showAddFieldForce, setShowAddFieldForce] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  // Round F item 4 — the category tabs above the tile grid had no onClick
+  // at all (confirmed by reading this file); this drives real filtering.
+  const [categoryFilter, setCategoryFilter] = useState<"All" | MasterCategory>("All");
+  // Round F item 4 — each tile's "..." button had no onClick either (12 of
+  // them, confirmed via a dead-button sweep); this backs a real small menu.
+  const [openTileMenu, setOpenTileMenu] = useState<string | null>(null);
+
+  // Round F item 4 — the "Recent Master Modifications & Audit Trail"
+  // section below was 100% hardcoded mock rows with every control
+  // (search, All Modules, Export, View Diff, pagination) a no-op.
+  // Wired to the real GET /company/audit-log (reads the same AuditLogModel
+  // every real write across this backend already logs to).
+  const auditSectionRef = useRef<HTMLDivElement>(null);
+  const [auditSearch, setAuditSearch] = useState("");
+  const [auditModule, setAuditModule] = useState("All Modules");
+  const [auditModules, setAuditModules] = useState<string[]>([]);
+  const [auditModuleMenuOpen, setAuditModuleMenuOpen] = useState(false);
+  const [auditPage, setAuditPage] = useState(1);
+  const AUDIT_PAGE_SIZE = 5;
+  const [auditEntries, setAuditEntries] = useState<AuditLogEntry[]>([]);
+  const [auditTotal, setAuditTotal] = useState(0);
+  const [auditLoading, setAuditLoading] = useState(true);
+  const [auditError, setAuditError] = useState("");
+  const [diffEntry, setDiffEntry] = useState<AuditLogEntry | null>(null);
+  const [exporting, setExporting] = useState(false);
+
+  const loadAudit = useCallback(() => {
+    setAuditLoading(true);
+    setAuditError("");
+    apiClient.auditLog({ search: auditSearch, module: auditModule, page: auditPage, pageSize: AUDIT_PAGE_SIZE })
+      .then((r) => { setAuditEntries(r.data); setAuditTotal(r.total); })
+      .catch((e) => setAuditError(e instanceof Error ? e.message : "Unable to load audit log"))
+      .finally(() => setAuditLoading(false));
+  }, [auditSearch, auditModule, auditPage]);
+
+  useEffect(() => { loadAudit(); }, [loadAudit]);
+  useEffect(() => {
+    apiClient.auditLogModules().then((r) => setAuditModules(r.data)).catch(() => {});
+  }, []);
+  // Any filter change resets back to page 1, same as every other
+  // filtered/paginated table in this app.
+  useEffect(() => { setAuditPage(1); }, [auditSearch, auditModule]);
+
+  function viewModuleAudit(moduleTitle: string) {
+    setOpenTileMenu(null);
+    setAuditModule(moduleTitle);
+    setAuditSearch("");
+    auditSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  async function exportAuditLog() {
+    setExporting(true);
+    try {
+      const blob = await apiClient.auditLogExportBlob({ search: auditSearch, module: auditModule });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `audit-log-${Date.now()}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      setAuditError(e instanceof Error ? e.message : "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  }
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
+      }
+      if (!(event.target as HTMLElement).closest("[data-tile-menu-root]")) {
+        setOpenTileMenu(null);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
@@ -204,14 +297,15 @@ export function AdminMastersDashboard() {
             <p className="font-body-sm text-body-sm text-text-muted">Configure, view, and administer central records across pharma operational domains</p>
           </div>
           <div className="flex items-center gap-1.5 bg-surface-canvas p-1 rounded-lg">
-            <button className="px-3 py-1.5 rounded-md bg-surface-card text-primary font-bold shadow-sm text-label-sm" type="button">All Masters (12)</button>
-            <button className="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium" type="button">Territory &amp; Field (4)</button>
-            <button className="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium" type="button">Commercial &amp; Products (4)</button>
-            <button className="px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium" type="button">Financial &amp; Compliance (4)</button>
+            <button className={categoryFilter === "All" ? "px-3 py-1.5 rounded-md bg-surface-card text-primary font-bold shadow-sm text-label-sm" : "px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium"} onClick={() => setCategoryFilter("All")} type="button">All Masters (12)</button>
+            <button className={categoryFilter === "Territory & Field" ? "px-3 py-1.5 rounded-md bg-surface-card text-primary font-bold shadow-sm text-label-sm" : "px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium"} onClick={() => setCategoryFilter("Territory & Field")} type="button">Territory &amp; Field (4)</button>
+            <button className={categoryFilter === "Commercial & Products" ? "px-3 py-1.5 rounded-md bg-surface-card text-primary font-bold shadow-sm text-label-sm" : "px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium"} onClick={() => setCategoryFilter("Commercial & Products")} type="button">Commercial &amp; Products (4)</button>
+            <button className={categoryFilter === "Financial & Compliance" ? "px-3 py-1.5 rounded-md bg-surface-card text-primary font-bold shadow-sm text-label-sm" : "px-3 py-1.5 rounded-md text-text-secondary hover:text-text-primary transition-colors text-label-sm font-medium"} onClick={() => setCategoryFilter("Financial & Compliance")} type="button">Financial &amp; Compliance (4)</button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-grid-gutter">
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["subdivision"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -239,12 +333,41 @@ export function AdminMastersDashboard() {
                 <span className="">Configure Hierarchy</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "subdivision" ? null : "subdivision")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "subdivision" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/subdivision"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open SubDivision
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("SubDivision")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["product"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -272,12 +395,41 @@ export function AdminMastersDashboard() {
                 <span className="">Manage Products</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "product" ? null : "product")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "product" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/product"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Product
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Product")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["field-force"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -305,12 +457,41 @@ export function AdminMastersDashboard() {
                 <span className="">Reps &amp; Mappings</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "field-force" ? null : "field-force")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "field-force" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/field-force"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Field Force
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Field Force")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["customer"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -338,12 +519,41 @@ export function AdminMastersDashboard() {
                 <span className="">Customer Master Registry</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "customer" ? null : "customer")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "customer" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Customer
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Customer")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["input"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -371,11 +581,39 @@ export function AdminMastersDashboard() {
                 <span className="">Sampling &amp; Inputs</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "input" ? null : "input")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "input" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/input"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Input
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Input")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
           {/* Post-launch fix — the "Call Manager" reference build's real
               Campaign master (campaignMaster, GenericMasterTable, added to
@@ -386,6 +624,7 @@ export function AdminMastersDashboard() {
               dashboard has no real data-fetching wired into it for any
               tile (all the "N Items"/"100% Online" badges elsewhere on
               this page are static placeholder text, not live figures). */}
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["campaign"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -409,12 +648,41 @@ export function AdminMastersDashboard() {
                 <span className="">Campaign Master</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "campaign" ? null : "campaign")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "campaign" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/campaign-master"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Campaign
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Campaign")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["territory-bulk"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -442,14 +710,43 @@ export function AdminMastersDashboard() {
                 <span className="">Territory Ops</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "territory-bulk" ? null : "territory-bulk")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "territory-bulk" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/field-force-entries"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Territory Bulk Activation
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Territory Bulk Activation")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
 
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["stockist-details"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -477,12 +774,41 @@ export function AdminMastersDashboard() {
                 <span className="">Stockist Master</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "stockist-details" ? null : "stockist-details")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "stockist-details" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/stockist-details"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Stockist Details
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Stockist Details")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["expense-setup"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -510,12 +836,41 @@ export function AdminMastersDashboard() {
                 <span className="">Allowance Policies</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "expense-setup" ? null : "expense-setup")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "expense-setup" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/expense"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Expense Setup
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Expense Setup")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["manager-expense"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -543,12 +898,41 @@ export function AdminMastersDashboard() {
                 <span className="">Manager Slabs</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "manager-expense" ? null : "manager-expense")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "manager-expense" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/manager-expense"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Manager Expense
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Manager Expense")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["personal-information"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -576,12 +960,41 @@ export function AdminMastersDashboard() {
                 <span className="">Employee Details</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "personal-information" ? null : "personal-information")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "personal-information" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/personal-information"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Personal Information
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Personal Information")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
 
+          {(categoryFilter === "All" || categoryFilter === TILE_CATEGORY["sales"]) && (
           <div className="rounded-xl border border-border-subtle bg-surface-canvas/50 hover:bg-surface-card hover:border-primary/40 hover:shadow-md transition-all p-card-padding-standard flex flex-col justify-between group">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
@@ -609,15 +1022,43 @@ export function AdminMastersDashboard() {
                 <span className="">Sales Rules &amp; Targets</span>
                 <span className="material-symbols-outlined text-[16px]">chevron_right</span>
               </Link>
-              <button className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors" title="More actions" type="button">
-                <span className="material-symbols-outlined text-[16px]">more_vert</span>
-              </button>
+              <div className="relative" data-tile-menu-root>
+                <button
+                  className="w-7 h-7 rounded hover:bg-surface-subtle text-text-muted hover:text-text-primary flex items-center justify-center transition-colors"
+                  title="More actions"
+                  type="button"
+                  onClick={() => setOpenTileMenu(openTileMenu === "sales" ? null : "sales")}
+                >
+                  <span className="material-symbols-outlined text-[16px]">more_vert</span>
+                </button>
+                {openTileMenu === "sales" && (
+                  <div className="absolute right-0 bottom-full mb-1 w-48 bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden z-20 py-1">
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => { setOpenTileMenu(null); router.push("/admin/workspace/division-dashboard/division-navigation-tabs/division-master/sales"); }}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">open_in_new</span>
+                      Open Sales
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors flex items-center gap-2"
+                      type="button"
+                      onClick={() => viewModuleAudit("Sales")}
+                    >
+                      <span className="material-symbols-outlined text-[16px] text-text-secondary">history</span>
+                      View Recent Changes
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
+        )}
         </div>
       </section>
 
-      <section className="bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col space-y-4">
+      <section ref={auditSectionRef} className="bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2">
           <div>
             <h2 className="font-headline-md text-headline-md text-text-primary">Recent Master Modifications &amp; Audit Trail</h2>
@@ -626,18 +1067,57 @@ export function AdminMastersDashboard() {
           <div className="flex items-center gap-2 flex-wrap">
             <div className="relative min-w-[200px]">
               <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[17px]">filter_list</span>
-              <input className="w-full h-[36px] pl-8 pr-3 rounded-lg bg-surface-canvas text-text-primary font-body-sm focus:outline-none focus:bg-surface-card shadow-sm border border-border-subtle focus:border-border-strong" placeholder="Filter logs by user or entity..." type="text"/>
+              <input
+                className="w-full h-[36px] pl-8 pr-3 rounded-lg bg-surface-canvas text-text-primary font-body-sm focus:outline-none focus:bg-surface-card shadow-sm border border-border-subtle focus:border-border-strong"
+                placeholder="Filter logs by user or entity..."
+                type="text"
+                value={auditSearch}
+                onChange={(e) => setAuditSearch(e.target.value)}
+              />
             </div>
-            <button className="h-[36px] px-3 rounded-lg bg-surface-subtle border border-border-subtle hover:bg-border-subtle text-text-primary font-label-md text-label-md flex items-center gap-1 shadow-sm transition-colors" type="button">
-              <span className="material-symbols-outlined text-[16px]">tune</span>
-              <span className="">All Modules</span>
-            </button>
-            <button className="h-[36px] px-3 rounded-lg bg-surface-subtle border border-border-subtle hover:bg-border-subtle text-text-primary font-label-md text-label-md flex items-center gap-1 shadow-sm transition-colors" type="button">
+            <div className="relative" data-tile-menu-root>
+              <button
+                className="h-[36px] px-3 rounded-lg bg-surface-subtle border border-border-subtle hover:bg-border-subtle text-text-primary font-label-md text-label-md flex items-center gap-1 shadow-sm transition-colors"
+                type="button"
+                onClick={() => setAuditModuleMenuOpen((v) => !v)}
+              >
+                <span className="material-symbols-outlined text-[16px]">tune</span>
+                <span className="">{auditModule}</span>
+              </button>
+              {auditModuleMenuOpen && (
+                <div className="absolute right-0 top-full mt-1 w-52 max-h-72 overflow-y-auto bg-surface-card border border-border-subtle rounded-lg shadow-lg z-20 py-1">
+                  <button
+                    className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors"
+                    type="button"
+                    onClick={() => { setAuditModule("All Modules"); setAuditModuleMenuOpen(false); }}
+                  >
+                    All Modules
+                  </button>
+                  {auditModules.map((m) => (
+                    <button
+                      key={m}
+                      className="w-full text-left px-3 py-2 text-label-sm text-text-primary hover:bg-surface-subtle transition-colors"
+                      type="button"
+                      onClick={() => { setAuditModule(m); setAuditModuleMenuOpen(false); }}
+                    >
+                      {m}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              className="h-[36px] px-3 rounded-lg bg-surface-subtle border border-border-subtle hover:bg-border-subtle text-text-primary font-label-md text-label-md flex items-center gap-1 shadow-sm transition-colors disabled:opacity-60"
+              type="button"
+              disabled={exporting}
+              onClick={() => void exportAuditLog()}
+            >
               <span className="material-symbols-outlined text-[16px]">file_download</span>
-              <span className="">Export Audit Log</span>
+              <span className="">{exporting ? "Exporting..." : "Export Audit Log"}</span>
             </button>
           </div>
         </div>
+        {auditError && <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">{auditError}</p>}
         <div className="w-full overflow-x-auto rounded-lg border border-border-subtle">
           <table className="w-full text-left border-collapse">
             <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
@@ -651,145 +1131,107 @@ export function AdminMastersDashboard() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border-subtle">
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-status-info"></span>
-                    <span className="font-label-md text-label-md text-text-primary font-semibold">Doctor</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="font-medium text-text-primary">Dr. Rajeshwar Sharma</span>
-                  <span className="block font-label-sm text-text-muted">MCL Core List • Max Healthcare Saket</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm font-semibold">
-                    <span className="material-symbols-outlined text-[13px]">add_circle</span>Created
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="text-text-primary font-medium">Anand Verma</span>
-                  <span className="block font-label-sm text-text-muted">North Ops Lead</span>
-                </td>
-                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">14 min ago (10 Sep 2026, 14:48)</td>
-                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
-                  <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
-                </td>
-              </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-primary"></span>
-                    <span className="font-label-md text-label-md text-text-primary font-semibold">Product</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="font-medium text-text-primary">ZiviCal D3 60k IU Softgels</span>
-                  <span className="block font-label-sm text-text-muted">SKU-8820 • Revised MRP &amp; PTR Slabs</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm font-semibold">
-                    <span className="material-symbols-outlined text-[13px]">edit_note</span>Modified
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="text-text-primary font-medium">Pricing Committee</span>
-                  <span className="block font-label-sm text-text-muted">Corporate HQ</span>
-                </td>
-                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">42 min ago (10 Sep 2026, 14:20)</td>
-                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
-                  <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
-                </td>
-              </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-secondary"></span>
-                    <span className="font-label-md text-label-md text-text-primary font-semibold">Territory Bulk</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="font-medium text-text-primary">Andheri West Patch B</span>
-                  <span className="block font-label-sm text-text-muted">Realigned to Mumbai Metro Zone 2</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm font-semibold">
-                    <span className="material-symbols-outlined text-[13px]">sync_alt</span>Realigned
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="text-text-primary font-medium">Admin Zivira</span>
-                  <span className="block font-label-sm text-text-muted">HQ Operations</span>
-                </td>
-                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">1 hr ago (10 Sep 2026, 13:58)</td>
-                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
-                  <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
-                </td>
-              </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-status-warning"></span>
-                    <span className="font-label-md text-label-md text-text-primary font-semibold">Expense Setup</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="font-medium text-text-primary">Metro Ex-HQ Daily Allowance</span>
-                  <span className="block font-label-sm text-text-muted">Updated from ₹480 to ₹520/day</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm font-semibold">
-                    <span className="material-symbols-outlined text-[13px]">edit_note</span>Modified
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="text-text-primary font-medium">Finance Team</span>
-                  <span className="block font-label-sm text-text-muted">Admin Zivira</span>
-                </td>
-                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">2 hrs ago (10 Sep 2026, 12:45)</td>
-                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
-                  <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
-                </td>
-              </tr>
-              <tr className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-status-danger"></span>
-                    <span className="font-label-md text-label-md text-text-primary font-semibold">Stockist Details</span>
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="font-medium text-text-primary">Apex Medico Agencies</span>
-                  <span className="block font-label-sm text-text-muted">DL Renewal Pending (Kolkata Hub)</span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm font-semibold">
-                    <span className="material-symbols-outlined text-[13px]">pause_circle</span>Suspended
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  <span className="text-text-primary font-medium">Compliance Cell</span>
-                  <span className="block font-label-sm text-text-muted">Legal Dept</span>
-                </td>
-                <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">3 hrs ago (10 Sep 2026, 11:30)</td>
-                <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
-                  <button className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors" type="button">View Diff</button>
-                </td>
-              </tr>
+              {auditLoading && (
+                <tr><td colSpan={6} className="px-4 py-6 text-center text-sm text-text-muted">Loading...</td></tr>
+              )}
+              {!auditLoading && auditEntries.length === 0 && (
+                <tr><td colSpan={6} className="px-4 py-6 text-center text-sm text-text-muted">No audit records match this filter.</td></tr>
+              )}
+              {!auditLoading && auditEntries.map((entry) => (
+                <tr key={entry.id} className="h-table-row-height hover:bg-surface-canvas/60 transition-colors hover:bg-surface-subtle/50 transition-colors group">
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-status-info"></span>
+                      <span className="font-label-md text-label-md text-text-primary font-semibold">{entry.module}</span>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                    <span className="font-medium text-text-primary">{entry.entityName}</span>
+                    <span className="block font-label-sm text-text-muted">{entry.action}</span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm font-semibold">
+                      {entry.changeType}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                    <span className="text-text-primary font-medium">{entry.updatedBy}</span>
+                  </td>
+                  <td className="px-4 text-text-muted font-body-sm py-3 text-sm text-text-primary whitespace-nowrap">{new Date(entry.timestamp).toLocaleString("en-IN")}</td>
+                  <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
+                    <button
+                      className="px-2.5 py-1 rounded bg-surface-subtle border border-border-subtle hover:bg-brand-primary-subtle hover:border-brand-primary-subtle hover:text-primary text-text-secondary font-label-sm text-label-sm transition-colors"
+                      type="button"
+                      onClick={() => setDiffEntry(entry)}
+                    >
+                      View Diff
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-3 font-body-sm text-body-sm text-text-secondary">
-          <div className="">Showing <strong className="text-text-primary">1 to 5</strong> of <strong className="text-text-primary">42</strong> Audit Records Today</div>
+          <div className="">
+            Showing <strong className="text-text-primary">{auditTotal === 0 ? 0 : (auditPage - 1) * AUDIT_PAGE_SIZE + 1} to {Math.min(auditPage * AUDIT_PAGE_SIZE, auditTotal)}</strong> of <strong className="text-text-primary">{auditTotal}</strong> Audit Records
+          </div>
           <div className="flex items-center gap-1.5">
-            <button className="px-2.5 py-1 rounded bg-surface-canvas border border-border-subtle hover:bg-surface-subtle text-text-muted disabled:opacity-40 font-label-md text-label-md" disabled={true} type="button">Prev</button>
-            <button className="w-7 h-7 rounded border border-primary bg-primary text-on-primary font-label-md text-label-md font-semibold" type="button">1</button>
-            <button className="w-7 h-7 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md" type="button">2</button>
-            <button className="w-7 h-7 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md" type="button">3</button>
-            <button className="px-2.5 py-1 rounded bg-surface-canvas border border-border-subtle hover:bg-surface-subtle text-text-primary font-label-md text-label-md" type="button">Next</button>
+            <button
+              className="px-2.5 py-1 rounded bg-surface-canvas border border-border-subtle hover:bg-surface-subtle text-text-muted disabled:opacity-40 font-label-md text-label-md"
+              disabled={auditPage <= 1}
+              type="button"
+              onClick={() => setAuditPage((p) => Math.max(1, p - 1))}
+            >
+              Prev
+            </button>
+            {Array.from({ length: Math.max(1, Math.ceil(auditTotal / AUDIT_PAGE_SIZE)) }).slice(0, 10).map((_, i) => {
+              const pageNum = i + 1;
+              return (
+                <button
+                  key={pageNum}
+                  className={pageNum === auditPage
+                    ? "w-7 h-7 rounded border border-primary bg-primary text-on-primary font-label-md text-label-md font-semibold"
+                    : "w-7 h-7 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md"}
+                  type="button"
+                  onClick={() => setAuditPage(pageNum)}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
+            <button
+              className="px-2.5 py-1 rounded bg-surface-canvas border border-border-subtle hover:bg-surface-subtle text-text-primary font-label-md text-label-md disabled:opacity-40"
+              type="button"
+              disabled={auditPage >= Math.ceil(auditTotal / AUDIT_PAGE_SIZE)}
+              onClick={() => setAuditPage((p) => p + 1)}
+            >
+              Next
+            </button>
           </div>
         </div>
       </section>
+
+      {diffEntry && (
+        <div className="fixed inset-0 z-[90] bg-slate-950/70 flex items-center justify-center p-4" onClick={() => setDiffEntry(null)}>
+          <div className="w-full max-w-lg bg-surface-card rounded-2xl shadow-2xl p-5 space-y-3" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-headline-sm text-headline-sm text-text-primary">{diffEntry.module} &middot; {diffEntry.changeType}</h3>
+              <button type="button" className="text-text-muted hover:text-text-primary" onClick={() => setDiffEntry(null)}>
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+            <p className="font-body-sm text-body-sm text-text-secondary">{diffEntry.entityName} &middot; {diffEntry.action} &middot; {new Date(diffEntry.timestamp).toLocaleString("en-IN")} &middot; by {diffEntry.updatedBy}</p>
+            {/* Honest limitation (see backend commit note): no write path in
+                this codebase records a structured before/after pair, so
+                this shows the change's real recorded metadata as-is rather
+                than fabricating "before"/"after" fields that don't exist. */}
+            <pre className="bg-surface-canvas rounded-xl p-3 text-xs text-text-primary overflow-x-auto max-h-80 overflow-y-auto">
+              {diffEntry.metadata ? JSON.stringify(diffEntry.metadata, null, 2) : "No additional change details were recorded for this entry."}
+            </pre>
+          </div>
+        </div>
+      )}
 
       {/* Modals */}
       {showAddFieldForce && (
