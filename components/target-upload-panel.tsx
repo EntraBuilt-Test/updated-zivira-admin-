@@ -31,8 +31,13 @@ export function TargetUploadPanel({ masterKey: _masterKey }: { masterKey: string
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  // Round F item 2 -- this template used to generate "HQ Code"/"Sale ERP
+  // Code"/"Target Qty"/"Target Rate" while the backend importer required
+  // "Field Force Name"/"Product" columns that were never in the sheet at
+  // all -- every row failed to import. Headers below now match exactly
+  // what src/routes/uploads.routes.ts's importTargets() actually reads.
   function downloadTemplate() {
-    const ws = XLSX.utils.aoa_to_sheet([["HQ Code", "Sale ERP Code", "Month", "Target Qty", "Target Rate", "Target Value"]]);
+    const ws = XLSX.utils.aoa_to_sheet([["Field Force Name", "Division", "HQ", "Product", "Month", "Year", "Target Qty", "Target Rate"]]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Target Upload");
     XLSX.writeFile(wb, "Target_Upload_Template.xlsx");
