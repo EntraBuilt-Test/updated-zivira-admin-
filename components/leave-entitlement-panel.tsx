@@ -61,6 +61,10 @@ export function LeaveEntitlementPanel({ masterKey: _masterKey }: { masterKey: st
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [bulkOpen, setBulkOpen] = useState(false);
+  const [bulkValues, setBulkValues] = useState({ cl: "10", pl: "10", sl: "10", lop: "10" });
+  const [bulkSaving, setBulkSaving] = useState(false);
+  const [bulkMessage, setBulkMessage] = useState<string | null>(null);
 
   useEffect(() => {
     apiClient.employees().then((res) => setEmployees(res.data)).catch(() => {});
@@ -99,6 +103,26 @@ export function LeaveEntitlementPanel({ masterKey: _masterKey }: { masterKey: st
     setEdits((prev) => ({ ...prev, [code]: { ...prev[code], [field]: value } }));
   }
 
+  async function bulkApplyToAll() {
+    setBulkSaving(true);
+    setBulkMessage(null);
+    setError(null);
+    try {
+      const cl = Number(bulkValues.cl) || 0;
+      const pl = Number(bulkValues.pl) || 0;
+      const sl = Number(bulkValues.sl) || 0;
+      const lop = Number(bulkValues.lop) || 0;
+      const payload = employees.map((e) => ({ employeeCode: e.employeeCode, cl, pl, sl, lop }));
+      const res = await apiClient.leaveEntitlementSubmit({ year, rows: payload });
+      setBulkMessage("Applied CL " + cl + " / PL " + pl + " / SL " + sl + " / LOP " + lop + " to " + res.data.saved + " active employee(s) for " + year + ".");
+      if (loaded) await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to apply Leave Entitlement to all employees");
+    } finally {
+      setBulkSaving(false);
+    }
+  }
+
   async function finalSubmit() {
     setSaving(true);
     setError(null);
@@ -129,6 +153,39 @@ export function LeaveEntitlementPanel({ masterKey: _masterKey }: { masterKey: st
       <div>
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Master</p>
         <h2 className="text-2xl font-bold text-text-primary">Leave Entitlement - Entry</h2>
+      </div>
+
+      <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm w-full space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-semibold text-text-primary">Apply one entitlement to every active employee</span>
+          <button className="button button-secondary" type="button" onClick={() => setBulkOpen((v) => !v)}>
+            {bulkOpen ? "Close" : "Apply to All"}
+          </button>
+        </div>
+        {bulkOpen && (
+          <div className="flex flex-wrap items-end gap-3 pt-1 border-t border-border-subtle">
+            {(["cl", "pl", "sl", "lop"] as const).map((k) => (
+              <div key={k} style={{ minWidth: "90px" }}>
+                <span className="block text-xs font-medium text-text-muted mb-1 uppercase">{k}</span>
+                <input
+                  className="input"
+                  type="number"
+                  min={0}
+                  value={bulkValues[k]}
+                  onChange={(e) => setBulkValues((prev) => ({ ...prev, [k]: e.target.value }))}
+                />
+              </div>
+            ))}
+            <div style={{ minWidth: "140px" }}>
+              <span className="block text-xs font-medium text-text-muted mb-1">Year</span>
+              <CustomSelect value={year} options={yearOptions} onChange={setYear} placeholder="Year" />
+            </div>
+            <button className="button" type="button" onClick={bulkApplyToAll} disabled={bulkSaving || employees.length === 0}>
+              {bulkSaving ? "Applying..." : "Apply to all " + employees.length + " active employee(s)"}
+            </button>
+          </div>
+        )}
+        {bulkMessage && <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{bulkMessage}</div>}
       </div>
 
       <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-wrap items-end gap-3 w-full">

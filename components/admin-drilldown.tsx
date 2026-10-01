@@ -88,6 +88,18 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <ChemistMaster />;
   }
 
+  // Post-launch robustness round items 2/3 -- real, unique paths for the
+  // Customer section's Chemist Master and Listed Doctor Master tiles (see
+  // the comment on these nodes in zivira-tree.ts for why the old slugs
+  // collided with an unrelated generic master screen).
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor/chemist-master") {
+    return <ChemistMaster />;
+  }
+
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor/listed-doctor-master") {
+    return <ListedDoctorMaster />;
+  }
+
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/field-force-entries/hospital") {
     return <HospitalMaster />;
   }

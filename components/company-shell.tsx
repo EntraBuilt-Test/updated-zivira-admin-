@@ -45,7 +45,13 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Array<{ id: string; title: string; message: string; type: string; time: string }>>([]);
+  const [notifications, setNotifications] = useState<Array<{ id: string; title: string; message: string; type: string; time: string; rawTime: string }>>([]);
+  // Item 5 (post-launch robustness round) -- this bell already opened and
+  // loaded real data, but its unread dot was just "notifications.length >
+  // 0" -- it never cleared after being viewed, unlike the manager/field
+  // bells. Real fix: compare against a per-viewer lastSeen timestamp, same
+  // pattern already used on the other two portals.
+  const [hasUnread, setHasUnread] = useState(false);
   
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({ "Platform": false, "Reports & Field": false, "Analytics": false });
   
@@ -94,7 +100,8 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
               title: `Notice: ${notice.title}`,
               message: notice.message,
               type: notice.priority === "URGENT" ? "urgent" : "notice",
-              time: new Date(notice.createdAt).toLocaleString()
+              time: new Date(notice.createdAt).toLocaleString(),
+              rawTime: notice.createdAt
             }))
           );
         }
@@ -107,11 +114,18 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
               title: entry.title,
               message: entry.message,
               type: entry.type,
-              time: new Date(entry.time).toLocaleString()
+              time: new Date(entry.time).toLocaleString(),
+              rawTime: entry.time
             }))
           );
         }
-        if (!cancelled) setNotifications(liveAlerts);
+        if (!cancelled) {
+          setNotifications(liveAlerts);
+          const lastSeen = window.localStorage.getItem("zivira.company.notifications.lastSeen");
+          const lastSeenMs = lastSeen ? new Date(lastSeen).getTime() : 0;
+          const newest = liveAlerts.reduce((max, n) => Math.max(max, new Date(n.rawTime).getTime() || 0), 0);
+          setHasUnread(newest > lastSeenMs);
+        }
       } catch (e) {}
     }
 
@@ -437,12 +451,16 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
             
             <div className="flex items-center gap-card-padding-compact flex-shrink-0">
               <button 
-                onClick={() => setNotificationsOpen(o => !o)}
+                onClick={() => {
+                  setNotificationsOpen(o => !o);
+                  window.localStorage.setItem("zivira.company.notifications.lastSeen", new Date().toISOString());
+                  setHasUnread(false);
+                }}
                 className="relative w-9 h-9 rounded-lg flex items-center justify-center text-text-secondary hover:bg-surface-subtle hover:text-on-surface transition-colors" 
                 type="button"
               >
                 <span className="material-symbols-outlined text-[20px]">notifications</span>
-                {notifications.length > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary"></span>}
+                {hasUnread && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary"></span>}
               </button>
               
               {notificationsOpen && (

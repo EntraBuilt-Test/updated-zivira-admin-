@@ -271,6 +271,14 @@ export function AdminHomeDashboard() {
   const [fieldForceRows, setFieldForceRows] = useState<FieldForceRow[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
+  // Item 12 (post-launch robustness round) -- Flash News/Quote of the Week
+  // used to be admin-only content blobs with no delivery anywhere,
+  // including back on the admin's own home screen. Real fetch of whatever
+  // admin actually saved; null/blank values render nothing.
+  const [flashNews, setFlashNews] = useState<string | null>(null);
+  const [quoteOfWeek, setQuoteOfWeek] = useState<string | null>(null);
+  const [noticeBoard, setNoticeBoard] = useState<string[] | null>(null);
+  const [talkToUs, setTalkToUs] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
@@ -300,6 +308,29 @@ export function AdminHomeDashboard() {
         setNotices(noticePayload.data.slice(0, 5));
       }
       
+      // 3b. Flash News / Quote of the Week -- real admin-settings values,
+      // shown right here instead of only living in the edit form.
+      try {
+        const [flashRes, quoteRes] = await Promise.all([
+          apiClient.getAdminSetting<{ content: string; setAsHomePage: boolean }>("flashNews"),
+          apiClient.getAdminSetting<{ quote: string; setAsHomePage: boolean }>("quoteOfTheWeek")
+        ]);
+        setFlashNews(flashRes.data?.content?.trim() || null);
+        setQuoteOfWeek(quoteRes.data?.quote?.trim() || null);
+        const [noticeRes, talkRes] = await Promise.all([
+          apiClient.getAdminSetting<{ content1: string; content2: string; content3: string }>("noticeBoard"),
+          apiClient.getAdminSetting<{ content: string }>("talkToUs")
+        ]);
+        const notices = [noticeRes.data?.content1, noticeRes.data?.content2, noticeRes.data?.content3].map((s) => s?.trim()).filter((s): s is string => !!s);
+        setNoticeBoard(notices.length ? notices : null);
+        setTalkToUs(talkRes.data?.content?.trim() || null);
+      } catch {
+        setFlashNews(null);
+        setQuoteOfWeek(null);
+        setNoticeBoard(null);
+        setTalkToUs(null);
+      }
+
       // 3. Activity feed
       const dcrData = await apiClient.dcrs();
       const recent = dcrData.data.slice(0, 4);
@@ -395,6 +426,31 @@ export function AdminHomeDashboard() {
 
   return (
     <div className="flex flex-col w-full space-y-6">
+      {(flashNews || quoteOfWeek || noticeBoard || talkToUs) && (
+        <div className="space-y-2">
+          {flashNews && (
+            <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm text-amber-900 flex items-center gap-2 dark:bg-amber-950/40 dark:border-amber-800 dark:text-amber-200">
+              <span className="font-semibold uppercase tracking-wide text-[11px]">Flash News</span>
+              <span className="truncate">{flashNews}</span>
+            </div>
+          )}
+          {quoteOfWeek && (
+            <div className="rounded-lg border border-indigo-200 bg-indigo-50 px-4 py-2.5 text-sm italic text-indigo-900 dark:bg-indigo-950/30 dark:border-indigo-800 dark:text-indigo-200">
+              &ldquo;{quoteOfWeek}&rdquo;
+            </div>
+          )}
+          {noticeBoard && noticeBoard.map((n, i) => (
+            <div key={i} className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-[11px] text-sky-900">
+              {n}
+            </div>
+          ))}
+          {talkToUs && (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-700">
+              <span className="font-bold uppercase tracking-wide mr-1">Talk to Us</span>{talkToUs}
+            </div>
+          )}
+        </div>
+      )}
       {showNoticeModal && (
         <PostNoticeModal
           onClose={() => setShowNoticeModal(false)}

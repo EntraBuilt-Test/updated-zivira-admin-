@@ -114,7 +114,22 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         node("Customer", "doctor", "division", [
           node("Customer Master", "category", "division"),
           node("Stockist Master", "stockist-master", "division"),
-          node("Chemist Master", "qualification", "division"),
+          // Post-launch robustness round items 2/3 -- "Chemist Master" used
+          // to share the slug "qualification" with the unrelated, already
+          // generic "Doctor Qualification"/"Dealer Mapping" screen at the
+          // exact same path (division-master/doctor/qualification), so it
+          // silently opened that wrong table instead of the real,
+          // apiClient.dealers()-backed ChemistMaster component (same
+          // DealerModel the Chemist Upload importer actually writes to).
+          // Given its own unique slug here, it now reaches the real screen.
+          node("Chemist Master", "chemist-master", "division"),
+          // Listed Doctor Upload wrote real rows into DoctorModel, but no
+          // reachable tree node ever rendered the real, already-built
+          // apiClient.doctors()-backed ListedDoctorMaster component -- the
+          // only two tiles under Customer ("Customer Master") pointed at an
+          // unrelated generic "doctorMaster" collection the uploader never
+          // wrote to. This is the real screen uploaded doctors now show up on.
+          node("Listed Doctor Master", "listed-doctor-master", "division"),
           node("Chemist Mapping", "chemist-mapping", "division")
         ]),
         node("Input", "input", "division"),
