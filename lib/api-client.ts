@@ -414,6 +414,21 @@ export function invalidateEmployeesCache() {
   employeesCache = null;
 }
 
+export type ActivitiesSummary = {
+  date: string;
+  totalCallsLoggedToday: number;
+  totalCallsLoggedYesterday: number;
+  callsDeltaPct: number | null;
+  doctorDetailingVisitsToday: number;
+  gpsNotCapturedToday: number;
+  gpsNotCapturedDetailingToday: number;
+  chemistStockistOrdersToday: number;
+  chemistStockistOrderQtyToday: number;
+  chemistStockistOrderValueToday: number;
+  chemistStockistOrderValuePartial: boolean;
+  pendingApprovals: { leave: number; expense: number; tourPlan: number; deviation: number; total: number };
+};
+
 export const apiClient = {
   login(username: string, password: string) {
     return request<{ token: string }>("/auth/login", {
@@ -424,6 +439,12 @@ export const apiClient = {
 
   dashboard() {
     return request<CompanyDashboard>("/company/dashboard");
+  },
+
+  // Round F item 1 — real live numbers for the Activities landing page's 4
+  // stat cards (previously 100% hardcoded).
+  activitiesSummary() {
+    return request<ActivitiesSummary>("/company/activities/summary");
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app

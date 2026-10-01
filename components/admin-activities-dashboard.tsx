@@ -1,10 +1,36 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect, useState } from "react";
 import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 import { ZoneDropdown } from "./zone-dropdown";
+import { apiClient, type ActivitiesSummary } from "@/lib/api-client";
+
+function formatLakhs(rupees: number) {
+  return `₹${(rupees / 100000).toFixed(2)} Lakhs`;
+}
 
 export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
+  // Round F item 1 — these 4 cards used to be fully hardcoded ("1,420",
+  // "8.4 mins", "₹4.82 Lakhs", "9 GPS Mismatches" never changed no matter
+  // what reps/managers actually did). Now backed by a real aggregation
+  // (GET /company/activities/summary). "Avg E-Detailing mins" is dropped
+  // entirely rather than faked — no model anywhere stores per-session VA
+  // duration, confirmed by reading every e-detailing/slide model in the
+  // backend. "GPS Mismatches" (a distance vs. a registered clinic
+  // location) has no real data either — no Doctor/Chemist record stores a
+  // lat/lng to diff against — so it's replaced with the honest, real
+  // proxy: DCRs submitted today with no GPS captured at all.
+  const [summary, setSummary] = useState<ActivitiesSummary | null>(null);
+  const [summaryError, setSummaryError] = useState("");
+
+  useEffect(() => {
+    apiClient.activitiesSummary()
+      .then((r) => setSummary(r.data))
+      .catch((e) => setSummaryError(e instanceof Error ? e.message : "Unable to load live activity stats"));
+  }, []);
+
   return (
     <div className="flex flex-col w-full space-y-6">
       <div className="flex flex-col w-full space-y-6">
@@ -38,10 +64,10 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="bg-surface-card p-4 rounded-xl shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-start justify-between">
 <div>
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Total Calls Logged</span>
+<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Total Calls Logged Today</span>
 <div className="flex items-baseline gap-2 mt-1">
-<span className="font-metric-value text-metric-value text-text-primary">1,420</span>
-<span className="font-body-sm text-body-sm text-text-muted">/ 1,600 Target</span>
+<span className="font-metric-value text-metric-value text-text-primary">{summary ? summary.totalCallsLoggedToday.toLocaleString() : "–"}</span>
+<span className="font-body-sm text-body-sm text-text-muted">DCRs</span>
 </div>
 </div>
 <div className="w-10 h-10 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
@@ -49,14 +75,15 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="space-y-1.5">
-<div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
-<div className="bg-primary h-full rounded-full transition-all duration-500" style={{ "width": "88.75%" }}></div>
-</div>
 <div className="flex items-center justify-between font-label-sm text-label-sm">
-<span className="text-status-success font-semibold flex items-center gap-1">
-<span className="material-symbols-outlined text-[14px]">arrow_upward</span> +4.2% vs yesterday
+{summary && summary.callsDeltaPct !== null ? (
+<span className={`font-semibold flex items-center gap-1 ${summary.callsDeltaPct >= 0 ? "text-status-success" : "text-status-danger"}`}>
+<span className="material-symbols-outlined text-[14px]">{summary.callsDeltaPct >= 0 ? "arrow_upward" : "arrow_downward"}</span> {summary.callsDeltaPct >= 0 ? "+" : ""}{summary.callsDeltaPct}% vs yesterday
           </span>
-<span className="text-text-secondary">88.7% Complete</span>
+) : (
+<span className="text-text-muted">{summaryError ? "Live data unavailable" : "Loading…"}</span>
+)}
+<span className="text-text-secondary">{summary ? `${summary.totalCallsLoggedYesterday.toLocaleString()} yesterday` : ""}</span>
 </div>
 </div>
 </div>
@@ -64,9 +91,9 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="bg-surface-card p-4 rounded-xl shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-start justify-between">
 <div>
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Doctor Detailing Visits</span>
+<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Doctor Detailing Visits Today</span>
 <div className="flex items-baseline gap-2 mt-1">
-<span className="font-metric-value text-metric-value text-text-primary">1,105</span>
+<span className="font-metric-value text-metric-value text-text-primary">{summary ? summary.doctorDetailingVisitsToday.toLocaleString() : "–"}</span>
 <span className="font-body-sm text-body-sm text-text-secondary">Visits</span>
 </div>
 </div>
@@ -75,13 +102,9 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="space-y-1.5">
-<div className="flex items-center justify-between text-text-secondary font-body-sm text-body-sm">
-<span className="">Avg. E-Detailing: <strong className="text-text-primary font-semibold">8.4 mins</strong></span>
-<span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">On Track</span>
-</div>
 <div className="flex items-center gap-1.5 text-text-muted font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[15px] text-tertiary">co_present</span>
-<span className="">78% Visual Aid coverage achieved</span>
+<span className="material-symbols-outlined text-[15px] text-tertiary">gps_off</span>
+<span className="">{summary ? `${summary.gpsNotCapturedDetailingToday} of these had no GPS captured` : "Loading…"}</span>
 </div>
 </div>
 </div>
@@ -89,9 +112,9 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div className="bg-surface-card p-4 rounded-xl shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden group hover:shadow-md transition-shadow">
 <div className="flex items-start justify-between">
 <div>
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Chemist &amp; Stockist Orders</span>
+<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Chemist &amp; Stockist Orders Today</span>
 <div className="flex items-baseline gap-2 mt-1">
-<span className="font-metric-value text-metric-value text-text-primary">315</span>
+<span className="font-metric-value text-metric-value text-text-primary">{summary ? summary.chemistStockistOrdersToday.toLocaleString() : "–"}</span>
 <span className="font-body-sm text-body-sm text-text-muted">Bookings (POB)</span>
 </div>
 </div>
@@ -101,12 +124,12 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 <div className="space-y-1.5">
 <div className="flex items-center justify-between">
-<span className="font-headline-sm text-headline-sm text-text-primary">₹4.82 Lakhs</span>
-<span className="text-status-success font-label-sm text-label-sm flex items-center gap-0.5">
-<span className="material-symbols-outlined text-[13px]">trending_up</span> +12% MoM
-          </span>
+<span className="font-headline-sm text-headline-sm text-text-primary">{summary ? formatLakhs(summary.chemistStockistOrderValueToday) : "–"}</span>
+{summary?.chemistStockistOrderValuePartial && (
+<span className="text-status-warning font-label-sm text-label-sm">Partial (no rate for some products)</span>
+)}
 </div>
-<p className="font-body-sm text-body-sm text-text-muted">89 Secondary billing confirmations today</p>
+<p className="font-body-sm text-body-sm text-text-muted">{summary ? `${summary.chemistStockistOrderQtyToday.toLocaleString()} units booked today` : "Loading…"}</p>
 </div>
 </div>
 {/* Card 4 */}
@@ -115,20 +138,29 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <div>
 <span className="font-label-sm text-label-sm uppercase tracking-wider text-status-danger">Pending Approvals &amp; Alerts</span>
 <div className="flex items-baseline gap-2 mt-1">
-<span className="font-metric-value text-metric-value text-status-danger">14</span>
-<span className="font-body-sm text-body-sm text-text-muted">Flagged Logs</span>
+<span className="font-metric-value text-metric-value text-status-danger">{summary ? summary.pendingApprovals.total.toLocaleString() : "–"}</span>
+<span className="font-body-sm text-body-sm text-text-muted">Pending Approvals</span>
 </div>
 </div>
 <div className="w-10 h-10 rounded-lg bg-status-danger-bg text-status-danger flex items-center justify-center">
 <span className="material-symbols-outlined text-[22px]">warning_amber</span>
 </div>
 </div>
-<div className="flex items-center gap-2">
+<div className="flex flex-wrap items-center gap-2">
 <span className="px-2 py-0.5 rounded-full bg-status-danger-bg text-status-danger font-label-sm text-label-sm">
-          9 GPS Mismatches
+          {summary ? summary.pendingApprovals.leave : "–"} Leave
         </span>
 <span className="px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm">
-          5 Delayed Logs
+          {summary ? summary.pendingApprovals.expense : "–"} Expense
+        </span>
+<span className="px-2 py-0.5 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm">
+          {summary ? summary.pendingApprovals.tourPlan : "–"} Tour Plan
+        </span>
+<span className="px-2 py-0.5 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm">
+          {summary ? summary.pendingApprovals.deviation : "–"} Deviation
+        </span>
+<span className="px-2 py-0.5 rounded-full bg-status-danger-bg text-status-danger font-label-sm text-label-sm">
+          {summary ? summary.gpsNotCapturedToday : "–"} GPS Not Captured Today
         </span>
 </div>
 </div>
@@ -663,7 +695,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* Linear Route Milestone Progress */}
 <div className="space-y-2 pt-1">
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Today's Sequenced Route Progress</span>
+<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Today&apos;s Sequenced Route Progress</span>
 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
 <div className="p-2 rounded-lg bg-surface-canvas flex flex-col justify-between">
 <div className="flex items-center justify-between text-status-success font-label-sm text-label-sm">
