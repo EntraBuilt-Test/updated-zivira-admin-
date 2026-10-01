@@ -271,6 +271,26 @@ export type DcrRecord = Omit<DcrExtended, "doctorId" | "samplesGiven" | "inputsG
   samplesGiven?: { product?: string; productName?: string; qty: number }[];
   inputsGiven?: { inputType?: string; inputName?: string; qty: number }[];
   jointWork?: DcrExtended["jointWork"] & { wasJoint?: boolean; managerName?: string };
+  // Item A (post-launch robustness round) -- real fields GET /company/dcrs
+  // already returns that the type didn't carry yet, needed to replace the
+  // Activities dashboard's fake Telemetry table/Geofence panel with real data.
+  employeeName?: string;
+  hospitalClinic?: string | null;
+  checkInTime?: string | null;
+  visitDateOnly?: string;
+  gpsLocation?: { latitude: number | null; longitude: number | null; label?: string | null };
+};
+
+// Item A (post-launch robustness round) -- real download-count metrics
+// backing the Activities dashboard's "E-Detailing VA Session Metrics"
+// panel (GET /company/edetailing-summary). Deliberately has no
+// duration/engagement field -- none is ever recorded.
+export type EdetailingSummary = {
+  downloadsToday: number;
+  downloadsThisWeek: number;
+  distinctRepsThisWeek: number;
+  topSlides: { fileName: string; brand: string; count: number }[];
+  topReps: { employeeCode: string; employeeName: string; count: number }[];
 };
 
 export type DcrFilters = {
@@ -457,6 +477,11 @@ export const apiClient = {
   // stat cards (previously 100% hardcoded).
   activitiesSummary() {
     return request<ActivitiesSummary>("/company/activities/summary");
+  },
+
+  // Item A (post-launch robustness round)
+  edetailingSummary() {
+    return request<EdetailingSummary>("/company/edetailing-summary");
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app

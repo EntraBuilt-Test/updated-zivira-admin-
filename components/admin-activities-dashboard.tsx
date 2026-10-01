@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ToolbarDropdown } from "./toolbar-dropdown";
 import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 import { ZoneDropdown } from "./zone-dropdown";
-import { apiClient, type ActivitiesSummary } from "@/lib/api-client";
+import { apiClient, type ActivitiesSummary, type DcrRecord, type EdetailingSummary } from "@/lib/api-client";
 
 function formatLakhs(rupees: number) {
   return `₹${(rupees / 100000).toFixed(2)} Lakhs`;
@@ -30,6 +29,44 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
       .then((r) => setSummary(r.data))
       .catch((e) => setSummaryError(e instanceof Error ? e.message : "Unable to load live activity stats"));
   }, []);
+
+  // Item A (post-launch robustness round) -- real data backing the
+  // "Real-time Field Activity Telemetry", "Live Rep Route & Geofence" and
+  // "E-Detailing VA Session Metrics" panels below, all 3 previously
+  // 100% hardcoded mock content. See the comment on the JSX below for
+  // exactly what real data exists and what had to be honestly scoped down.
+  const [dcrs, setDcrs] = useState<DcrRecord[]>([]);
+  const [dcrsLoading, setDcrsLoading] = useState(true);
+  const [dcrsError, setDcrsError] = useState("");
+  const [edetailing, setEdetailing] = useState<EdetailingSummary | null>(null);
+  const [edetailingError, setEdetailingError] = useState("");
+
+  function loadDcrs() {
+    setDcrsLoading(true);
+    setDcrsError("");
+    apiClient.dcrs()
+      .then((r) => setDcrs(r.data))
+      .catch((e) => setDcrsError(e instanceof Error ? e.message : "Unable to load recent activity"))
+      .finally(() => setDcrsLoading(false));
+  }
+
+  useEffect(() => {
+    loadDcrs();
+    apiClient.edetailingSummary()
+      .then((r) => setEdetailing(r.data))
+      .catch((e) => setEdetailingError(e instanceof Error ? e.message : "Unable to load e-detailing metrics"));
+  }, []);
+
+  const todayStr = (() => {
+    const d = new Date();
+    return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+  })();
+  const todaysDcrs = dcrs.filter((d) => (d.visitDateOnly ?? d.visitDate?.slice(0, 10)) === todayStr);
+  const todaysTotal = todaysDcrs.length;
+  const todaysGpsVisits = todaysDcrs
+    .filter((d) => d.gpsLocation && d.gpsLocation.latitude !== null && d.gpsLocation.longitude !== null)
+    .sort((a, b) => new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime())
+    .slice(0, 8);
 
   return (
     <div className="flex flex-col w-full space-y-6">
@@ -230,593 +267,190 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 </div>
-{/* MAIN DATA ROSTER: COMPREHENSIVE DCR & FIELD ACTIVITIES TABLE */}
+{/* ITEM A (post-launch robustness round): replaces 6 hardcoded fake rows
+    with the real most-recent DCRs (GET /company/dcrs, already used
+    elsewhere in this app, newly typed with gpsLocation/hospitalClinic/
+    checkInTime). True server push isn't implemented anywhere in this
+    codebase, so this is honestly a "recent activity, refreshed on load /
+    manual refresh" view, not a live-push feed -- labeled as such below
+    rather than claiming a live socket connection that doesn't exist. */}
 <div className="bg-surface-card rounded-xl shadow-sm overflow-hidden flex flex-col">
 <div className="px-card-padding-spacious py-3.5 bg-surface-card flex items-center justify-between">
 <div className="flex items-center gap-2">
 <span className="material-symbols-outlined text-primary text-[20px]">badge</span>
-<span className="font-headline-sm text-headline-sm text-text-primary">Real-time Field Activity Telemetry (Audited DCRs)</span>
+<span className="font-headline-sm text-headline-sm text-text-primary">Recent Field Activity (Submitted DCRs)</span>
 </div>
 <div className="flex items-center gap-3 text-text-muted font-body-sm text-body-sm">
-<span className="">Showing 6 of 1,420 logs</span>
-<div className="flex items-center gap-1">
-<button className="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-subtle text-text-secondary" type="button">
-<span className="material-symbols-outlined text-[18px]">chevron_left</span>
-</button>
-<span className="font-label-md text-label-md text-text-primary">Page 1/237</span>
-<button className="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-subtle text-text-secondary" type="button">
-<span className="material-symbols-outlined text-[18px]">chevron_right</span>
+<span>{dcrsLoading ? "Loading..." : `Showing ${dcrs.length} most recent`}</span>
+<button type="button" onClick={loadDcrs} className="w-7 h-7 rounded flex items-center justify-center hover:bg-surface-subtle text-text-secondary" title="Refresh">
+<span className="material-symbols-outlined text-[18px]">refresh</span>
 </button>
 </div>
 </div>
-</div>
-{/* Responsive Scrollable Data Grid */}
 <div className="w-full overflow-x-auto">
 <table className="w-full text-left font-table-cell text-table-cell text-text-primary min-w-[1240px]">
 <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
-<tr className="bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider h-table-header-height hover:bg-surface-subtle/50 transition-colors group">
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">
-<input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</th>
+<tr className="bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider h-table-header-height">
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Rep (MR)</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor / Contact Info</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Activity Type</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Timestamp &amp; Geofence</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor / Hospital</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Timestamp &amp; GPS</th>
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Products Detailed</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Promo / Samples Handover</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Verification Status</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Actions</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Samples / Inputs</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th>
 </tr>
 </thead>
 <tbody className="divide-y divide-border-subtle">
-{/* ROW 1: Rahul Sharma (Mumbai - Doctor Detail) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card hover:bg-surface-subtle/50 transition-colors group">
-<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
-<input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center gap-3">
-<div className="w-9 h-9 rounded-full bg-brand-primary-subtle text-primary font-headline-sm flex items-center justify-center flex-shrink-0">
-                  RS
-                </div>
-<div className="flex flex-col min-w-0">
-<span className="font-label-md text-label-md text-text-primary truncate">Rahul Sharma</span>
-<span className="font-body-sm text-body-sm text-text-muted">MR-4089 · Mumbai South</span>
-</div>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<span className="font-label-md text-label-md text-text-primary">Dr. Ananya Iyer, MD</span>
-<span className="font-body-sm text-body-sm text-text-secondary">Cardiologist · Lilavati Hospital</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[13px]">person_check</span> Doctor Detail
-              </span>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
-<span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
-<span className="">10:14 AM</span>
-</div>
-<span className="font-body-sm text-body-sm text-status-success flex items-center gap-1">
-                  18.5204° N, 73.8567° E (12m delta)
-                </span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-wrap gap-1">
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">ZiviCal D3 (5m)</span>
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">CardioCare 20 (3m)</span>
-</div>
-</td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
-              2x ZiviCal D3 Samples, 1x Desk Pen
-            </td>
-<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
-<span className="w-1.5 h-1.5 rounded-full bg-status-success"></span> Approved
-              </span>
-</td>
-<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center justify-end gap-1.5">
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
-<span className="material-symbols-outlined text-[18px]">visibility</span>
-</button>
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Listen Audio/VA Log" type="button">
-<span className="material-symbols-outlined text-[18px]">play_circle</span>
-</button>
-</div>
-</td>
-</tr>
-{/* ROW 2: Priya Mehta (Pune - Chemist POB) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-canvas/30 hover:bg-surface-subtle/50 transition-colors group">
-<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
-<input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center gap-3">
-<div className="w-9 h-9 rounded-full bg-surface-container-high text-on-surface-variant font-headline-sm flex items-center justify-center flex-shrink-0">
-                  PM
-                </div>
-<div className="flex flex-col min-w-0">
-<span className="font-label-md text-label-md text-text-primary truncate">Priya Mehta</span>
-<span className="font-body-sm text-body-sm text-text-muted">MR-3122 · Pune Camp</span>
-</div>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<span className="font-label-md text-label-md text-text-primary">Apollo Medicos #442</span>
-<span className="font-body-sm text-body-sm text-text-secondary">Lead Chemist: Harish Patel</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-subtle text-secondary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[13px]">local_pharmacy</span> Chemist POB
-              </span>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
-<span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
-<span className="">10:48 AM</span>
-</div>
-<span className="font-body-sm text-body-sm text-status-success">POB Booked: ₹42,500</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-wrap gap-1">
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">GlycoZiv 500 (100 Strips)</span>
-</div>
-</td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
-              Product Monograph &amp; LBL Kit
-            </td>
-<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
-<span className="w-1.5 h-1.5 rounded-full bg-status-success"></span> Approved
-              </span>
-</td>
-<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center justify-end gap-1.5">
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
-<span className="material-symbols-outlined text-[18px]">receipt</span>
-</button>
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-status-success transition-colors" title="Approve" type="button">
-<span className="material-symbols-outlined text-[18px]">check_circle</span>
-</button>
-</div>
-</td>
-</tr>
-{/* ROW 3: Rajesh Kumar (Delhi - GPS Alert Flagged) */}
-<tr className="hover:bg-status-danger-bg/20 transition-colors h-table-row-height bg-status-danger-bg/10 hover:bg-surface-subtle/50 transition-colors group">
-<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
-<input defaultChecked={true} className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center gap-3">
-<div className="w-9 h-9 rounded-full bg-status-danger-bg text-status-danger font-headline-sm flex items-center justify-center flex-shrink-0">
-                  RK
-                </div>
-<div className="flex flex-col min-w-0">
-<span className="font-label-md text-label-md text-text-primary truncate">Rajesh Kumar</span>
-<span className="font-body-sm text-body-sm text-text-muted">MR-1904 · Delhi NCR</span>
-</div>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<span className="font-label-md text-label-md text-text-primary">Dr. Sanjay Grover, MBBS</span>
-<span className="font-body-sm text-body-sm text-text-secondary">General Physician · Max Care Clinic</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[13px]">person_check</span> Doctor Detail
-              </span>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<div className="flex items-center gap-1.5 font-label-md text-label-md text-status-danger">
-<span className="material-symbols-outlined text-[16px]">location_off</span>
-<span className="">11:22 AM</span>
-</div>
-<span className="font-body-sm text-body-sm text-status-danger font-semibold">
-                  Mismatch: 620m away from clinic
-                </span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-wrap gap-1">
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Metfor-Z (2m)</span>
-</div>
-</td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
-              None logged
-            </td>
-<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-danger-bg text-status-danger font-label-sm text-label-sm">
-<span className="w-1.5 h-1.5 rounded-full bg-status-danger"></span> GPS Alert Flagged
-              </span>
-</td>
-<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center justify-end gap-1.5">
-<button className="px-2 py-1 rounded bg-status-danger-bg hover:bg-status-danger hover:text-on-primary text-status-danger font-label-sm text-label-sm transition-colors" type="button">
-                  Audit Flag
-                </button>
-</div>
-</td>
-</tr>
-{/* ROW 4: Vikram Joshi (Ahmedabad - Joint Field Work with ABM) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card hover:bg-surface-subtle/50 transition-colors group">
-<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
-<input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center gap-3">
-<div className="w-9 h-9 rounded-full bg-status-info-bg text-status-info font-headline-sm flex items-center justify-center flex-shrink-0">
-                  VJ
-                </div>
-<div className="flex flex-col min-w-0">
-<span className="font-label-md text-label-md text-text-primary truncate">Vikram Joshi</span>
-<span className="font-body-sm text-body-sm text-text-muted">MR-5520 · Ahmedabad Central</span>
-</div>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<span className="font-label-md text-label-md text-text-primary">Dr. Meera Desai, DM</span>
-<span className="font-body-sm text-body-sm text-text-secondary">Endocrinologist · Sterling Hospital</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-info-bg text-status-info font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[13px]">groups</span> Joint Work w/ ABM
-              </span>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
-<span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
-<span className="">11:50 AM</span>
-</div>
-<span className="font-body-sm text-body-sm text-status-success">
-                  23.0225° N, 72.5714° E (5m)
-                </span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-wrap gap-1">
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">GlycoZiv XR (7m)</span>
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Thyro-Ziv 50 (4m)</span>
-</div>
-</td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
-              4x GlycoZiv Samples, 2x Patient Diaries
-            </td>
-<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-warning-bg text-status-warning font-label-sm text-label-sm">
-<span className="w-1.5 h-1.5 rounded-full bg-status-warning"></span> Under Review
-              </span>
-</td>
-<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center justify-end gap-1.5">
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
-<span className="material-symbols-outlined text-[18px]">visibility</span>
-</button>
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-status-success transition-colors" title="Approve" type="button">
-<span className="material-symbols-outlined text-[18px]">check</span>
-</button>
-</div>
-</td>
-</tr>
-{/* ROW 5: Sneha Roy (Kolkata - Doctor Detail) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-canvas/30 hover:bg-surface-subtle/50 transition-colors group">
-<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
-<input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center gap-3">
-<div className="w-9 h-9 rounded-full bg-tertiary-fixed-dim text-on-tertiary-fixed font-headline-sm flex items-center justify-center flex-shrink-0">
-                  SR
-                </div>
-<div className="flex flex-col min-w-0">
-<span className="font-label-md text-label-md text-text-primary truncate">Sneha Roy</span>
-<span className="font-body-sm text-body-sm text-text-muted">MR-2287 · Kolkata East</span>
-</div>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<span className="font-label-md text-label-md text-text-primary">Dr. Subhash Bose, MD</span>
-<span className="font-body-sm text-body-sm text-text-secondary">Chest Physician · Woodlands Heart Centre</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-brand-primary-subtle text-primary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[13px]">person_check</span> Doctor Detail
-              </span>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
-<span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
-<span className="">12:15 PM</span>
-</div>
-<span className="font-body-sm text-body-sm text-status-success">
-                  22.5726° N, 88.3639° E (18m)
-                </span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-wrap gap-1">
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Resp-Clear Inhaler (6m)</span>
-</div>
-</td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
-              1x Demo Inhaler Unit, 3x Patient Guides
-            </td>
-<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
-<span className="w-1.5 h-1.5 rounded-full bg-status-success"></span> Approved
-              </span>
-</td>
-<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center justify-end gap-1.5">
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
-<span className="material-symbols-outlined text-[18px]">visibility</span>
-</button>
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="VA Feedback" type="button">
-<span className="material-symbols-outlined text-[18px]">rate_review</span>
-</button>
-</div>
-</td>
-</tr>
-{/* ROW 6: Amit Verma (Lucknow - Stockist Follow-up) */}
-<tr className="hover:bg-surface-subtle/70 transition-colors h-table-row-height bg-surface-card hover:bg-surface-subtle/50 transition-colors group">
-<td className="w-10 px-4 text-center py-3 text-sm text-text-primary whitespace-nowrap">
-<input className="rounded accent-primary w-4 h-4 cursor-pointer" type="checkbox"/>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center gap-3">
-<div className="w-9 h-9 rounded-full bg-secondary-fixed text-on-secondary-fixed font-headline-sm flex items-center justify-center flex-shrink-0">
-                  AV
-                </div>
-<div className="flex flex-col min-w-0">
-<span className="font-label-md text-label-md text-text-primary truncate">Amit Verma</span>
-<span className="font-body-sm text-body-sm text-text-muted">MR-6011 · Lucknow North</span>
-</div>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<span className="font-label-md text-label-md text-text-primary">Awadh Pharma Distributors</span>
-<span className="font-body-sm text-body-sm text-text-secondary">Distributor: Manoj Tandon</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-subtle text-secondary font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[13px]">store</span> Stockist Follow-up
-              </span>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-col">
-<div className="flex items-center gap-1.5 font-label-md text-label-md text-text-primary">
-<span className="material-symbols-outlined text-status-success text-[16px]">verified</span>
-<span className="">12:42 PM</span>
-</div>
-<span className="font-body-sm text-body-sm text-text-secondary">Payment Realization &amp; Stock Audit</span>
-</div>
-</td>
-<td className="px-3 py-3 px-4 text-sm text-text-primary whitespace-nowrap">
-<div className="flex flex-wrap gap-1">
-<span className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">Batch Reconciliation #ZIV-990</span>
-</div>
-</td>
-<td className="px-3 py-3 font-body-sm text-body-sm text-text-secondary px-4 text-sm text-text-primary whitespace-nowrap">
-              Scheme Circular Q3 Handover
-            </td>
-<td className="px-3 py-3 text-center px-4 text-sm text-text-primary whitespace-nowrap">
-<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm">
-                Draft / In-Transit
-              </span>
-</td>
-<td className="px-4 py-3 text-right text-sm text-text-primary whitespace-nowrap">
-<div className="flex items-center justify-end gap-1.5">
-<button className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-canvas text-text-secondary hover:text-text-primary transition-colors" title="Inspect Call" type="button">
-<span className="material-symbols-outlined text-[18px]">more_vert</span>
-</button>
-</div>
-</td>
-</tr>
+{dcrsError && (
+<tr><td colSpan={6} className="px-4 py-6 text-center text-status-danger text-sm">{dcrsError}</td></tr>
+)}
+{!dcrsError && !dcrsLoading && dcrs.length === 0 && (
+<tr><td colSpan={6} className="px-4 py-6 text-center text-text-muted text-sm">No DCRs submitted yet.</td></tr>
+)}
+{dcrs.slice(0, 20).map((dcr) => {
+  const doctor = typeof dcr.doctorId === "object" ? dcr.doctorId : null;
+  const initials = (dcr.employeeName || dcr.employeeCode || "?").split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
+  const gps = dcr.gpsLocation;
+  const hasGps = gps && gps.latitude !== null && gps.longitude !== null;
+  const samplesCount = (dcr.samplesGiven ?? []).reduce((sum, s) => sum + (s.qty || 0), 0);
+  const inputsCount = (dcr.inputsGiven ?? []).reduce((sum, i) => sum + (i.qty || 0), 0);
+  return (
+    <tr key={dcr.id} className="hover:bg-surface-subtle/70 transition-colors h-table-row-height">
+      <td className="px-4 py-3 text-sm whitespace-nowrap">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-brand-primary-subtle text-primary font-headline-sm flex items-center justify-center flex-shrink-0">{initials}</div>
+          <div className="flex flex-col min-w-0">
+            <span className="font-label-md text-label-md text-text-primary truncate">{dcr.employeeName || dcr.employeeCode}</span>
+            <span className="font-body-sm text-body-sm text-text-muted">{dcr.employeeCode}</span>
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-3 text-sm whitespace-nowrap">
+        <div className="flex flex-col">
+          <span className="font-label-md text-label-md text-text-primary">{doctor?.name ?? "-"}</span>
+          <span className="font-body-sm text-body-sm text-text-secondary">{doctor?.specialty ?? dcr.hospitalClinic ?? ""}</span>
+        </div>
+      </td>
+      <td className="px-4 py-3 text-sm whitespace-nowrap">
+        <div className="flex flex-col">
+          <span className="font-label-md text-label-md text-text-primary">{dcr.checkInTime ?? new Date(dcr.visitDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+          <span className={"font-body-sm text-body-sm " + (hasGps ? "text-status-success" : "text-text-muted")}>
+            {hasGps ? `${gps!.latitude!.toFixed(4)}°, ${gps!.longitude!.toFixed(4)}°` : "GPS not captured"}
+          </span>
+        </div>
+      </td>
+      <td className="px-4 py-3 text-sm whitespace-nowrap">
+        <div className="flex flex-wrap gap-1">
+          {(dcr.productsDetailed ?? []).length === 0 ? <span className="text-text-muted text-xs">-</span> : dcr.productsDetailed.map((p, i) => (
+            <span key={i} className="px-2 py-0.5 rounded bg-surface-canvas text-text-primary text-[11px] font-medium">{p}</span>
+          ))}
+        </div>
+      </td>
+      <td className="px-4 py-3 text-sm text-text-secondary whitespace-nowrap">
+        {samplesCount > 0 || inputsCount > 0 ? `${samplesCount} sample(s), ${inputsCount} input(s)` : "-"}
+      </td>
+      <td className="px-4 py-3 text-center text-sm whitespace-nowrap">
+        <span className={"inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-label-sm text-label-sm " + (String(dcr.status) === "APPROVED" || String(dcr.status) === "AUTO_APPROVED" ? "bg-status-success-bg text-status-success" : dcr.status === "REJECTED" ? "bg-status-danger-bg text-status-danger" : "bg-surface-subtle text-text-secondary")}>
+          <span className="w-1.5 h-1.5 rounded-full bg-current"></span> {dcr.status}
+        </span>
+      </td>
+    </tr>
+  );
+})}
 </tbody>
 </table>
 </div>
-{/* Table Pagination Footer */}
-<div className="px-card-padding-spacious py-3 bg-surface-canvas/50 flex flex-col sm:flex-row items-center justify-between gap-3">
-<div className="flex items-center gap-2 font-body-sm text-body-sm text-text-muted">
-<span className="">Rows per page:</span>
-<ToolbarDropdown options={["25", "50", "100"]} initialSelected={"25"} />
-<span className="">Showing 1 to 6 of 1,420 entries</span>
 </div>
-<div className="flex items-center gap-1">
-<button className="px-2.5 py-1 rounded text-text-muted hover:bg-surface-card font-label-md text-label-md transition-colors" type="button">First</button>
-<button className="w-7 h-7 rounded flex items-center justify-center text-text-muted hover:bg-surface-card" type="button">
-<span className="material-symbols-outlined text-[16px]">chevron_left</span>
-</button>
-<button className="w-7 h-7 rounded bg-primary text-on-primary font-label-md text-label-md flex items-center justify-center" type="button">1</button>
-<button className="w-7 h-7 rounded hover:bg-surface-card text-text-secondary font-label-md text-label-md flex items-center justify-center" type="button">2</button>
-<button className="w-7 h-7 rounded hover:bg-surface-card text-text-secondary font-label-md text-label-md flex items-center justify-center" type="button">3</button>
-<span className="px-1 text-text-muted">...</span>
-<button className="w-7 h-7 rounded hover:bg-surface-card text-text-secondary font-label-md text-label-md flex items-center justify-center" type="button">237</button>
-<button className="w-7 h-7 rounded flex items-center justify-center text-text-secondary hover:bg-surface-card" type="button">
-<span className="material-symbols-outlined text-[16px]">chevron_right</span>
-</button>
-<button className="px-2.5 py-1 rounded text-text-secondary hover:bg-surface-card font-label-md text-label-md transition-colors" type="button">Last</button>
-</div>
-</div>
-</div>
-{/* AUXILIARY SPLIT PANELS (60/40 RATIO): LIVE GEO-FEED & E-DETAILING ANALYTICS */}
+
+{/* ITEM A: replaces the fake animated-map "Live Rep Route & Geofence" and
+    fabricated "E-Detailing VA Session Metrics" panels. Real GPS data only
+    exists per-DCR-visit (DcrModel.gpsLocation) -- there is no continuous
+    location-ping stream anywhere in this codebase, so a genuinely "live
+    route" can't be built; this honestly shows today's real GPS-stamped
+    check-ins instead. E-Detailing metrics are real download counts from
+    SlideDownloadModel only -- no duration/engagement field exists. */}
 <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-{/* PANEL A: LIVE GEO-VERIFICATION & DOCTOR COVERAGE FEED (7 COLUMNS) */}
-<div className="lg:col-span-7 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col justify-between space-y-4">
+<div className="lg:col-span-7 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col space-y-4">
 <div className="flex items-center justify-between">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
 <span className="material-symbols-outlined text-[20px]">explore</span>
 </div>
 <div>
-<h2 className="font-headline-sm text-headline-sm text-text-primary">Live Rep Route &amp; Geofence Verification</h2>
-<span className="font-body-sm text-body-sm text-text-muted">Rahul Sharma (MR-4089) · Route Track: Bandra-Khar-Santacruz</span>
-</div>
-</div>
-<span className="px-2.5 py-1 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm">
-          98.4% Route Compliance
-        </span>
-</div>
-{/* Real Map Location Viewport */}
-<div className="relative w-full h-56 rounded-lg overflow-hidden shadow-inner group">
-<div className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-location="Bandra Kurla Complex, Mumbai, India" style={{ "backgroundImage": "url('https://lh3.googleusercontent.com/aida-public/AB6AXuB9e4szfnLnW_KgyvabFf8ha0QQPfMaf3ovjONv7S96_kNNANIxU87fegM53an6Yx4wxulG7jLw9pCsmHt2jIoMisyzCZr0Bjy1XVnvh9mxvQ1ba6kuADYRuMWj8g0GZMY7zy8XFpdlcXdQ0ImzMvJJaSxGi398ljmFbQ0svEpCgpUCm6foj0XFD2uNxus08ZL4H1DS8V6UfvstcntRf8rdxeYIzH9g3RlwucbhuNnOqcqgU4uiX6NM')" }}></div>
-<div className="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent"></div>
-{/* Live Route HUD Overlay */}
-<div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-on-primary">
-<div className="flex items-center gap-2">
-<span className="material-symbols-outlined text-status-success text-[18px]">satellite_alt</span>
-<span className="font-label-sm text-label-sm tracking-wide">GPS Signal: High Precision (HDOP 0.8)</span>
-</div>
-<span className="font-label-sm text-label-sm bg-inverse-surface/90 px-2 py-0.5 rounded text-white backdrop-blur-sm">
-            Live Ping: 2m ago
-          </span>
-</div>
-</div>
-{/* Linear Route Milestone Progress */}
-<div className="space-y-2 pt-1">
-<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Today&apos;s Sequenced Route Progress</span>
-<div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
-<div className="p-2 rounded-lg bg-surface-canvas flex flex-col justify-between">
-<div className="flex items-center justify-between text-status-success font-label-sm text-label-sm">
-<span className="">09:30 AM</span>
-<span className="material-symbols-outlined text-[14px]">check_circle</span>
-</div>
-<span className="font-label-md text-label-md text-text-primary truncate mt-1">Dr. S. Kulkarni</span>
-<span className="text-[11px] text-text-muted">Completed (14m)</span>
-</div>
-<div className="p-2 rounded-lg bg-surface-canvas flex flex-col justify-between">
-<div className="flex items-center justify-between text-status-success font-label-sm text-label-sm">
-<span className="">10:14 AM</span>
-<span className="material-symbols-outlined text-[14px]">check_circle</span>
-</div>
-<span className="font-label-md text-label-md text-text-primary truncate mt-1">Dr. Ananya Iyer</span>
-<span className="text-[11px] text-text-muted">Completed (8m)</span>
-</div>
-<div className="p-2 rounded-lg bg-brand-primary-subtle flex flex-col justify-between">
-<div className="flex items-center justify-between text-primary font-label-sm text-label-sm">
-<span className="">11:45 AM</span>
-<span className="material-symbols-outlined text-[14px] animate-spin">sync</span>
-</div>
-<span className="font-label-md text-label-md text-text-primary truncate mt-1">Dr. P. Nambiar</span>
-<span className="text-[11px] text-primary font-medium">In Clinic Visit Now</span>
-</div>
-<div className="p-2 rounded-lg bg-surface-canvas flex flex-col justify-between opacity-70">
-<div className="flex items-center justify-between text-text-muted font-label-sm text-label-sm">
-<span className="">02:15 PM</span>
-<span className="material-symbols-outlined text-[14px]">schedule</span>
-</div>
-<span className="font-label-md text-label-md text-text-secondary truncate mt-1">Dr. F. Merchant</span>
-<span className="text-[11px] text-text-muted">Next Scheduled</span>
+<h2 className="font-headline-sm text-headline-sm text-text-primary">Today&apos;s GPS-Stamped Check-ins</h2>
+<span className="font-body-sm text-body-sm text-text-muted">Real per-visit GPS captured on DCR submission — no continuous location tracking exists, so this is a list, not a live map.</span>
 </div>
 </div>
 </div>
+<div className="space-y-2 flex-1 overflow-y-auto max-h-72">
+{todaysGpsVisits.length === 0 ? (
+  <p className="text-sm text-text-muted italic px-1 py-4 text-center">No GPS-stamped visits logged yet today.</p>
+) : (
+  todaysGpsVisits.map((dcr) => {
+    const doctor = typeof dcr.doctorId === "object" ? dcr.doctorId : null;
+    return (
+      <div key={dcr.id} className="p-2.5 rounded-lg bg-surface-canvas flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <span className="font-label-md text-label-md text-text-primary truncate block">{dcr.employeeName || dcr.employeeCode} — {doctor?.name ?? dcr.hospitalClinic ?? "Visit"}</span>
+          <span className="text-[11px] text-text-muted">{dcr.gpsLocation!.latitude!.toFixed(4)}°, {dcr.gpsLocation!.longitude!.toFixed(4)}°</span>
+        </div>
+        <span className="text-[11px] text-text-secondary font-medium whitespace-nowrap">{dcr.checkInTime ?? new Date(dcr.visitDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
+      </div>
+    );
+  })
+)}
 </div>
-{/* PANEL B: E-DETAILING INSIGHTS (VA SESSION METRICS - 5 COLUMNS) */}
-<div className="lg:col-span-5 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col justify-between space-y-4">
-<div className="flex items-center justify-between">
+<div className="text-[11px] text-text-muted pt-1 border-t border-border-subtle">
+{todaysTotal > 0 ? `${todaysGpsVisits.length} of ${todaysTotal} DCRs submitted today have GPS captured` : "No DCRs submitted today yet"}
+</div>
+</div>
+
+<div className="lg:col-span-5 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col space-y-4">
 <div className="flex items-center gap-2.5">
 <div className="w-8 h-8 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center">
 <span className="material-symbols-outlined text-[20px]">analytics</span>
 </div>
 <div>
-<h2 className="font-headline-sm text-headline-sm text-text-primary">E-Detailing VA Session Metrics</h2>
-<span className="font-body-sm text-body-sm text-text-muted">Digital Visual Aid Engagement Today</span>
+<h2 className="font-headline-sm text-headline-sm text-text-primary">E-Detailing Downloads</h2>
+<span className="font-body-sm text-body-sm text-text-muted">Real slide-download counts — no session-duration/engagement data exists to report.</span>
 </div>
 </div>
-<button className="text-text-muted hover:text-text-primary" type="button">
-<span className="material-symbols-outlined text-[18px]">more_horiz</span>
-</button>
-</div>
-{/* Micro Visual Aid Engagement Summary Bar */}
+{edetailingError && <p className="text-sm text-status-danger">{edetailingError}</p>}
 <div className="p-3 rounded-lg bg-surface-canvas flex items-center justify-between">
 <div>
-<span className="font-body-sm text-body-sm text-text-secondary">Average Screen Duration</span>
-<div className="font-headline-md text-headline-md text-text-primary mt-0.5">8m 24s / call</div>
+<span className="font-body-sm text-body-sm text-text-secondary">Downloads Today</span>
+<div className="font-headline-md text-headline-md text-text-primary mt-0.5">{edetailing?.downloadsToday ?? 0}</div>
 </div>
 <div className="h-10 w-px bg-surface-subtle"></div>
 <div>
-<span className="font-body-sm text-body-sm text-text-secondary">VA Interactive Slips</span>
-<div className="font-headline-md text-headline-md text-primary mt-0.5">1,248 total</div>
+<span className="font-body-sm text-body-sm text-text-secondary">Reps Active (7d)</span>
+<div className="font-headline-md text-headline-md text-primary mt-0.5">{edetailing?.distinctRepsThisWeek ?? 0}</div>
 </div>
 </div>
-{/* Top Detailed Product Performance Bars */}
-<div className="space-y-3.5 flex-1">
-{/* Product 1 */}
-<div className="space-y-1">
-<div className="flex items-center justify-between text-body-sm font-body-sm">
-<span className="font-label-md text-label-md text-text-primary">1. ZiviCal D3 (Bone &amp; Calcium)</span>
-<span className="text-text-secondary font-semibold">412 slides · 92% Engagement</span>
-</div>
-<div className="w-full bg-surface-subtle h-2 rounded-full overflow-hidden">
-<div className="bg-primary h-full rounded-full" style={{ "width": "92%" }}></div>
-</div>
-</div>
-{/* Product 2 */}
-<div className="space-y-1">
-<div className="flex items-center justify-between text-body-sm font-body-sm">
-<span className="font-label-md text-label-md text-text-primary">2. CardioCare 20 (Hypertension)</span>
-<span className="text-text-secondary font-semibold">310 slides · 88% Engagement</span>
-</div>
-<div className="w-full bg-surface-subtle h-2 rounded-full overflow-hidden">
-<div className="bg-secondary h-full rounded-full" style={{ "width": "88%" }}></div>
-</div>
-</div>
-{/* Product 3 */}
-<div className="space-y-1">
-<div className="flex items-center justify-between text-body-sm font-body-sm">
-<span className="font-label-md text-label-md text-text-primary">3. GlycoZiv XR (Anti-Diabetic)</span>
-<span className="text-text-secondary font-semibold">245 slides · 79% Engagement</span>
-</div>
-<div className="w-full bg-surface-subtle h-2 rounded-full overflow-hidden">
-<div className="bg-tertiary h-full rounded-full" style={{ "width": "79%" }}></div>
-</div>
-</div>
-{/* Product 4 */}
-<div className="space-y-1">
-<div className="flex items-center justify-between text-body-sm font-body-sm">
-<span className="font-label-md text-label-md text-text-primary">4. Resp-Clear Dry Inhaler</span>
-<span className="text-text-secondary font-semibold">180 slides · 72% Engagement</span>
-</div>
-<div className="w-full bg-surface-subtle h-2 rounded-full overflow-hidden">
-<div className="bg-outline h-full rounded-full" style={{ "width": "72%" }}></div>
+<div className="space-y-3 flex-1">
+<span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Top Slides This Week (by downloads)</span>
+{(!edetailing || edetailing.topSlides.length === 0) ? (
+  <p className="text-sm text-text-muted italic">No slide downloads recorded this week.</p>
+) : (
+  edetailing.topSlides.map((s, i) => {
+    const max = edetailing.topSlides[0]?.count || 1;
+    return (
+      <div key={i} className="space-y-1">
+        <div className="flex items-center justify-between text-body-sm font-body-sm">
+          <span className="font-label-md text-label-md text-text-primary truncate">{i + 1}. {s.fileName}{s.brand ? ` (${s.brand})` : ""}</span>
+          <span className="text-text-secondary font-semibold whitespace-nowrap">{s.count} download(s)</span>
+        </div>
+        <div className="w-full bg-surface-subtle h-2 rounded-full overflow-hidden">
+          <div className="bg-primary h-full rounded-full" style={{ width: `${(s.count / max) * 100}%` }}></div>
+        </div>
+      </div>
+    );
+  })
+)}
 </div>
 </div>
 </div>
-{/* Quick Action Feedback Link */}
-<div className="pt-2 flex items-center justify-between text-text-secondary font-body-sm text-body-sm">
-<span className="flex items-center gap-1">
-<span className="material-symbols-outlined text-[16px] text-status-success">check</span>
-          Sync status: 99.1% updated
-        </span>
-<a className="text-primary hover:underline font-label-md text-label-md flex items-center gap-1" href="#">
-<span className="">Download VA Analytics</span>
-<span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-</div>
+
+    </div>
     </div>
   );
 }
