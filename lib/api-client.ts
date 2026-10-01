@@ -1233,8 +1233,19 @@ export const apiClient = {
     const response = await fetch(`${getApiBaseUrl()}/company/audit-log${qs}`, {
       headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }
     });
-    const payload = await response.json();
-    if (!response.ok) throw new Error(payload?.error?.message ?? "Unable to load audit log");
+    // Round G item 1 — surface the real status/body instead of a generic
+    // message: a plain fetch failure, a non-JSON 404/502 (e.g. this route
+    // not yet live on the deployed backend), and a real JSON error from
+    // the route itself all need to be distinguishable from the UI, not
+    // collapsed into one unhelpful string.
+    const rawText = await response.text();
+    let payload: { data?: AuditLogEntry[]; total?: number; page?: number; pageSize?: number; error?: { message?: string } } | null = null;
+    try { payload = rawText ? JSON.parse(rawText) : null; } catch { /* non-JSON body, handled below */ }
+    if (!response.ok) {
+      const detail = payload?.error?.message ?? (rawText ? rawText.slice(0, 200) : response.statusText);
+      throw new Error(`Unable to load audit log (HTTP ${response.status}): ${detail}`);
+    }
+    if (!payload) throw new Error("Unable to load audit log: empty response body");
     return payload as { data: AuditLogEntry[]; total: number; page: number; pageSize: number };
   },
 
@@ -1251,7 +1262,14 @@ export const apiClient = {
     const response = await fetch(`${getApiBaseUrl()}/company/audit-log/export${qs}`, {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }
     });
-    if (!response.ok) throw new Error("Export failed");
+    if (!response.ok) {
+      // Round G item 1 — "Export failed" alone gave no way to tell a
+      // genuine server error apart from this route not yet being live on
+      // the deployed backend (a 404). Read the real body so the error
+      // banner shows exactly what happened.
+      const text = await response.text().catch(() => "");
+      throw new Error(`Export failed (HTTP ${response.status}): ${text.slice(0, 200) || response.statusText}`);
+    }
     return response.blob();
   },
 
