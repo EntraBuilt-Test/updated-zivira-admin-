@@ -92,12 +92,19 @@ export function DcrBulkApproval() {
     setSelected(new Set());
   }
 
+  // Round 36 Item B -- real shared reason for a bulk reject, persisted via
+  // the same real approval-audit-log collection the single-row flow now
+  // writes to.
   async function applyBulkAction(status: "Approved" | "Rejected") {
     if (!selected.size) return;
+    let reason = "";
+    if (status === "Rejected") {
+      reason = window.prompt(`Reason for rejecting these ${selected.size} date(s) (optional, shown on the Reject/Approval View report):`) || "";
+    }
     setWorking(true);
     setError(null);
     try {
-      const res = await apiClient.masterBulkAction(MASTER_KEY, { ids: Array.from(selected), status });
+      const res = await apiClient.masterBulkAction(MASTER_KEY, { ids: Array.from(selected), status, reason });
       const failed = res.data.results.filter((r) => !r.ok);
       if (failed.length) {
         setError(`${failed.length} of ${res.data.results.length} row(s) could not be updated.`);

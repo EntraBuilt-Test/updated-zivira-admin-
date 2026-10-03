@@ -405,12 +405,24 @@ export function TpDatewiseReport() {
         </div>
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Day</span>
-          <div className="flex flex-wrap gap-1.5 max-w-xl">
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-              <label key={d} className="flex items-center gap-1 px-1.5 py-0.5 rounded border border-border-subtle text-xs">
-                <input type="checkbox" checked={selectedDays.includes(d)} onChange={() => toggleDay(d)} /> {d}
-              </label>
-            ))}
+          {/* Round 36 Item 3 -- replaced the bare checkbox+number row with
+              clickable calendar-style day tiles; selected state is the
+              tile's own filled background, matching our tile-grid pattern
+              elsewhere. Same selectedDays array/behavior underneath. */}
+          <div className="grid gap-1.5 max-w-xl" style={{ gridTemplateColumns: "repeat(7, minmax(0, 1fr))" }}>
+            {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => {
+              const active = selectedDays.includes(d);
+              return (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => toggleDay(d)}
+                  className={`h-8 w-8 rounded-lg text-xs font-medium border transition-colors ${active ? "bg-primary text-on-primary border-primary" : "bg-surface-canvas text-text-primary border-border-subtle hover:bg-surface-subtle"}`}
+                >
+                  {d}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

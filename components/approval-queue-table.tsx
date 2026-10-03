@@ -99,10 +99,20 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
   const pending = rows.filter((r) => String(r.approvalStatus ?? "Pending") === "Pending");
   const visibleRows = showAll ? rows : pending;
 
+  // Round 36 Item B -- a real reason is now captured at the moment of the
+  // actual approve/reject action (not a new flow -- this IS the existing
+  // approve/reject flow, just with the missing reason field added) and
+  // persisted into the new real append-only approval-audit-log collection
+  // server-side. Reason is optional on Approve, asked for on Reject since
+  // that's when a reason is actually useful to a DCR report reader.
   async function act(row: MasterRecord, status: "Approved" | "Rejected") {
+    let reason = "";
+    if (status === "Rejected") {
+      reason = window.prompt("Reason for rejecting (optional, shown on the Reject/Approval View report):") || "";
+    }
     setWorkingId(String(row.id));
     try {
-      await apiClient.updateMasterRecord(masterKey, String(row.id), { approvalStatus: status });
+      await apiClient.updateMasterRecord(masterKey, String(row.id), { approvalStatus: status, reason });
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update approval status");

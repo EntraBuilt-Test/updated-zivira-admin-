@@ -518,7 +518,16 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
         </header>
 
         <main className="w-full pt-[96px] pb-container-padding-mobile sm:pb-container-padding-desktop min-h-screen bg-surface-canvas px-container-padding-mobile sm:px-container-padding-desktop">
-          {children}
+          {/* Round 36 Item 7 -- every tab's filter bars/tables/cards were
+              stretching to the raw viewport width with no centering,
+              reading as left-aligned/inconsistent on wide screens. A
+              single max-width + mx-auto wrapper here centers EVERY tab
+              panel's content (Activity Reports sub-tabs, TP/DCR panels,
+              Customized Report, and every other workspace/tab page) at
+              once, consistently, without touching each component. */}
+          <div className="w-full max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
       </div>
     </div>

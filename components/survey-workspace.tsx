@@ -607,7 +607,7 @@ function SurveyViewScreen() {
     setLoading(true);
     setViewed(true);
     try {
-      const r = await apiClient.surveyView(surveyId, employeeCode);
+      const r = await apiClient.surveyView(surveyId, employeeCode, mode);
       setResult(r.data);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to load Survey View");
@@ -674,7 +674,17 @@ function SurveyViewScreen() {
           <select
             className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
             value={mode}
-            onChange={(e) => setMode(e.target.value as "Question Wise" | "Answer Wise")}
+            onChange={(e) => {
+              const next = e.target.value as "Question Wise" | "Answer Wise";
+              setMode(next);
+              if (viewed && employeeCode && surveyId) {
+                setLoading(true);
+                apiClient.surveyView(surveyId, employeeCode, next)
+                  .then((r) => setResult(r.data))
+                  .catch((err) => setError(err instanceof Error ? err.message : "Unable to load Survey View"))
+                  .finally(() => setLoading(false));
+              }
+            }}
           >
             <option value="Question Wise">Question Wise</option>
             <option value="Answer Wise">Answer Wise</option>
@@ -708,11 +718,11 @@ function SurveyViewScreen() {
             <div>
               <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Survey - View</h2>
               <p className="font-body-sm text-body-sm text-text-secondary">Field Force Name: {selectedEmployee?.name} - {selectedEmployee?.designation} - {selectedEmployee?.territory}</p>
-              {mode === "Answer Wise" && (
-                <p className="font-body-sm text-body-sm text-text-muted italic mt-1">
-                  No real survey-answer data pipeline exists yet (field reps have no way to submit survey answers), so Answer Wise currently renders the same real structure as Question Wise rather than a fabricated difference.
-                </p>
-              )}
+              <p className="font-body-sm text-body-sm text-text-muted italic mt-1">
+                {mode === "Question Wise"
+                  ? "Round 36: Question Wise shows how many of this survey's real questions apply to each category (Drs/Chm/Stk/Hos/Prd) -- the same count for every row, since it reflects the survey's own composition, not this rep's activity."
+                  : "Round 36: Answer Wise now reads real submitted answers (field reps can answer surveys from the field app's new Surveys screen) -- each cell is how many of that category's questions this specific rep has actually answered so far."}
+              </p>
             </div>
             <div className="flex items-center gap-2">
               <button type="button" onClick={exportExcel} className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container-high text-text-secondary font-label-sm text-label-sm transition-colors">Excel</button>
@@ -749,19 +759,17 @@ function SurveyViewScreen() {
                       <td className="px-3 py-1.5">{r.hq}</td>
                       <td className="px-3 py-1.5">{r.doj ? new Date(r.doj).toLocaleDateString() : "-"}</td>
                       <td className="px-3 py-1.5">{r.employeeCode}</td>
-                      {/* No real survey-answer pipeline exists yet -- honestly
-                          "-" for every category cell, matching the legacy
-                          screenshot's own unanswered-survey display exactly
-                          rather than fabricating response counts. */}
-                      {PROCESS_TYPE_COLUMNS.map((c) => (
-                        <td key={c.key} className="px-3 py-1.5 text-center">-</td>
+                      {PROCESS_TYPE_COLUMNS.map((col) => (
+                        <td key={col.key} className="px-3 py-1.5 text-center">{r.counts ? r.counts[col.key] : "-"}</td>
                       ))}
                     </tr>
                   ))}
                   <tr className="font-bold text-status-danger">
                     <td className="px-3 py-1.5" colSpan={6}>Grand Total</td>
-                    {PROCESS_TYPE_COLUMNS.map((c) => (
-                      <td key={c.key} className="px-3 py-1.5 text-center">-</td>
+                    {PROCESS_TYPE_COLUMNS.map((col) => (
+                      <td key={col.key} className="px-3 py-1.5 text-center">
+                        {result.rows.reduce((sum, r) => sum + (r.counts ? r.counts[col.key] : 0), 0)}
+                      </td>
                     ))}
                   </tr>
                 </tbody>

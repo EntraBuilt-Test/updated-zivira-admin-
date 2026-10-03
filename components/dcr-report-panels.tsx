@@ -163,7 +163,7 @@ export function DcrViewWorkspace() {
           {!error && result && !result.needsDate && DATE_PICKER_MODES.has(mode) && date && (
             <div className="overflow-x-auto rounded-lg border border-border-subtle mt-3">
               {(mode === "rcpa-view" || mode === "reminder-calls") && (
-                <p className="text-xs text-status-warning p-2">No distinct RCPA / reminder-call schema exists yet -- showing the same real per-date DCR listing (coordinator-confirmed this is the correct legacy-equivalent behavior for these two modes).</p>
+                <p className="text-xs text-status-warning p-2">Round 36 re-check: confirmed there is still no distinct real RCPA or reminder-call submission schema anywhere in this codebase -- the &quot;RCPA&quot; label elsewhere in the product (e.g. the Customized Report catalog&apos;s RCPA fields, and an MIS Reports nav entry) is a legacy field-name carryover with no backing model or field-rep capture flow behind it. Rather than fabricate a distinct table, this still shows the same real per-date DCR listing for both modes.</p>
               )}
               <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
                 <thead className="bg-brand-primary-subtle"><tr><th className="px-3 py-2">S.No</th><th className="px-3 py-2">FieldForce</th><th className="px-3 py-2">Doctor</th><th className="px-3 py-2">Session</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Notes</th></tr></thead>
@@ -356,25 +356,25 @@ export function DcrStatusReport() {
                 </h2>
               </div>
               <div className="overflow-x-auto rounded-lg border border-border-subtle">
-                <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
+                <table className="w-full text-left font-table-cell text-table-cell text-text-primary border-collapse">
                   <thead className="bg-brand-primary-subtle">
                     <tr>
-                      <th className="px-2 py-2">S.No</th><th className="px-2 py-2">Employee id</th><th className="px-2 py-2">FieldForce Name</th>
-                      <th className="px-2 py-2">Designation</th><th className="px-2 py-2">HQ</th>
-                      {result.days.map((d) => <th key={d} className="px-2 py-1 text-center">{d}</th>)}
+                      <th className="px-2 py-2 border-r border-border-subtle">S.No</th><th className="px-2 py-2 border-r border-border-subtle">Employee id</th><th className="px-2 py-2 border-r border-border-subtle">FieldForce Name</th>
+                      <th className="px-2 py-2 border-r border-border-subtle">Designation</th><th className="px-2 py-2 border-r border-border-subtle">HQ</th>
+                      {result.days.map((d) => <th key={d} className="px-2 py-1 text-center border-r border-border-subtle">{d}</th>)}
                       <th className="px-2 py-2">No of Days Present</th>
                     </tr>
                   </thead>
                   <tbody>
                     {result.rows.map((r, i) => (
                       <tr key={r.employeeCode}>
-                        <td className="px-2 py-1 border-t border-border-subtle">{i + 1}</td>
-                        <td className="px-2 py-1 border-t border-border-subtle">{r.employeeCode}</td>
-                        <td className="px-2 py-1 border-t border-border-subtle">{r.name}</td>
-                        <td className="px-2 py-1 border-t border-border-subtle">{r.designation}</td>
-                        <td className="px-2 py-1 border-t border-border-subtle">{r.hq}</td>
+                        <td className="px-2 py-1 border-t border-r border-border-subtle">{i + 1}</td>
+                        <td className="px-2 py-1 border-t border-r border-border-subtle">{r.employeeCode}</td>
+                        <td className="px-2 py-1 border-t border-r border-border-subtle">{r.name}</td>
+                        <td className="px-2 py-1 border-t border-r border-border-subtle">{r.designation}</td>
+                        <td className="px-2 py-1 border-t border-r border-border-subtle">{r.hq}</td>
                         {r.perDay.map((d) => (
-                          <td key={d.day} className="px-1 py-1 border-t border-border-subtle text-center text-xs">
+                          <td key={d.day} className="px-1 py-1 border-t border-r border-border-subtle text-center text-xs">
                             {result.detailed ? `${d.sd ?? ""}/${d.drs ?? ""}` : d.code}
                           </td>
                         ))}

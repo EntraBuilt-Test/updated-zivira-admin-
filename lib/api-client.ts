@@ -378,9 +378,11 @@ export type SurveyViewRow = {
   hq: string;
   doj: string | null;
 };
+export type SurveyViewCounts = { drs: number; chm: number; stk: number; hos: number; prd: number };
 export type SurveyViewResult = {
   surveyTitle: string;
-  rows: SurveyViewRow[];
+  mode?: "Question Wise" | "Answer Wise";
+  rows: (SurveyViewRow & { counts?: SurveyViewCounts })[];
 };
 
 // Round 34 -- Activity Reports > TP / DCR, real legacy-parity report
@@ -800,8 +802,9 @@ export const apiClient = {
   closeSurvey(id: string) {
     return request<Survey>(`/company/surveys/${id}/close`, { method: "PATCH" });
   },
-  surveyView(surveyId: string, employeeCode: string) {
-    return request<SurveyViewResult>(`/company/surveys/${surveyId}/view?employeeCode=${encodeURIComponent(employeeCode)}`);
+  surveyView(surveyId: string, employeeCode: string, mode?: "Question Wise" | "Answer Wise") {
+    const modeParam = mode ? `&mode=${encodeURIComponent(mode)}` : "";
+    return request<SurveyViewResult>(`/company/surveys/${surveyId}/view?employeeCode=${encodeURIComponent(employeeCode)}${modeParam}`);
   },
 
   // Round 34 -- Activity Reports > TP / DCR real report endpoints.
@@ -1292,7 +1295,7 @@ export const apiClient = {
     return request<MasterRecord[]>(`/company/masters/${key}/bulk${qs}`);
   },
 
-  masterBulkAction(key: string, input: { ids: string[]; status: "Approved" | "Rejected" }) {
+  masterBulkAction(key: string, input: { ids: string[]; status: "Approved" | "Rejected"; reason?: string }) {
     return request<{ results: { id: string; ok: boolean; error?: string }[]; updatedCount: number }>(
       `/company/masters/${key}/bulk-action`,
       { method: "POST", body: JSON.stringify(input) }
