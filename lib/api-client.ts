@@ -305,6 +305,32 @@ export type DispatchToday = {
   totalQty: number;
 };
 
+// Activity Reports rebuild round -- Territory >> View / Status, matching
+// sanpharma.info's own screens exactly (see company.routes.ts for the
+// field-derivation notes and disclosed scoping decisions).
+export type TerritoryViewDoctorRow = {
+  name: string;
+  specialty: string;
+  category: string;
+  qual: string;
+  class: string;
+};
+export type TerritoryViewGroup = { territoryName: string; rows: TerritoryViewDoctorRow[] };
+export type TerritoryView = {
+  fieldForceName: string;
+  designation: string;
+  hq: string;
+  territories: TerritoryViewGroup[];
+};
+export type TerritoryStatusRow = {
+  fieldForce: string;
+  hq: string;
+  totalDrs: number;
+  noOfPlans: number;
+  allocatedDrs: number;
+  notAllocatedDrs: number;
+};
+
 export type EdetailingSummary = {
   downloadsToday: number;
   downloadsThisWeek: number;
@@ -512,6 +538,15 @@ export const apiClient = {
   },
   dispatchesToday() {
     return request<DispatchToday[]>("/company/dispatches-today");
+  },
+
+  // Activity Reports rebuild round -- Territory >> View / Status.
+  territoryView(employeeCode: string) {
+    return request<TerritoryView | null>(`/company/reports/territory-view?employeeCode=${encodeURIComponent(employeeCode)}`);
+  },
+  territoryStatus(employeeCode?: string) {
+    const qs = employeeCode ? `?employeeCode=${encodeURIComponent(employeeCode)}` : "";
+    return request<TerritoryStatusRow[]>(`/company/reports/territory-status${qs}`);
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app
