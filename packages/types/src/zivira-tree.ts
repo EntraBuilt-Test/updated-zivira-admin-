@@ -223,13 +223,15 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
       node("Activity Reports", "activity-reports", "division", [
         node("Territory", "territory", "division", [node("View", "view", "division"), node("Status", "status", "division")]),
         node("Survey", "survey", "division", [node("Question Creation", "question-creation", "division"), node("Updation", "updation", "division"), node("View", "view", "division")]),
-        // Coordinator round (Activity Reports visual rebuild) -- the legacy
-        // sanpharma.info TP menu genuinely shows "View" twice (confirmed from
-        // the real legacy screenshots); the slug stays "status" for URL
-        // stability (nothing else referenced it, but renaming a slug can
-        // silently break an old bookmark/link) while the *title* is corrected
-        // to match the legacy duplicate exactly.
-        node("TP", "tp", "division", [node("Consolidated View", "consolidated-view", "division"), node("View", "view", "division"), node("View", "status", "division"), node("Datewise", "datewise", "division")]),
+        // Round 34 correction: an earlier round renamed this 3rd child's
+        // title to "View" based on a claimed legacy duplicate-label pattern.
+        // Round 34's detailed legacy spec confirms TP > View
+        // (TP_View_Report.aspx, a single rep's day-by-day detail) and
+        // TP > Status (TP_Status_Report.aspx, a team submission/approval
+        // status rollup) are two genuinely distinct real legacy pages, not
+        // a duplicate -- reverted the title back to "Status" accordingly.
+        // Slug stays "status" (unchanged either way, so no link breaks).
+        node("TP", "tp", "division", [node("Consolidated View", "consolidated-view", "division"), node("View", "view", "division"), node("Status", "status", "division"), node("Datewise", "datewise", "division")]),
         node("DCR", "dcr", "division", [node("View", "view", "division"), node("Status", "status", "division"), node("Not Approved", "not-approved", "division"), node("Not Submitted", "not-submitted", "division"), node("Count - ModeWise", "count-modewise", "division"), node("Approve/Reject", "approve-reject", "division"), node("Time Status", "time-status", "division"), node("Checkin-Checkout", "checkin-checkout", "division")]),
         node("Customized Report", "customized-report", "division")
       ]),

@@ -47,6 +47,8 @@ import { TransferMasterDetailsPanel } from "@/components/transfer-master-details
 import { UnlistedToListedConversionPanel } from "@/components/unlisted-to-listed-conversion-panel";
 import { DelayedReleasePanel } from "@/components/delayed-release-panel";
 import { TerritoryViewReport, TerritoryStatusReport } from "@/components/territory-report-panels";
+import { TpConsolidatedViewReport, TpViewReport, TpStatusReport, TpDatewiseReport } from "@/components/tp-report-panels";
+import { DcrViewWorkspace, DcrStatusReport } from "@/components/dcr-report-panels";
 import { SurveyWorkspace } from "@/components/survey-workspace";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
@@ -791,8 +793,27 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("activity-reports/territory/status")) {
     return <TerritoryStatusReport />;
   }
+  if (pathStr.endsWith("activity-reports/tp/consolidated-view")) {
+    return <TpConsolidatedViewReport />;
+  }
+  if (pathStr.endsWith("activity-reports/tp/view")) {
+    return <TpViewReport />;
+  }
+  if (pathStr.endsWith("activity-reports/tp/status")) {
+    return <TpStatusReport />;
+  }
+  if (pathStr.endsWith("activity-reports/tp/datewise")) {
+    return <TpDatewiseReport />;
+  }
+  // Round 34 -- replaced the simple read-only AdminDcrView mount with the
+  // real multi-mode DCR > View workspace (9 legacy modes, see
+  // dcr-report-panels.tsx). AdminDcrView itself (Admin Review / DCR
+  // approval queue) stays in use elsewhere via its own real import.
   if (pathStr.endsWith("activity-reports/dcr/view")) {
-    return <AdminDcrView />;
+    return <DcrViewWorkspace />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/status")) {
+    return <DcrStatusReport />;
   }
   if (pathStr.endsWith("activity-reports/dcr/approve-reject")) {
     return <MasterScreen masterKey="approvalDcr" />;

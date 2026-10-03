@@ -383,6 +383,131 @@ export type SurveyViewResult = {
   rows: SurveyViewRow[];
 };
 
+// Round 34 -- Activity Reports > TP / DCR, real legacy-parity report
+// screens. See company.routes.ts for the honest schema-reality
+// disclosures (pobIsApproximated / nonListedUnsupported /
+// stockistUnsupported / unsupportedCodes) that these types surface as-is
+// rather than hiding.
+export type TpDayStatus = { day: number; kind: string; label: string };
+export type TpConsolidatedColumn = {
+  employeeCode: string;
+  name: string;
+  designation: string;
+  hq: string;
+  days: TpDayStatus[];
+};
+export type TpConsolidatedView = {
+  fieldForceName: string;
+  month: string;
+  columns: TpConsolidatedColumn[];
+};
+
+export type TpViewDay = {
+  day: number;
+  date: string;
+  workType: string;
+  territory: string;
+  type: string;
+  jointWork: string;
+  objective: string;
+  managerJfw: string;
+};
+export type TpViewResult = {
+  employee: { name: string; designation: string; hq: string };
+  status: string;
+  completedAt: string | null;
+  confirmedAt: string | null;
+  summary: { hqDays: number; exDays: number; osDays: number; holidaySunday: number; others: number };
+  days: TpViewDay[];
+};
+
+export type TpStatusRow = {
+  employeeCode: string;
+  name: string;
+  designation: string;
+  hq: string;
+  status: string;
+  entryDate: string | null;
+  approvedDate: string | null;
+};
+
+export type TpDatewiseRow = {
+  employeeCode: string;
+  name: string;
+  designation: string;
+  hq: string;
+  state: string;
+  joinDate: string | null;
+  perDay: Record<number, { kind: string; label: string }>;
+};
+export type TpDatewiseResult = {
+  fieldForceName: string;
+  month: string;
+  days: number[];
+  rows: TpDatewiseRow[];
+};
+
+export type DcrViewMode =
+  | "all-doctors" | "dcr-dates" | "all-remarks" | "detailed"
+  | "listed-doctor-remarks" | "not-approved-dates" | "tp-my-day-plan"
+  | "rcpa-view" | "reminder-calls";
+
+export type DcrViewDatePickerRow = {
+  employeeCode: string;
+  doctorName: string;
+  visitDate: string;
+  callSession: string;
+  status: string;
+  notes: string;
+};
+export type DcrViewRemarkRow = { date: string; remarks: string };
+export type DcrViewDetailedDay = {
+  date: string;
+  submitted: boolean;
+  territory?: string;
+  startTime?: string;
+  endTime?: string;
+  workType?: string;
+  listedDrMet?: number;
+  listedDrPob?: number;
+  chemistMet?: number;
+  chemistPob?: number;
+  stockistMet?: number;
+  nonListedDrMet?: number;
+};
+export type DcrViewDoctorRow = { employeeCode: string; doctorName: string; count: number };
+export type DcrViewResult = {
+  mode: DcrViewMode;
+  needsDate?: boolean;
+  rows?: (DcrViewDatePickerRow | DcrViewRemarkRow | DcrViewDoctorRow)[];
+  days?: DcrViewDetailedDay[];
+  employee?: { name: string; designation: string; hq: string } | null;
+  pobIsApproximated?: boolean;
+  nonListedUnsupported?: boolean;
+  stockistUnsupported?: boolean;
+  totals?: { submittedDays: number; listedDrMet: number; chemistMet: number; avgListedDrMetPerSubmittedDay: number };
+};
+
+export type DcrStatusDay = { day: number; code: string; sd?: number | null; drs?: number | null };
+export type DcrStatusRow = {
+  employeeCode: string;
+  name: string;
+  designation: string;
+  hq: string;
+  joinDate: string | null;
+  perDay: DcrStatusDay[];
+  noOfDaysPresent: number;
+};
+export type DcrStatusResult = {
+  rows: DcrStatusRow[];
+  days: number[];
+  detailed: boolean;
+  periodwise: boolean;
+  rangeStart: string;
+  rangeEnd: string;
+  unsupportedCodes: string[];
+};
+
 export type EdetailingSummary = {
   downloadsToday: number;
   downloadsThisWeek: number;
@@ -634,6 +759,42 @@ export const apiClient = {
   },
   surveyView(surveyId: string, employeeCode: string) {
     return request<SurveyViewResult>(`/company/surveys/${surveyId}/view?employeeCode=${encodeURIComponent(employeeCode)}`);
+  },
+
+  // Round 34 -- Activity Reports > TP / DCR real report endpoints.
+  tpConsolidatedView(params: { employeeCode: string; month: string; allBaseLevel: boolean }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, allBaseLevel: String(params.allBaseLevel) });
+    return request<TpConsolidatedView | null>(`/company/reports/tp-consolidated-view?${qs.toString()}`);
+  },
+  tpView(params: { employeeCode: string; month: string }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month });
+    return request<TpViewResult | null>(`/company/reports/tp-view?${qs.toString()}`);
+  },
+  tpStatus(params: { employeeCode: string; month: string; withVacants: boolean }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, withVacants: String(params.withVacants) });
+    return request<TpStatusRow[]>(`/company/reports/tp-status?${qs.toString()}`);
+  },
+  tpDatewise(params: { employeeCode: string; month: string; days: number[] }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, days: params.days.join(",") });
+    return request<TpDatewiseResult | null>(`/company/reports/tp-datewise?${qs.toString()}`);
+  },
+  dcrView(params: { employeeCode: string; month?: string; mode: DcrViewMode; date?: string; onlyVacantManagers?: boolean }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, mode: params.mode });
+    if (params.month) qs.set("month", params.month);
+    if (params.date) qs.set("date", params.date);
+    if (params.onlyVacantManagers) qs.set("onlyVacantManagers", "true");
+    return request<DcrViewResult | null>(`/company/reports/dcr-view?${qs.toString()}`);
+  },
+  dcrStatus(params: { employeeCode: string; month?: string; fromDate?: string; toDate?: string; periodwise?: boolean; detailed?: boolean; withVacants?: boolean; onlyManagers?: boolean }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode });
+    if (params.month) qs.set("month", params.month);
+    if (params.fromDate) qs.set("fromDate", params.fromDate);
+    if (params.toDate) qs.set("toDate", params.toDate);
+    if (params.periodwise) qs.set("periodwise", "true");
+    if (params.detailed) qs.set("detailed", "true");
+    if (params.withVacants) qs.set("withVacants", "true");
+    if (params.onlyManagers) qs.set("onlyManagers", "true");
+    return request<DcrStatusResult | null>(`/company/reports/dcr-status?${qs.toString()}`);
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app
