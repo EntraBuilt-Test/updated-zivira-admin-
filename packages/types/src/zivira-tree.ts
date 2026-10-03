@@ -223,7 +223,13 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
       node("Activity Reports", "activity-reports", "division", [
         node("Territory", "territory", "division", [node("View", "view", "division"), node("Status", "status", "division")]),
         node("Survey", "survey", "division", [node("Question Creation", "question-creation", "division"), node("Updation", "updation", "division"), node("View", "view", "division")]),
-        node("TP", "tp", "division", [node("Consolidated View", "consolidated-view", "division"), node("View", "view", "division"), node("Status", "status", "division"), node("Datewise", "datewise", "division")]),
+        // Coordinator round (Activity Reports visual rebuild) -- the legacy
+        // sanpharma.info TP menu genuinely shows "View" twice (confirmed from
+        // the real legacy screenshots); the slug stays "status" for URL
+        // stability (nothing else referenced it, but renaming a slug can
+        // silently break an old bookmark/link) while the *title* is corrected
+        // to match the legacy duplicate exactly.
+        node("TP", "tp", "division", [node("Consolidated View", "consolidated-view", "division"), node("View", "view", "division"), node("View", "status", "division"), node("Datewise", "datewise", "division")]),
         node("DCR", "dcr", "division", [node("View", "view", "division"), node("Status", "status", "division"), node("Not Approved", "not-approved", "division"), node("Not Submitted", "not-submitted", "division"), node("Count - ModeWise", "count-modewise", "division"), node("Approve/Reject", "approve-reject", "division"), node("Time Status", "time-status", "division"), node("Checkin-Checkout", "checkin-checkout", "division")]),
         node("Customized Report", "customized-report", "division")
       ]),

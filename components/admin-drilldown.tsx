@@ -46,6 +46,7 @@ import { LeaveStatusPanel } from "@/components/leave-status-panel";
 import { TransferMasterDetailsPanel } from "@/components/transfer-master-details-panel";
 import { UnlistedToListedConversionPanel } from "@/components/unlisted-to-listed-conversion-panel";
 import { DelayedReleasePanel } from "@/components/delayed-release-panel";
+import { TerritoryViewReport, TerritoryStatusReport } from "@/components/territory-report-panels";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
@@ -757,6 +758,26 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
   if (pathStr.endsWith("division-options/quiz-category")) {
     return <GenericMasterTable masterKey="quizCategoryList" />;
+  }
+
+  // Coordinator round (Activity Reports visual rebuild) -- these were
+  // previously rendered inline by a standalone component with its own
+  // pill-tab navigation; that page now just shows an AdminTabGrid tile
+  // grid (like MIS Reports / Update-Delete) and drilldown into these exact
+  // same real panels/screens happens here, through the same
+  // /admin/workspace/[...path] architecture every other tile-grid screen
+  // in this app already uses.
+  if (pathStr.endsWith("activity-reports/territory/view")) {
+    return <TerritoryViewReport />;
+  }
+  if (pathStr.endsWith("activity-reports/territory/status")) {
+    return <TerritoryStatusReport />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/view")) {
+    return <AdminDcrView />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/approve-reject")) {
+    return <MasterScreen masterKey="approvalDcr" />;
   }
 
   if (pathStr.includes("activity/dcr") || pathStr.includes("activities/dcr")) {
