@@ -22,18 +22,18 @@ const MONTH_NAMES = ["January","February","March","April","May","June","July","A
 const THIS_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 6 }, (_, i) => THIS_YEAR - 3 + i);
 
-function monthLabel(month: string) {
+export function monthLabel(month: string) {
   const [y, m] = month.split("-").map((v) => parseInt(v, 10));
   return `${MONTH_NAMES[m - 1]} ${y}`;
 }
 
-function useManagers() {
+export function useManagers() {
   const [managers, setManagers] = useState<ManagerAnalysisManager[]>([]);
   useEffect(() => { apiClient.managerAnalysisManagers().then((r) => setManagers(r.data)).catch(() => setManagers([])); }, []);
   return managers;
 }
 
-function ManagerPicker({ managers, value, onChange }: { managers: ManagerAnalysisManager[]; value: string; onChange: (v: string) => void }) {
+export function ManagerPicker({ managers, value, onChange }: { managers: ManagerAnalysisManager[]; value: string; onChange: (v: string) => void }) {
   return (
     <div className="flex flex-col gap-1">
       <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Filed Force Name</span>
@@ -45,7 +45,7 @@ function ManagerPicker({ managers, value, onChange }: { managers: ManagerAnalysi
   );
 }
 
-function MonthYearRangePicker({
+export function MonthYearRangePicker({
   fromMonth, fromYear, toMonth, toYear, onChange
 }: { fromMonth: number; fromYear: number; toMonth: number; toYear: number; onChange: (v: { fromMonth: number; fromYear: number; toMonth: number; toYear: number }) => void }) {
   const sel = "h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm";
@@ -83,8 +83,8 @@ function summaryCell(summary: DayCallsSummary | undefined, key: keyof DayCallsSu
   return summary ? (summary[key] as number) : 0;
 }
 
-const th = "px-3 py-2 border-r border-border-subtle";
-const td = "px-3 py-1.5 border-t border-r border-border-subtle";
+export const th = "px-3 py-2 border-r border-border-subtle";
+export const td = "px-3 py-1.5 border-t border-r border-border-subtle";
 
 // ── Item 3 -- Manager Analysis > HQ - Coveragewise ──────────────────────
 export function HqCoveragewiseReport() {

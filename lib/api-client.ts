@@ -772,6 +772,32 @@ export type JointWorkResult = {
   repRows?: JointWorkRepRow[];
 };
 
+// Round 38 Items 1/2/3 -- Manager Analysis continued, types.
+export type FieldworkManagerAnalysisRow = {
+  employeeCode: string; name: string; designation: string; hq: string; joinDate: string | null; firstLevelManager: string | null;
+  perMonth: Record<string, Record<string, number>>;
+};
+export type FieldworkManagerAnalysisResult = {
+  fieldForceName: string; designation: string; hq: string; months: string[]; rows: FieldworkManagerAnalysisRow[];
+};
+export type ManagerWiseCoverageRow = {
+  employeeCode: string; name: string; designation: string; hq: string;
+  callDetails: { masterListDoctors: number; doctorsMet: number; coveragePct: number; listedDrsMissed: number; unlistedDrsMet: number };
+  attendance: { daysWorked: number; daysField: number; daysNonField: number; daysOnLeave: number };
+  summary: { doctorsCallsSeen: number; doctorsCallAverage: number; chemistCallsSeen: number; chemistCallAverage: number };
+  jointWork: { days: number; callsMet: number; callsSeen: number; callAverage: number };
+  repeatedCalls: { met: number; coveragePct: number };
+};
+export type ManagerWiseCoverageResult = {
+  fieldForceName: string; designation: string; hq: string; months: string[]; rows: ManagerWiseCoverageRow[]; resultShapeIsInference: boolean;
+};
+export type VisitFrequencyBucket = { v1: number; v2: number; v3: number; vMore: number };
+export type SpecialityCategoryVisitResult = {
+  mode: "Specialitywise Visit" | "Categorywise Visit"; fieldForceName: string; months: string[];
+  specialties?: string[]; categories?: string[];
+  perMonth: Record<string, Record<string, VisitFrequencyBucket>>;
+};
+
 export const apiClient = {
   login(username: string, password: string) {
     return request<{ token: string }>("/auth/login", {
@@ -2145,6 +2171,20 @@ export const apiClient = {
   jointWorkAnalysis(params: { employeeCode: string; fromMonth: string; toMonth: string; mode: string }) {
     const qs = new URLSearchParams(params);
     return request<JointWorkResult>(`/company/manager-analysis/joint-work?${qs.toString()}`);
+  },
+
+  // Round 38 Items 1/2/3 -- Manager Analysis continued
+  fieldworkManagerAnalysis(params: { employeeCode: string; fromMonth: string; toMonth: string }) {
+    const qs = new URLSearchParams(params);
+    return request<FieldworkManagerAnalysisResult>(`/company/manager-analysis/fieldwork-manager-analysis?${qs.toString()}`);
+  },
+  managerWiseCoverage(params: { employeeCode: string; fromMonth: string; toMonth: string }) {
+    const qs = new URLSearchParams(params);
+    return request<ManagerWiseCoverageResult>(`/company/manager-analysis/manager-wise-coverage?${qs.toString()}`);
+  },
+  specialityCategoryVisit(params: { employeeCode: string; fromMonth: string; toMonth: string; mode: string }) {
+    const qs = new URLSearchParams(params);
+    return request<SpecialityCategoryVisitResult>(`/company/manager-analysis/speciality-category-visit?${qs.toString()}`);
   }
 };
 

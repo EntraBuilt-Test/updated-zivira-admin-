@@ -53,6 +53,7 @@ import { DcrViewWorkspace, DcrStatusReport } from "@/components/dcr-report-panel
 import { DcrNotApprovedReport, DcrNotSubmittedReport, DcrCountModewiseReport, DcrRejectApproveReport, DcrTimeStatusReport, DcrCheckinCheckoutReport } from "@/components/dcr-report-panels-2";
 import { SurveyWorkspace } from "@/components/survey-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
+import { FieldworkManagerAnalysisReport, ManagerWiseCoverageReport, SpecialityCategoryVisitReport } from "@/components/manager-analysis-panels-2";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
@@ -849,6 +850,15 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
   if (pathStr.endsWith("mis-reports/manager-analysis/joint-workwise")) {
     return <JointWorkwiseReport />;
+  }
+  if (pathStr.endsWith("mis-reports/manager-analysis/fieldwork-manager-analysis")) {
+    return <FieldworkManagerAnalysisReport />;
+  }
+  if (pathStr.endsWith("mis-reports/manager-analysis/coverage-analysis-mgr")) {
+    return <ManagerWiseCoverageReport />;
+  }
+  if (pathStr.endsWith("mis-reports/manager-analysis/speciality-category-visit-wise")) {
+    return <SpecialityCategoryVisitReport />;
   }
 
   if (pathStr.includes("activity/dcr") || pathStr.includes("activities/dcr")) {
