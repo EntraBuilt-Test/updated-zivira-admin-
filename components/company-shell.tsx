@@ -12,6 +12,7 @@ const searchPages = [
   { title: "Masters List", category: "Platform", href: "/admin/masters" },
   { title: "Activities", category: "Platform", href: "/admin/activities" },
   { title: "Activity Reports", category: "Platform", href: "/admin/activity-reports" },
+  { title: "Customized Report", category: "Platform", href: "/admin/custom-reports" },
   { title: "MIS Reports", category: "Platform", href: "/admin/mis-reports" },
   { title: "Settings Options", category: "Platform", href: "/admin/options" },
   { title: "Doctor Celebrations", category: "Platform", href: "/admin/doctor-celebrations" },

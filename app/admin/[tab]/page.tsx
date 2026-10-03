@@ -43,6 +43,14 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
     return <AdminMisReportsDashboard node={node} path={rootPath} />;
   }
 
+  // Round 35 Item 7 -- Customized Report builder, standalone top-level
+  // module (no tile-grid node tree underneath it -- its two real screens
+  // are switched internally by CustomReportWorkspace).
+  if (tab === "custom-reports") {
+    const { CustomReportWorkspace } = await import("@/components/custom-report-workspace");
+    return <CustomReportWorkspace />;
+  }
+
   if (tab === "options") {
     return <AdminOptionsDashboard node={node} path={rootPath} />;
   }

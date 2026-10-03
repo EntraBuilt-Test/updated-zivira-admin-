@@ -508,6 +508,49 @@ export type DcrStatusResult = {
   unsupportedCodes: string[];
 };
 
+// Round 35 -- 7 more DCR legacy-parity reports + the Customized Report
+// builder. See company.routes.ts for the honest schema-reality
+// disclosures these types surface as-is.
+export type DcrNotApprovedRow = { fieldForceName: string; region: string; pendingDates: string; approvalBy: string };
+
+export type DcrNotSubmittedRow = { day: number; expected: string };
+
+export type DcrCountModewiseChannel = { date: string; count: number };
+export type DcrCountModewiseRow = {
+  employeeCode: string; name: string; hq: string; designation: string;
+  desktop: DcrCountModewiseChannel; mobile: DcrCountModewiseChannel; apps: DcrCountModewiseChannel;
+  edetailing: DcrCountModewiseChannel; others: DcrCountModewiseChannel; iosEdet: DcrCountModewiseChannel;
+};
+
+export type DcrRejectApproveRow = {
+  fieldForceName: string; hq: string; designation: string; mode: "Approve" | "Reject";
+  actionDate: string | null; workType: string; reason: string; actedAt: string | null;
+};
+
+export type DcrTimeStatusDay = {
+  day: number; workType: string; startTime: string; closeTime: string; duration: string;
+  drCall: string; chemistCall: string; filledDate: string;
+};
+export type DcrTimeStatusRow = {
+  employeeCode: string; name: string; designation: string; hq: string; joinDate: string | null;
+  perDay: DcrTimeStatusDay[];
+};
+
+export type DcrCheckinCheckoutRow = { date: string; name: string; checkIn: string; checkOut: string; lat?: number; lng?: number };
+
+// Customized Report builder
+export type CustomReportSummary = { id: string; name: string; defaultParams: string[]; parameterCount: number };
+export type CustomReportMetricCategory = { category: string; metrics: { key: string; label: string }[] };
+export type CustomReportMetadata = {
+  categories: CustomReportMetricCategory[];
+  specialties: string[];
+  campaigns: string[];
+  campaignsUnsupported: boolean;
+};
+export type CustomReportDetail = { id: string; name: string; defaultParams: string[]; metrics: string[] };
+export type CustomReportOutputMetric = { key: string; label: string; computed: boolean; value: number | string | null };
+export type CustomReportOutput = { reportName: string; employeeCode?: string; month?: string; metrics: CustomReportOutputMetric[] };
+
 export type EdetailingSummary = {
   downloadsToday: number;
   downloadsThisWeek: number;
@@ -795,6 +838,56 @@ export const apiClient = {
     if (params.withVacants) qs.set("withVacants", "true");
     if (params.onlyManagers) qs.set("onlyManagers", "true");
     return request<DcrStatusResult | null>(`/company/reports/dcr-status?${qs.toString()}`);
+  },
+
+  // Round 35 -- 7 more DCR legacy-parity reports.
+  dcrNotApproved(params: { month: string }) {
+    const qs = new URLSearchParams({ month: params.month });
+    return request<DcrNotApprovedRow[]>(`/company/reports/dcr-not-approved?${qs.toString()}`);
+  },
+  dcrNotSubmitted(params: { employeeCode: string; month: string }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month });
+    return request<DcrNotSubmittedRow[]>(`/company/reports/dcr-not-submitted?${qs.toString()}`);
+  },
+  dcrCountModewise(params: { employeeCode: string; month: string; mode: "countwise" | "datewise" }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, mode: params.mode });
+    return request<{ mode: string; rows: DcrCountModewiseRow[]; channelDataUnsupported?: boolean }>(`/company/reports/dcr-count-modewise?${qs.toString()}`);
+  },
+  dcrRejectApprove(params: { month: string }) {
+    const qs = new URLSearchParams({ month: params.month });
+    return request<DcrRejectApproveRow[]>(`/company/reports/dcr-reject-approve?${qs.toString()}`);
+  },
+  dcrTimeStatus(params: { employeeCode: string; month: string }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month });
+    return request<DcrTimeStatusRow[]>(`/company/reports/dcr-time-status?${qs.toString()}`);
+  },
+  dcrCheckinCheckout(params: { employeeCode: string; month: string; mode: string }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, mode: params.mode });
+    return request<{ mode: string; rows: DcrCheckinCheckoutRow[]; unsupported?: boolean; reason?: string }>(`/company/reports/dcr-checkin-checkout?${qs.toString()}`);
+  },
+
+  // Round 35 -- Customized Report builder.
+  customReports() {
+    return request<CustomReportSummary[]>("/company/custom-reports");
+  },
+  createCustomReport(body: { name: string; defaultParams: string[] }) {
+    return request<CustomReportSummary>("/company/custom-reports", { method: "POST", body: JSON.stringify(body) });
+  },
+  customReport(id: string) {
+    return request<CustomReportDetail>(`/company/custom-reports/${id}`);
+  },
+  saveCustomReportMetrics(id: string, metrics: string[]) {
+    return request<{ id: string; name: string; parameterCount: number }>(`/company/custom-reports/${id}/metrics`, { method: "PATCH", body: JSON.stringify({ metrics }) });
+  },
+  deleteCustomReport(id: string) {
+    return request<{ id: string }>(`/company/custom-reports/${id}`, { method: "DELETE" });
+  },
+  customReportMetadata() {
+    return request<CustomReportMetadata>("/company/custom-reports/metadata");
+  },
+  customReportOutput(id: string, params: { employeeCode: string; month: string }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month });
+    return request<CustomReportOutput>(`/company/custom-reports/${id}/output?${qs.toString()}`);
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app

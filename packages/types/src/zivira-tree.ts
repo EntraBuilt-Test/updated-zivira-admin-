@@ -293,6 +293,13 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
       node("Logout", "division-logout", "division", [node("Session Termination", "session-termination", "division"), node("Redirect to Login", "redirect-to-login", "division")])
     ])
   ]),
+  // Round 35 Item 7 -- Customized Report builder, a standalone top-level
+  // module (legacy shows its own top nav "HOME / CUSTOM REPORT CREATION /
+  // REPORTS / LOGOUT"), not nested under Activity Reports' existing
+  // (placeholder) "Customized Report" leaf. Distinct slug
+  // "custom-report-builder" avoids colliding with that pre-existing leaf's
+  // "customized-report" slug.
+  node("Customized Report", "custom-report-builder", "division"),
   node("Notification & Communication Layer", "notification-communication-layer", "communication", [
     node("No Mails Received", "no-mails-received", "communication"),
     node("Notice Board", "notice-board", "communication"),

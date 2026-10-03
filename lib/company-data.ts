@@ -44,6 +44,7 @@ export const companyNav: NavGroup[] = [
     title: "Reports & Field",
     items: [
       { title: "Activity Reports", href: "/admin/activity-reports", icon: FileBarChart },
+      { title: "Customized Report", href: "/admin/custom-reports", icon: FileBarChart },
       { title: "MIS Reports", href: "/admin/mis-reports", icon: CalendarDays },
       { title: "Tour Plans", href: "/admin/tour-plans", icon: FileBarChart },
       { title: "Doctor Celebrations", href: "/admin/doctor-celebrations", icon: Cake },

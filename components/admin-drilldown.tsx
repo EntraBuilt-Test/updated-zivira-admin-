@@ -49,6 +49,7 @@ import { DelayedReleasePanel } from "@/components/delayed-release-panel";
 import { TerritoryViewReport, TerritoryStatusReport } from "@/components/territory-report-panels";
 import { TpConsolidatedViewReport, TpViewReport, TpStatusReport, TpDatewiseReport } from "@/components/tp-report-panels";
 import { DcrViewWorkspace, DcrStatusReport } from "@/components/dcr-report-panels";
+import { DcrNotApprovedReport, DcrNotSubmittedReport, DcrCountModewiseReport, DcrRejectApproveReport, DcrTimeStatusReport, DcrCheckinCheckoutReport } from "@/components/dcr-report-panels-2";
 import { SurveyWorkspace } from "@/components/survey-workspace";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
@@ -815,8 +816,23 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("activity-reports/dcr/status")) {
     return <DcrStatusReport />;
   }
+  if (pathStr.endsWith("activity-reports/dcr/not-approved")) {
+    return <DcrNotApprovedReport />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/not-submitted")) {
+    return <DcrNotSubmittedReport />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/count-modewise")) {
+    return <DcrCountModewiseReport />;
+  }
   if (pathStr.endsWith("activity-reports/dcr/approve-reject")) {
-    return <MasterScreen masterKey="approvalDcr" />;
+    return <DcrRejectApproveReport />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/time-status")) {
+    return <DcrTimeStatusReport />;
+  }
+  if (pathStr.endsWith("activity-reports/dcr/checkin-checkout")) {
+    return <DcrCheckinCheckoutReport />;
   }
 
   if (pathStr.includes("activity/dcr") || pathStr.includes("activities/dcr")) {
