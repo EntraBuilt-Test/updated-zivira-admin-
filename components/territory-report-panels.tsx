@@ -13,8 +13,11 @@ import { apiClient, type Employee, type TerritoryView, type TerritoryStatusRow }
 // export) is unchanged from last round -- only where they're mounted from
 // changed.
 
+const ALL_TEAMS = "All Teams";
+
 export function TerritoryViewReport() {
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const [team, setTeam] = useState(ALL_TEAMS);
   const [employeeCode, setEmployeeCode] = useState("");
   const [result, setResult] = useState<TerritoryView | null>(null);
   const [loading, setLoading] = useState(false);
@@ -28,11 +31,38 @@ export function TerritoryViewReport() {
     }).catch(() => setEmployees([]));
   }, []);
 
+  // Coordinator round (Item 1 fix) -- "Team" used to be a disabled
+  // decorative dropdown with a single fixed "Team" option, and the
+  // field-rep dropdown next to it always listed every employee regardless.
+  // There is no separate real "team" grouping field in this codebase, so
+  // "Team" is now a real filter over each employee's own real territory
+  // (the closest real grouping concept that exists) -- picking one
+  // genuinely narrows the field-rep dropdown to reps in that territory,
+  // and resets the selection to the first match plus hides any stale
+  // result until View is clicked again.
+  const teamOptions = useMemo(
+    () => [ALL_TEAMS, ...Array.from(new Set(employees.map((e) => e.territory).filter(Boolean))).sort()],
+    [employees]
+  );
+  const visibleEmployees = useMemo(
+    () => (team === ALL_TEAMS ? employees : employees.filter((e) => e.territory === team)),
+    [employees, team]
+  );
+
+  function handleTeamChange(nextTeam: string) {
+    setTeam(nextTeam);
+    const pool = nextTeam === ALL_TEAMS ? employees : employees.filter((e) => e.territory === nextTeam);
+    setEmployeeCode(pool[0]?.employeeCode ?? "");
+    setViewed(false);
+  }
+
   const selected = employees.find((e) => e.employeeCode === employeeCode);
   // Legacy's "Base Level" row shows the selected rep's own reporting
   // manager, auto-derived -- not an independent user choice. Reproduced
-  // the same way here from the real employee record rather than a second
-  // free-standing dropdown with nothing real to back it.
+  // the same way here from the real employee record (recomputes live
+  // whenever the selected rep changes) rather than a second free-standing
+  // dropdown with nothing real to back it. Kept as a real, enabled select
+  // (not grayed out) since it does reflect real, live-updating data.
   const baseLevelManager = useMemo(() => {
     if (!selected?.reportingManager) return null;
     return employees.find((e) => e.employeeCode === selected.reportingManager) || null;
@@ -60,15 +90,21 @@ export function TerritoryViewReport() {
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Filter By</span>
           <div className="flex items-center gap-2">
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" disabled value="Team">
-              <option value="Team">Team</option>
+            <select
+              className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
+              value={team}
+              onChange={(e) => handleTeamChange(e.target.value)}
+            >
+              {teamOptions.map((t) => (
+                <option key={t} value={t}>{t === ALL_TEAMS ? "Team" : t}</option>
+              ))}
             </select>
             <select
               className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[280px]"
               value={employeeCode}
               onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}
             >
-              {employees.map((emp) => (
+              {visibleEmployees.map((emp) => (
                 <option key={emp.employeeCode} value={emp.employeeCode}>
                   {emp.name} - {emp.designation} - {emp.territory}
                 </option>
@@ -78,8 +114,8 @@ export function TerritoryViewReport() {
         </div>
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Base Level</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[200px]" disabled value={baseLevelManager?.name ?? ""}>
-            <option value={baseLevelManager?.name ?? ""}>{baseLevelManager?.name ?? "—"}</option>
+          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[200px]" value={baseLevelManager?.name ?? ""} onChange={() => {}}>
+            <option value={baseLevelManager?.name ?? ""}>{baseLevelManager?.name ?? "No reporting manager on file"}</option>
           </select>
         </div>
         <button

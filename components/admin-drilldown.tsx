@@ -47,6 +47,7 @@ import { TransferMasterDetailsPanel } from "@/components/transfer-master-details
 import { UnlistedToListedConversionPanel } from "@/components/unlisted-to-listed-conversion-panel";
 import { DelayedReleasePanel } from "@/components/delayed-release-panel";
 import { TerritoryViewReport, TerritoryStatusReport } from "@/components/territory-report-panels";
+import { SurveyWorkspace } from "@/components/survey-workspace";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
@@ -767,6 +768,23 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   // same real panels/screens happens here, through the same
   // /admin/workspace/[...path] architecture every other tile-grid screen
   // in this app already uses.
+  // Coordinator round -- Activity Reports > Survey, real question
+  // bank + survey builder matching the legacy sanpharma.info Survey module.
+  // All 3 of this round's tile-grid Survey leaves mount the same
+  // SurveyWorkspace component with a different initial screen; its own
+  // in-component cross-nav bar (matching the legacy app's 4-button bar on
+  // every Survey screen) handles moving between all 4 real screens from
+  // there, including "Create - Survey" which has no tile of its own.
+  if (pathStr.endsWith("activity-reports/survey/question-creation")) {
+    return <SurveyWorkspace initialScreen="question-creation" />;
+  }
+  if (pathStr.endsWith("activity-reports/survey/updation")) {
+    return <SurveyWorkspace initialScreen="update-survey" />;
+  }
+  if (pathStr.endsWith("activity-reports/survey/view")) {
+    return <SurveyWorkspace initialScreen="view" />;
+  }
+
   if (pathStr.endsWith("activity-reports/territory/view")) {
     return <TerritoryViewReport />;
   }

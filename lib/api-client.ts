@@ -331,6 +331,45 @@ export type TerritoryStatusRow = {
   notAllocatedDrs: number;
 };
 
+// Activity Reports rebuild round -- Survey module, matching
+// sanpharma.info's Create - Question / Create - Survey / Update - Survey
+// screens exactly.
+export type SurveyQuestionControlType = "Enterable - Text" | "Enterable - Numeric" | "Selectable - Single" | "Selectable- Multiple";
+export type SurveyQuestion = {
+  id: string;
+  questionText: string;
+  controlType: SurveyQuestionControlType;
+  maxLength?: number | null;
+  options?: string[];
+  status: "ACTIVE" | "INACTIVE";
+  createdAt: string;
+};
+export type SurveyQuestionRef = {
+  questionId: string;
+  drs: boolean;
+  chm: boolean;
+  hos: boolean;
+  stk: boolean;
+  prd: boolean;
+};
+export type Survey = {
+  id: string;
+  title: string;
+  processFromDate: string;
+  processToDate: string;
+  questions: SurveyQuestionRef[];
+  questionCount: number;
+  status: "ACTIVE" | "INACTIVE";
+  processed: boolean;
+  processedAt: string | null;
+  closed: boolean;
+  closedAt: string | null;
+  createdAt: string;
+};
+export type SurveyDetail = Omit<Survey, "questions"> & {
+  questions: (SurveyQuestionRef & { question: SurveyQuestion | null })[];
+};
+
 export type EdetailingSummary = {
   downloadsToday: number;
   downloadsThisWeek: number;
@@ -547,6 +586,38 @@ export const apiClient = {
   territoryStatus(employeeCode?: string) {
     const qs = employeeCode ? `?employeeCode=${encodeURIComponent(employeeCode)}` : "";
     return request<TerritoryStatusRow[]>(`/company/reports/territory-status${qs}`);
+  },
+
+  // Activity Reports rebuild round -- Survey module.
+  surveyQuestions() {
+    return request<SurveyQuestion[]>("/company/survey-questions");
+  },
+  createSurveyQuestion(body: { questionText: string; controlType: SurveyQuestionControlType; maxLength?: number | null; options?: string[] }) {
+    return request<SurveyQuestion>("/company/survey-questions", { method: "POST", body: JSON.stringify(body) });
+  },
+  deactivateSurveyQuestion(id: string) {
+    return request<SurveyQuestion>(`/company/survey-questions/${id}/deactivate`, { method: "PATCH" });
+  },
+  surveys() {
+    return request<Survey[]>("/company/surveys");
+  },
+  survey(id: string) {
+    return request<SurveyDetail>(`/company/surveys/${id}`);
+  },
+  createSurvey(body: { title: string; processFromDate: string; processToDate: string; questions: SurveyQuestionRef[] }) {
+    return request<Survey>("/company/surveys", { method: "POST", body: JSON.stringify(body) });
+  },
+  updateSurvey(id: string, body: { title?: string; processFromDate?: string; processToDate?: string; questions?: SurveyQuestionRef[] }) {
+    return request<Survey>(`/company/surveys/${id}`, { method: "PATCH", body: JSON.stringify(body) });
+  },
+  deactivateSurvey(id: string) {
+    return request<Survey>(`/company/surveys/${id}/deactivate`, { method: "PATCH" });
+  },
+  processSurvey(id: string) {
+    return request<Survey>(`/company/surveys/${id}/process`, { method: "PATCH" });
+  },
+  closeSurvey(id: string) {
+    return request<Survey>(`/company/surveys/${id}/close`, { method: "PATCH" });
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app
