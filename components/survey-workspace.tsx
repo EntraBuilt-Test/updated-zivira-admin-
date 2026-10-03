@@ -7,7 +7,9 @@ import {
   type SurveyQuestionControlType,
   type Survey,
   type SurveyDetail,
-  type SurveyQuestionRef
+  type SurveyQuestionRef,
+  type Employee,
+  type SurveyViewResult
 } from "@/lib/api-client";
 
 // Coordinator round -- Activity Reports > Survey, built to match the real
@@ -561,6 +563,217 @@ function UpdateSurveyScreen({ readOnly, onEdit, onToast }: { readOnly: boolean; 
   );
 }
 
+const PROCESS_TYPE_COLUMNS: { key: "drs" | "chm" | "stk" | "hos" | "prd"; label: string }[] = [
+  { key: "drs", label: "Drs" },
+  { key: "chm", label: "Chm" },
+  { key: "stk", label: "Stk" },
+  { key: "hos", label: "Hos" },
+  { key: "prd", label: "Prd" }
+];
+
+function SurveyViewScreen() {
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const [employeeCode, setEmployeeCode] = useState("");
+  const [mode, setMode] = useState<"Question Wise" | "Answer Wise">("Question Wise");
+  const [surveys, setSurveys] = useState<Survey[]>([]);
+  const [surveyId, setSurveyId] = useState("");
+  const [result, setResult] = useState<SurveyViewResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [viewed, setViewed] = useState(false);
+
+  useEffect(() => {
+    apiClient.employees().then((r) => setEmployees(r.data)).catch(() => setEmployees([]));
+    apiClient.surveys().then((r) => {
+      setSurveys(r.data);
+      if (r.data.length > 0) setSurveyId(r.data[0].id);
+    }).catch(() => setSurveys([]));
+  }, []);
+
+  const matchingEmployees = useMemo(() => {
+    const q = employeeSearch.trim().toLowerCase();
+    if (!q) return [];
+    return employees.filter((e) => e.name.toLowerCase().includes(q)).slice(0, 8);
+  }, [employeeSearch, employees]);
+  const selectedEmployee = employees.find((e) => e.employeeCode === employeeCode);
+
+  async function handleView() {
+    if (!employeeCode || !surveyId) {
+      setError("Select a Field Force and a Survey first.");
+      return;
+    }
+    setError("");
+    setLoading(true);
+    setViewed(true);
+    try {
+      const r = await apiClient.surveyView(surveyId, employeeCode);
+      setResult(r.data);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Unable to load Survey View");
+      setResult(null);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function exportExcel() {
+    if (!result) return;
+    const header = ["S.No", "FieldForce Name", "Designation Name", "HQ", "DOJ", "Emp.Code", ...PROCESS_TYPE_COLUMNS.map((c) => c.label)];
+    const lines = [header.join(",")];
+    result.rows.forEach((r, idx) => {
+      lines.push([idx + 1, `"${r.name}"`, r.designation, r.hq, r.doj ?? "-", r.employeeCode, ...PROCESS_TYPE_COLUMNS.map(() => "-")].join(","));
+    });
+    lines.push(["", "", "", "", "", "Grand Total", ...PROCESS_TYPE_COLUMNS.map(() => "-")].join(","));
+    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "survey-view.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4 max-w-xl">
+        <div className="space-y-1.5 relative">
+          <label className="font-label-sm text-label-sm text-text-muted">Filed Force Name</label>
+          {selectedEmployee ? (
+            <div className="flex items-center justify-between h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm">
+              <span>{selectedEmployee.name} - {selectedEmployee.designation} - {selectedEmployee.territory}</span>
+              <button type="button" onClick={() => { setEmployeeCode(""); setViewed(false); }} className="text-text-muted text-xs underline">change</button>
+            </div>
+          ) : (
+            <>
+              <input
+                type="text"
+                placeholder="--- Select the Field force --- (type a name)"
+                className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
+                value={employeeSearch}
+                onChange={(e) => setEmployeeSearch(e.target.value)}
+              />
+              {matchingEmployees.length > 0 && (
+                <div className="absolute z-20 mt-1 w-full bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden">
+                  {matchingEmployees.map((emp) => (
+                    <button
+                      key={emp.employeeCode}
+                      type="button"
+                      onClick={() => { setEmployeeCode(emp.employeeCode); setEmployeeSearch(""); setViewed(false); }}
+                      className="w-full text-left px-3 py-2 text-sm hover:bg-surface-subtle transition-colors"
+                    >
+                      {emp.name} - {emp.designation} - {emp.territory}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        <div className="space-y-1.5">
+          <label className="font-label-sm text-label-sm text-text-muted">Mode</label>
+          <select
+            className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
+            value={mode}
+            onChange={(e) => setMode(e.target.value as "Question Wise" | "Answer Wise")}
+          >
+            <option value="Question Wise">Question Wise</option>
+            <option value="Answer Wise">Answer Wise</option>
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <label className="font-label-sm text-label-sm text-text-muted">Survey Name</label>
+          <select
+            className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
+            value={surveyId}
+            onChange={(e) => { setSurveyId(e.target.value); setViewed(false); }}
+          >
+            {surveys.length === 0 && <option value="">No surveys created yet</option>}
+            {surveys.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
+          </select>
+        </div>
+        {error && <p className="text-status-danger text-sm">{error}</p>}
+        <button
+          type="button"
+          onClick={handleView}
+          disabled={!employeeCode || !surveyId || loading}
+          className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-brand-primary-hover transition-all disabled:opacity-50"
+        >
+          {loading ? "Loading..." : "View"}
+        </button>
+      </div>
+
+      {viewed && result && (
+        <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Survey - View</h2>
+              <p className="font-body-sm text-body-sm text-text-secondary">Field Force Name: {selectedEmployee?.name} - {selectedEmployee?.designation} - {selectedEmployee?.territory}</p>
+              {mode === "Answer Wise" && (
+                <p className="font-body-sm text-body-sm text-text-muted italic mt-1">
+                  No real survey-answer data pipeline exists yet (field reps have no way to submit survey answers), so Answer Wise currently renders the same real structure as Question Wise rather than a fabricated difference.
+                </p>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <button type="button" onClick={exportExcel} className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container-high text-text-secondary font-label-sm text-label-sm transition-colors">Excel</button>
+              <button type="button" onClick={() => setViewed(false)} className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container-high text-text-secondary font-label-sm text-label-sm transition-colors">Close</button>
+            </div>
+          </div>
+          {result.rows.length === 0 ? (
+            <p className="text-text-muted text-sm">No field reps found for this selection.</p>
+          ) : (
+            <div className="overflow-x-auto rounded-lg border border-border-subtle">
+              <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
+                <thead>
+                  <tr className="bg-brand-primary-subtle">
+                    <th className="px-3 py-2 w-14" rowSpan={2}>S.No</th>
+                    <th className="px-3 py-2" rowSpan={2}>FieldForce Name</th>
+                    <th className="px-3 py-2" rowSpan={2}>Designation Name</th>
+                    <th className="px-3 py-2" rowSpan={2}>HQ</th>
+                    <th className="px-3 py-2" rowSpan={2}>DOJ</th>
+                    <th className="px-3 py-2" rowSpan={2}>Emp.Code</th>
+                    <th className="px-3 py-2 text-center" colSpan={PROCESS_TYPE_COLUMNS.length}>{result.surveyTitle}</th>
+                  </tr>
+                  <tr className="bg-brand-primary-subtle">
+                    {PROCESS_TYPE_COLUMNS.map((c) => (
+                      <th key={c.key} className="px-3 py-1 text-center border-t border-border-subtle">{c.label}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border-subtle">
+                  {result.rows.map((r, idx) => (
+                    <tr key={r.id}>
+                      <td className="px-3 py-1.5">{idx + 1}</td>
+                      <td className="px-3 py-1.5">{r.name}</td>
+                      <td className="px-3 py-1.5">{r.designation}</td>
+                      <td className="px-3 py-1.5">{r.hq}</td>
+                      <td className="px-3 py-1.5">{r.doj ? new Date(r.doj).toLocaleDateString() : "-"}</td>
+                      <td className="px-3 py-1.5">{r.employeeCode}</td>
+                      {/* No real survey-answer pipeline exists yet -- honestly
+                          "-" for every category cell, matching the legacy
+                          screenshot's own unanswered-survey display exactly
+                          rather than fabricating response counts. */}
+                      {PROCESS_TYPE_COLUMNS.map((c) => (
+                        <td key={c.key} className="px-3 py-1.5 text-center">-</td>
+                      ))}
+                    </tr>
+                  ))}
+                  <tr className="font-bold text-status-danger">
+                    <td className="px-3 py-1.5" colSpan={6}>Grand Total</td>
+                    {PROCESS_TYPE_COLUMNS.map((c) => (
+                      <td key={c.key} className="px-3 py-1.5 text-center">-</td>
+                    ))}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SurveyWorkspace({ initialScreen }: { initialScreen: ScreenKey }) {
   const [screen, setScreen] = useState<ScreenKey>(initialScreen);
   const [editingSurveyId, setEditingSurveyId] = useState<string | null>(null);
@@ -604,16 +817,7 @@ export function SurveyWorkspace({ initialScreen }: { initialScreen: ScreenKey })
         />
       )}
       {screen === "update-survey" && <UpdateSurveyScreen readOnly={false} onEdit={handleEdit} onToast={showToast} />}
-      {screen === "view" && (
-        // Legacy's "View" cross-nav destination had no reference screenshot
-        // in this round's spec; the most plausible real behavior -- and the
-        // only one consistent with everything else being a real listing
-        // sourced from the same Survey records -- is a read-only version of
-        // the Update - Survey listing with the state-changing action
-        // columns removed. Disclosed as an assumption, not confirmed
-        // against a legacy screenshot.
-        <UpdateSurveyScreen readOnly onEdit={() => {}} onToast={showToast} />
-      )}
+      {screen === "view" && <SurveyViewScreen />}
 
       {toast && <Toast message={toast} />}
     </div>

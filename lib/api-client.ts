@@ -370,6 +370,19 @@ export type SurveyDetail = Omit<Survey, "questions"> & {
   questions: (SurveyQuestionRef & { question: SurveyQuestion | null })[];
 };
 
+export type SurveyViewRow = {
+  id: string;
+  employeeCode: string;
+  name: string;
+  designation: string;
+  hq: string;
+  doj: string | null;
+};
+export type SurveyViewResult = {
+  surveyTitle: string;
+  rows: SurveyViewRow[];
+};
+
 export type EdetailingSummary = {
   downloadsToday: number;
   downloadsThisWeek: number;
@@ -618,6 +631,9 @@ export const apiClient = {
   },
   closeSurvey(id: string) {
     return request<Survey>(`/company/surveys/${id}/close`, { method: "PATCH" });
+  },
+  surveyView(surveyId: string, employeeCode: string) {
+    return request<SurveyViewResult>(`/company/surveys/${surveyId}/view?employeeCode=${encodeURIComponent(employeeCode)}`);
   },
 
   // Round 9 item 1 — every FieldForce/employee-name dropdown across the app

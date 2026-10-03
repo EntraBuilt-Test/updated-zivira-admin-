@@ -111,6 +111,32 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
   // original copy since it's still true of the module as a whole.
   const isWiredLeaf = !node.children?.length && (pathStr.includes("daily-mr-work/") || pathStr.includes("manager-activity-report/"));
 
+  // Coordinator round (Survey Item 1 fix) -- the 3 Activity Reports >
+  // Survey leaves (Question Creation / Updation / View) each mount
+  // SurveyWorkspace, which already renders its own legacy-accurate title
+  // and 4-button cross-nav bar (Create - Question / Create - Survey /
+  // Update - Survey / View). Stacking the generic PageHeader ("Updation" /
+  // "Working modern page for this exact architecture tab...") above that
+  // made clicking "Updation" look like it landed on a separate placeholder
+  // page before the real Update - Survey listing further down, instead of
+  // going straight there the way the legacy app does. Suppressed here for
+  // just these 3 leaves; a plain Back control is kept so there's still a
+  // way out to the tile grid.
+  const isSurveyWorkspaceLeaf = pathStr.endsWith("activity-reports/survey/question-creation")
+    || pathStr.endsWith("activity-reports/survey/updation")
+    || pathStr.endsWith("activity-reports/survey/view");
+
+  if (isSurveyWorkspaceLeaf) {
+    return (
+      <>
+        <div className="mb-4">
+          <BackButton fallback="/admin/home" />
+        </div>
+        <AdminDrilldown node={node} path={path} />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader
