@@ -548,6 +548,8 @@ export type CustomReportMetadata = {
   specialties: string[];
   campaigns: string[];
   campaignsUnsupported: boolean;
+  products: string[]; // Round 37 Item 2
+  brands: string[];
 };
 export type CustomReportDetail = { id: string; name: string; defaultParams: string[]; metrics: string[] };
 export type CustomReportOutputMetric = { key: string; label: string; computed: boolean; value: number | string | null };
@@ -727,6 +729,47 @@ export type ActivitiesSummary = {
   chemistStockistOrderValueToday: number;
   chemistStockistOrderValuePartial: boolean;
   pendingApprovals: { leave: number; expense: number; tourPlan: number; deviation: number; total: number };
+};
+
+// Round 37 Items 3/4/5 -- Manager Analysis types.
+export type ManagerAnalysisManager = { employeeCode: string; name: string; designation: string; territory: string; joinDate: string | null };
+export type DayCallsSummary = {
+  calendarDays: number; sundaysHolidays: number; workingDaysExclHolSun: number; fieldworkDays: number; noFieldworkDays: number;
+  leave: number; tpDeviationDays: number; listedDrsMet: number; listedDrsSeen: number; callAverage: number;
+  morningCalls: number; eveningCalls: number; bothCalls: number; nilDrsMet: number; coreDrsMet: number; nCoreDrsMet: number; sCoreDrsMet: number;
+};
+export type HqExOsRow = {
+  hqName: string; repName: string; employeeCode: string;
+  perMonth: Record<string, { daysWorked: { hq: number; ex: number; os: number; total: number }; totalDoctorCalls: { hq: number; ex: number; os: number; total: number } }>;
+  totals: { daysWorked: { hq: number; ex: number; os: number; total: number }; totalDoctorCalls: { hq: number; ex: number; os: number; total: number } };
+};
+export type DetailRow = {
+  employeeCode: string; name: string; designation: string; hq: string; doj: string | null;
+  startDcrDate: string | null; lastDcrDate: string | null;
+  perMonth: Record<string, { fwDays: number; nfwDays: number; v1: number; v2: number; missed: number; morningCalls: number; eveningCalls: number; bothCalls: number; met: number; totalCalls: number; avgCalls: number }>;
+};
+export type HqCoverageResult = {
+  mode: string; fieldForceName?: string; designation?: string; hq?: string; doj?: string | null; months: string[];
+  summaryPerMonth?: Record<string, DayCallsSummary>; summaryTotal?: DayCallsSummary;
+  noRecordsFound?: boolean;
+  hqRows?: HqExOsRow[];
+  detailRows?: DetailRow[];
+};
+export type CoverageAnalysis1Result = {
+  fieldForceName: string; designation: string; hq: string; month: string;
+  callDetails: { masterListDoctors: number; doctorsMet: number; coveragePct: number; listedDrsMissed: number; unlistedDrsMet: number };
+  attendance: { daysWorked: number; daysField: number; daysNonField: number; daysOnLeave: number };
+  summary: { doctorsCallsSeen: number; doctorsCallAverage: number; chemistCallsSeen: number; chemistCallAverage: number };
+  jointWork: { days: number; callsMet: number; callsSeen: number; callAverage: number };
+  repeatedCalls: { met: number; coveragePct: number };
+};
+export type JointWorkEntry = { days: number; dates: string[]; calls: number } | null;
+export type JointWorkChainRow = { employeeCode: string; name: string; hq: string; designation: string; joinDate: string | null; perMonth: Record<string, JointWorkEntry> };
+export type JointWorkRepRow = { employeeCode: string; name: string; hq: string; designation: string; joinDate: string | null; perMonth: Record<string, JointWorkEntry>; chain: JointWorkChainRow[] };
+export type JointWorkResult = {
+  mode: string; months: string[];
+  managerRow?: { employeeCode: string; name: string; hq: string; designation: string; joinDate: string | null; perMonth: Record<string, JointWorkEntry> };
+  repRows?: JointWorkRepRow[];
 };
 
 export const apiClient = {
@@ -2085,6 +2128,23 @@ export const apiClient = {
   // Topic 15 — Alert & Notification Engine
   alertsEngine(month?: string) {
     return fetchRaw<{ data: AlertRow[]; month: string; summary: { high: number; medium: number; low: number } }>(`/company/analytics/alerts${month ? `?month=${month}` : ""}`);
+  },
+
+  // Round 37 Items 3/4/5 -- Manager Analysis
+  managerAnalysisManagers() {
+    return request<ManagerAnalysisManager[]>("/company/manager-analysis/managers");
+  },
+  hqCoverageAnalysis(params: { employeeCode: string; fromMonth: string; toMonth: string; mode: string }) {
+    const qs = new URLSearchParams(params);
+    return request<HqCoverageResult>(`/company/manager-analysis/hq-coverage?${qs.toString()}`);
+  },
+  coverageAnalysis1(employeeCode: string, month: string) {
+    const qs = new URLSearchParams({ employeeCode, month });
+    return request<CoverageAnalysis1Result>(`/company/manager-analysis/coverage-analysis-1?${qs.toString()}`);
+  },
+  jointWorkAnalysis(params: { employeeCode: string; fromMonth: string; toMonth: string; mode: string }) {
+    const qs = new URLSearchParams(params);
+    return request<JointWorkResult>(`/company/manager-analysis/joint-work?${qs.toString()}`);
   }
 };
 

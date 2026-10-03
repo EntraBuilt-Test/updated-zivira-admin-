@@ -186,6 +186,12 @@ function CustomReportGeneration({
   const [error, setError] = useState("");
   const [specialitySelected, setSpecialitySelected] = useState<string[]>([]);
   const [campaignSelected, setCampaignSelected] = useState<string[]>([]);
+  // Round 37 Item 2 -- real Product Exposure / Brand Exposure / Call
+  // Feedback multi-selects (previously "None selected" placeholders with
+  // no real dropdown behind them).
+  const [productSelected, setProductSelected] = useState<string[]>([]);
+  const [brandSelected, setBrandSelected] = useState<string[]>([]);
+  const [feedbackProductSelected, setFeedbackProductSelected] = useState<string[]>([]);
 
   useEffect(() => {
     setLoading(true);
@@ -226,20 +232,45 @@ function CustomReportGeneration({
       </div>
 
       <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))" }}>
-        {metadata?.categories.map((cat) => (
-          <div key={cat.category} className="bg-surface-card rounded-xl shadow-sm p-4 space-y-2">
-            <h3 className="font-label-md text-label-md text-text-primary font-semibold border-b border-border-subtle pb-1">{cat.category}</h3>
-            <div className="flex flex-col gap-1.5">
-              {cat.metrics.map((m) => (
-                <label key={m.key} className="flex items-center gap-2 text-sm text-text-primary">
-                  <input type="checkbox" checked={selected.has(m.key)} onChange={() => toggle(m.key)} />
-                  {m.label}
-                  <Eye size={12} className="text-text-muted" />
-                </label>
-              ))}
+        {metadata?.categories.map((cat) => {
+          // Round 37 Item 2 -- Product Exposure / Brand Exposure / Call
+          // Feedback each get a real multi-select (real product/brand
+          // names) rendered above their checkboxes, same pattern as
+          // Speciality Analysis / Campaign Info below.
+          const multiSelectFor: Record<string, { options: string[]; value: string[]; onChange: (v: string[]) => void } | undefined> = {
+            "Product Exposure": { options: metadata?.products || [], value: productSelected, onChange: setProductSelected },
+            "Brand Exposure": { options: metadata?.brands || [], value: brandSelected, onChange: setBrandSelected },
+            "Call Feedback": { options: metadata?.products || [], value: feedbackProductSelected, onChange: setFeedbackProductSelected }
+          };
+          const multiSelect = multiSelectFor[cat.category];
+          return (
+            <div key={cat.category} className="bg-surface-card rounded-xl shadow-sm p-4 space-y-2">
+              <h3 className="font-label-md text-label-md text-text-primary font-semibold border-b border-border-subtle pb-1">{cat.category}</h3>
+              {multiSelect && (
+                <>
+                  <select
+                    multiple
+                    className="w-full h-24 rounded-lg border border-border-subtle bg-surface-canvas text-sm p-1"
+                    value={multiSelect.value}
+                    onChange={(e) => multiSelect.onChange(Array.from(e.target.selectedOptions, (o) => o.value))}
+                  >
+                    {multiSelect.options.map((o) => <option key={o} value={o}>{o}</option>)}
+                  </select>
+                  {multiSelect.value.length === 0 && <p className="text-xs text-text-muted">None selected</p>}
+                </>
+              )}
+              <div className="flex flex-col gap-1.5">
+                {cat.metrics.map((m) => (
+                  <label key={m.key} className="flex items-center gap-2 text-sm text-text-primary">
+                    <input type="checkbox" checked={selected.has(m.key)} onChange={() => toggle(m.key)} />
+                    {m.label}
+                    <Eye size={12} className="text-text-muted" />
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         <div className="bg-surface-card rounded-xl shadow-sm p-4 space-y-2">
           <h3 className="font-label-md text-label-md text-text-primary font-semibold border-b border-border-subtle pb-1">Speciality Analysis</h3>

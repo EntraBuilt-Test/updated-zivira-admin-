@@ -2,6 +2,7 @@
 
 import type { ZiviraTreeNode } from "@zivira/types";
 import Link from "next/link";
+import { Suspense } from "react";
 import { GenericMasterTable } from "@/components/generic-master-table";
 import { MasterScreen } from "@/components/master-screen";
 import { AdminTabGrid } from "@/components/admin-tab-grid";
@@ -51,6 +52,7 @@ import { TpConsolidatedViewReport, TpViewReport, TpStatusReport, TpDatewiseRepor
 import { DcrViewWorkspace, DcrStatusReport } from "@/components/dcr-report-panels";
 import { DcrNotApprovedReport, DcrNotSubmittedReport, DcrCountModewiseReport, DcrRejectApproveReport, DcrTimeStatusReport, DcrCheckinCheckoutReport } from "@/components/dcr-report-panels-2";
 import { SurveyWorkspace } from "@/components/survey-workspace";
+import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
@@ -833,6 +835,20 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
   if (pathStr.endsWith("activity-reports/dcr/checkin-checkout")) {
     return <DcrCheckinCheckoutReport />;
+  }
+
+  // Round 37 Items 3/4/5 -- Manager Analysis (nested under MIS Reports,
+  // the Zivira tree already had these 3 leaf slugs defined, unwired).
+  if (pathStr.endsWith("mis-reports/manager-analysis/hq-coveragewise")) {
+    return <HqCoveragewiseReport />;
+  }
+  if (pathStr.endsWith("mis-reports/manager-analysis/coverage-analysis-1")) {
+    // useSearchParams() (for the Item 3 drill-down link) needs a Suspense
+    // boundary in the App Router.
+    return <Suspense fallback={<p className="text-text-muted text-sm">Loading...</p>}><CoverageAnalysis1Report /></Suspense>;
+  }
+  if (pathStr.endsWith("mis-reports/manager-analysis/joint-workwise")) {
+    return <JointWorkwiseReport />;
   }
 
   if (pathStr.includes("activity/dcr") || pathStr.includes("activities/dcr")) {
