@@ -24,37 +24,37 @@ import {
 // popup (Print / Excel / Close icons top-right) exactly like the legacy
 // screens; every number comes from the backend's mis-reports-compute.ts.
 
-const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-const NOW = new Date();
-const THIS_YEAR = NOW.getFullYear();
+export const MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+export const NOW = new Date();
+export const THIS_YEAR = NOW.getFullYear();
 const YEARS = Array.from({ length: 6 }, (_, i) => THIS_YEAR - 3 + i);
-const SELECT = "h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm";
-const LABEL = "font-label-sm text-label-sm uppercase tracking-wider text-text-muted";
-const GO = "h-9 px-8 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50";
-const MIS_BASE = "/admin/workspace/division-dashboard/division-navigation-tabs/mis-reports";
+export const SELECT = "h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm";
+export const LABEL = "font-label-sm text-label-sm uppercase tracking-wider text-text-muted";
+export const GO = "h-9 px-8 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50";
+export const MIS_BASE = "/admin/workspace/division-dashboard/division-navigation-tabs/mis-reports";
 
-const th = baseTh + " text-center";
-const td = baseTd + " text-center";
-const tealHead = "bg-teal-700 text-white";
-const link = "text-blue-600 underline cursor-pointer font-semibold";
+export const th = baseTh + " text-center";
+export const td = baseTd + " text-center";
+export const tealHead = "bg-teal-700 text-white";
+export const link = "text-blue-600 underline cursor-pointer font-semibold";
 
-function ym(year: number, month: number) {
+export function ym(year: number, month: number) {
   return `${year}-${String(month).padStart(2, "0")}`;
 }
-function shortMonth(month: string) {
+export function shortMonth(month: string) {
   const [y, m] = month.split("-").map((v) => parseInt(v, 10));
   return `${MONTH_NAMES[m - 1].slice(0, 3)} - ${y}`;
 }
-function longMonth(month: string) {
+export function longMonth(month: string) {
   const [y, m] = month.split("-").map((v) => parseInt(v, 10));
   return `${MONTH_NAMES[m - 1]} - ${y}`;
 }
-function dmy(date: string | null | undefined) {
+export function dmy(date: string | null | undefined) {
   if (!date) return "-";
   const [y, m, d] = date.slice(0, 10).split("-");
   return `${d}/${m}/${y}`;
 }
-function dash(n: number) {
+export function dash(n: number) {
   return n === 0 ? "-" : n;
 }
 
@@ -74,7 +74,7 @@ function tableToCsv(root: HTMLElement): string {
   return lines.join("\n");
 }
 
-function ReportModal({ title, fileName, onClose, children }: { title: string; fileName: string; onClose: () => void; children: ReactNode }) {
+export function ReportModal({ title, fileName, onClose, children }: { title: string; fileName: string; onClose: () => void; children: ReactNode }) {
   const bodyRef = useRef<HTMLDivElement>(null);
   function handlePrint() {
     const html = bodyRef.current?.innerHTML || "";
@@ -112,11 +112,11 @@ function ReportModal({ title, fileName, onClose, children }: { title: string; fi
   );
 }
 
-function ScreenTitle({ children }: { children: ReactNode }) {
+export function ScreenTitle({ children }: { children: ReactNode }) {
   return <h2 className="text-xl font-bold text-purple-800 underline decoration-purple-800">{children}</h2>;
 }
 
-function MonthYearSelect({ month, year, onChange }: { month: number; year: number; onChange: (month: number, year: number) => void }) {
+export function MonthYearSelect({ month, year, onChange }: { month: number; year: number; onChange: (month: number, year: number) => void }) {
   return (
     <>
       <div className="flex flex-col gap-1">
@@ -135,7 +135,7 @@ function MonthYearSelect({ month, year, onChange }: { month: number; year: numbe
   );
 }
 
-function useRange() {
+export function useRange() {
   const [range, setRange] = useState({ fromMonth: NOW.getMonth() + 1, fromYear: THIS_YEAR, toMonth: NOW.getMonth() + 1, toYear: THIS_YEAR });
   return { range, setRange, fromKey: ym(range.fromYear, range.fromMonth), toKey: ym(range.toYear, range.toMonth) };
 }

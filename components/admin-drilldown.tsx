@@ -55,6 +55,7 @@ import { SurveyWorkspace } from "@/components/survey-workspace";
 import { CustomReportWorkspace } from "@/components/custom-report-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
 import { DcrAnalysisReport, VisitAnalysisReport, SalesDetailsReport, PobWiseReport, PobPeriodicReport } from "@/components/mis-analysis-panels";
+import { WorkHygieneReport, ClassWiseViewReport, DcrAnalysisDumpReport, MissedCallReport, SingleDoctorReport, RepVsManagerReport, ReviewReport, AssessmentReport } from "@/components/mis-analysis-panels-2";
 import { FieldworkManagerAnalysisReport, ManagerWiseCoverageReport, SpecialityCategoryVisitReport } from "@/components/manager-analysis-panels-2";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
@@ -851,6 +852,31 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   // Round 39 items 3-7 -- MIS Reports > Analysis screens.
   if (pathStr.endsWith("mis-reports/analysis/dcr")) {
     return <Suspense fallback={<p className="text-text-muted text-sm">Loading...</p>}><DcrAnalysisReport /></Suspense>;
+  }
+  // Round 40 -- legacy-parity MIS screens.
+  if (pathStr.endsWith("mis-reports/analysis/work-hygiene-report")) {
+    return <WorkHygieneReport />;
+  }
+  if (pathStr.endsWith("mis-reports/analysis/class-wise-view")) {
+    return <ClassWiseViewReport />;
+  }
+  if (pathStr.endsWith("mis-reports/analysis/dcr-analysis-dump")) {
+    return <DcrAnalysisDumpReport />;
+  }
+  if (pathStr.endsWith("mis-reports/missed-call-report")) {
+    return <MissedCallReport />;
+  }
+  if (pathStr.endsWith("mis-reports/single-analysis/doctor-analysis")) {
+    return <SingleDoctorReport />;
+  }
+  if (pathStr.endsWith("mis-reports/single-analysis/rep-vs-manager")) {
+    return <RepVsManagerReport />;
+  }
+  if (pathStr.endsWith("mis-reports/single-analysis/review-report")) {
+    return <ReviewReport />;
+  }
+  if (pathStr.endsWith("mis-reports/single-analysis/assessment-report")) {
+    return <AssessmentReport />;
   }
   if (pathStr.endsWith("mis-reports/analysis/visit-analysis")) {
     return <VisitAnalysisReport />;

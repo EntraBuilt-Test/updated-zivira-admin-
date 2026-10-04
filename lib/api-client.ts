@@ -224,9 +224,9 @@ export function clearToken() {
 // forever (previously: no timeout at all, and a non-JSON 502 from the
 // host's proxy threw a cryptic "Unexpected token <").
 const REQUEST_TIMEOUT_MS = 30000;
-async function fetchWithTimeout(url: string, init: RequestInit = {}) {
+async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
     return await fetch(url, { ...init, signal: init.signal ?? controller.signal });
   } catch (error) {
@@ -882,6 +882,50 @@ export type PobPeriodicResult = {
   totals: { fwd: number; morning: number; evening: number; drsSeen: number; callAvg: number; drsPob: number; chemPob: number; products: Record<string, number> };
   products: string[]; from: string; to: string; fieldForceName: string; designation: string; hq: string;
 };
+
+// Round 40 -- MIS Reports: Work Hygiene, Class Wise View, Missed Call, Single
+// Doctor, Rep Vs Manager, Review Report, Assessment Report (DCR dump is a
+// file download). Mirrors src/utils/mis-reports-2-compute.ts.
+export type WorkHygieneRow = {
+  employeeCode: string; name: string; designation: string; hq: string; doj: string | null; firstLevelManager: string | null; secondLevelManager: string | null;
+  lastDcrDate: string | null; fwd: number; leave: number; listedVisits: number; listedCallAvg: number; unlistedVisits: number; unlistedCallAvg: number;
+  cumulativeCallAvg: number; dcrSubmittedDays: number; approvalPendingDates: number; delayReportingDates: number; totalDelayReporting: number;
+  joint: Record<string, number>; isSelected: boolean;
+};
+export type WorkHygieneResult = { month: string; designations: string[]; rows: WorkHygieneRow[]; fieldForceName: string; designation: string; hq: string };
+export type ClassWiseRow = { doctorName: string; speciality: string; category: string; className: string; territory: string; perMonth: Record<string, { amount: number; className: string }>; total: number };
+export type ClassWiseResult = { months: string[]; rows: ClassWiseRow[]; grandTotal: number; fieldForceName: string; designation: string; hq: string };
+export type MissedListedRow = { employeeCode: string; name: string; designation: string; hq: string; depth: number; isManager: boolean; perMonth: Record<string, { list: number; met: number; missed: number }> };
+export type MissedCallResult = {
+  mode: string; fieldForceName?: string; months?: string[]; rows?: MissedListedRow[];
+  employee?: { employeeCode: string; name: string; designation: string; hq: string }; month?: string;
+  missedDoctors?: { name: string; category: string }[];
+  summary?: { listedDrsInList: number; callsMet: number; callsSeen: number; listedDrsMissed: number; byCategory: Record<string, { total: number; met: number; missed: number }> };
+  visitDetails?: { one: number; two: number; three: number; moreThanThree: number };
+};
+export type ForceDoctor = { id: string; name: string };
+export type SingleDoctorMonth = {
+  visits: { date: string; time: string; session: string; workedWith: string }[];
+  detailed: { name: string; count: number }[]; sampled: { name: string; qty: number }[]; inputs: { name: string; qty: number }[];
+  remarks: string[]; business: number;
+};
+export type SingleDoctorResult = {
+  employee: { employeeCode: string; name: string; designation: string; hq: string }; months: string[];
+  profile: { doctorName: string; address: string; mobile: string; email: string; hospitalAddress: string; category: string; speciality: string; className: string; qualification: string; campaignName: string; drUniqueCode: string };
+  perMonth: Record<string, SingleDoctorMonth>;
+};
+export type RepVsManagerMetrics = { fwDays: number; doctorsMet: number; coveragePct: number; callAverage: number; chemistsMet: number; jointWorkDays: number };
+export type RepVsManagerResult = {
+  month: string;
+  manager: { employeeCode: string; name: string; designation: string; hq: string; metrics: RepVsManagerMetrics };
+  rows: { employeeCode: string; name: string; designation: string; hq: string; rep: RepVsManagerMetrics; withThisManager: { jointDays: number; jointCalls: number } }[];
+};
+export type ReviewReportResult = {
+  month: string;
+  employee: { name: string; employeeCode: string; designation: string; hq: string; state: string; division: string; isManager: boolean };
+  metrics: Record<string, number | string>; top5: { name: string; count: number }[]; inputSpent: number;
+};
+export type AssessmentResult = { months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; cols: Record<string, Record<string, string>> };
 
 export const apiClient = {
   // Round 39 item 1 -- fired when a login page opens so a sleeping backend
@@ -2262,6 +2306,50 @@ export const apiClient = {
   },
 
   // Round 38 Items 1/2/3 -- Manager Analysis continued
+  workHygiene(params: { employeeCode: string; month: string }) {
+    return request<WorkHygieneResult>(`/company/mis/work-hygiene?${new URLSearchParams(params).toString()}`);
+  },
+  classWise(params: { employeeCode: string; fromMonth: string; toMonth: string }) {
+    return request<ClassWiseResult>(`/company/mis/class-wise?${new URLSearchParams(params).toString()}`);
+  },
+  missedCall(params: { mode: string; employeeCode: string; fromMonth: string; toMonth: string }) {
+    return request<MissedCallResult>(`/company/mis/missed-call?${new URLSearchParams(params).toString()}`);
+  },
+  forceDoctors(employeeCode: string) {
+    return request<ForceDoctor[]>(`/company/mis/force-doctors?employeeCode=${encodeURIComponent(employeeCode)}`);
+  },
+  singleDoctor(params: { employeeCode: string; doctorId: string; fromMonth: string; toMonth: string }) {
+    return request<SingleDoctorResult>(`/company/mis/single-doctor?${new URLSearchParams(params).toString()}`);
+  },
+  repVsManager(params: { employeeCode: string; month: string }) {
+    return request<RepVsManagerResult>(`/company/mis/rep-vs-manager?${new URLSearchParams(params).toString()}`);
+  },
+  reviewReport(params: { employeeCode: string; month: string }) {
+    return request<ReviewReportResult>(`/company/mis/review-report?${new URLSearchParams(params).toString()}`);
+  },
+  assessmentReport(params: { employeeCode: string; fromMonth: string; toMonth: string }) {
+    return request<AssessmentResult>(`/company/mis/assessment?${new URLSearchParams(params).toString()}`);
+  },
+  // DCR Analysis Dump: the file IS the output (CSV or real .xlsx), streamed
+  // from the backend with the Bearer token and saved via a blob link.
+  async downloadDcrDump(params: { employeeCode: string; month: string; days: number[]; vacant: boolean; format: "csv" | "xlsx" }) {
+    const token = getToken();
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, days: params.days.join(","), vacant: String(params.vacant), format: params.format });
+    const response = await fetchWithTimeout(`${API_BASE_URL}/company/mis/dcr-dump?${qs.toString()}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} }, 180000);
+    if (!response.ok) {
+      let message = "Download failed";
+      try { message = (await response.json())?.error?.message ?? message; } catch { /* non-JSON error body */ }
+      throw new Error(message);
+    }
+    const blob = await response.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `DCR_Analysis_Dump_${params.month}.${params.format}`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+  },
   misTeam(employeeCode: string) {
     return request<MisTeamMember[]>(`/company/mis/team?employeeCode=${encodeURIComponent(employeeCode)}`);
   },
