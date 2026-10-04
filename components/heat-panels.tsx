@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { GO, LABEL, SELECT, ReportModal, ScreenTitle, th, td, tealHead } from "@/components/mis-analysis-panels";
-import { apiClient, type HeatKind, type HeatResult } from "@/lib/api-client";
+import { apiClient, type HeatKind, type HeatResult, type HqVisitColor, type HqVisitResult } from "@/lib/api-client";
 
 // Round 42 -- MIS Reports > Heat Analysis: Not At All Visit Drs, Not At All
 // Promoted Products, Not At All Visit HQs. "More than N Month(s)" = nothing
@@ -24,19 +24,13 @@ const LEGEND: { label: string; color: string; max: number }[] = [
 ];
 const bandColor = (n: number) => (LEGEND.find((l) => n <= l.max) ?? LEGEND[LEGEND.length - 1]).color;
 
-const CONFIG: Record<HeatKind, { title: string; resultTitle: string; footnote?: string }> = {
+const CONFIG: Record<HeatKind, { title: string; resultTitle: string }> = {
   drs: { title: "Not At All Visit Drs", resultTitle: "Not at all Visited Drs" },
-  products: { title: "Not At All Promoted Products", resultTitle: "Not at all Promoted Products" },
-  hqs: {
-    title: "Not At All Visit HQs",
-    resultTitle: "Not at all Visited HQs",
-    footnote: "Layout inferred: the legacy result screen was not available. Cnt = this force's territories (its own HQ, its listed doctors' territories and its chemists' patches) with no doctor call, chemist call or visit log in the period."
-  }
+  products: { title: "Not At All Promoted Products", resultTitle: "Not at all Promoted Products" }
 };
 const MODES = [6, 5, 4, 3, 2, 1];
 
 function Err({ msg }: { msg: string }) { return msg ? <p className="text-sm text-status-danger">{msg}</p> : null; }
-function Note({ children }: { children: ReactNode }) { return <p className="text-xs text-text-muted italic">{children}</p>; }
 
 function HeatReport({ kind }: { kind: HeatKind }) {
   const cfg = CONFIG[kind];
@@ -94,7 +88,6 @@ function HeatReport({ kind }: { kind: HeatKind }) {
               ))}
             </tbody>
           </table>
-          {cfg.footnote && <Note>{cfg.footnote}</Note>}
         </ReportModal>
       )}
     </div>
@@ -103,4 +96,71 @@ function HeatReport({ kind }: { kind: HeatKind }) {
 
 export function NotAtAllVisitDrsReport() { return <HeatReport kind="drs" />; }
 export function NotAtAllPromotedProductsReport() { return <HeatReport kind="products" />; }
-export function NotAtAllVisitHqsReport() { return <HeatReport kind="hqs" />; }
+// ── Round 43 -- Not At All Visit HQs (legacy Not_At_All_Visit_HQs.aspx) ──────
+const HQ_FILL: Record<HqVisitColor, string> = { green: "#00ff00", red: "#ff0000", yellow: "#ffe600" };
+const HQ_MODES: { n: number; label: string }[] = [
+  { n: 6, label: "More than 6 Month" }, { n: 5, label: "More than 5 Month" }, { n: 4, label: "More than 4" },
+  { n: 3, label: "More than 3" }, { n: 2, label: "More than 2" }, { n: 1, label: "More than 1 Month" }
+];
+const HQ_LEGEND: { c: HqVisitColor; label: string }[] = [{ c: "green", label: "Visited" }, { c: "red", label: "Not Visited" }, { c: "yellow", label: "Not Reporting" }];
+const HQ_TD = "border border-black px-2 py-1 text-sm";
+
+export function NotAtAllVisitHqsReport() {
+  const [code, setCode] = useState("");
+  const [months, setMonths] = useState("");
+  const [result, setResult] = useState<HqVisitResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  async function view() {
+    if (!code) { setError("Select a field force."); return; }
+    if (!months) { setError("Select a mode."); return; }
+    setLoading(true); setError("");
+    try { setResult((await apiClient.hqVisitReport({ employeeCode: code, months: Number(months) })).data); }
+    catch (e) { setError(e instanceof Error ? e.message : "Unable to load report"); setResult(null); }
+    finally { setLoading(false); }
+  }
+  return (
+    <div className="space-y-5">
+      <div className={CARD}>
+        <ScreenTitle>Not At All Visit HQs</ScreenTitle>
+        <div className="flex flex-wrap items-end gap-4">
+          <FieldForceSelect value={code} onChange={setCode} label="Filed Force Name" clearLabel="---Select Clear---" />
+          <div className="flex flex-col gap-1">
+            <span className={LABEL}>Mode</span>
+            <select className={SELECT} value={months} onChange={(e) => setMonths(e.target.value)}>
+              <option value="">--Select--</option>
+              {HQ_MODES.map((m) => <option key={m.n} value={m.n}>{m.label}</option>)}
+            </select>
+          </div>
+          <button type="button" className={GO} disabled={loading || !months} onClick={view}>{loading ? "Loading..." : "View"}</button>
+        </div>
+        <Err msg={error} />
+      </div>
+      {result && (
+        <ReportModal title="Not At All Visit HQs" fileName="Not_At_All_Visit_HQs" onClose={() => setResult(null)}>
+          <h3 className="text-center text-lg font-bold underline">Managers - Not at all Visited HQs for Last {result.months} Month{result.months > 1 ? "s" : ""}</h3>
+          <p className="text-sm font-bold">Field Force Name : {result.employee.name} - {result.employee.designation} - {result.employee.hq}</p>
+          <table className="border-collapse text-xs"><tbody>
+            <tr>{HQ_LEGEND.map((l) => <td key={l.c} className="border border-black w-10 h-5" style={{ background: HQ_FILL[l.c] }} />)}</tr>
+            <tr>{HQ_LEGEND.map((l) => <td key={l.c} className="px-2 text-center">{l.label}</td>)}</tr>
+          </tbody></table>
+          <table className="w-full border-collapse">
+            <thead><tr>
+              {["S.No", "FieldForce Name", "Designation Name", "HQ", "Emp Id."].map((h) => <th key={h} className={TH + " !border-black"}>{h}</th>)}
+              {result.designations.map((d) => <th key={d} className={TH + " !border-black !px-1 w-9"}>{d}</th>)}
+            </tr></thead>
+            <tbody>
+              {result.rows.length === 0 && <tr><td className={HQ_TD + " text-center"} colSpan={5 + result.designations.length}>No base-level employees report under this manager.</td></tr>}
+              {result.rows.map((r) => (
+                <tr key={r.employeeCode} style={{ background: "#fff" }}>
+                  <td className={HQ_TD}>{r.sno}</td><td className={HQ_TD}>{r.name}</td><td className={HQ_TD}>{r.designation}</td><td className={HQ_TD}>{r.hq}</td><td className={HQ_TD}>{r.employeeCode}</td>
+                  {result.designations.map((d) => <td key={d} className="border border-black" style={{ background: HQ_FILL[r.cells[d] ?? "yellow"] }} />)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </ReportModal>
+      )}
+    </div>
+  );
+}

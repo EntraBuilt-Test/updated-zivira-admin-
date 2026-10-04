@@ -953,11 +953,18 @@ export type PobRxDayWiseResult = {
   mode: "Datewise" | "Productwise"; month: string; days: number; employee: PobRxEmployee;
   rows: { employeeCode: string; name: string; hq: string; designation: string; isManager: boolean; product?: string; perDay: PobRxDayCell[]; total: PobRxDayCell }[];
 };
-export type HeatKind = "drs" | "products" | "hqs";
+export type HeatKind = "drs" | "products";
 export type HeatResult = {
   kind: HeatKind; months: number; from: string; to: string;
   employee: { employeeCode: string; name: string; designation: string; hq: string };
   rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; cnt: number; isSelected: boolean }[];
+};
+
+export type HqVisitColor = "green" | "red" | "yellow";
+export type HqVisitResult = {
+  months: number; from: string; to: string; designations: string[];
+  employee: { employeeCode: string; name: string; designation: string; hq: string };
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; cells: Record<string, HqVisitColor> }[];
 };
 
 export const apiClient = {
@@ -2395,6 +2402,9 @@ export const apiClient = {
   },
   heatReport(kind: HeatKind, p: { employeeCode: string; months: number }) {
     return request<HeatResult>(`/company/mis/heat/${kind}?${new URLSearchParams({ employeeCode: p.employeeCode, months: String(p.months) }).toString()}`);
+  },
+  hqVisitReport(p: { employeeCode: string; months: number }) {
+    return request<HqVisitResult>(`/company/mis/heat/hqs?${new URLSearchParams({ employeeCode: p.employeeCode, months: String(p.months) }).toString()}`);
   },
   // Listed Dr/Chem Dump: the response IS the .xlsx file.
   async downloadPobrxDump(p: { employeeCode: string; month: string; mode: string; products: string[]; checkVacant: boolean; option: string }) {
