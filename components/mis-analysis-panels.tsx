@@ -60,7 +60,7 @@ export function dash(n: number) {
 }
 
 // ── Popup shell with Print / Excel / Close ──────────────────────────────
-export function ReportModal({ title, fileName, onClose, children }: { title: string; fileName: string; onClose: () => void; children: ReactNode }) {
+export function ReportModal({ title, fileName, onClose, children, textButtons }: { title: string; fileName: string; onClose: () => void; children: ReactNode; textButtons?: boolean }) {
   const bodyRef = useRef<HTMLDivElement>(null);
   function handlePrint() {
     const html = bodyRef.current?.innerHTML || "";
@@ -86,9 +86,19 @@ export function ReportModal({ title, fileName, onClose, children }: { title: str
         <div className="flex items-center justify-between px-4 py-2 border-b border-border-subtle">
           <span className="font-label-md text-label-md text-text-secondary truncate">{title}</span>
           <div className="flex items-center gap-2">
-            <button type="button" title="Print" onClick={handlePrint} className="p-1.5 rounded hover:bg-surface-subtle"><Printer size={18} /></button>
-            <button type="button" title="Excel" onClick={() => void handleExcel()} className="p-1.5 rounded hover:bg-surface-subtle"><FileSpreadsheet size={18} /></button>
-            <button type="button" title="Close" onClick={onClose} className="p-1.5 rounded hover:bg-surface-subtle"><X size={18} /></button>
+            {textButtons ? (
+              <>
+                <button type="button" onClick={handlePrint} className="px-3 py-1 rounded border border-border-subtle text-sm hover:bg-surface-subtle">Print</button>
+                <button type="button" onClick={() => void handleExcel()} className="px-3 py-1 rounded border border-border-subtle text-sm hover:bg-surface-subtle">Excel</button>
+                <button type="button" onClick={onClose} className="px-3 py-1 rounded border border-border-subtle text-sm hover:bg-surface-subtle">Close</button>
+              </>
+            ) : (
+              <>
+                <button type="button" title="Print" onClick={handlePrint} className="p-1.5 rounded hover:bg-surface-subtle"><Printer size={18} /></button>
+                <button type="button" title="Excel" onClick={() => void handleExcel()} className="p-1.5 rounded hover:bg-surface-subtle text-green-600"><FileSpreadsheet size={18} /></button>
+                <button type="button" title="Close" onClick={onClose} className="p-1.5 rounded hover:bg-surface-subtle text-red-600"><X size={18} /></button>
+              </>
+            )}
           </div>
         </div>
         <div ref={bodyRef} className="p-4 space-y-3 overflow-x-auto">{children}</div>

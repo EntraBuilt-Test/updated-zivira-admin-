@@ -55,6 +55,7 @@ import { SurveyWorkspace } from "@/components/survey-workspace";
 import { CustomReportWorkspace } from "@/components/custom-report-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
 import { PobRxProductWiseReport, PobRxFieldforceWiseReport, PobRxDayWiseReport, PobRxDumpReport } from "@/components/pob-rx-panels";
+import { CatClsVisitDetailsReport, VisitDetailDateWiseReport } from "@/components/visit-details-panels";
 import { NotAtAllVisitDrsReport, NotAtAllPromotedProductsReport, NotAtAllVisitHqsReport } from "@/components/heat-panels";
 import { DcrAnalysisReport, VisitAnalysisReport, SalesDetailsReport, PobWiseReport, PobPeriodicReport } from "@/components/mis-analysis-panels";
 import { WorkHygieneReport, ClassWiseViewReport, DcrAnalysisDumpReport, MissedCallReport, SingleDoctorReport, RepVsManagerReport, ReviewReport, AssessmentReport } from "@/components/mis-analysis-panels-2";
@@ -193,6 +194,11 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   // Campaign catalog field reps pick from in Campaign Planning.
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/campaign-master") {
     return <GenericMasterTable masterKey="campaignMaster" />;
+  }
+
+  // Round 44 -- Doctor Type master (Core drs, Academica, ...).
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor-type-master") {
+    return <GenericMasterTable masterKey="doctorTypeMaster" />;
   }
 
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor/stockist-master") {
@@ -886,6 +892,8 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/analysis/sales-details")) {
     return <SalesDetailsReport />;
   }
+  if (pathStr.endsWith("mis-reports/visit-details/cat-cls-splty-lstdr-wise")) return <CatClsVisitDetailsReport />;
+  if (pathStr.endsWith("mis-reports/visit-details/datewise")) return <VisitDetailDateWiseReport />;
   if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-product-wise")) {
     return <PobRxProductWiseReport />;
   }

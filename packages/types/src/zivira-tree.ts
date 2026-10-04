@@ -137,6 +137,8 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         // authored Campaign catalog (name, brand/product focus, start/end
         // date, status) a field rep picks from in Campaign Planning.
         node("Campaign", "campaign-master", "division"),
+        // Round 44 -- Doctor Type list used by MIS > Visit Details (Doctor Type mode).
+        node("Doctor Type", "doctor-type-master", "division"),
         node("Territory Bulk Activation/Deactivation", "field-force-entries", "division", [
           node("Patch Name", "territory", "division"),
           node("Territory - Listed Doctor", "territory-listed-doctor", "division"),

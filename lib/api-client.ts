@@ -960,6 +960,26 @@ export type HeatResult = {
   rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; cnt: number; isSelected: boolean }[];
 };
 
+// Round 44 -- MIS Reports > Visit Details
+export type VisitMode = "Category" | "Speciality" | "Class" | "Listed Doctor" | "Campaign" | "Doctor Type";
+export type VisitDetailOptions = { specialities: string[]; campaigns: string[]; doctorTypes: string[]; categories: string[]; classes: string[] };
+export type VisitCell = { list: number; met: number; seen: number; missed: number };
+export type CatClsVisitResult = {
+  mode: VisitMode; months: string[]; values: string[]; grouped: boolean; withVacants: boolean;
+  employee: { employeeCode: string; name: string; designation: string; hq: string };
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; subDivision: string; isManager: boolean; isVacant: boolean;
+    perMonth: Record<string, { total: VisitCell; groups: Record<string, VisitCell> }> }[];
+};
+export type DateWiseDoctor = { name: string; territory: string; qualification: string; category: string; specialty: string; cls: string };
+export type DateWiseResult = {
+  month: string; numDays: number; employee: { employeeCode: string; name: string; designation: string; hq: string };
+  weeks: { week: number; from: number; to: number; label: string }[];
+} & (
+  | { matrix: false; rows: (DateWiseDoctor & { sno: number; days: Record<string, number>; total: number })[] }
+  | { matrix: true; week: { week: number; from: number; to: number; label: string };
+      days: { day: number; weekday: string; status: string; calls: (DateWiseDoctor & { time: string; products: string })[] }[] }
+);
+
 export type HqVisitColor = "green" | "red" | "yellow";
 export type HqVisitResult = {
   months: number; from: string; to: string; designations: string[];
@@ -2402,6 +2422,16 @@ export const apiClient = {
   },
   heatReport(kind: HeatKind, p: { employeeCode: string; months: number }) {
     return request<HeatResult>(`/company/mis/heat/${kind}?${new URLSearchParams({ employeeCode: p.employeeCode, months: String(p.months) }).toString()}`);
+  },
+  visitDetailOptions() { return request<VisitDetailOptions>("/company/mis/visit-details/options"); },
+  catClsVisit(p: { employeeCode: string; mode: VisitMode; fromMonth: string; toMonth: string; values: string[]; withVacants: boolean }) {
+    const qs = new URLSearchParams({ employeeCode: p.employeeCode, mode: p.mode, fromMonth: p.fromMonth, toMonth: p.toMonth, values: p.values.join("||"), withVacants: String(p.withVacants) });
+    return request<CatClsVisitResult>(`/company/mis/visit-details/cat-cls?${qs.toString()}`);
+  },
+  visitDateWise(p: { employeeCode: string; month: string; week?: number }) {
+    const qs = new URLSearchParams({ employeeCode: p.employeeCode, month: p.month });
+    if (p.week) qs.set("week", String(p.week));
+    return request<DateWiseResult>(`/company/mis/visit-details/datewise?${qs.toString()}`);
   },
   hqVisitReport(p: { employeeCode: string; months: number }) {
     return request<HqVisitResult>(`/company/mis/heat/hqs?${new URLSearchParams({ employeeCode: p.employeeCode, months: String(p.months) }).toString()}`);
