@@ -116,6 +116,11 @@ export type Dealer = {
   location?: string | null;
   pincode?: string | null;
   address?: string | null;
+  // Round 46 -- Chemist Dump / RCPA Dump columns.
+  chemistClass?: string | null;
+  category?: string | null;
+  clusterName?: string | null;
+  commonRefNo?: string | null;
   status: "ACTIVE" | "INACTIVE";
 };
 
@@ -1003,6 +1008,17 @@ export type SlideAnalysisResult = {
   rows: { sno: number; employeeCode: string; employeeName: string; doctor: string; speciality: string; category: string; cls: string; territory: string; qualification: string;
     cells: Record<string, { views: number; seconds: number }>; totalViews: number; totalSeconds: number }[];
 };
+// Round 46 -- Options > Resigned User Status / Join-Left Details / TP - Deviation For Baselevel.
+export type ResignedUsersResult = { from: string; to: string; rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; dcrStart: string; dcrEnd: string; viewMonth: string }[] };
+export type JoinLeftResult = {
+  from: string; to: string;
+  joined: { sno: number; employeeCode: string; name: string; hq: string; designation: string; doj: string; dcrStart: string; createdId: string; division: string }[];
+  left: { sno: number; employeeCode: string; name: string; hq: string; designation: string; dateOfLeft: string; dcrLast: string; deactiveDate: string; division: string }[];
+};
+export type TpDeviationResult = {
+  month: string; employee: { employeeCode: string; name: string; designation: string; hq: string };
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; planned: number; deviations: number; days: { date: string; planned: string; worked: string; deviation: "Y" | "N" }[] }[];
+};
 export type DrsAnalysisResult = {
   months: string[]; employee: DetailingBase;
   rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; perMonth: Record<string, { total: number; met: number; edet: number; pct: number }> }[];
@@ -1237,7 +1253,7 @@ export const apiClient = {
   },
 
   // Round 45 -- real persistence for the Listed Doctor edit form.
-  updateDoctor(id: string, input: Partial<{ name: string; specialty: string; category: "A" | "B" | "C"; state: string; city: string; territory: string; status: "ACTIVE" | "INACTIVE"; qualification: string | null; phone: string | null; doctorTypes: string[]; campaign: string | null; promotedBrands: string[] }>) {
+  updateDoctor(id: string, input: Partial<{ name: string; specialty: string; category: "A" | "B" | "C"; state: string; city: string; territory: string; status: "ACTIVE" | "INACTIVE"; qualification: string | null; phone: string | null; doctorTypes: string[]; campaign: string | null; promotedBrands: string[]; priorityProducts: string[]; mappedProducts: string[] } & Record<string, string | string[] | null>>) {
     return request<Doctor>(`/company/doctors/${id}`, { method: "PATCH", body: JSON.stringify(input) });
   },
   setDoctorTier(id: string, doctorCategory: "NIL" | "CORE" | "N CORE" | "S CORE") {
@@ -2489,6 +2505,10 @@ export const apiClient = {
   drsAnalysis(p: { employeeCode: string; fromMonth: string; toMonth: string }) {
     return request<DrsAnalysisResult>(`/company/mis/drs-analysis?${new URLSearchParams(p).toString()}`);
   },
+  resignedUsers(p: { fromMonth: string; toMonth: string }) { return request<ResignedUsersResult>(`/company/mis/resigned-users?${new URLSearchParams(p).toString()}`); },
+  joinLeft(p: { fromMonth: string; toMonth: string }) { return request<JoinLeftResult>(`/company/mis/join-left?${new URLSearchParams(p).toString()}`); },
+  tpDeviation(p: { employeeCode: string; month: string }) { return request<TpDeviationResult>(`/company/mis/tp-deviation?${new URLSearchParams(p).toString()}`); },
+  resignEmployee(employeeCode: string, leftDate: string) { return request<Employee>(`/company/employees/${encodeURIComponent(employeeCode)}/resign`, { method: "POST", body: JSON.stringify({ leftDate }) }); },
   // Generic authed file download (the response IS the file): Day Wise / Call Report dumps.
   async downloadMisFile(path: string, query: Record<string, string>, fileName: string) {
     const token = getToken();

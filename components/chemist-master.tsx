@@ -67,6 +67,10 @@ export function ChemistMaster() {
     stockist: "Zivira Stockist Chennai",
     // Contact Details
     contactPerson: "",
+    chemistClass: "",
+    category: "",
+    clusterName: "",
+    commonRefNo: "",
     mobile: "",
     email: "",
     // Business Info
@@ -100,6 +104,10 @@ export function ChemistMaster() {
       hq: "Chennai Central HQ",
       stockist: "Zivira Stockist Chennai",
       contactPerson: "",
+      chemistClass: "",
+      category: "",
+      clusterName: "",
+      commonRefNo: "",
       mobile: "",
       email: "",
       gstin: "",
@@ -131,6 +139,10 @@ export function ChemistMaster() {
       hq: "Chennai Central HQ",
       stockist: "Zivira Stockist Chennai",
       contactPerson: row.contactPersonName || "",
+      chemistClass: row.chemistClass || "",
+      category: row.category || "",
+      clusterName: row.clusterName || "",
+      commonRefNo: row.commonRefNo || "",
       mobile: row.dealerPhone || "",
       email: row.dealerEmail || "",
       gstin: "",
@@ -158,6 +170,10 @@ export function ChemistMaster() {
           contactPersonName: form.contactPerson,
           dealerPhone: form.mobile,
           dealerEmail: form.email,
+          chemistClass: form.chemistClass || null,
+          category: form.category || null,
+          clusterName: form.clusterName || null,
+          commonRefNo: form.commonRefNo || null,
           status: form.status.toUpperCase() as "ACTIVE" | "INACTIVE"
         };
         try {
@@ -191,6 +207,10 @@ export function ChemistMaster() {
           contactPersonName: form.contactPerson,
           dealerPhone: form.mobile,
           dealerEmail: form.email,
+          chemistClass: form.chemistClass || null,
+          category: form.category || null,
+          clusterName: form.clusterName || null,
+          commonRefNo: form.commonRefNo || null,
           status: form.status.toUpperCase() as "ACTIVE" | "INACTIVE"
         });
         await fetchData();
@@ -390,6 +410,22 @@ export function ChemistMaster() {
                 <div className="field">
                   <label>Email Address</label>
                   <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+                </div>
+                <div className="field">
+                  <label>Chemist Class</label>
+                  <input value={form.chemistClass} onChange={e => setForm({ ...form, chemistClass: e.target.value })} placeholder="e.g. 27" />
+                </div>
+                <div className="field">
+                  <label>Chemist Category</label>
+                  <input value={form.category} onChange={e => setForm({ ...form, category: e.target.value })} placeholder="e.g. A" />
+                </div>
+                <div className="field">
+                  <label>Cluster Name</label>
+                  <input value={form.clusterName} onChange={e => setForm({ ...form, clusterName: e.target.value })} />
+                </div>
+                <div className="field">
+                  <label>Common Reference Number</label>
+                  <input value={form.commonRefNo} onChange={e => setForm({ ...form, commonRefNo: e.target.value })} />
                 </div>
               </>
             )}

@@ -27,6 +27,7 @@ const searchPages = [
   { title: "Doctor Qualification Master", category: "Doctors", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor/qualification" },
   { title: "Input Master", category: "Inputs", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/input" },
   { title: "Campaign Master", category: "Campaign", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/campaign-master" },
+  { title: "Transit Bills", category: "Sales", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/sales/transit-bills-entry" },
   { title: "Fixed Expense Master", category: "Expenses", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/fixed-expense-master" },
   { title: "Doctor Type Master", category: "Doctors", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/doctor-type-master" },
   { title: "Stockist Details", category: "Stockists", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/stockist-details/add-edit-deactivate" },

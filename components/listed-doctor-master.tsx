@@ -17,6 +17,12 @@ type ListedDoctorRow = {
   status: "Active" | "Inactive";
 };
 const initialDoctors: ListedDoctorRow[] = [];
+const PROFILE_FIELDS: [string, string][] = [
+  ["drPotential", "Dr Potential"], ["businessValue", "Business Value"], ["expBusinessValue", "Exp Business Value"], ["currentBusiness", "Current Business"], ["communication", "Communication"],
+  ["workingPlace", "Working Place"], ["visitingDays", "Visiting Days"], ["iuiCycle", "IUI Cycle"], ["avgPatientsPerDay", "Average Number of Patients Per Day"], ["classOfPatients", "Class of Patients"],
+  ["timeOfMeeting", "Time Of Meeting"], ["consultationFees", "Consultation Fees"], ["hospitalAddress", "Hospital Address"], ["telephone", "Telephone No"]
+];
+
 export function ListedDoctorMaster() {
   const [list, setList] = useState<any[]>([]);
   const [view, setView] = useState<"list" | "add" | "edit">("list");
@@ -46,12 +52,16 @@ export function ListedDoctorMaster() {
   // Round 45 -- classification fields that really persist (tier, doctor types, campaign,
   // promoted brands) and the supportive chemists mapped to the doctor.
   const [extra, setExtra] = useState({ tier: "NIL" as "NIL" | "CORE" | "N CORE" | "S CORE", doctorTypes: [] as string[], campaign: "", promoted: [] as string[], dealerIds: [] as string[] });
-  const [opts, setOpts] = useState<{ campaigns: string[]; doctorTypes: string[]; brands: string[] }>({ campaigns: [], doctorTypes: [], brands: [] });
+  const [opts, setOpts] = useState<{ campaigns: string[]; doctorTypes: string[]; brands: string[]; products: string[] }>({ campaigns: [], doctorTypes: [], brands: [], products: [] });
+  // Round 46 -- Listeddr dump business profile (all optional), P0..P5 priority products and mapped products.
+  const [profile, setProfile] = useState<Record<string, string>>({});
+  const [prio, setPrio] = useState<string[]>(["", "", "", "", "", ""]);
+  const [mapped, setMapped] = useState<string[]>([]);
   const [dealers, setDealers] = useState<Dealer[]>([]);
   const [dealerSearch, setDealerSearch] = useState("");
   useEffect(() => {
     apiClient.visitDetailOptions().then((r) => setOpts((o) => ({ ...o, campaigns: r.data.campaigns, doctorTypes: r.data.doctorTypes }))).catch(() => {});
-    apiClient.detailingOptions().then((r) => setOpts((o) => ({ ...o, brands: r.data.brands.filter((b) => b !== "Nil") }))).catch(() => {});
+    apiClient.detailingOptions().then((r) => setOpts((o) => ({ ...o, brands: r.data.brands.filter((b) => b !== "Nil"), products: r.data.products }))).catch(() => {});
   }, []);
   const toggleExtra = (key: "doctorTypes" | "promoted" | "dealerIds", v: string) => setExtra((e) => ({ ...e, [key]: e[key].includes(v) ? e[key].filter((x) => x !== v) : [...e[key], v] }));
   // Form inputs for 7 tabs
@@ -157,6 +167,9 @@ export function ListedDoctorMaster() {
       promoted: Array.isArray(row.promotedBrands) ? row.promotedBrands : [],
       dealerIds: Array.isArray(row.supportiveChemists) ? row.supportiveChemists.map((c: { dealerId: string }) => c.dealerId) : []
     });
+    setProfile(Object.fromEntries(PROFILE_FIELDS.map(([k]) => [k, row[k] || ""])));
+    setPrio(Array.from({ length: 6 }, (_, i) => (Array.isArray(row.priorityProducts) && row.priorityProducts[i]) || ""));
+    setMapped(Array.isArray(row.mappedProducts) ? row.mappedProducts : []);
     apiClient.dealers().then((r) => setDealers(r.data)).catch(() => setDealers([]));
     setActiveFormTab(1);
     setView("edit");
@@ -212,7 +225,8 @@ export function ListedDoctorMaster() {
         await apiClient.updateDoctor(id, {
           name: form.name, specialty: form.specialty, category: form.category as "A" | "B" | "C", state: form.state, city: form.city, territory: form.patch,
           status: apiStatus, qualification: form.qualification || null, phone: form.mobile || null,
-          doctorTypes: extra.doctorTypes, campaign: extra.campaign || null, promotedBrands: extra.promoted
+          doctorTypes: extra.doctorTypes, campaign: extra.campaign || null, promotedBrands: extra.promoted,
+          ...Object.fromEntries(PROFILE_FIELDS.map(([k]) => [k, (profile[k] || "").trim() || null])), priorityProducts: prio, mappedProducts: mapped
         });
         if (extra.tier !== (selectedDoc.doctorCategory || "NIL")) await apiClient.setDoctorTier(id, extra.tier);
         const before = Array.isArray(selectedDoc.supportiveChemists) ? selectedDoc.supportiveChemists.map((c: { dealerId: string }) => c.dealerId) : [];
@@ -442,6 +456,36 @@ export function ListedDoctorMaster() {
                       {opts.brands.map(b => <label key={b} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 13 }}><input type="checkbox" checked={extra.promoted.includes(b)} onChange={() => toggleExtra("promoted", b)} />{b}</label>)}
                     </div>
                   </div>
+                  {view === "edit" && (
+                    <>
+                      <div className="field" style={{ gridColumn: "span 2" }}><label style={{ fontWeight: 700 }}>Business Profile (shown in the Listeddr dump)</label></div>
+                      {PROFILE_FIELDS.map(([k, label]) => (
+                        <div className="field" key={k}>
+                          <label>{label}</label>
+                          <input value={profile[k] || ""} onChange={e => setProfile({ ...profile, [k]: e.target.value })} />
+                        </div>
+                      ))}
+                      {prio.map((v, i) => (
+                        <div className="field" key={`p${i}`}>
+                          <label>Priority Product P{i}</label>
+                          <select className="input" value={v} onChange={e => setPrio(prio.map((x, j) => (j === i ? e.target.value : x)))}>
+                            <option value="">None</option>
+                            {opts.products.map(pn => <option key={pn} value={pn}>{pn}</option>)}
+                          </select>
+                        </div>
+                      ))}
+                      <div className="field" style={{ gridColumn: "span 2" }}>
+                        <label>Mapped Products</label>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+                          {opts.products.map(pn => <label key={pn} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 13 }}><input type="checkbox" checked={mapped.includes(pn)} onChange={() => setMapped(mapped.includes(pn) ? mapped.filter(x => x !== pn) : [...mapped, pn])} />{pn}</label>)}
+                        </div>
+                      </div>
+                      <div className="field" style={{ gridColumn: "span 2" }}>
+                        <label>Geo Tags (captured from the field app)</label>
+                        <span style={{ fontSize: 13 }}>{Array.isArray(selectedDoc?.geoTags) && selectedDoc.geoTags.length ? `${selectedDoc.geoTags.length} tag(s); latest ${selectedDoc.geoTags[selectedDoc.geoTags.length - 1].lat}, ${selectedDoc.geoTags[selectedDoc.geoTags.length - 1].lng}` : "No geo tag captured yet."}</span>
+                      </div>
+                    </>
+                  )}
                 </>
               )}
             </>

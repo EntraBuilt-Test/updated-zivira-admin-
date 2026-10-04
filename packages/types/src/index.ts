@@ -77,6 +77,10 @@ export type Employee = {
   postalCode?: string | null;
   l1Division?: string | null;
   l1Role?: string | null;
+  // Round 46 -- separation tracking + legacy Saneforce code.
+  leftDate?: string | null;
+  deactivatedAt?: string | null;
+  sfCode?: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -87,6 +91,24 @@ export type Doctor = {
   campaign?: string | null;
   doctorTypes?: string[];
   promotedBrands?: string[];
+  // Round 46 -- Listeddr dump business-profile fields.
+  drPotential?: string | null;
+  businessValue?: string | null;
+  expBusinessValue?: string | null;
+  currentBusiness?: string | null;
+  communication?: string | null;
+  workingPlace?: string | null;
+  visitingDays?: string | null;
+  iuiCycle?: string | null;
+  avgPatientsPerDay?: string | null;
+  classOfPatients?: string | null;
+  timeOfMeeting?: string | null;
+  consultationFees?: string | null;
+  hospitalAddress?: string | null;
+  telephone?: string | null;
+  priorityProducts?: string[];
+  mappedProducts?: string[];
+  geoTags?: { lat: number; lng: number; address?: string }[];
   supportiveChemists?: { dealerId: string; dealerName: string }[];
   id: string;
   tenantSlug: string;

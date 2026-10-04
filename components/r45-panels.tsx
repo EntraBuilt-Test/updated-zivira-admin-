@@ -470,3 +470,6 @@ export function DrsAnalysisReport() {
     </div>
   );
 }
+
+// Shared with the Round 46 panels.
+export { Err, Note, BackButton, CARD, YEARS, NOW_M, SELECT_FF };

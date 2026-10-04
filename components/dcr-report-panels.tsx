@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { withExcel } from "@/components/with-excel";
 import {
@@ -48,10 +49,14 @@ function useEmployees() {
 // ── Item 5 -- DCR > View ─────────────────────────────────────────────
 function DcrViewWorkspaceInner() {
   const employees = useEmployees();
-  const [employeeCode, setEmployeeCode] = useState("admin");
+  // Round 46 -- Resigned User Status drill-down opens this view pre-filled (?employeeCode=&month=YYYY-MM).
+  const searchParams = useSearchParams();
+  const qCode = searchParams.get("employeeCode") || "";
+  const qMonth = /^\d{4}-\d{2}$/.test(searchParams.get("month") || "") ? searchParams.get("month")! : "";
+  const [employeeCode, setEmployeeCode] = useState(qCode || "admin");
   const [onlyVacantManagers, setOnlyVacantManagers] = useState(false);
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [year, setYear] = useState(THIS_YEAR);
+  const [month, setMonth] = useState(qMonth ? parseInt(qMonth.slice(5, 7), 10) : new Date().getMonth() + 1);
+  const [year, setYear] = useState(qMonth ? parseInt(qMonth.slice(0, 4), 10) : THIS_YEAR);
   const [mode, setMode] = useState<DcrViewMode>("all-doctors");
   const [date, setDate] = useState("");
   const [result, setResult] = useState<DcrViewResult | null>(null);
@@ -76,6 +81,10 @@ function DcrViewWorkspaceInner() {
       setResult(null);
     } finally { setLoading(false); }
   }
+
+  // Runs once for the drill-down's own query params, not on every handleView identity change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (qCode && qMonth && resolvedEmployeeCode) void handleView(); }, [qCode, qMonth, resolvedEmployeeCode]);
 
   async function handleGo() {
     if (!resolvedEmployeeCode || !date) return;

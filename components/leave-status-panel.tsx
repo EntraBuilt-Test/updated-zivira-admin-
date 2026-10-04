@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -15,12 +16,17 @@ const YEARS = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - 4 +
 
 export function LeaveStatusPanel() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [mode, setMode] = useState<"Team" | "Individual">("Team");
-  const [fieldForceName, setFieldForceName] = useState("");
-  const [fromMonth, setFromMonth] = useState(MONTHS[now.getMonth()]);
-  const [fromYear, setFromYear] = useState(String(now.getFullYear()));
-  const [toMonth, setToMonth] = useState(MONTHS[now.getMonth()]);
-  const [toYear, setToYear] = useState(String(now.getFullYear()));
+  // Round 46 -- Resigned User Status drill-down opens this view pre-filled (?name=&from=YYYY-MM&to=YYYY-MM).
+  const searchParams = useSearchParams();
+  const qName = searchParams.get("name") || "";
+  const qFrom = /^\d{4}-\d{2}$/.test(searchParams.get("from") || "") ? searchParams.get("from")! : "";
+  const qTo = /^\d{4}-\d{2}$/.test(searchParams.get("to") || "") ? searchParams.get("to")! : "";
+  const [mode, setMode] = useState<"Team" | "Individual">(qName ? "Individual" : "Team");
+  const [fieldForceName, setFieldForceName] = useState(qName);
+  const [fromMonth, setFromMonth] = useState(qFrom ? MONTHS[parseInt(qFrom.slice(5, 7), 10) - 1] : MONTHS[now.getMonth()]);
+  const [fromYear, setFromYear] = useState(qFrom ? qFrom.slice(0, 4) : String(now.getFullYear()));
+  const [toMonth, setToMonth] = useState(qTo ? MONTHS[parseInt(qTo.slice(5, 7), 10) - 1] : MONTHS[now.getMonth()]);
+  const [toYear, setToYear] = useState(qTo ? qTo.slice(0, 4) : String(now.getFullYear()));
   const [rows, setRows] = useState<any[]>([]);
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -46,6 +52,10 @@ export function LeaveStatusPanel() {
       setLoading(false);
     }
   }
+
+  // Runs once for the drill-down's own query params.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (qName) void view(); }, [qName]);
 
   return (
     <section className="subdivision-console">

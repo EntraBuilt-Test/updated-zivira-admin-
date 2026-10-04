@@ -55,6 +55,7 @@ import { SurveyWorkspace } from "@/components/survey-workspace";
 import { CustomReportWorkspace } from "@/components/custom-report-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
 import { PobRxProductWiseReport, PobRxFieldforceWiseReport, PobRxDayWiseReport, PobRxDumpReport } from "@/components/pob-rx-panels";
+import { RcpaDumpReport, SkuDumpReport, VisitDrsDumpReport, SsDumpReport, ListeddrDumpReport, ChemistDumpReport, TransitBillsDumpReport, StockistDumpReport, ResignedUserStatusReport, JoinLeftDetailsReport, TpDeviationReport } from "@/components/r46-panels";
 import { QuizTestResultReport, DayWiseDumpReport, CallReportDumpReport, DetailingVisitWiseReport, BrandStarRatingReport, SlideAnalysisReport, DrsAnalysisReport } from "@/components/r45-panels";
 import { CatClsVisitDetailsReport, VisitDetailDateWiseReport } from "@/components/visit-details-panels";
 import { NotAtAllVisitDrsReport, NotAtAllPromotedProductsReport, NotAtAllVisitHqsReport } from "@/components/heat-panels";
@@ -760,7 +761,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/leave-status")) {
-    return <LeaveStatusPanel />;
+    return <Suspense fallback={<p className="text-text-muted text-sm">Loading...</p>}><LeaveStatusPanel /></Suspense>;
   }
 
   if (pathStr.endsWith("transfers/transfer-master-details")) {
@@ -817,7 +818,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <TpConsolidatedViewReport />;
   }
   if (pathStr.endsWith("activity-reports/tp/view")) {
-    return <TpViewReport />;
+    return <Suspense fallback={<p className="text-text-muted text-sm">Loading...</p>}><TpViewReport /></Suspense>;
   }
   if (pathStr.endsWith("activity-reports/tp/status")) {
     return <TpStatusReport />;
@@ -830,7 +831,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   // dcr-report-panels.tsx). AdminDcrView itself (Admin Review / DCR
   // approval queue) stays in use elsewhere via its own real import.
   if (pathStr.endsWith("activity-reports/dcr/view")) {
-    return <DcrViewWorkspace />;
+    return <Suspense fallback={<p className="text-text-muted text-sm">Loading...</p>}><DcrViewWorkspace /></Suspense>;
   }
   if (pathStr.endsWith("activity-reports/dcr/status")) {
     return <DcrStatusReport />;
@@ -899,6 +900,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <SalesDetailsReport />;
   }
   if (pathStr.endsWith("mis-reports/quiz-test-result")) return <QuizTestResultReport />;
+  // Round 46 -- dumps and result screens.
+  if (pathStr.endsWith("mis-reports/dump-ii/rcpa")) return <RcpaDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump-ii/product-exposure-analysis-sku")) return <SkuDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump/visit-drs")) return <VisitDrsDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump/secondary-sale")) return <SsDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump/listeddr")) return <ListeddrDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump/chemist")) return <ChemistDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump/transit-bills")) return <TransitBillsDumpReport />;
+  if (pathStr.endsWith("mis-reports/dump/listed-stockiest")) return <StockistDumpReport />;
+  if (pathStr.endsWith("mis-reports/options/resigned-user-status")) return <ResignedUserStatusReport />;
+  if (pathStr.endsWith("mis-reports/options/join-left-details")) return <JoinLeftDetailsReport />;
+  if (pathStr.endsWith("mis-reports/tp-deviation-baselevel")) return <TpDeviationReport />;
+  if (pathStr.endsWith("division-master/sales/transit-bills-entry")) return <GenericMasterTable masterKey="transitBills" />;
   if (pathStr.endsWith("mis-reports/summary/day-wise-reports")) return <DayWiseDumpReport />;
   if (pathStr.endsWith("mis-reports/summary/call-report-dump")) return <CallReportDumpReport />;
   if (pathStr.endsWith("mis-reports/digital-detailing/visit-wise")) return <DetailingVisitWiseReport />;

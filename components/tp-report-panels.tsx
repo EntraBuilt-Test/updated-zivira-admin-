@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { withExcel } from "@/components/with-excel";
 import {
@@ -159,9 +160,13 @@ function TpConsolidatedViewReportInner() {
 function TpViewReportInner() {
   const employees = useEmployees();
   const [filterByCode, setFilterByCode] = useState("");
-  const [employeeCode, setEmployeeCode] = useState("");
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
-  const [year, setYear] = useState(THIS_YEAR);
+  // Round 46 -- Resigned User Status drill-down opens this view pre-filled (?employeeCode=&month=YYYY-MM).
+  const searchParams = useSearchParams();
+  const qCode = searchParams.get("employeeCode") || "";
+  const qMonth = /^\d{4}-\d{2}$/.test(searchParams.get("month") || "") ? searchParams.get("month")! : "";
+  const [employeeCode, setEmployeeCode] = useState(qCode);
+  const [month, setMonth] = useState(qMonth ? parseInt(qMonth.slice(5, 7), 10) : new Date().getMonth() + 1);
+  const [year, setYear] = useState(qMonth ? parseInt(qMonth.slice(0, 4), 10) : THIS_YEAR);
   const [result, setResult] = useState<TpViewResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -184,6 +189,10 @@ function TpViewReportInner() {
       setResult(null);
     } finally { setLoading(false); }
   }
+
+  // Runs once for the drill-down's own query params, not on every handleView identity change.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (qCode && qMonth) void handleView(); }, [qCode, qMonth]);
 
   return (
     <div className="space-y-5">

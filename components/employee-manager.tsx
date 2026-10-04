@@ -55,9 +55,21 @@ export function EmployeeManager() {
     hq: "",
     patch: "",
     drivingLicense: "",
+    sfCode: "",
     status: "ACTIVE"
   });
   const [saving, setSaving] = useState(false);
+  // Round 46 -- "Mark Resigned": records the left date and deactivates the ID.
+  const [resignFor, setResignFor] = useState<any | null>(null);
+  const [resignDate, setResignDate] = useState("");
+  const [resigning, setResigning] = useState(false);
+  async function confirmResign() {
+    if (!resignFor || !/^\d{4}-\d{2}-\d{2}$/.test(resignDate)) { setError("Enter the left date."); return; }
+    setResigning(true); setError("");
+    try { await apiClient.resignEmployee(resignFor.employeeCode, resignDate); setResignFor(null); setResignDate(""); await loadEmployees(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Unable to mark resigned"); }
+    finally { setResigning(false); }
+  }
 
   async function loadEmployees() {
     setLoading(true);
@@ -107,6 +119,7 @@ export function EmployeeManager() {
         territory: form.hq,
         role: (DESIGNATION_TO_ROLE[form.designation] ?? "OTHER") as any,
         drivingLicense: form.drivingLicense || undefined,
+        sfCode: form.sfCode || undefined,
         status: form.status as "ACTIVE" | "INACTIVE"
       } as any);
       setShowForm(false);
@@ -126,6 +139,7 @@ export function EmployeeManager() {
         hq: "",
         patch: "",
         drivingLicense: "",
+        sfCode: "",
         status: "ACTIVE"
       });
       await loadEmployees();
@@ -279,6 +293,10 @@ export function EmployeeManager() {
             <input value={form.drivingLicense} onChange={(e) => setForm({ ...form, drivingLicense: e.target.value })} placeholder="e.g. DL-MH-20-1234567" />
           </div>
           <div className="field">
+            <label>Saneforce Code</label>
+            <input value={form.sfCode} onChange={(e) => setForm({ ...form, sfCode: e.target.value })} placeholder="e.g. 1886532" />
+          </div>
+          <div className="field">
             <label>Employee Status</label>
             <select className="input" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
               <option value="ACTIVE">Active</option>
@@ -340,6 +358,8 @@ export function EmployeeManager() {
                 );
               })}
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Status</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Left Date</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-subtle">
@@ -373,11 +393,17 @@ export function EmployeeManager() {
                     {employee.status === "ACTIVE" ? "Active" : "Inactive"}
                   </span>
                 </td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.leftDate ? formatDate(employee.leftDate) : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                  {employee.status === "ACTIVE" ? (
+                    <button type="button" className="px-3 py-1 rounded border border-border-subtle text-xs font-semibold hover:bg-surface-subtle" onClick={() => { setResignFor(employee); setResignDate(""); setError(""); }}>Mark Resigned</button>
+                  ) : "—"}
+                </td>
               </tr>
             ))}
             {employees.length === 0 && (
               <tr className="hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={16} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={18} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No field force found
                 </td>
               </tr>
@@ -385,6 +411,21 @@ export function EmployeeManager() {
           </tbody>
         </table>
       </div>
+      {resignFor ? (
+        <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-surface-card rounded-xl shadow-2xl border border-border-subtle w-full max-w-sm p-5 space-y-4">
+            <h3 className="font-bold text-text-primary">Mark Resigned</h3>
+            <p className="text-sm text-text-secondary">{resignFor.name} ({resignFor.employeeCode}) will be deactivated and the left date recorded.</p>
+            <label className="block text-sm">Left Date
+              <input type="date" className="input mt-1 w-full" value={resignDate} onChange={(e) => setResignDate(e.target.value)} />
+            </label>
+            <div className="flex justify-end gap-2">
+              <button type="button" className="px-3 py-1.5 rounded border border-border-subtle text-sm" onClick={() => setResignFor(null)}>Cancel</button>
+              <button type="button" className="px-3 py-1.5 rounded bg-primary text-on-primary text-sm font-semibold disabled:opacity-50" disabled={resigning} onClick={() => void confirmResign()}>{resigning ? "Saving..." : "Confirm"}</button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </>
   );
 }
