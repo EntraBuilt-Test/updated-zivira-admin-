@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import {
   apiClient,
   type SurveyQuestion,
@@ -573,7 +574,6 @@ const PROCESS_TYPE_COLUMNS: { key: "drs" | "chm" | "stk" | "hos" | "prd"; label:
 
 function SurveyViewScreen() {
   const [employees, setEmployees] = useState<Employee[]>([]);
-  const [employeeSearch, setEmployeeSearch] = useState("");
   const [employeeCode, setEmployeeCode] = useState("");
   const [mode, setMode] = useState<"Question Wise" | "Answer Wise">("Question Wise");
   const [surveys, setSurveys] = useState<Survey[]>([]);
@@ -591,11 +591,6 @@ function SurveyViewScreen() {
     }).catch(() => setSurveys([]));
   }, []);
 
-  const matchingEmployees = useMemo(() => {
-    const q = employeeSearch.trim().toLowerCase();
-    if (!q) return [];
-    return employees.filter((e) => e.name.toLowerCase().includes(q)).slice(0, 8);
-  }, [employeeSearch, employees]);
   const selectedEmployee = employees.find((e) => e.employeeCode === employeeCode);
 
   async function handleView() {
@@ -636,39 +631,7 @@ function SurveyViewScreen() {
   return (
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4 max-w-xl">
-        <div className="space-y-1.5 relative">
-          <label className="font-label-sm text-label-sm text-text-muted">Filed Force Name</label>
-          {selectedEmployee ? (
-            <div className="flex items-center justify-between h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm">
-              <span>{selectedEmployee.name} - {selectedEmployee.designation} - {selectedEmployee.territory}</span>
-              <button type="button" onClick={() => { setEmployeeCode(""); setViewed(false); }} className="text-text-muted text-xs underline">change</button>
-            </div>
-          ) : (
-            <>
-              <input
-                type="text"
-                placeholder="--- Select the Field force --- (type a name)"
-                className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
-                value={employeeSearch}
-                onChange={(e) => setEmployeeSearch(e.target.value)}
-              />
-              {matchingEmployees.length > 0 && (
-                <div className="absolute z-20 mt-1 w-full bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden">
-                  {matchingEmployees.map((emp) => (
-                    <button
-                      key={emp.employeeCode}
-                      type="button"
-                      onClick={() => { setEmployeeCode(emp.employeeCode); setEmployeeSearch(""); setViewed(false); }}
-                      className="w-full text-left px-3 py-2 text-sm hover:bg-surface-subtle transition-colors"
-                    >
-                      {emp.name} - {emp.designation} - {emp.territory}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="Filed Force Name" minWidth={0} />
         <div className="space-y-1.5">
           <label className="font-label-sm text-label-sm text-text-muted">Mode</label>
           <select

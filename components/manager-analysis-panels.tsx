@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   apiClient,
@@ -34,15 +35,7 @@ export function useManagers() {
 }
 
 export function ManagerPicker({ managers, value, onChange }: { managers: ManagerAnalysisManager[]; value: string; onChange: (v: string) => void }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Filed Force Name</span>
-      <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[260px]" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">---Select---</option>
-        {managers.map((m) => <option key={m.employeeCode} value={m.employeeCode}>{m.name} - {m.designation} - {m.territory}</option>)}
-      </select>
-    </div>
-  );
+  return <FieldForceSelect value={value} onChange={onChange} employees={managers} label="Filed Force Name" clearLabel="---Select Clear---" />;
 }
 
 export function MonthYearRangePicker({
@@ -287,7 +280,6 @@ export function CoverageAnalysis1Report() {
   const initialEmployeeCode = searchParams.get("employeeCode") || "";
   const initialMonth = searchParams.get("month") || "";
   const [employeeCode, setEmployeeCode] = useState(initialEmployeeCode);
-  const [employeeSearch, setEmployeeSearch] = useState("");
   const [employees, setEmployees] = useState<{ employeeCode: string; name: string; designation: string; territory: string }[]>([]);
   const [month, setMonth] = useState(initialMonth || new Date().toISOString().slice(0, 7));
   const [result, setResult] = useState<CoverageAnalysis1Result | null>(null);
@@ -309,34 +301,13 @@ export function CoverageAnalysis1Report() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { if (initialEmployeeCode && initialMonth) handleView(); }, [initialEmployeeCode, initialMonth]);
 
-  const matching = employeeSearch.trim() ? employees.filter((e) => e.name.toLowerCase().includes(employeeSearch.toLowerCase())).slice(0, 8) : [];
-  const selectedEmployee = employees.find((e) => e.employeeCode === employeeCode);
 
   return (
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-3">
         <h2 className="font-headline-sm text-headline-sm text-text-primary">Coverage Analysis 1</h2>
         <div className="flex flex-wrap items-end gap-4">
-          <div className="flex flex-col gap-1 relative">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Filed Force Name</span>
-            {selectedEmployee ? (
-              <div className="flex items-center justify-between h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[260px]">
-                <span>{selectedEmployee.name} - {selectedEmployee.designation} - {selectedEmployee.territory}</span>
-                <button type="button" onClick={() => setEmployeeCode("")} className="text-text-muted text-xs underline">change</button>
-              </div>
-            ) : (
-              <>
-                <input type="text" placeholder="type a name" className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[260px]" value={employeeSearch} onChange={(e) => setEmployeeSearch(e.target.value)} />
-                {matching.length > 0 && (
-                  <div className="absolute z-20 mt-14 w-full bg-surface-card border border-border-subtle rounded-lg shadow-lg overflow-hidden">
-                    {matching.map((e) => (
-                      <button key={e.employeeCode} type="button" onClick={() => { setEmployeeCode(e.employeeCode); setEmployeeSearch(""); }} className="w-full text-left px-3 py-2 text-sm hover:bg-surface-subtle">{e.name} - {e.designation} - {e.territory}</button>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+          <FieldForceSelect value={employeeCode} onChange={setEmployeeCode} employees={employees} label="Filed Force Name" />
           <div className="flex flex-col gap-1">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Month</span>
             <input type="month" className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={month} onChange={(e) => setMonth(e.target.value)} />

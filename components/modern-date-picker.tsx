@@ -134,7 +134,7 @@ export function ModernDatePicker({ value, onChange, placeholder = "Select date",
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+8px)] left-0 w-[240px] bg-surface-card rounded-xl shadow-xl border border-border-subtle p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-[calc(100%+8px)] left-0 w-[240px] bg-surface-card rounded-xl shadow-xl border border-border-subtle p-3 z-50">
           
           {/* Header */}
           <div className="flex items-center justify-between mb-3">

@@ -21,8 +21,7 @@ const tabSlugMap: Record<string, string> = {
   "kpi-engine": "kpi-engine",
   "bi-reports": "bi-reports",
   "alerts": "alerts",
-  "executive": "executive",
-  "custom-reports": "custom-report-builder"
+  "executive": "executive"
 };
 
 function findNode(nodes: ZiviraTreeNode[], slug: string): ZiviraTreeNode | undefined {
@@ -146,10 +145,5 @@ export const adminTabMeta: Record<string, { eyebrow: string; title: string; desc
     eyebrow: "Executive Dashboard",
     title: "Executive Dashboard",
     description: "High-level overview and insights"
-  },
-  "custom-reports": {
-    eyebrow: "Customized Report",
-    title: "Customized Report Builder",
-    description: "Build and manage your own report definitions -- real parameter and metric selection, real save/count persistence."
   }
 };

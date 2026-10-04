@@ -54,7 +54,7 @@ export function MonthYearPicker({ month, year, onMonthChange, onYearChange }: Mo
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+8px)] left-0 w-[280px] bg-surface-card rounded-xl shadow-xl border border-border-subtle p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-[calc(100%+8px)] left-0 w-[280px] bg-surface-card rounded-xl shadow-xl border border-border-subtle p-4 z-50">
           {/* Header for Year selection */}
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-border-subtle">
             <button 

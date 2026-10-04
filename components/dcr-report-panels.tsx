@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import {
   apiClient,
   type Employee,
@@ -92,11 +93,7 @@ export function DcrViewWorkspace() {
       <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4">
         <div className="flex flex-wrap items-end gap-5">
           <div className="flex flex-col gap-1">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">FieldForce Name</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[220px]" value={employeeCode} onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}>
-              <option value="admin">admin (self + direct reports)</option>
-              {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-            </select>
+            <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="FieldForce Name" extraOptions={[{ value: "admin", label: "admin (self + direct reports)" }]} />
           </div>
           <label className="flex items-center gap-2 h-9 font-body-sm text-body-sm text-text-primary">
             <input type="checkbox" checked={onlyVacantManagers} onChange={(e) => { setOnlyVacantManagers(e.target.checked); setViewed(false); }} />
@@ -297,11 +294,7 @@ export function DcrStatusReport() {
       <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4">
         <div className="flex flex-wrap items-end gap-5">
           <div className="flex flex-col gap-1">
-            <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">FieldForce Name</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[220px]" value={employeeCode} onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}>
-              <option value="admin">admin (self + direct reports)</option>
-              {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-            </select>
+            <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="FieldForce Name" extraOptions={[{ value: "admin", label: "admin (self + direct reports)" }]} />
           </div>
           <div className="flex items-center gap-4 h-9 font-body-sm text-body-sm text-text-primary">
             <label className="flex items-center gap-1"><input type="radio" checked={type === "month"} onChange={() => setType("month")} /> Monthwise</label>

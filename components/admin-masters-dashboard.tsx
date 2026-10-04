@@ -152,7 +152,7 @@ export function AdminMastersDashboard() {
               <span className="">Quick Add Master Record</span>
             </button>
             {isDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-56 bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden z-50 py-1 animate-in fade-in zoom-in-95 duration-100">
+              <div className="absolute right-0 top-full mt-2 w-56 bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden z-50 py-1">
                 <div className="px-3 py-2 text-[11px] font-bold text-text-muted uppercase tracking-wider border-b border-border-subtle">
                   Select Master
                 </div>

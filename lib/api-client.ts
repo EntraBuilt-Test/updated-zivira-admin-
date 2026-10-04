@@ -219,9 +219,36 @@ export function clearToken() {
   window.localStorage.removeItem(TOKEN_KEY);
 }
 
+// Round 39 item 1 -- every API call now has a hard timeout and a readable
+// error, so a cold/unreachable backend can never leave a button spinning
+// forever (previously: no timeout at all, and a non-JSON 502 from the
+// host's proxy threw a cryptic "Unexpected token <").
+const REQUEST_TIMEOUT_MS = 30000;
+async function fetchWithTimeout(url: string, init: RequestInit = {}) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  try {
+    return await fetch(url, { ...init, signal: init.signal ?? controller.signal });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("The server is taking too long to respond (it may be waking up). Please try again in a moment.");
+    }
+    throw new Error("Cannot reach the server. Check your connection and try again.");
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function readJson(response: Response) {
+  try {
+    return await response.json();
+  } catch {
+    throw new Error(`The server returned an unexpected response (${response.status}). It may be restarting -- please retry.`);
+  }
+}
+
 async function request<T>(path: string, init: RequestInit = {}) {
   const token = getToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
     ...init,
     cache: "no-store",
     headers: {
@@ -230,7 +257,7 @@ async function request<T>(path: string, init: RequestInit = {}) {
       ...init.headers
     }
   });
-  const payload = await response.json();
+  const payload = await readJson(response);
 
   if (!response.ok) {
     throw new Error(payload?.error?.message ?? "API request failed");
@@ -243,7 +270,7 @@ export type PaginationInfo = { page: number; limit: number; total: number; total
 
 async function requestPaginated<T>(path: string, init: RequestInit = {}): Promise<{ data: T[]; pagination: PaginationInfo }> {
   const token = getToken();
-  const response = await fetch(`${API_BASE_URL}${path}`, {
+  const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
     ...init,
     cache: "no-store",
     headers: {
@@ -252,7 +279,7 @@ async function requestPaginated<T>(path: string, init: RequestInit = {}): Promis
       ...init.headers
     }
   });
-  const payload = await response.json();
+  const payload = await readJson(response);
 
   if (!response.ok) {
     throw new Error(payload?.error?.message ?? "API request failed");
@@ -798,7 +825,68 @@ export type SpecialityCategoryVisitResult = {
   perMonth: Record<string, Record<string, VisitFrequencyBucket>>;
 };
 
+// Round 39 -- MIS Reports > Analysis (DCR / Visit Analysis / Sales Details /
+// POB Wise / POB Wise - Periodically). Mirrors src/utils/mis-reports-compute.ts.
+export type MisTeamMember = { employeeCode: string; name: string; designation: string; territory: string };
+export type DcrAnalysisRow = {
+  date: string; submittedDate: string | null; workType: string; workedWith: string; jointCalls: number; asPerTp: number;
+  worked: number; dev: number; listedDrMet: number; listedDrUnique: number; drsPob: number; unlistDrMet: number;
+  chemistMet: number; chemistPob: number; stockistMet: number; startTime: string; endTime: string;
+};
+export type DcrAnalysisReportData = {
+  employee: { employeeCode: string; name: string; designation: string; hq: string };
+  month: string;
+  rows: DcrAnalysisRow[];
+  totals: { jointCalls: number; asPerTp: number; worked: number; dev: number; listedDrMet: number; listedDrUnique: number; drsPob: number; unlistDrMet: number; chemistMet: number; chemistPob: number; stockistMet: number };
+  delayed: { lockedDate: string | null; releasedDate: string | null };
+  workTypeDays: { label: string; days: number }[];
+  callsDetails: {
+    totalDoctors: number; doctorsMet: number; totalCallsSeen: number; nlDrsMet: number; coveragePct: number; callAverage: number;
+    tpDeviation: number; jointWorkDays: number; jointWorkCallAvg: number; chemistPobValue: number; chemistMet: number; chemistSeen: number; chemistCallAvg: number;
+  };
+  jointWorkDetails: { rows: { name: string; dates: number; calls: number }[]; total: { dates: number; calls: number } };
+};
+export type DcrAnalysisResult = { month: string; reports: DcrAnalysisReportData[]; truncated: boolean };
+export type VisitBlock = { list: number; met: number; seen: number };
+export type VisitAnalysisRow = {
+  employeeCode: string; name: string; designation: string; hq: string; doj: string | null; lastDcr: string | null; month: string; group: string;
+  total: VisitBlock; v1: VisitBlock; v2: VisitBlock; morning: number; evening: number; both: number; callAvg: number;
+  met1: number; met2: number; metAbove2: number; missed: number;
+  daywise: { avail: number; fieldWork: number; leave: number; other: number };
+  territory: { hq: number; ex: number; os: number };
+};
+export type VisitAnalysisResult = {
+  type: "Category" | "Speciality" | "Class" | "Campaign"; groups: string[]; rows: VisitAnalysisRow[]; campaignsAvailable: boolean;
+  level: string; months: string[]; fieldForceName: string; designation: string; hq: string; memberCount: number;
+};
+export type SalesTriple = { total: number; visited: number; productive: number; missed: number; missedPct: number };
+export type SalesEmployeeRow = { employeeCode: string; name: string; designation: string; hq: string; listed: SalesTriple; unlisted: SalesTriple; chemist: SalesTriple; isSelf?: boolean };
+export type SalesCell = { till: number; today: number; total: number };
+export type SalesStateRow = { state: string; listed: SalesCell; unlisted: SalesCell; chemist: SalesCell; totalSalesValue: number };
+export type SalesDetailsResult = {
+  mode: string; month: string; states?: SalesStateRow[]; state?: string; rows?: SalesEmployeeRow[];
+  fieldForceName?: string; designation?: string; hq?: string;
+};
+export type PobCell = { drs: number; chem: number; products: Record<string, number> };
+export type PobWiseRow = { employeeCode: string; name: string; designation: string; hq: string; joinDate: string | null; perMonth: Record<string, PobCell>; total: PobCell };
+export type PobWiseResult = {
+  months: string[]; products: string[]; rows: PobWiseRow[]; grandTotal: { perMonth: Record<string, PobCell>; total: PobCell };
+  mode: string; fieldForceName: string; designation: string; hq: string;
+};
+export type PobPeriodicRow = {
+  employeeCode: string; name: string; designation: string; hq: string; joinDate: string | null;
+  fwd: number; morning: number; evening: number; drsSeen: number; callAvg: number; drsPob: number; chemPob: number; products: Record<string, number>;
+};
+export type PobPeriodicResult = {
+  rows: PobPeriodicRow[];
+  totals: { fwd: number; morning: number; evening: number; drsSeen: number; callAvg: number; drsPob: number; chemPob: number; products: Record<string, number> };
+  products: string[]; from: string; to: string; fieldForceName: string; designation: string; hq: string;
+};
+
 export const apiClient = {
+  // Round 39 item 1 -- fired when a login page opens so a sleeping backend
+  // starts waking while the user types credentials.
+  warmUp() { return fetch(`${API_BASE_URL}/health`, { cache: "no-store" }).catch(() => undefined); },
   login(username: string, password: string) {
     return request<{ token: string }>("/auth/login", {
       method: "POST",
@@ -1603,7 +1691,7 @@ export const apiClient = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: form
     });
-    const payload = await response.json();
+    const payload = await readJson(response);
     if (!response.ok) throw new Error(payload?.error?.message ?? "Could not save the quiz");
     return payload as ApiEnvelope<QuizRecord>;
   },
@@ -1619,7 +1707,7 @@ export const apiClient = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: form
     });
-    const payload = await response.json();
+    const payload = await readJson(response);
     if (!response.ok) throw new Error(payload?.error?.message ?? "Could not upload questions");
     return payload as ApiEnvelope<QuizRecord>;
   },
@@ -1716,7 +1804,7 @@ export const apiClient = {
       headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
       body: form
     });
-    const payload = await response.json();
+    const payload = await readJson(response);
     if (!response.ok) {
       throw new Error(payload?.error?.message ?? payload?.data?.error ?? "Upload failed");
     }
@@ -2174,6 +2262,33 @@ export const apiClient = {
   },
 
   // Round 38 Items 1/2/3 -- Manager Analysis continued
+  misTeam(employeeCode: string) {
+    return request<MisTeamMember[]>(`/company/mis/team?employeeCode=${encodeURIComponent(employeeCode)}`);
+  },
+  dcrAnalysis(params: { employeeCode: string; month: string; individual: boolean; baseLevel: string }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, individual: String(params.individual), baseLevel: params.baseLevel });
+    return request<DcrAnalysisResult>(`/company/mis/dcr-analysis?${qs.toString()}`);
+  },
+  visitAnalysis(params: { employeeCode: string; level: string; fromMonth: string; toMonth: string; type: string }) {
+    return request<VisitAnalysisResult>(`/company/mis/visit-analysis?${new URLSearchParams(params).toString()}`);
+  },
+  salesDetails(params: { mode: string; month: string; employeeCode?: string; state?: string }) {
+    const qs = new URLSearchParams({ mode: params.mode, month: params.month });
+    if (params.employeeCode) qs.set("employeeCode", params.employeeCode);
+    if (params.state) qs.set("state", params.state);
+    return request<SalesDetailsResult>(`/company/mis/sales-details?${qs.toString()}`);
+  },
+  pobProducts() {
+    return request<string[]>("/company/mis/pob-products");
+  },
+  pobWise(params: { employeeCode: string; fromMonth: string; toMonth: string; mode: string; products: string[] }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, fromMonth: params.fromMonth, toMonth: params.toMonth, mode: params.mode, products: params.products.join("||") });
+    return request<PobWiseResult>(`/company/mis/pob-wise?${qs.toString()}`);
+  },
+  pobPeriodic(params: { employeeCode: string; from: string; to: string; products: string[] }) {
+    const qs = new URLSearchParams({ employeeCode: params.employeeCode, from: params.from, to: params.to, products: params.products.join("||") });
+    return request<PobPeriodicResult>(`/company/mis/pob-periodic?${qs.toString()}`);
+  },
   fieldworkManagerAnalysis(params: { employeeCode: string; fromMonth: string; toMonth: string }) {
     const qs = new URLSearchParams(params);
     return request<FieldworkManagerAnalysisResult>(`/company/manager-analysis/fieldwork-manager-analysis?${qs.toString()}`);
@@ -2266,7 +2381,7 @@ async function fetchRaw<T>(path: string): Promise<T> {
     cache: "no-store",
     headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }
   });
-  const payload = await response.json();
+  const payload = await readJson(response);
   if (!response.ok) {
     throw new Error(payload?.error?.message ?? "API request failed");
   }

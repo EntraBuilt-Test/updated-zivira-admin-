@@ -52,12 +52,13 @@ import { TpConsolidatedViewReport, TpViewReport, TpStatusReport, TpDatewiseRepor
 import { DcrViewWorkspace, DcrStatusReport } from "@/components/dcr-report-panels";
 import { DcrNotApprovedReport, DcrNotSubmittedReport, DcrCountModewiseReport, DcrRejectApproveReport, DcrTimeStatusReport, DcrCheckinCheckoutReport } from "@/components/dcr-report-panels-2";
 import { SurveyWorkspace } from "@/components/survey-workspace";
+import { CustomReportWorkspace } from "@/components/custom-report-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
+import { DcrAnalysisReport, VisitAnalysisReport, SalesDetailsReport, PobWiseReport, PobPeriodicReport } from "@/components/mis-analysis-panels";
 import { FieldworkManagerAnalysisReport, ManagerWiseCoverageReport, SpecialityCategoryVisitReport } from "@/components/manager-analysis-panels-2";
 
 export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
   const pathStr = path.join("/");
-  console.log("DEBUG drilldown pathStr:", pathStr);
 
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/field-force-entries/territory") {
     return <GenericMasterTable masterKey="patchNameMaster" />;
@@ -840,6 +841,29 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
   // Round 37 Items 3/4/5 -- Manager Analysis (nested under MIS Reports,
   // the Zivira tree already had these 3 leaf slugs defined, unwired).
+  // Round 39 item 2 -- the whole Customized Report module (Name Creation,
+  // saved-reports list, parameter generation, output) now lives at its
+  // legacy home: Activity Reports > Customized Report. The standalone
+  // /admin/custom-reports page and its sidebar entry are gone.
+  if (pathStr.endsWith("activity-reports/customized-report")) {
+    return <CustomReportWorkspace />;
+  }
+  // Round 39 items 3-7 -- MIS Reports > Analysis screens.
+  if (pathStr.endsWith("mis-reports/analysis/dcr")) {
+    return <Suspense fallback={<p className="text-text-muted text-sm">Loading...</p>}><DcrAnalysisReport /></Suspense>;
+  }
+  if (pathStr.endsWith("mis-reports/analysis/visit-analysis")) {
+    return <VisitAnalysisReport />;
+  }
+  if (pathStr.endsWith("mis-reports/analysis/sales-details")) {
+    return <SalesDetailsReport />;
+  }
+  if (pathStr.endsWith("mis-reports/analysis/pob-wise")) {
+    return <PobWiseReport />;
+  }
+  if (pathStr.endsWith("mis-reports/analysis/pob-wise-periodically")) {
+    return <PobPeriodicReport />;
+  }
   if (pathStr.endsWith("mis-reports/manager-analysis/hq-coveragewise")) {
     return <HqCoveragewiseReport />;
   }

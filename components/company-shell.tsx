@@ -12,7 +12,6 @@ const searchPages = [
   { title: "Masters List", category: "Platform", href: "/admin/masters" },
   { title: "Activities", category: "Platform", href: "/admin/activities" },
   { title: "Activity Reports", category: "Platform", href: "/admin/activity-reports" },
-  { title: "Customized Report", category: "Platform", href: "/admin/custom-reports" },
   { title: "MIS Reports", category: "Platform", href: "/admin/mis-reports" },
   { title: "Settings Options", category: "Platform", href: "/admin/options" },
   { title: "Doctor Celebrations", category: "Platform", href: "/admin/doctor-celebrations" },
@@ -467,7 +466,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
               {notificationsOpen && (
                 <div
                   ref={notifRef}
-                  className="absolute right-4 top-14 w-80 bg-surface-card border border-border-subtle rounded-xl shadow-xl p-4 animate-dropdownFadeIn"
+                  className="absolute right-4 top-14 w-80 bg-surface-card border border-border-subtle rounded-xl shadow-xl p-4"
                 >
                   <div className="flex items-center justify-between mb-3 border-b border-border-subtle pb-2">
                     <h4 className="m-0 text-[15px] text-text-primary font-bold">Notifications</h4>

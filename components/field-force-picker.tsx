@@ -50,14 +50,14 @@ export function FieldForcePicker({ value, onChange, rows }: FieldForcePickerProp
     <div className="relative min-w-[220px]" ref={containerRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full h-[38px] px-3 rounded-lg bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md flex items-center justify-between border border-border-subtle hover:border-border-strong focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm transition-all group"
+        className="w-full h-[38px] px-3 rounded-lg bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md flex items-center justify-between border border-border-subtle hover:border-border-strong focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm group"
       >
         <div className="flex items-center gap-2.5 overflow-hidden">
           <Users className="w-4 h-4 text-primary opacity-80 group-hover:opacity-100 transition-opacity flex-shrink-0" />
           <span className="font-semibold truncate">{displayLabel}</span>
         </div>
         <span 
-          className="material-symbols-outlined text-[18px] text-text-muted transition-transform duration-300 ease-in-out ml-2 flex-shrink-0" 
+          className="material-symbols-outlined text-[18px] text-text-muted ml-2 flex-shrink-0" 
           style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }}
         >
           expand_more
@@ -65,7 +65,7 @@ export function FieldForcePicker({ value, onChange, rows }: FieldForcePickerProp
       </button>
 
       {isOpen && (
-        <div className="absolute top-[calc(100%+8px)] left-0 w-[320px] bg-surface-card rounded-xl shadow-xl border border-border-subtle overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-[calc(100%+8px)] left-0 w-[320px] bg-surface-card rounded-xl shadow-xl border border-border-subtle overflow-hidden z-50">
           {/* Search Header */}
           <div className="p-3 border-b border-border-subtle bg-surface-canvas/50">
             <div className="relative">

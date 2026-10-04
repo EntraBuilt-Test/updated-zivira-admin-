@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { AdminTabGrid } from "@/components/admin-tab-grid";
 import { AdminHomeDashboard } from "@/components/admin-home-dashboard";
 import { AdminMastersDashboard } from "@/components/admin-masters-dashboard";
@@ -14,6 +14,12 @@ import { AdminOptionsDashboard } from "@/components/admin-options-dashboard";
 
 export default async function AdminTabPage({ params }: { params: Promise<{ tab: string }> }) {
   const { tab } = await params;
+
+  // Round 39 item 2 -- the standalone Customized Report page was folded into
+  // Activity Reports > Customized Report; keep old links/bookmarks working.
+  if (tab === "custom-reports") {
+    redirect("/admin/workspace/division-dashboard/division-navigation-tabs/activity-reports/customized-report");
+  }
   const node = getAdminTab(tab);
   const meta = adminTabMeta[tab];
 
@@ -41,14 +47,6 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
 
   if (tab === "mis-reports") {
     return <AdminMisReportsDashboard node={node} path={rootPath} />;
-  }
-
-  // Round 35 Item 7 -- Customized Report builder, standalone top-level
-  // module (no tile-grid node tree underneath it -- its two real screens
-  // are switched internally by CustomReportWorkspace).
-  if (tab === "custom-reports") {
-    const { CustomReportWorkspace } = await import("@/components/custom-report-workspace");
-    return <CustomReportWorkspace />;
   }
 
   if (tab === "options") {

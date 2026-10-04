@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import { Trash2, Eye } from "lucide-react";
 import {
   apiClient,
@@ -84,6 +85,7 @@ function CustomReportNameCreation({
 
   async function load() {
     setLoading(true);
+    setError("");
     try { setReports((await apiClient.customReports()).data); }
     catch (e) { setError(e instanceof Error ? e.message : "Failed to load reports"); }
     finally { setLoading(false); }
@@ -138,7 +140,9 @@ function CustomReportNameCreation({
             ))}
           </div>
         </div>
-        {error && <p className="text-status-danger text-sm">{error}</p>}
+        {error && (
+          <p className="text-status-danger text-sm">{error} <button type="button" onClick={() => void load()} className="underline ml-2">Retry</button></p>
+        )}
         <button type="button" onClick={handleSave} disabled={!name.trim() || saving} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{saving ? "Saving..." : "Save"}</button>
       </div>
 
@@ -318,11 +322,7 @@ function CustomReportOutputView({ reportId, reportName }: { reportId: string; re
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 flex flex-wrap items-end gap-5">
         <div className="flex flex-col gap-1">
-          <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">FieldForce Name</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[220px]" value={employeeCode} onChange={(e) => setEmployeeCode(e.target.value)}>
-            <option value="">Select...</option>
-            {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-          </select>
+          <FieldForceSelect value={employeeCode} onChange={(code) => setEmployeeCode(code)} employees={employees} label="FieldForce Name" />
         </div>
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Month</span>

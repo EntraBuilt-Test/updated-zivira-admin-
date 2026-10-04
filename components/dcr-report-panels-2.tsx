@@ -1,6 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import {
   apiClient,
   type Employee,
@@ -116,10 +117,7 @@ export function DcrNotSubmittedReport() {
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Field Force Name</span>
           <div className="flex items-center gap-2">
             <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" defaultValue="Team"><option>Team</option></select>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[260px]" value={employeeCode} onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}>
-              <option value="">Select...</option>
-              {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-            </select>
+            <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="FieldForce Name" hideLabel />
           </div>
         </div>
         <MonthYear month={month} year={year} onMonth={setMonth} onYear={setYear} />
@@ -168,11 +166,7 @@ export function DcrCountModewiseReport() {
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 flex flex-wrap items-end gap-5">
         <div className="flex flex-col gap-1">
-          <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">FieldForce Name</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[220px]" value={employeeCode} onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}>
-            <option value="">---Select Clear---</option>
-            {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-          </select>
+          <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="FieldForce Name" />
         </div>
         <MonthYear month={month} year={year} onMonth={setMonth} onYear={setYear} />
         <div className="flex flex-col gap-1">
@@ -318,11 +312,7 @@ export function DcrTimeStatusReport() {
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 flex flex-wrap items-end gap-5">
         <div className="flex flex-col gap-1">
-          <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Filed Force Name</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[220px]" value={employeeCode} onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}>
-            <option value="">---Select Clear---</option>
-            {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-          </select>
+          <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="Filed Force Name" />
         </div>
         <MonthYear month={month} year={year} onMonth={setMonth} onYear={setYear} />
         <button type="button" onClick={handleView} disabled={!employeeCode || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{loading ? "Loading..." : "View"}</button>
@@ -397,11 +387,7 @@ export function DcrCheckinCheckoutReport() {
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 flex flex-wrap items-end gap-5">
         <div className="flex flex-col gap-1">
-          <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Field Force Name</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[220px]" value={employeeCode} onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}>
-            <option value="">--Select--</option>
-            {employees.map((e) => <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>)}
-          </select>
+          <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="Field Force Name" />
         </div>
         <MonthYear month={month} year={year} onMonth={setMonth} onYear={setYear} />
         <div className="flex flex-col gap-1">

@@ -40,7 +40,7 @@ export function ToolbarDropdown({
       </button>
 
       {open && (
-        <div className="absolute top-[calc(100%+8px)] right-0 z-50 min-w-[240px] bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden py-1 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute top-[calc(100%+8px)] right-0 z-50 min-w-[240px] bg-surface-card border border-border-subtle rounded-xl shadow-lg overflow-hidden py-1">
           {options.map((opt) => {
             const isSelected = opt === selected;
             return (

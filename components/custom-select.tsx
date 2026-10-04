@@ -1,8 +1,16 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 
-export function CustomSelect({
+// Round 39 item 8 -- instant-open select. Changes vs. the previous version:
+//  * the outside-click listener is attached only while the menu is open
+//    (it used to be a permanent document listener per instance -- dozens on
+//    report screens);
+//  * the option list is memoised and rendered only while open, with CSS
+//    hover classes instead of per-row onMouseEnter/Leave style mutation;
+//  * no animation, and the page's scrollbar gutter is reserved globally
+//    (globals.css) so opening a long menu cannot shift the layout.
+function CustomSelectImpl({
   value,
   options,
   onChange,
@@ -19,22 +27,38 @@ export function CustomSelect({
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
+    if (!open) return;
+    function handleClickOutside(event: PointerEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () => document.removeEventListener("pointerdown", handleClickOutside);
+  }, [open]);
+
+  const optionNodes = useMemo(
+    () =>
+      open
+        ? options.map((opt) => (
+            <button
+              key={opt}
+              type="button"
+              className={opt === value ? "cs-option cs-option-selected" : "cs-option"}
+              style={{ padding: "8px 16px", textAlign: "left", fontSize: "14px", cursor: "pointer", border: "none", background: "transparent" }}
+              onClick={() => {
+                onChange(opt);
+                setOpen(false);
+              }}
+            >
+              {opt}
+            </button>
+          ))
+        : null,
+    [open, options, value, onChange]
+  );
 
   return (
     <div ref={ref} style={{ position: "relative", display: "block", ...style }}>
-      <button
-        type="button"
-        onClick={() => setOpen(!open)}
-        className="input flex items-center justify-between"
-      >
+      <button type="button" onClick={() => setOpen((o) => !o)} className="input flex items-center justify-between">
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
           {value || placeholder || "Select an option"}
         </span>
@@ -60,42 +84,11 @@ export function CustomSelect({
             flexDirection: "column"
           }}
         >
-          {options.map((opt) => {
-            const isSelected = opt === value;
-            return (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => {
-                  onChange(opt);
-                  setOpen(false);
-                }}
-                style={{
-                  padding: "8px 16px",
-                  textAlign: "left",
-                  background: isSelected ? "var(--brand)" : "transparent",
-                  color: isSelected ? "white" : "inherit",
-                  fontSize: "14px",
-                  cursor: "pointer",
-                  border: "none",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.background = "rgba(249, 115, 22, 0.1)"; // Faint orange hover
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected) {
-                    e.currentTarget.style.background = "transparent";
-                  }
-                }}
-              >
-                {opt}
-              </button>
-            );
-          })}
+          {optionNodes}
         </div>
       )}
     </div>
   );
 }
+
+export const CustomSelect = memo(CustomSelectImpl);

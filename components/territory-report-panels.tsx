@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import { apiClient, type Employee, type TerritoryView, type TerritoryStatusRow } from "@/lib/api-client";
 
 // Coordinator round (Activity Reports visual rebuild) -- these two real
@@ -99,17 +100,7 @@ export function TerritoryViewReport() {
                 <option key={t} value={t}>{t === ALL_TEAMS ? "Team" : t}</option>
               ))}
             </select>
-            <select
-              className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[280px]"
-              value={employeeCode}
-              onChange={(e) => { setEmployeeCode(e.target.value); setViewed(false); }}
-            >
-              {visibleEmployees.map((emp) => (
-                <option key={emp.employeeCode} value={emp.employeeCode}>
-                  {emp.name} - {emp.designation} - {emp.territory}
-                </option>
-              ))}
-            </select>
+            <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={visibleEmployees} label="FieldForce Name" hideLabel />
           </div>
         </div>
         <div className="flex flex-col gap-1">
@@ -236,19 +227,7 @@ export function TerritoryStatusReport() {
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-1">
-          <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Field Force Name</span>
-          <select
-            className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[260px]"
-            value={employeeCode}
-            onChange={(e) => setEmployeeCode(e.target.value)}
-          >
-            <option value="ALL">All Field Reps</option>
-            {employees.map((emp) => (
-              <option key={emp.employeeCode} value={emp.employeeCode}>
-                {emp.name} - {emp.designation} - {emp.territory}
-              </option>
-            ))}
-          </select>
+          <FieldForceSelect value={employeeCode} onChange={(code) => setEmployeeCode(code)} employees={employees} label="Field Force Name" extraOptions={[{ value: "ALL", label: "All Field Reps" }]} />
         </div>
         <button
           type="button"

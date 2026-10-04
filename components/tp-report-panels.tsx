@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { FieldForceSelect } from "@/components/field-force-select";
 import {
   apiClient,
   type Employee,
@@ -64,17 +65,7 @@ function MonthYearPicker({
 function EmployeePicker({
   employees, value, onChange, label = "FieldForce Name"
 }: { employees: Employee[]; value: string; onChange: (v: string) => void; label?: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">{label}</span>
-      <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[260px]" value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">Select...</option>
-        {employees.map((e) => (
-          <option key={e.employeeCode} value={e.employeeCode}>{e.name} - {e.designation} - {e.territory}</option>
-        ))}
-      </select>
-    </div>
-  );
+  return <FieldForceSelect value={value} onChange={onChange} employees={employees} label={label} />;
 }
 
 // ── Item 1 -- TP > Consolidated View ──────────────────────────────────

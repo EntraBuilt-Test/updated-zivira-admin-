@@ -40,6 +40,14 @@
   }
 
   html, body { margin: 0; padding: 0; }
+  /* Round 39 item 8 -- DROPDOWN SHAKE. Menus are absolutely positioned and
+     can extend past the page bottom; the moment one opened the document
+     grew a vertical scrollbar, the viewport narrowed by ~8-15px and the
+     whole page jumped sideways, then jumped back on close. Reserving the
+     scrollbar gutter permanently removes the shift for every dropdown,
+     native or custom. */
+  html { overflow-y: scroll; scrollbar-gutter: stable; }
+  body { overflow-anchor: none; }
   body { overscroll-behavior: none; }
   main > :first-child { margin-top: 0 !important; }
   main > :last-child { margin-bottom: 0 !important; }
@@ -205,3 +213,9 @@
     @apply bg-brand-primary/20;
   }
 }
+
+/* Round 39 item 8 -- native selects open instantly: no colour transition,
+   and custom option lists get cheap CSS hover instead of JS style mutation. */
+select { transition: none !important; }
+.cs-option:hover { background: rgba(249, 115, 22, 0.1); }
+.cs-option-selected, .cs-option-selected:hover { background: var(--brand); color: white; }
