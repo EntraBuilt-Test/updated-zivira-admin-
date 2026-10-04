@@ -8,6 +8,7 @@ import {
   type SpecialityCategoryVisitResult
 } from "@/lib/api-client";
 import { useManagers, ManagerPicker, MonthYearRangePicker, monthLabel, th, td } from "./manager-analysis-panels";
+import { withExcel } from "@/components/with-excel";
 
 const THIS_YEAR = new Date().getFullYear();
 
@@ -20,7 +21,7 @@ const THIS_YEAR = new Date().getFullYear();
 const FIELDWORK_DESIGNATION_CODES = ["BM", "BH", "BDE", "RBM", "Sr.RBM", "ABM", "ZBM", "BDM", "BRM", "NBM", "Sr ABM", "HM", "MH", "SM"];
 
 // ── Item 1 -- FieldWork Manager - Analysis ──────────────────────────────
-export function FieldworkManagerAnalysisReport() {
+function FieldworkManagerAnalysisReportInner() {
   const managers = useManagers();
   const [employeeCode, setEmployeeCode] = useState("");
   const [fromMonth, setFromMonth] = useState(new Date().getMonth() + 1);
@@ -103,7 +104,7 @@ export function FieldworkManagerAnalysisReport() {
 // ── Item 2 -- Manager Wise - Coverage Analysis (INFERRED result shape --
 // see manager-analysis-compute.ts's header comment; the coordinator's own
 // legacy description was cut off with no screenshot) ────────────────────
-export function ManagerWiseCoverageReport() {
+function ManagerWiseCoverageReportInner() {
   const managers = useManagers();
   const [employeeCode, setEmployeeCode] = useState("");
   const [fromMonth, setFromMonth] = useState(new Date().getMonth() + 1);
@@ -187,7 +188,7 @@ export function ManagerWiseCoverageReport() {
 }
 
 // ── Item 3 -- Speciality/Category Visit Wise ────────────────────────────
-export function SpecialityCategoryVisitReport() {
+function SpecialityCategoryVisitReportInner() {
   const managers = useManagers();
   const [employeeCode, setEmployeeCode] = useState("");
   const [fromMonth, setFromMonth] = useState(new Date().getMonth() + 1);
@@ -313,3 +314,7 @@ export function SpecialityCategoryVisitReport() {
     </div>
   );
 }
+
+export const FieldworkManagerAnalysisReport = withExcel(FieldworkManagerAnalysisReportInner, "fieldwork-manager-analysis");
+export const ManagerWiseCoverageReport = withExcel(ManagerWiseCoverageReportInner, "manager-wise-coverage");
+export const SpecialityCategoryVisitReport = withExcel(SpecialityCategoryVisitReportInner, "speciality-category-visit");

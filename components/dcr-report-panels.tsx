@@ -2,12 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
   type Employee,
   type DcrViewMode,
   type DcrViewResult,
-  type DcrViewDatePickerRow,
+  type DcrViewDatePickerRow, type DcrViewRcpaRow, type DcrViewReminderRow,
   type DcrViewRemarkRow,
   type DcrViewDoctorRow,
   type DcrStatusResult
@@ -45,7 +46,7 @@ function useEmployees() {
 }
 
 // ── Item 5 -- DCR > View ─────────────────────────────────────────────
-export function DcrViewWorkspace() {
+function DcrViewWorkspaceInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("admin");
   const [onlyVacantManagers, setOnlyVacantManagers] = useState(false);
@@ -157,11 +158,8 @@ export function DcrViewWorkspace() {
             </div>
           )}
 
-          {!error && result && !result.needsDate && DATE_PICKER_MODES.has(mode) && date && (
+          {!error && result && !result.needsDate && DATE_PICKER_MODES.has(mode) && mode !== "rcpa-view" && mode !== "reminder-calls" && date && (
             <div className="overflow-x-auto rounded-lg border border-border-subtle mt-3">
-              {(mode === "rcpa-view" || mode === "reminder-calls") && (
-                <p className="text-xs text-status-warning p-2">Round 36 re-check: confirmed there is still no distinct real RCPA or reminder-call submission schema anywhere in this codebase -- the &quot;RCPA&quot; label elsewhere in the product (e.g. the Customized Report catalog&apos;s RCPA fields, and an MIS Reports nav entry) is a legacy field-name carryover with no backing model or field-rep capture flow behind it. Rather than fabricate a distinct table, this still shows the same real per-date DCR listing for both modes.</p>
-              )}
               <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
                 <thead className="bg-brand-primary-subtle"><tr><th className="px-3 py-2">S.No</th><th className="px-3 py-2">FieldForce</th><th className="px-3 py-2">Doctor</th><th className="px-3 py-2">Session</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Notes</th></tr></thead>
                 <tbody>
@@ -176,6 +174,52 @@ export function DcrViewWorkspace() {
                     </tr>
                   ))}
                   {(!result.rows || result.rows.length === 0) && <tr><td colSpan={6} className="px-3 py-4 text-center text-text-muted">No entries for this date.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {!error && result && !result.needsDate && mode === "rcpa-view" && date && (
+            <div className="overflow-x-auto rounded-lg border border-border-subtle mt-3">
+              <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
+                <thead className="bg-brand-primary-subtle"><tr><th className="px-3 py-2">S.No</th><th className="px-3 py-2">FieldForce</th><th className="px-3 py-2">Doctor</th><th className="px-3 py-2">Chemist</th><th className="px-3 py-2">Our Product</th><th className="px-3 py-2">Our Qty</th><th className="px-3 py-2">Competitor Product</th><th className="px-3 py-2">Competitor Qty</th></tr></thead>
+                <tbody>
+                  {(result.rows as DcrViewRcpaRow[] || []).map((r, i) => (
+                    <tr key={i}>
+                      <td className="px-3 py-2 border-t border-border-subtle">{i + 1}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.fieldForceName}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.doctorName || "-"}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.chemistName || "-"}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.ourProduct}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.ourQty}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.competitorProduct || "-"}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.competitorQty}</td>
+                    </tr>
+                  ))}
+                  {(!result.rows || result.rows.length === 0) && <tr><td colSpan={8} className="px-3 py-4 text-center text-text-muted">No RCPA entries for this date.</td></tr>}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {!error && result && !result.needsDate && mode === "reminder-calls" && date && (
+            <div className="overflow-x-auto rounded-lg border border-border-subtle mt-3">
+              <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
+                <thead className="bg-brand-primary-subtle"><tr><th className="px-3 py-2">S.No</th><th className="px-3 py-2">FieldForce</th><th className="px-3 py-2">Doctor</th><th className="px-3 py-2">Visit Date</th><th className="px-3 py-2">Follow-up Date</th><th className="px-3 py-2">Session</th><th className="px-3 py-2">Status</th><th className="px-3 py-2">Notes</th></tr></thead>
+                <tbody>
+                  {(result.rows as DcrViewReminderRow[] || []).map((r, i) => (
+                    <tr key={i}>
+                      <td className="px-3 py-2 border-t border-border-subtle">{i + 1}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.fieldForceName}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.doctorName || "-"}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.visitDate}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.followUpDate || "-"}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.callSession}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.status}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.notes || "-"}</td>
+                    </tr>
+                  ))}
+                  {(!result.rows || result.rows.length === 0) && <tr><td colSpan={8} className="px-3 py-4 text-center text-text-muted">No reminder calls for this date.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -198,12 +242,6 @@ export function DcrViewWorkspace() {
           {!error && result && mode === "detailed" && result.employee && (
             <div className="space-y-3">
               <div className="font-body-md text-body-md"><strong>{result.employee.name}</strong> - {result.employee.designation} - {result.employee.hq}</div>
-              {(result.pobIsApproximated || result.nonListedUnsupported || result.stockistUnsupported) && (
-                <p className="text-xs text-status-warning">
-                  Honest approximations: &quot;Listed Dr(s) POB&quot; reuses the real &quot;Listed Dr(s) Met&quot; count (no distinct POB field exists for doctor visits).
-                  &quot;Non Listed Dr(s) Met&quot; and &quot;Stockist Met&quot; show 0 -- no real tracking exists anywhere in the schema for unlisted-doctor or stockist visits.
-                </p>
-              )}
               <div className="overflow-x-auto rounded-lg border border-border-subtle">
                 <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
                   <thead className="bg-brand-primary-subtle">
@@ -239,7 +277,7 @@ export function DcrViewWorkspace() {
                       <tr className="font-semibold bg-surface-subtle">
                         <td className="px-2 py-1 border-t border-border-subtle" colSpan={5}>Total ({result.totals.submittedDays} submitted days)</td>
                         <td className="px-2 py-1 border-t border-border-subtle text-center">{result.totals.listedDrMet}</td>
-                        <td className="px-2 py-1 border-t border-border-subtle text-center">{result.totals.listedDrMet}</td>
+                        <td className="px-2 py-1 border-t border-border-subtle text-center">{(result.days || []).reduce((n, d) => n + (d.listedDrPob || 0), 0)}</td>
                         <td className="px-2 py-1 border-t border-border-subtle text-center">{result.totals.chemistMet}</td>
                         <td className="px-2 py-1 border-t border-border-subtle" colSpan={3}>Avg Listed Dr Met/day: {result.totals.avgListedDrMetPerSubmittedDay}</td>
                       </tr>
@@ -256,7 +294,7 @@ export function DcrViewWorkspace() {
 }
 
 // ── Item 6 -- DCR > Status ───────────────────────────────────────────
-export function DcrStatusReport() {
+function DcrStatusReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("admin");
   const [type, setType] = useState<"month" | "period">("month");
@@ -378,13 +416,8 @@ export function DcrStatusReport() {
                 </table>
               </div>
               <div className="rounded-lg border border-border-subtle p-3 text-xs space-y-1">
-                <p className="font-semibold">Work Type legend (real codes this schema can back):</p>
-                <p>FW = Field Work &nbsp; H = Holiday &nbsp; WO = Weekly Off &nbsp; L = Leave &nbsp; (blank) = Not Planned / No submission</p>
-                {result.unsupportedCodes.length > 0 && (
-                  <p className="text-status-warning">
-                    The legacy legend also lists {result.unsupportedCodes.join("/")} -- none of these have a distinct backing concept anywhere in this schema, so they are intentionally not shown rather than fabricated.
-                  </p>
-                )}
+                <p className="font-semibold">Work Type legend:</p>
+                <p>{(result.legend || []).map((l) => `${l.code} = ${l.name}`).join("  |  ")}  |  (blank) = Not Planned / No submission</p>
                 {result.detailed && <p>Detailed/Attendance columns show &quot;SD/Drs&quot; = distinct doctor territories touched / distinct doctors met that day (real DCR-derived counts).</p>}
               </div>
             </div>
@@ -394,3 +427,6 @@ export function DcrStatusReport() {
     </div>
   );
 }
+
+export const DcrViewWorkspace = withExcel(DcrViewWorkspaceInner, "dcr-view");
+export const DcrStatusReport = withExcel(DcrStatusReportInner, "dcr-status");

@@ -450,6 +450,8 @@ export type TpViewResult = {
   days: TpViewDay[];
 };
 
+export type R41Settings = { dcrDelayDays: number; categoryNorms: { NIL: number; CORE: number; "N CORE": number; "S CORE": number }; companyTimezone: string };
+export type TpStatusStateGroup = { state: string; total: number; submitted: number; approved: number; notSubmitted: number; rows: TpStatusRow[] };
 export type TpStatusRow = {
   employeeCode: string;
   name: string;
@@ -489,6 +491,8 @@ export type DcrViewDatePickerRow = {
   status: string;
   notes: string;
 };
+export type DcrViewRcpaRow = { employeeCode: string; fieldForceName: string; doctorName: string; chemistName: string; ourProduct: string; ourQty: number; competitorProduct: string; competitorQty: number; visitDate: string };
+export type DcrViewReminderRow = { employeeCode: string; fieldForceName: string; doctorName: string; visitDate: string; followUpDate: string; callSession: string; status: string; notes: string };
 export type DcrViewRemarkRow = { date: string; remarks: string };
 export type DcrViewDetailedDay = {
   date: string;
@@ -508,7 +512,7 @@ export type DcrViewDoctorRow = { employeeCode: string; doctorName: string; count
 export type DcrViewResult = {
   mode: DcrViewMode;
   needsDate?: boolean;
-  rows?: (DcrViewDatePickerRow | DcrViewRemarkRow | DcrViewDoctorRow)[];
+  rows?: (DcrViewDatePickerRow | DcrViewRemarkRow | DcrViewDoctorRow | DcrViewRcpaRow | DcrViewReminderRow)[];
   days?: DcrViewDetailedDay[];
   employee?: { name: string; designation: string; hq: string } | null;
   pobIsApproximated?: boolean;
@@ -535,6 +539,7 @@ export type DcrStatusResult = {
   rangeStart: string;
   rangeEnd: string;
   unsupportedCodes: string[];
+  legend?: { code: string; name: string; category?: string }[];
 };
 
 // Round 35 -- 7 more DCR legacy-parity reports + the Customized Report
@@ -838,7 +843,7 @@ export type DcrAnalysisReportData = {
   month: string;
   rows: DcrAnalysisRow[];
   totals: { jointCalls: number; asPerTp: number; worked: number; dev: number; listedDrMet: number; listedDrUnique: number; drsPob: number; unlistDrMet: number; chemistMet: number; chemistPob: number; stockistMet: number };
-  delayed: { lockedDate: string | null; releasedDate: string | null };
+  delayed: { lockedDate: string | null; releasedDate: string | null; locks?: { date: string; lockedAt: string | null; releasedAt: string | null; releasedBy: string | null; reason: string }[] };
   workTypeDays: { label: string; days: number }[];
   callsDetails: {
     totalDoctors: number; doctorsMet: number; totalCallsSeen: number; nlDrsMet: number; coveragePct: number; callAverage: number;
@@ -908,10 +913,13 @@ export type SingleDoctorMonth = {
   visits: { date: string; time: string; session: string; workedWith: string }[];
   detailed: { name: string; count: number }[]; sampled: { name: string; qty: number }[]; inputs: { name: string; qty: number }[];
   remarks: string[]; business: number;
+  rx: { name: string; qty: number }[];
+  rcpa: { date: string; chemist: string; ourProduct: string; ourQty: number; competitorProduct: string; competitorQty: number }[];
+  crm: { date: string; type: string; amountRs: number; status: string; approvedBy: string }[];
 };
 export type SingleDoctorResult = {
   employee: { employeeCode: string; name: string; designation: string; hq: string }; months: string[];
-  profile: { doctorName: string; address: string; mobile: string; email: string; hospitalAddress: string; category: string; speciality: string; className: string; qualification: string; campaignName: string; drUniqueCode: string };
+  profile: { doctorName: string; address: string; mobile: string; email: string; hospitalAddress: string; category: string; speciality: string; className: string; qualification: string; campaignName: string; drUniqueCode: string; supportiveChemists: string[] };
   perMonth: Record<string, SingleDoctorMonth>;
 };
 export type RepVsManagerMetrics = { fwDays: number; doctorsMet: number; coveragePct: number; callAverage: number; chemistsMet: number; jointWorkDays: number };
@@ -924,6 +932,8 @@ export type ReviewReportResult = {
   month: string;
   employee: { name: string; employeeCode: string; designation: string; hq: string; state: string; division: string; isManager: boolean };
   metrics: Record<string, number | string>; top5: { name: string; count: number }[]; inputSpent: number;
+  secondaryRows: { product: string; qty: number; value: number }[];
+  delayedDates: { date: string; days: number; kind: "late-submitted" | "locked-outstanding" }[];
 };
 export type AssessmentResult = { months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; cols: Record<string, Record<string, string>> };
 
@@ -1020,6 +1030,10 @@ export const apiClient = {
   tpStatus(params: { employeeCode: string; month: string; withVacants: boolean }) {
     const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, withVacants: String(params.withVacants) });
     return request<TpStatusRow[]>(`/company/reports/tp-status?${qs.toString()}`);
+  },
+  tpStatusStatewise(params: { employeeCode?: string; month: string; withVacants: boolean }) {
+    const qs = new URLSearchParams({ month: params.month, withVacants: String(params.withVacants), statewise: "true", ...(params.employeeCode ? { employeeCode: params.employeeCode } : {}) });
+    return request<{ states: TpStatusStateGroup[] }>(`/company/reports/tp-status?${qs.toString()}`);
   },
   tpDatewise(params: { employeeCode: string; month: string; days: number[] }) {
     const qs = new URLSearchParams({ employeeCode: params.employeeCode, month: params.month, days: params.days.join(",") });
@@ -1979,6 +1993,23 @@ export const apiClient = {
       method: "POST",
       body: JSON.stringify({ ids })
     });
+  },
+
+  // ── Round 41 settings / locks / work type codes ───────────────────────
+  r41Settings() { return request<R41Settings>("/company/settings/r41"); },
+  saveR41Settings(input: Partial<R41Settings>) {
+    return request<R41Settings>("/company/settings/r41", { method: "PUT", body: JSON.stringify(input) });
+  },
+  workTypeCodes() { return request<{ code: string; name: string; category: string }[]>("/company/work-type-codes"); },
+  saveWorkTypeCode(input: { code: string; name: string; category?: string }) {
+    return request<{ code: string; name: string; category: string }>("/company/work-type-codes", { method: "POST", body: JSON.stringify(input) });
+  },
+  crmEntries(params: { month?: string; status?: string }) {
+    const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][]).toString();
+    return request<Record<string, unknown>[]>(`/company/crm?${qs}`);
+  },
+  crmAction(id: string, action: "approve" | "reject") {
+    return request<Record<string, unknown>>(`/company/crm/${id}/${action}`, { method: "POST", body: "{}" });
   },
 
   // ── Delayed Release ──────────────────────────────────────────────────────

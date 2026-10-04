@@ -2,12 +2,14 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
   type Employee,
   type TpConsolidatedView,
   type TpViewResult,
   type TpStatusRow,
+  type TpStatusStateGroup,
   type TpDatewiseResult
 } from "@/lib/api-client";
 
@@ -69,7 +71,7 @@ function EmployeePicker({
 }
 
 // ── Item 1 -- TP > Consolidated View ──────────────────────────────────
-export function TpConsolidatedViewReport() {
+function TpConsolidatedViewReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -154,7 +156,7 @@ export function TpConsolidatedViewReport() {
 }
 
 // ── Item 2 -- TP > View ────────────────────────────────────────────────
-export function TpViewReport() {
+function TpViewReportInner() {
   const employees = useEmployees();
   const [filterByCode, setFilterByCode] = useState("");
   const [employeeCode, setEmployeeCode] = useState("");
@@ -264,7 +266,7 @@ export function TpViewReport() {
 }
 
 // ── Item 3 -- TP > Status ───────────────────────────────────────────────
-export function TpStatusReport() {
+function TpStatusReportInner() {
   const employees = useEmployees();
   const [viewBy, setViewBy] = useState<"fieldforce" | "state">("fieldforce");
   const [employeeCode, setEmployeeCode] = useState("");
@@ -272,20 +274,26 @@ export function TpStatusReport() {
   const [year, setYear] = useState(THIS_YEAR);
   const [withVacants, setWithVacants] = useState(false);
   const [rows, setRows] = useState<TpStatusRow[] | null>(null);
+  const [states, setStates] = useState<TpStatusStateGroup[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [viewed, setViewed] = useState(false);
 
   async function handleView() {
-    if (!employeeCode) return;
+    if (viewBy === "fieldforce" && !employeeCode) return;
     setLoading(true); setError(""); setViewed(true);
     const monthStr = `${year}-${String(month).padStart(2, "0")}`;
     try {
+      if (viewBy === "state") {
+        const r = await apiClient.tpStatusStatewise({ employeeCode: employeeCode || undefined, month: monthStr, withVacants });
+        setStates(r.data.states); setRows(null);
+        return;
+      }
       const r = await apiClient.tpStatus({ employeeCode, month: monthStr, withVacants });
-      setRows(r.data);
+      setRows(r.data); setStates(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to load TP Status");
-      setRows(null);
+      setRows(null); setStates(null);
     } finally { setLoading(false); }
   }
 
@@ -304,18 +312,37 @@ export function TpStatusReport() {
           <input type="checkbox" checked={withVacants} onChange={(e) => { setWithVacants(e.target.checked); setViewed(false); }} />
           With Vacants
         </label>
-        <button type="button" onClick={handleView} disabled={!employeeCode || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-brand-primary-hover transition-all disabled:opacity-50">
+        <button type="button" onClick={handleView} disabled={(viewBy === "fieldforce" && !employeeCode) || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm hover:bg-brand-primary-hover transition-all disabled:opacity-50">
           {loading ? "Loading..." : "View"}
         </button>
       </div>
 
-      {viewBy === "state" && viewed && (
-        <p className="text-xs text-status-warning bg-surface-card rounded-xl p-3">
-          State-wise grouping has no distinct real concept in this schema beyond each employee&apos;s own `state` field -- showing the same FieldForce-wise direct-report rollup below rather than fabricating a separate state-grouped view.
-        </p>
+      {viewBy === "state" && viewed && states && (
+        <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4">
+          <h2 className="font-headline-sm text-headline-sm text-text-primary underline text-center">TP - Status State-wise for the Month of {monthLabel(`${year}-${String(month).padStart(2,"0")}`)}</h2>
+          {states.length === 0 && <p className="text-text-muted text-sm text-center">No field force found.</p>}
+          {states.map((g) => (
+            <div key={g.state} className="space-y-1">
+              <p className="font-semibold text-sm">{g.state} - Total {g.total} | Submitted {g.submitted} | Approved {g.approved} | Not Submitted {g.notSubmitted}</p>
+              <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
+                <thead className="bg-brand-primary-subtle"><tr><th className="px-3 py-2">S.No</th><th className="px-3 py-2">FieldForce Name</th><th className="px-3 py-2">Designation</th><th className="px-3 py-2">Hq</th><th className="px-3 py-2">Emp_Id</th><th className="px-3 py-2">Tp Status</th><th className="px-3 py-2">Entry Date</th><th className="px-3 py-2">Approved Date</th></tr></thead>
+                <tbody>
+                  {g.rows.map((r, i) => (
+                    <tr key={r.employeeCode}>
+                      <td className="px-3 py-2 border-t border-border-subtle">{i + 1}</td><td className="px-3 py-2 border-t border-border-subtle">{r.name}</td><td className="px-3 py-2 border-t border-border-subtle">{r.designation}</td><td className="px-3 py-2 border-t border-border-subtle">{r.hq}</td><td className="px-3 py-2 border-t border-border-subtle">{r.employeeCode}</td><td className="px-3 py-2 border-t border-border-subtle">{r.status}</td>
+                      <td className="px-3 py-2 border-t border-border-subtle">{r.entryDate ? new Date(r.entryDate).toLocaleDateString("en-IN") : "-"}</td><td className="px-3 py-2 border-t border-border-subtle">{r.approvedDate ? new Date(r.approvedDate).toLocaleDateString("en-IN") : "-"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ))}
+        </div>
       )}
 
-      {viewed && (
+      {viewBy === "state" && viewed && error && <p className="text-status-danger text-sm">{error}</p>}
+
+      {viewed && viewBy === "fieldforce" && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5">
           {error && <p className="text-status-danger text-sm">{error}</p>}
           {!error && !loading && (!rows || rows.length === 0) && <p className="text-text-muted text-sm">No direct reports found for this field rep.</p>}
@@ -355,7 +382,7 @@ export function TpStatusReport() {
 }
 
 // ── Item 4 -- Tour Plan > Datewise ──────────────────────────────────────
-export function TpDatewiseReport() {
+function TpDatewiseReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -464,3 +491,8 @@ export function TpDatewiseReport() {
     </div>
   );
 }
+
+export const TpConsolidatedViewReport = withExcel(TpConsolidatedViewReportInner, "tp-consolidated-view");
+export const TpViewReport = withExcel(TpViewReportInner, "tp-view");
+export const TpStatusReport = withExcel(TpStatusReportInner, "tp-status");
+export const TpDatewiseReport = withExcel(TpDatewiseReportInner, "tp-datewise");

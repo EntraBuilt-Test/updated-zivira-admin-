@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Printer, FileSpreadsheet, X } from "lucide-react";
+import { exportElementToXlsx } from "@/lib/xlsx-export";
 import { FieldForceSelect, useFieldForceOptions } from "@/components/field-force-select";
 import { MonthYearRangePicker, useManagers, th as baseTh, td as baseTd } from "@/components/manager-analysis-panels";
 import {
@@ -59,21 +60,6 @@ export function dash(n: number) {
 }
 
 // ── Popup shell with Print / Excel / Close ──────────────────────────────
-function tableToCsv(root: HTMLElement): string {
-  const lines: string[] = [];
-  root.querySelectorAll("tr").forEach((tr) => {
-    const cells: string[] = [];
-    tr.querySelectorAll("th,td").forEach((c) => {
-      const span = parseInt(c.getAttribute("colspan") || "1", 10);
-      const text = (c.textContent || "").replace(/\s+/g, " ").trim().replace(/"/g, '""');
-      cells.push(`"${text}"`);
-      for (let i = 1; i < span; i++) cells.push('""');
-    });
-    lines.push(cells.join(","));
-  });
-  return lines.join("\n");
-}
-
 export function ReportModal({ title, fileName, onClose, children }: { title: string; fileName: string; onClose: () => void; children: ReactNode }) {
   const bodyRef = useRef<HTMLDivElement>(null);
   function handlePrint() {
@@ -85,15 +71,14 @@ export function ReportModal({ title, fileName, onClose, children }: { title: str
     w.focus();
     w.print();
   }
-  function handleExcel() {
+  async function handleExcel() {
     if (!bodyRef.current) return;
-    const csv = tableToCsv(bodyRef.current);
-    const blob = new Blob(["﻿" + csv], { type: "text/csv;charset=utf-8" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `${fileName}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
+    try {
+      const ok = await exportElementToXlsx(bodyRef.current, fileName);
+      if (!ok) window.alert("There is no table to export.");
+    } catch (err) {
+      window.alert(`Excel export failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
   return (
     <div className="fixed inset-0 z-[70] bg-black/40 flex items-start justify-center p-4 overflow-y-auto">
@@ -102,7 +87,7 @@ export function ReportModal({ title, fileName, onClose, children }: { title: str
           <span className="font-label-md text-label-md text-text-secondary truncate">{title}</span>
           <div className="flex items-center gap-2">
             <button type="button" title="Print" onClick={handlePrint} className="p-1.5 rounded hover:bg-surface-subtle"><Printer size={18} /></button>
-            <button type="button" title="Excel" onClick={handleExcel} className="p-1.5 rounded hover:bg-surface-subtle"><FileSpreadsheet size={18} /></button>
+            <button type="button" title="Excel" onClick={() => void handleExcel()} className="p-1.5 rounded hover:bg-surface-subtle"><FileSpreadsheet size={18} /></button>
             <button type="button" title="Close" onClick={onClose} className="p-1.5 rounded hover:bg-surface-subtle"><X size={18} /></button>
           </div>
         </div>
@@ -210,8 +195,8 @@ function DcrAnalysisBlock({ report }: { report: DcrAnalysisReportData }) {
       <div className="bg-blue-600 text-white font-bold text-center py-1 rounded">DCR Delayed Status</div>
       <table className="w-full text-sm border-collapse">
         <tbody>
-          <tr><td className={td + " font-semibold"}>Locked Date</td><td className={td}>{report.delayed.lockedDate ? dmy(report.delayed.lockedDate) : "Nil"}</td></tr>
-          <tr><td className={td + " font-semibold"}>Released Date</td><td className={td}>{report.delayed.releasedDate ? dmy(report.delayed.releasedDate) : "Nil"}</td></tr>
+          <tr><td className={td + " font-semibold"}>Locked Date</td><td className={td}>{report.delayed.locks?.length ? report.delayed.locks.map((l) => `${dmy(l.date)} (locked ${l.lockedAt ? dmy(l.lockedAt) : "-"})`).join(", ") : "Nil"}</td></tr>
+          <tr><td className={td + " font-semibold"}>Released Date</td><td className={td}>{report.delayed.locks?.some((l) => l.releasedAt) ? report.delayed.locks.filter((l) => l.releasedAt).map((l) => `${dmy(l.date)} (released ${dmy(l.releasedAt as string)}${l.releasedBy ? ` by ${l.releasedBy.replace(/^admin:/, "admin ")}` : ""})`).join(", ") : report.delayed.releasedDate ? report.delayed.releasedDate.split(", ").map(dmy).join(", ") : "Nil"}</td></tr>
         </tbody>
       </table>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
@@ -247,8 +232,7 @@ function DcrAnalysisBlock({ report }: { report: DcrAnalysisReportData }) {
         </table>
       </div>
       <p className="text-xs text-text-muted">
-        Drs POB / Chemist POB are values in Rs (explicit value, else quantity x the product master rate). Doctor POB is real only for calls where POB was entered (a new DCR field -- the field app&apos;s DCR form does not capture it yet). Locked Date is Nil: no DCR lock date is stored anywhere in this system; Released Date comes from the admin Delayed Release action. Dev = a worked day with no Tour Plan entry; No of TP Deviation also counts planned days with no DCR.
-      </p>
+        Drs POB / Chemist POB are values in Rs (per-product POB value, else quantity x the product master rate, else the POB amount entered on the call). Locked Date is when the DCR date was auto-locked after the company delay window; Released Date comes from the admin Delayed Release action. Dev = a worked day with no Tour Plan entry; No of TP Deviation also counts planned days with no DCR. DCRs submitted before the field app captured POB have none.</p>
     </div>
   );
 }
@@ -407,7 +391,7 @@ export function VisitAnalysisReport() {
           <div className="text-xs text-text-muted space-y-1">
             <p>Each field force member has one row per month per {result.type.toLowerCase()} (the {result.type} column is the grouping this report is run by; it is the only addition to the legacy column set).</p>
             <p>V1 / V2 split the {result.type.toLowerCase()}&apos;s doctors by their planned visit frequency from the Doctor - Classification master (Monthly or less = V1, Twice a Month / Fortnightly = V2; Weekly doctors appear under Total only). Dr Met 1 / 2 / Above 2 Times are actual visits that month; Dr Seen counts calls.</p>
-            {result.type === "Category" && <p>Category comes from the Managerwise Core Doctor Map (CORE / NON CORE); doctors with no entry are Nil. A separate SUPER CORE tier has no data behind it, so it never appears.</p>}
+            {result.type === "Category" && <p>Category is the doctor category (Nil / CORE / N CORE / S CORE) set on the Doctor master.</p>}
           </div>
         </ReportModal>
       )}
@@ -625,7 +609,7 @@ export function PobWiseReport() {
               </tr>
             </tbody>
           </table>
-          <p className="text-xs text-text-muted">Drs POB / Chem POB are counts of calls that carried POB. Product columns are POB quantity; a separate prescription (Rx) quantity is not captured anywhere in this system. Doctor-side POB exists only for DCRs where POB was entered (new field; the field app&apos;s DCR form does not capture it yet), so Drs POB is 0 until then. Shows the selected field force and everyone reporting to them.</p>
+          <p className="text-xs text-text-muted">Drs POB / Chem POB are counts of calls that carried POB. Product columns are POB quantity. Shows the selected field force and everyone reporting to them.</p>
         </ReportModal>
       )}
     </div>

@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { apiClient, type Employee, type TerritoryView, type TerritoryStatusRow } from "@/lib/api-client";
+import { downloadXlsx, parseNumeric, type TableModel } from "@/lib/xlsx-export";
+import { withExcel } from "@/components/with-excel";
 
 // Coordinator round (Activity Reports visual rebuild) -- these two real
 // panels used to live inline inside admin-activity-reports-dashboard.tsx
@@ -16,7 +18,7 @@ import { apiClient, type Employee, type TerritoryView, type TerritoryStatusRow }
 
 const ALL_TEAMS = "All Teams";
 
-export function TerritoryViewReport() {
+function TerritoryViewReportInner() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [team, setTeam] = useState(ALL_TEAMS);
   const [employeeCode, setEmployeeCode] = useState("");
@@ -210,17 +212,17 @@ export function TerritoryStatusReport() {
 
   function exportExcel() {
     if (!rows) return;
-    const header = ["S.No", "Field Force", "HQ", "Total Drs", "No of Plans", "Allocated Drs", "Not Allocated Drs"];
-    const lines = [header.join(",")];
-    rows.forEach((r, idx) => {
-      lines.push([idx + 1, `"${r.fieldForce}"`, `"${r.hq}"`, r.totalDrs, r.noOfPlans, r.allocatedDrs, r.notAllocatedDrs].join(","));
-    });
-    const blob = new Blob([lines.join("\n")], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "territory-status.csv";
-    a.click();
-    URL.revokeObjectURL(a.href);
+    const hdr = ["S.No", "Field Force", "HQ", "Total Drs", "No of Plans", "Allocated Drs", "Not Allocated Drs"];
+    const cell = (text: string, header = false) => ({ text, num: header ? undefined : parseNumeric(text), colSpan: 1, rowSpan: 1, bold: header, header });
+    const model: TableModel = {
+      tables: [{
+        rows: [
+          hdr.map((h) => cell(h, true)),
+          ...rows.map((r, idx) => [String(idx + 1), r.fieldForce, r.hq, String(r.totalDrs), String(r.noOfPlans), String(r.allocatedDrs), String(r.notAllocatedDrs)].map((v) => cell(v)))
+        ]
+      }]
+    };
+    void downloadXlsx(model, "territory-status");
   }
 
   return (
@@ -285,3 +287,5 @@ export function TerritoryStatusReport() {
     </div>
   );
 }
+
+export const TerritoryViewReport = withExcel(TerritoryViewReportInner, "territory-view");

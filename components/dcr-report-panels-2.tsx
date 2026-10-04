@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
   type Employee,
@@ -49,7 +50,7 @@ function MonthYear({ month, year, onMonth, onYear }: { month: number; year: numb
 }
 
 // ── Item 1 -- DCR > Not Approved (company-wide) ─────────────────────────
-export function DcrNotApprovedReport() {
+function DcrNotApprovedReportInner() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(THIS_YEAR);
   const [rows, setRows] = useState<DcrNotApprovedRow[] | null>(null);
@@ -93,7 +94,7 @@ export function DcrNotApprovedReport() {
 }
 
 // ── Item 2 -- DCR > Not Submitted ───────────────────────────────────────
-export function DcrNotSubmittedReport() {
+function DcrNotSubmittedReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -142,7 +143,7 @@ export function DcrNotSubmittedReport() {
 }
 
 // ── Item 3 -- DCR > Count-Modewise ──────────────────────────────────────
-export function DcrCountModewiseReport() {
+function DcrCountModewiseReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -188,7 +189,7 @@ export function DcrCountModewiseReport() {
           ) : (
             <div className="space-y-2">
               <p className="text-sm font-semibold">FieldForce: {selected?.name} &nbsp; Month: {MONTH_NAMES[month - 1]} &nbsp; Year: {year} &nbsp; Mode: DateWise</p>
-              <p className="text-xs text-status-warning">No submission-channel field exists anywhere in DcrModel -- every real DCR date/count is shown under &quot;Others&quot;; Desktop/Mobile/Apps/E-detailing/IOS-Edet are genuinely blank/zero rather than fabricated per-channel splits.</p>
+              <p className="text-xs text-text-muted">Counts by submission channel. DCRs submitted before channel tagging began carry no channel and are shown under &quot;Others&quot;; new field-app DCRs are tagged Apps.</p>
               <div className="overflow-x-auto rounded-lg border border-border-subtle">
                 <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
                   <thead className="bg-brand-primary-subtle">
@@ -230,7 +231,7 @@ export function DcrCountModewiseReport() {
 }
 
 // ── Item 4 -- DCR > Reject/Approval View (company-wide) ────────────────
-export function DcrRejectApproveReport() {
+function DcrRejectApproveReportInner() {
   const [month, setMonth] = useState(new Date().getMonth() + 1);
   const [year, setYear] = useState(THIS_YEAR);
   const [rows, setRows] = useState<DcrRejectApproveRow[] | null>(null);
@@ -289,7 +290,7 @@ const TIME_STATUS_METRICS: { key: keyof import("@/lib/api-client").DcrTimeStatus
   { key: "duration", label: "Duration" }, { key: "drCall", label: "Dr Call" }, { key: "chemistCall", label: "Chemst Call" }, { key: "filledDate", label: "Filled Date" }
 ];
 
-export function DcrTimeStatusReport() {
+function DcrTimeStatusReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -359,7 +360,7 @@ export function DcrTimeStatusReport() {
 // ── Item 6 -- DCR > Checkin-Checkout ────────────────────────────────────
 const CHECK_MODES = ["Doctor", "Chemist", "Stockist", "Unlisted Doctor", "Hospital", "CIP"];
 
-export function DcrCheckinCheckoutReport() {
+function DcrCheckinCheckoutReportInner() {
   const employees = useEmployees();
   const [employeeCode, setEmployeeCode] = useState("");
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -419,3 +420,10 @@ export function DcrCheckinCheckoutReport() {
     </div>
   );
 }
+
+export const DcrNotApprovedReport = withExcel(DcrNotApprovedReportInner, "dcr-not-approved");
+export const DcrNotSubmittedReport = withExcel(DcrNotSubmittedReportInner, "dcr-not-submitted");
+export const DcrCountModewiseReport = withExcel(DcrCountModewiseReportInner, "dcr-count-modewise");
+export const DcrRejectApproveReport = withExcel(DcrRejectApproveReportInner, "dcr-reject-approve");
+export const DcrTimeStatusReport = withExcel(DcrTimeStatusReportInner, "dcr-time-status");
+export const DcrCheckinCheckoutReport = withExcel(DcrCheckinCheckoutReportInner, "dcr-checkin-checkout");

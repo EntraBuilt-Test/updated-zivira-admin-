@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { useRouter, useSearchParams } from "next/navigation";
+import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
   type ManagerAnalysisManager,
@@ -80,7 +81,7 @@ export const th = "px-3 py-2 border-r border-border-subtle";
 export const td = "px-3 py-1.5 border-t border-r border-border-subtle";
 
 // ── Item 3 -- Manager Analysis > HQ - Coveragewise ──────────────────────
-export function HqCoveragewiseReport() {
+function HqCoveragewiseReportInner() {
   const router = useRouter();
   function onDrilldown(employeeCode: string, month: string) {
     router.push(`/admin/workspace/division-dashboard/division-navigation-tabs/mis-reports/manager-analysis/coverage-analysis-1?employeeCode=${employeeCode}&month=${month}`);
@@ -275,7 +276,7 @@ export function HqCoveragewiseReport() {
 }
 
 // ── Item 4 -- Coverage Analysis 1 ───────────────────────────────────────
-export function CoverageAnalysis1Report() {
+function CoverageAnalysis1ReportInner() {
   const searchParams = useSearchParams();
   const initialEmployeeCode = searchParams.get("employeeCode") || "";
   const initialMonth = searchParams.get("month") || "";
@@ -358,7 +359,7 @@ export function CoverageAnalysis1Report() {
 }
 
 // ── Item 5 -- Joint Workwise ─────────────────────────────────────────────
-export function JointWorkwiseReport() {
+function JointWorkwiseReportInner() {
   const managers = useManagers();
   const [employeeCode, setEmployeeCode] = useState("");
   const [fromMonth, setFromMonth] = useState(new Date().getMonth() + 1);
@@ -463,3 +464,7 @@ export function JointWorkwiseReport() {
     </div>
   );
 }
+
+export const HqCoveragewiseReport = withExcel(HqCoveragewiseReportInner, "hq-coveragewise");
+export const CoverageAnalysis1Report = withExcel(CoverageAnalysis1ReportInner, "coverage-analysis1");
+export const JointWorkwiseReport = withExcel(JointWorkwiseReportInner, "joint-workwise");

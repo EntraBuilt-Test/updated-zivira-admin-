@@ -179,7 +179,7 @@ export function ClassWiseViewReport() {
               <tr className="font-bold"><td className={td} colSpan={6 + result.months.length * 2}>Total</td><td className={td}>{blank(result.grandTotal)}</td></tr>
             </tbody>
           </table>
-          <Note>Business Amount is the real POB recorded on doctor DCRs (blank when none; the field app does not capture doctor POB on older DCRs). Class Name is Nil when the doctor has no A/B/C class assigned.</Note>
+          <Note>Business Amount is the POB recorded on doctor DCRs. DCRs submitted before the field app captured POB have none and show blank.</Note>
         </ReportModal>
       )}
     </div>
@@ -231,7 +231,7 @@ export function DcrAnalysisDumpReport() {
           <button type="button" className={link} disabled={!!busy} onClick={() => download("xlsx")}>{busy === "xlsx" ? "Preparing..." : "Download Excel"}</button>
         </div>
         <Err msg={error} />
-        <Note>One row per call (listed doctor, chemist, stockist/unlisted) plus leave days. Vacant adds inactive vacant manager seats (no vacancy flag exists, so this is derived). Address1, Qualification and POB are blank/NA where the field app does not capture them.</Note>
+        <Note>One row per call (listed doctor, chemist, stockist/unlisted/hospital) plus leave days. Session is derived from the call time (before 12:00 = M, otherwise E). Vacant adds inactive vacant manager seats.</Note>
       </div>
     </div>
   );
@@ -351,7 +351,6 @@ export function MissedCallReport() {
                 </table>
               </div>
             </div>
-            <Note>S CORE is always 0: the doctor map has only CORE / N CORE flags. Nil = listed doctors with no CORE mapping.</Note>
           </div>
         </ReportModal>
       )}
@@ -446,14 +445,16 @@ export function SingleDoctorReport() {
             <H>Listed Drs Visit - Productwise</H>
             {monthTable((m) => result.perMonth[m]?.detailed.length ? result.perMonth[m].detailed.map((x) => <div key={x.name}>{x.name} : {x.count}</div>) : "-")}
             <H>Supportive Chemist</H>
-            {monthTable(() => "")}
+            <p className="text-sm">{p.supportiveChemists?.length ? p.supportiveChemists.join(", ") : "-"}</p>
+            <H>Prescription (Rx) Qty</H>
+            {monthTable((m) => result.perMonth[m]?.rx?.length ? result.perMonth[m].rx.map((x) => <div key={x.name}>{x.name} - {x.qty}</div>) : "-")}
             <H>RCPA Details</H>
-            {monthTable(() => "")}
+            {monthTable((m) => result.perMonth[m]?.rcpa?.length ? result.perMonth[m].rcpa.map((x, i) => <div key={i}>{dmy(x.date)} {x.chemist}: {x.ourProduct} {x.ourQty}{x.competitorProduct ? ` vs ${x.competitorProduct} ${x.competitorQty}` : ""}</div>) : "-")}
             <H>CRM Details</H>
-            {monthTable(() => "")}
+            {monthTable((m) => result.perMonth[m]?.crm?.length ? result.perMonth[m].crm.map((x, i) => <div key={i}>{dmy(x.date)} {x.type} Rs {x.amountRs} ({x.status})</div>) : "-")}
             <H>Business Details</H>
             {monthTable((m) => blank(result.perMonth[m]?.business) || "-")}
-            <Note>Supportive Chemist, RCPA and CRM sections are empty: no doctor-linked source for them exists in the system yet. Business is the POB recorded on this doctor&apos;s DCRs.</Note>
+            <Note>Business is the POB recorded on this doctor&apos;s DCRs.</Note>
           </ReportModal>
         );
       })()}
@@ -529,29 +530,29 @@ export function RepVsManagerReport() {
 type Panel = { title: string; color: string; rows: [string, string][]; redZero?: string[]; redRows?: string[] };
 const PANELS: Panel[][] = [
   [
-    { title: "WORKING INFO", color: "bg-green-600", rows: [["Fieldwork Days", "fwDays"], ["Non-Fieldwork Days", "nfwDays"], ["Leave", "leave"], ["Holiday / Sunday", "holidaySunday"]] },
+    { title: "WORKING INFO", color: "bg-green-600", rows: [["Fieldwork Days", "fwDays"], ["Non-Fieldwork Days", "nfwDays"], ["Leave", "leave"], ["Holiday / Sunday", "holidaySunday"], ["Delayed DCR Days", "delayedDays"]], redZero: [] },
     { title: "MASTER INFO", color: "bg-blue-600", rows: [["Doctors in List", "totalDoctorsInList"], ["Chemists in List", "totalChemistInList"], ["Unlisted Drs in List", "totalUnlistedDrsInList"], ["Stockists in List", "totalStockistInList"], ["Hospitals in List", "totalHospitalInList"]] },
     { title: "LISTED DR INFO", color: "bg-purple-600", rows: [["Listed Drs Met", "listedDrsMet"], ["Listed Drs Seen", "listedDrsSeen"], ["Coverage %", "lstDrCoveragePct"], ["Call Average", "lstDrCallAverage"], ["Missed Call", "lstDrMissedCall"]] }
   ],
   [
-    { title: "CHEMIST INFO", color: "bg-teal-600", rows: [["Chemists Met", "chemistsMet"], ["Chemists Seen", "chemistsSeen"], ["Call Average", "chemCallAverage"], ["Missed Chemist", "chemMissedChemist"]] },
+    { title: "CHEMIST INFO", color: "bg-teal-600", rows: [["Chemists Met", "chemistsMet"], ["Chemists Seen", "chemistsSeen"], ["Call Average", "chemCallAverage"], ["Missed Chemist", "chemMissedChemist"], ["Chemist POB Count", "chemistPobCount"], ["Chemist POB Value (Rs)", "chemistPobValue"]] },
     { title: "UNLISTED DR INFO", color: "bg-orange-600", rows: [["Unlisteddr Met", "unlistedDrsMet"], ["Unlisteddr Seen", "unlistedDrsSeen"], ["Call Average", "unlstCallAverage"], ["Missed Call", "unlstMissedCall"]], redZero: ["unlistedDrsMet"] },
     { title: "JOINT WORK INFO", color: "bg-pink-600", rows: [["Joint Work Days", "jointWorkDays"], ["Joint Calls Met", "jointCallsMet"], ["Joint Calls Seen", "jointCallsSeen"], ["Joint Call Avg", "jointCallAvg"]] }
   ],
   [
-    { title: "DR CATEGORY INFO", color: "bg-indigo-600", rows: [["CORE List", "coreList"], ["N CORE List", "nonCoreList"]] },
-    { title: "SAMPLE INFO", color: "bg-cyan-600", rows: [["Sample Given Qty", "sampleGivenQty"], ["Drs Given", "sampleGivenDrs"], ["Products", "sampleGivenProducts"]] },
-    { title: "INPUT INFO", color: "bg-lime-600", rows: [["Input Given Qty", "inputGivenQty"], ["Drs Given", "inputGivenDrs"], ["Products", "inputGivenProducts"]] }
+    { title: "DR CATEGORY INFO", color: "bg-indigo-600", rows: [["Nil List", "nilList"], ["CORE List", "coreList"], ["N CORE List", "nCoreList"], ["S CORE List", "sCoreList"]] },
+    { title: "SAMPLE INFO", color: "bg-cyan-600", rows: [["Sample Given Qty", "sampleGivenQty"], ["Drs Given", "sampleGivenDrs"], ["Products", "sampleGivenProducts"], ["Sample Spent (Rs)", "sampleSpentRs"], ["Dr Service Spent (Rs)", "drServiceSpentRs"]] },
+    { title: "INPUT INFO", color: "bg-lime-600", rows: [["Input Given Qty", "inputGivenQty"], ["Drs Given", "inputGivenDrs"], ["Products", "inputGivenProducts"], ["Input Spent (Rs)", "inputSpentRs"]] }
   ],
   [
     { title: "PRODUCT INFO", color: "bg-rose-600", rows: [] },
-    { title: "DR CATEGORY VISIT INFO", color: "bg-amber-600", rows: [] },
-    { title: "DRS CATEGORY CALL ADHERENCE", color: "bg-emerald-600", rows: [["CORE Met 2x", "coreMet2x"], ["CORE Adherence %", "coreAdherCoverage"], ["CORE Missed", "coreMissed"], ["N CORE Met 2x", "nonCoreMet2x"], ["N CORE Adherence %", "nonCoreAdherCoverage"], ["N CORE Missed", "nonCoreMissed"]] }
+    { title: "DR CATEGORY VISIT INFO", color: "bg-amber-600", rows: [["Nil Met", "nilMet"], ["Nil Missed", "nilMissed"], ["CORE Met", "coreMet"], ["CORE Missed", "coreMissed"], ["N CORE Met", "nCoreMet"], ["N CORE Missed", "nCoreMissed"], ["S CORE Met", "sCoreMet"], ["S CORE Missed", "sCoreMissed"]] },
+    { title: "DRS CATEGORY CALL ADHERENCE", color: "bg-emerald-600", rows: [["Nil Adhered", "nilAdhered"], ["Nil Adherence %", "nilAdherPct"], ["CORE Adhered", "coreAdhered"], ["CORE Adherence %", "coreAdherPct"], ["N CORE Adhered", "nCoreAdhered"], ["N CORE Adherence %", "nCoreAdherPct"], ["S CORE Adhered", "sCoreAdhered"], ["S CORE Adherence %", "sCoreAdherPct"]] }
   ],
   [
     { title: "DRS VISIT", color: "bg-sky-600", rows: [["1 Visit Drs", "visit1Drs"], ["2 Visit Drs", "visit2Drs"], ["3 Visit Drs", "visit3Drs"], ["More Than 3 Visit Drs", "visitMoreThan3Drs"]] },
     { title: "TARGET & SALE INFO", color: "bg-violet-600", rows: [["Target", "target"], ["Primary Sale", "primarySale"], ["Secondary Sale", "secondarySale"], ["Achievement %", "achievement"]] },
-    { title: "OTHER INFO", color: "bg-fuchsia-600", rows: [["No of Detailing Drs", "noOfDetailingDrs"], ["No of Rx Drs", "noOfRxDrs"]] }
+    { title: "OTHER INFO", color: "bg-fuchsia-600", rows: [["No of Detailing Drs", "noOfDetailingDrs"], ["No of Rx Drs", "noOfRxDrs"], ["Stockists Met", "stockistMet"], ["Hospitals Met", "hospitalMet"], ["CIP Met", "cipMet"], ["RCPA Entries", "rcpaEntries"], ["CRM Entries", "crmEntries"], ["CRM Approved (Rs)", "crmApprovedAmount"]] }
   ],
   [
     { title: "SECONDARY SALE INFO", color: "bg-red-600", rows: [] },
@@ -609,7 +610,9 @@ export function ReviewReport() {
                       {p.title === "SECONDARY SALE INFO" && (
                         <>
                           <div className="flex justify-between font-bold"><span>Qty</span><span>Value</span></div>
-                          <div className="border border-gray-300 bg-white p-1 text-center">No Records Found</div>
+                          {(result.secondaryRows || []).length === 0
+                            ? <div className="border border-gray-300 bg-white p-1 text-center">No Records Found</div>
+                            : result.secondaryRows.map((r) => <div key={r.product} className="flex justify-between"><span>{r.product}</span><span className="font-semibold">{r.qty} / {r.value}</span></div>)}
                         </>
                       )}
                       {p.rows.map(([label, key]) => {
@@ -622,7 +625,13 @@ export function ReviewReport() {
                 ))}
               </div>
             ))}
-            <Note>Blank values have no real source yet (Target/Primary sale unless uploaded, Secondary Sale, sample/Dr-service spend). Dr Category Visit Info has no source and is left empty.</Note>
+            {(result.delayedDates || []).length > 0 && (
+              <div>
+                <p className="font-bold text-red-600 text-sm">Delayed DCR dates</p>
+                <table className="text-xs border-collapse"><thead><tr><th className={TH}>Date</th><th className={TH}>Days late</th><th className={TH}>Status</th></tr></thead>
+                  <tbody>{result.delayedDates.map((d) => <tr key={d.date}><td className={td}>{dmy(d.date)}</td><td className={td}>{d.days}</td><td className={td}>{d.kind === "locked-outstanding" ? "Locked - not submitted" : "Submitted late"}</td></tr>)}</tbody></table>
+              </div>
+            )}
           </ReportModal>
         );
       })()}
@@ -787,7 +796,7 @@ export function AssessmentReport() {
               ))}
             </tbody>
           </table>
-          <Note>Empty cell = zero or no real source (e.g. DCR lock date, sample/Dr-service spend, S CORE tier are not stored).</Note>
+          <Note>Empty cell = zero for the month.</Note>
         </ReportModal>
       )}
     </div>

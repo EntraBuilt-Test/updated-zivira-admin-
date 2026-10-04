@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { Trash2, Eye } from "lucide-react";
+import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
   type CustomReportSummary,
@@ -38,7 +39,7 @@ const OPTIONAL_PARAMS = [
 
 type Screen = "list" | "generation" | "output";
 
-export function CustomReportWorkspace() {
+function CustomReportWorkspaceInner() {
   const [screen, setScreen] = useState<Screen>("list");
   const [activeReportId, setActiveReportId] = useState<string | null>(null);
   const [activeReportName, setActiveReportName] = useState<string>("");
@@ -361,3 +362,5 @@ function CustomReportOutputView({ reportId, reportName }: { reportId: string; re
     </div>
   );
 }
+
+export const CustomReportWorkspace = withExcel(CustomReportWorkspaceInner, "custom-report");

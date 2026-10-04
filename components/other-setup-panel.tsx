@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { WorkTypeCodesCard, CrmReviewCard } from "@/components/r41-codes-crm";
+import { R41SettingsCard } from "@/components/r41-settings-card";
 import {
   TwoColumnBox,
   SubSectionLabel,
@@ -158,6 +160,10 @@ export function OtherSetupPanel({ masterKey: _masterKey }: { masterKey: string }
       <div className="card p-4">
         <h2 className="text-lg font-semibold">Other Setup</h2>
       </div>
+
+      <R41SettingsCard />
+      <WorkTypeCodesCard />
+      <CrmReviewCard />
 
       {error && <div className="card p-3 text-sm text-red-600">{error}</div>}
       {notice && <div className="card p-3 text-sm text-green-700">{notice}</div>}

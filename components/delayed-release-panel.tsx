@@ -5,13 +5,11 @@ import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
 // Matches sanpharma.info's MasterFiles/Options/Delayed_Release.aspx
-// ("Delayed Release") exactly: Year/Month + FieldForce Name filter, a
-// results table (Release All + per-row checkbox, S.No, FieldForce Name, HQ,
-// Designation, State, Delayed/Missing Dates) and a Release button. Backed
-// by the same real DCR-gap computation the Compliance Analytics dashboard
-// already uses (missedLast30Days) — a field force only appears here if
-// they genuinely have missed working-day DCRs — and "Release" is a real,
-// persisted per (month, employee) flag, so a released row stays released.
+// ("Delayed Release"): Year/Month + FieldForce Name filter, a results table
+// (Release All + per-row checkbox, S.No, FieldForce Name, HQ, Designation,
+// State, Delayed/Missing Dates) and a Release button. Round 41: backed by
+// real DcrLock records (a date locks once it passes the company delay window
+// set in Other Setup). Release stamps releasedAt / releasedBy on each lock.
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const now = new Date();
 const YEARS = Array.from({ length: 6 }, (_, i) => String(now.getFullYear() - 4 + i));
@@ -126,11 +124,11 @@ export function DelayedReleasePanel() {
                     <td className="px-4 py-2 text-sm">{r.hq}</td>
                     <td className="px-4 py-2 text-sm">{r.designation}</td>
                     <td className="px-4 py-2 text-sm">{r.state}</td>
-                    <td className="px-4 py-2 text-sm">{r.delayedMissingDates}</td>
+                    <td className="px-4 py-2 text-sm">{r.delayedMissingDates}{r.releaseRequested ? <span style={{ marginLeft: 8, color: "#d97706", fontSize: 11, fontWeight: 600 }}>Release requested</span> : null}</td>
                   </tr>
                 ))}
                 {rows.length === 0 && (
-                  <tr><td colSpan={7} className="px-4 py-6 text-center text-sm" style={{ color: "var(--muted)" }}>No delayed or missing DCR entries for this period</td></tr>
+                  <tr><td colSpan={7} className="px-4 py-6 text-center text-sm" style={{ color: "var(--muted)" }}>No locked DCR dates for this period</td></tr>
                 )}
               </tbody>
             </table>
