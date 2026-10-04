@@ -55,6 +55,7 @@ import { SurveyWorkspace } from "@/components/survey-workspace";
 import { CustomReportWorkspace } from "@/components/custom-report-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
 import { PobRxProductWiseReport, PobRxFieldforceWiseReport, PobRxDayWiseReport, PobRxDumpReport } from "@/components/pob-rx-panels";
+import { QuizTestResultReport, DayWiseDumpReport, CallReportDumpReport, DetailingVisitWiseReport, BrandStarRatingReport, SlideAnalysisReport, DrsAnalysisReport } from "@/components/r45-panels";
 import { CatClsVisitDetailsReport, VisitDetailDateWiseReport } from "@/components/visit-details-panels";
 import { NotAtAllVisitDrsReport, NotAtAllPromotedProductsReport, NotAtAllVisitHqsReport } from "@/components/heat-panels";
 import { DcrAnalysisReport, VisitAnalysisReport, SalesDetailsReport, PobWiseReport, PobPeriodicReport } from "@/components/mis-analysis-panels";
@@ -892,6 +893,13 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/analysis/sales-details")) {
     return <SalesDetailsReport />;
   }
+  if (pathStr.endsWith("mis-reports/quiz-test-result")) return <QuizTestResultReport />;
+  if (pathStr.endsWith("mis-reports/summary/day-wise-reports")) return <DayWiseDumpReport />;
+  if (pathStr.endsWith("mis-reports/summary/call-report-dump")) return <CallReportDumpReport />;
+  if (pathStr.endsWith("mis-reports/digital-detailing/visit-wise")) return <DetailingVisitWiseReport />;
+  if (pathStr.endsWith("mis-reports/digital-detailing/brand-wise-star-rating")) return <BrandStarRatingReport />;
+  if (pathStr.endsWith("mis-reports/digital-detailing/product-slide-analysis")) return <SlideAnalysisReport />;
+  if (pathStr.endsWith("mis-reports/digital-detailing/drs-analysis")) return <DrsAnalysisReport />;
   if (pathStr.endsWith("mis-reports/visit-details/cat-cls-splty-lstdr-wise")) return <CatClsVisitDetailsReport />;
   if (pathStr.endsWith("mis-reports/visit-details/datewise")) return <VisitDetailDateWiseReport />;
   if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-product-wise")) {

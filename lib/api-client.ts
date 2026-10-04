@@ -980,6 +980,34 @@ export type DateWiseResult = {
       days: { day: number; weekday: string; status: string; calls: (DateWiseDoctor & { time: string; products: string })[] }[] }
 );
 
+// Round 45 -- Quiz Test Result, Summary dumps, Digital Detailing, Slide Analysis, Drs Analyis
+export type QuizResultResult = {
+  month: string; scope: "Team" | "Individual"; days: { day: number; label: string }[];
+  employee: { employeeCode: string; name: string; designation: string; hq: string };
+  rows: { sno: number; employeeCode: string; doj: string; name: string; designation: string; hq: string; firstManager: string; secondManager: string; perDay: Record<string, { total: number; correct: number; pct: number }> }[];
+};
+export type DetailingOptions = { brands: string[]; products: string[] };
+export type DetailingBase = { employeeCode: string; name: string; designation: string; hq: string };
+export type DetailingVisitResult = {
+  month: string; mode: "Brand" | "Product"; names: string[]; employee: DetailingBase;
+  rows: { sno: number; label: string; employeeCode: string; name: string; hq: string; designation: string; groups: Record<string, { drs: number; one: number; two: number; more: number }> }[];
+};
+export type StarRatingResult = {
+  month: string; brands: string[]; employee: DetailingBase;
+  rows: { sno: number; label: string; employeeCode: string; name: string; hq: string; designation: string; groups: Record<string, { stars: number[]; nil: number }> }[];
+};
+export type SlideFilterKind = "ALL" | "Doctor Speciality" | "Doctor Category" | "Doctor Qualification" | "Doctor Class" | "Doctor Territory" | "Product / Brand";
+export type SlideAnalysisOptions = Record<Exclude<SlideFilterKind, "ALL">, string[]>;
+export type SlideAnalysisResult = {
+  months: string[]; basedOn: "Product" | "Brand"; filterKind: SlideFilterKind; filterValue: string; columns: string[]; employee: DetailingBase;
+  rows: { sno: number; employeeCode: string; employeeName: string; doctor: string; speciality: string; category: string; cls: string; territory: string; qualification: string;
+    cells: Record<string, { views: number; seconds: number }>; totalViews: number; totalSeconds: number }[];
+};
+export type DrsAnalysisResult = {
+  months: string[]; employee: DetailingBase;
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; perMonth: Record<string, { total: number; met: number; edet: number; pct: number }> }[];
+};
+
 export type HqVisitColor = "green" | "red" | "yellow";
 export type HqVisitResult = {
   months: number; from: string; to: string; designations: string[];
@@ -2432,6 +2460,42 @@ export const apiClient = {
     const qs = new URLSearchParams({ employeeCode: p.employeeCode, month: p.month });
     if (p.week) qs.set("week", String(p.week));
     return request<DateWiseResult>(`/company/mis/visit-details/datewise?${qs.toString()}`);
+  },
+  // Round 45
+  quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {
+    return request<QuizResultResult>(`/company/mis/quiz-result?${new URLSearchParams(p).toString()}`);
+  },
+  detailingOptions() { return request<DetailingOptions>("/company/mis/detailing/options"); },
+  detailingVisitWise(p: { employeeCode: string; month: string; mode: "Brand" | "Product"; names: string[] }) {
+    return request<DetailingVisitResult>(`/company/mis/detailing/visit-wise?${new URLSearchParams({ employeeCode: p.employeeCode, month: p.month, mode: p.mode, names: p.names.join("||") }).toString()}`);
+  },
+  brandStarRating(p: { employeeCode: string; month: string; names: string[] }) {
+    return request<StarRatingResult>(`/company/mis/detailing/star-rating?${new URLSearchParams({ employeeCode: p.employeeCode, month: p.month, names: p.names.join("||") }).toString()}`);
+  },
+  slideAnalysisOptions() { return request<SlideAnalysisOptions>("/company/mis/slide-analysis/options"); },
+  slideAnalysis(p: { employeeCode: string; fromMonth: string; toMonth: string; basedOn: "Product" | "Brand"; filterKind: SlideFilterKind; filterValue: string }) {
+    return request<SlideAnalysisResult>(`/company/mis/slide-analysis?${new URLSearchParams(p).toString()}`);
+  },
+  drsAnalysis(p: { employeeCode: string; fromMonth: string; toMonth: string }) {
+    return request<DrsAnalysisResult>(`/company/mis/drs-analysis?${new URLSearchParams(p).toString()}`);
+  },
+  // Generic authed file download (the response IS the file): Day Wise / Call Report dumps.
+  async downloadMisFile(path: string, query: Record<string, string>, fileName: string) {
+    const token = getToken();
+    const response = await fetchWithTimeout(`${API_BASE_URL}${path}?${new URLSearchParams(query).toString()}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} }, 180000);
+    if (!response.ok) {
+      let message = "Download failed";
+      try { message = (await response.json())?.error?.message ?? message; } catch { /* non-JSON error body */ }
+      throw new Error(message);
+    }
+    const blob = await response.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   },
   hqVisitReport(p: { employeeCode: string; months: number }) {
     return request<HqVisitResult>(`/company/mis/heat/hqs?${new URLSearchParams({ employeeCode: p.employeeCode, months: String(p.months) }).toString()}`);
