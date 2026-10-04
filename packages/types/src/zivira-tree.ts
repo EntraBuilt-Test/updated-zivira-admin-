@@ -139,6 +139,8 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         node("Campaign", "campaign-master", "division"),
         // Round 44 -- Doctor Type list used by MIS > Visit Details (Doctor Type mode).
         node("Doctor Type", "doctor-type-master", "division"),
+        // Round 45 -- monthly fixed expense per designation (Custom Report "Fixed Expenses").
+        node("Fixed Expense", "fixed-expense-master", "division"),
         node("Territory Bulk Activation/Deactivation", "field-force-entries", "division", [
           node("Patch Name", "territory", "division"),
           node("Territory - Listed Doctor", "territory-listed-doctor", "division"),

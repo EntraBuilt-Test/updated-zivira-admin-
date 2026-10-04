@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, Fragment, useMemo, useState } from "react";
-import * as XLSX from "xlsx";
+import { downloadAoaXlsx } from "@/lib/xlsx-export";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -89,10 +89,7 @@ export function MsisViewPanel({ masterKey: _masterKey }: { masterKey: string }) 
     const body = rows.map((r, i) => mode === "Monthwise"
       ? [i + 1, r.productName, r.rate, r.hqSalesQty, r.hqSalesVal, r.lessInfiltrationQty, r.lessInfiltrationVal, r.addInfiltrationQty, r.addInfiltrationVal, r.addInfiltration2Qty, r.addInfiltration2Val, r.totalSalesQty, r.totalSalesVal]
       : [i + 1, r.productName, r.rate, r.hqSalesQty, r.hqSalesVal, r.totalSalesQty, r.totalSalesVal]);
-    const ws = XLSX.utils.aoa_to_sheet([header, ...body]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "MSIS View");
-    XLSX.writeFile(wb, `MSIS_View_${mode}.xlsx`);
+    void downloadAoaXlsx({ sheetName: "MSIS View", fileName: `MSIS_View_${mode}.xlsx`, header, body });
   }
 
   return (

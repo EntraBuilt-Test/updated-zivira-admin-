@@ -3,7 +3,7 @@ import { StatusFilterDropdown } from "@/components/status-filter-dropdown";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
 import { RotateCcw, SlidersHorizontal, Trash2, Pencil, Ban, X, AlertTriangle } from "lucide-react";
 import { useState, useEffect } from "react";
-import { apiClient, type PaginationInfo } from "@/lib/api-client";
+import { apiClient, type Dealer, type PaginationInfo } from "@/lib/api-client";
 import { PaginationControls } from "./pagination-controls";
 type ListedDoctorRow = {
   id: string;
@@ -43,6 +43,17 @@ export function ListedDoctorMaster() {
       setLoading(false);
     }
   }
+  // Round 45 -- classification fields that really persist (tier, doctor types, campaign,
+  // promoted brands) and the supportive chemists mapped to the doctor.
+  const [extra, setExtra] = useState({ tier: "NIL" as "NIL" | "CORE" | "N CORE" | "S CORE", doctorTypes: [] as string[], campaign: "", promoted: [] as string[], dealerIds: [] as string[] });
+  const [opts, setOpts] = useState<{ campaigns: string[]; doctorTypes: string[]; brands: string[] }>({ campaigns: [], doctorTypes: [], brands: [] });
+  const [dealers, setDealers] = useState<Dealer[]>([]);
+  const [dealerSearch, setDealerSearch] = useState("");
+  useEffect(() => {
+    apiClient.visitDetailOptions().then((r) => setOpts((o) => ({ ...o, campaigns: r.data.campaigns, doctorTypes: r.data.doctorTypes }))).catch(() => {});
+    apiClient.detailingOptions().then((r) => setOpts((o) => ({ ...o, brands: r.data.brands.filter((b) => b !== "Nil") }))).catch(() => {});
+  }, []);
+  const toggleExtra = (key: "doctorTypes" | "promoted" | "dealerIds", v: string) => setExtra((e) => ({ ...e, [key]: e[key].includes(v) ? e[key].filter((x) => x !== v) : [...e[key], v] }));
   // Form inputs for 7 tabs
   const [form, setForm] = useState({
     code: "",
@@ -139,6 +150,14 @@ export function ListedDoctorMaster() {
       anniversaryDate: row.anniversaryDate ? String(row.anniversaryDate).split("T")[0] : "",
       maritalStatus: row.maritalStatus || "Single"
     });
+    setExtra({
+      tier: (["NIL", "CORE", "N CORE", "S CORE"].includes(row.doctorCategory) ? row.doctorCategory : "NIL"),
+      doctorTypes: Array.isArray(row.doctorTypes) ? row.doctorTypes : [],
+      campaign: row.campaign || "",
+      promoted: Array.isArray(row.promotedBrands) ? row.promotedBrands : [],
+      dealerIds: Array.isArray(row.supportiveChemists) ? row.supportiveChemists.map((c: { dealerId: string }) => c.dealerId) : []
+    });
+    apiClient.dealers().then((r) => setDealers(r.data)).catch(() => setDealers([]));
     setActiveFormTab(1);
     setView("edit");
   }
@@ -188,8 +207,17 @@ export function ListedDoctorMaster() {
         }
         await fetchData(pagination.page);
       } else if (view === "edit" && selectedDoc) {
-        // Mock update for now
-        setList(list.map(x => x.id === selectedDoc.id ? { ...x, ...form } : x));
+        // Round 45 -- the edit form used to only update local state; it now persists.
+        const id = String(selectedDoc.id);
+        await apiClient.updateDoctor(id, {
+          name: form.name, specialty: form.specialty, category: form.category as "A" | "B" | "C", state: form.state, city: form.city, territory: form.patch,
+          status: apiStatus, qualification: form.qualification || null, phone: form.mobile || null,
+          doctorTypes: extra.doctorTypes, campaign: extra.campaign || null, promotedBrands: extra.promoted
+        });
+        if (extra.tier !== (selectedDoc.doctorCategory || "NIL")) await apiClient.setDoctorTier(id, extra.tier);
+        const before = Array.isArray(selectedDoc.supportiveChemists) ? selectedDoc.supportiveChemists.map((c: { dealerId: string }) => c.dealerId) : [];
+        if (before.length !== extra.dealerIds.length || before.some((d: string) => !extra.dealerIds.includes(d))) await apiClient.setSupportiveChemists(id, extra.dealerIds);
+        await fetchData(pagination.page);
       }
       setView("list");
     } catch (err: any) {
@@ -386,6 +414,36 @@ export function ListedDoctorMaster() {
                   <option value="Weekly">Weekly</option>
                 </select>
               </div>
+              {view === "edit" && (
+                <>
+                  <div className="field">
+                    <label>Doctor Category (Nil / CORE / N CORE / S CORE)</label>
+                    <select className="input" value={extra.tier} onChange={e => setExtra({ ...extra, tier: e.target.value as typeof extra.tier })}>
+                      <option value="NIL">Nil</option><option value="CORE">CORE</option><option value="N CORE">N CORE</option><option value="S CORE">S CORE</option>
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label>Campaign</label>
+                    <select className="input" value={extra.campaign} onChange={e => setExtra({ ...extra, campaign: e.target.value })}>
+                      <option value="">None</option>
+                      {opts.campaigns.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                  <div className="field" style={{ gridColumn: "span 2" }}>
+                    <label>Doctor Type</label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+                      {opts.doctorTypes.length === 0 && <span style={{ fontSize: 12, opacity: 0.7 }}>No doctor types configured (Masters &gt; Doctor Type).</span>}
+                      {opts.doctorTypes.map(t => <label key={t} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 13 }}><input type="checkbox" checked={extra.doctorTypes.includes(t)} onChange={() => toggleExtra("doctorTypes", t)} />{t}</label>)}
+                    </div>
+                  </div>
+                  <div className="field" style={{ gridColumn: "span 2" }}>
+                    <label>Promoted Brands</label>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px 16px" }}>
+                      {opts.brands.map(b => <label key={b} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 13 }}><input type="checkbox" checked={extra.promoted.includes(b)} onChange={() => toggleExtra("promoted", b)} />{b}</label>)}
+                    </div>
+                  </div>
+                </>
+              )}
             </>
           )}
           {activeFormTab === 4 && (
@@ -410,6 +468,20 @@ export function ListedDoctorMaster() {
                 <label>Select Chemist</label>
                 <input value={form.chemist} onChange={e => setForm({ ...form, chemist: e.target.value })} />
               </div>
+              {view === "edit" && (
+                <div className="field" style={{ gridColumn: "span 2" }}>
+                  <label>Supportive Chemists ({extra.dealerIds.length} selected, max 20)</label>
+                  <input value={dealerSearch} onChange={e => setDealerSearch(e.target.value)} placeholder="Search chemists" />
+                  <div style={{ maxHeight: 220, overflowY: "auto", display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "4px 16px", marginTop: 6 }}>
+                    {dealers.filter(d => extra.dealerIds.includes(d.id) || d.dealerName.toLowerCase().includes(dealerSearch.toLowerCase())).slice(0, 200).map(d => (
+                      <label key={d.id} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 13 }}>
+                        <input type="checkbox" checked={extra.dealerIds.includes(d.id)} disabled={!extra.dealerIds.includes(d.id) && extra.dealerIds.length >= 20} onChange={() => toggleExtra("dealerIds", d.id)} />
+                        {d.dealerName}{d.patchName ? ` (${d.patchName})` : ""}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
             </>
           )}
           {activeFormTab === 6 && (
@@ -451,7 +523,7 @@ export function ListedDoctorMaster() {
               </button>
             ) : (
               <button className="button" type="submit">
-                Add Doctor
+                {view === "edit" ? "Save Changes" : "Add Doctor"}
               </button>
             )}
           </div>

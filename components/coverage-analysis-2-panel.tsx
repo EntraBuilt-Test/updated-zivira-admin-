@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import * as XLSX from "xlsx";
+import { downloadAoaXlsx } from "@/lib/xlsx-export";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -164,10 +164,10 @@ export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: s
       r.firstLevelManager, r.secondLevelManager, r.noOfFwd, r.noOfFwdExp, r.ttlDrs,
       ...TERRITORY_TYPES.flatMap((t) => METRIC_COLS.map((m) => metric(r, t, m)))
     ]);
-    const ws = XLSX.utils.aoa_to_sheet([header1, ...body]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Coverage Analysis 2");
-    XLSX.writeFile(wb, `Coverage_Analysis_2_${selectedMonth}_${selectedYear}.xlsx`);
+    void downloadAoaXlsx({
+      sheetName: "Coverage Analysis 2", fileName: `Coverage_Analysis_2_${selectedMonth}_${selectedYear}.xlsx`, header: header1, body,
+      groups: { fixed: 11, groups: TERRITORY_TYPES.map((t) => ({ label: t, cols: METRIC_COLS.map((m) => m) })) }
+    });
   }
 
   return (

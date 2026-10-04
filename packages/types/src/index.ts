@@ -82,6 +82,12 @@ export type Employee = {
 };
 
 export type Doctor = {
+  // Round 41 -- 4-tier category, campaign and supportive chemists
+  doctorCategory?: "NIL" | "CORE" | "N CORE" | "S CORE";
+  campaign?: string | null;
+  doctorTypes?: string[];
+  promotedBrands?: string[];
+  supportiveChemists?: { dealerId: string; dealerName: string }[];
   id: string;
   tenantSlug: string;
   name: string;
@@ -190,6 +196,13 @@ export type JointWork = {
 };
 
 export type DcrExtended = Dcr & {
+  // ── Round 41 -- real POB / Rx capture, call timestamp, work type code ──
+  pob?: { productId?: string; productCode?: string; productName: string; qty: number; valueRs?: number }[];
+  pobAmountRs?: number | null;
+  rxItems?: { productId?: string; productCode?: string; productName: string; qty: number }[];
+  callAt?: string;
+  workTypeCode?: string;
+  submissionChannel?: "Desktop" | "Mobile" | "Apps" | "E-detailing" | "Others";
   callSession?: "MORNING" | "AFTERNOON" | "EVENING";
   callTime?: string;
   samplesGiven?: SampleGiven[];

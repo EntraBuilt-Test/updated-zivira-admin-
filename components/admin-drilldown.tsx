@@ -197,6 +197,11 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
     return <GenericMasterTable masterKey="campaignMaster" />;
   }
 
+  // Round 45 -- Fixed Expense master (per designation).
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/fixed-expense-master") {
+    return <GenericMasterTable masterKey="fixedExpenseMaster" />;
+  }
+
   // Round 44 -- Doctor Type master (Core drs, Academica, ...).
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor-type-master") {
     return <GenericMasterTable masterKey="doctorTypeMaster" />;

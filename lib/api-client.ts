@@ -1236,6 +1236,16 @@ export const apiClient = {
     return requestPaginated<string>(`/company/doctors/clinics${qs ? `?${qs}` : ""}`);
   },
 
+  // Round 45 -- real persistence for the Listed Doctor edit form.
+  updateDoctor(id: string, input: Partial<{ name: string; specialty: string; category: "A" | "B" | "C"; state: string; city: string; territory: string; status: "ACTIVE" | "INACTIVE"; qualification: string | null; phone: string | null; doctorTypes: string[]; campaign: string | null; promotedBrands: string[] }>) {
+    return request<Doctor>(`/company/doctors/${id}`, { method: "PATCH", body: JSON.stringify(input) });
+  },
+  setDoctorTier(id: string, doctorCategory: "NIL" | "CORE" | "N CORE" | "S CORE") {
+    return request<Doctor>(`/company/doctors/${id}/category-tier`, { method: "PUT", body: JSON.stringify({ doctorCategory }) });
+  },
+  setSupportiveChemists(id: string, dealerIds: string[]) {
+    return request<Doctor>(`/company/doctors/${id}/supportive-chemists`, { method: "PUT", body: JSON.stringify({ dealerIds }) });
+  },
   createDoctor(input: Omit<Doctor, "id" | "tenantSlug" | "createdAt" | "updatedAt">) {
     return request<Doctor>("/company/doctors", {
       method: "POST",

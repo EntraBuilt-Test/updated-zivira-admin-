@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import * as XLSX from "xlsx";
+import { downloadAoaXlsx } from "@/lib/xlsx-export";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -96,10 +96,7 @@ export function DispatchViewPanel({
       i + 1, r.fieldForceName, r.hq, ...(showState ? [r.state] : []), r.designation,
       ...months.map((m) => r.monthly?.[m] ?? 0)
     ]);
-    const ws = XLSX.utils.aoa_to_sheet([header, ...body]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, title.slice(0, 30));
-    XLSX.writeFile(wb, `${title.replace(/\s+/g, "_")}.xlsx`);
+    void downloadAoaXlsx({ sheetName: title.slice(0, 30), fileName: `${title.replace(/\s+/g, "_")}.xlsx`, header, body });
   }
 
   return (

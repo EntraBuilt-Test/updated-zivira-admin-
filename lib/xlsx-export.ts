@@ -177,3 +177,28 @@ export async function exportElementToXlsx(root: HTMLElement, fileName: string): 
   await downloadXlsx(model, fileName);
   return true;
 }
+
+// Round 45 -- styled replacement for the older plain `XLSX.utils.aoa_to_sheet`
+// exports (Coverage Analysis 2, MSIS, Dispatch, generic masters): header row
+// with teal fill + bold white text, thin borders, numbers as numbers, optional
+// merged group headers. Same exceljs writer as every other report.
+const HEAD_FILL = "00796B";
+const hcell = (text: string, colSpan = 1, rowSpan = 1): XCell => ({ text, colSpan, rowSpan, bg: HEAD_FILL, color: "FFFFFF", bold: true, align: "center", header: true });
+const bcell = (v: string | number | null | undefined): XCell => {
+  const text = v === null || v === undefined ? "" : String(v);
+  return { text, num: typeof v === "number" ? v : parseNumeric(text), colSpan: 1, rowSpan: 1, bold: false, align: "left", header: false };
+};
+export type AoaOpts = { sheetName: string; fileName: string; header: string[]; body: (string | number | null | undefined)[][]; groups?: { fixed: number; groups: { label: string; cols: string[] }[] } };
+export function aoaModel(opts: AoaOpts): TableModel {
+  const rows: XCell[][] = [];
+  if (opts.groups) {
+    const fixed = opts.header.slice(0, opts.groups.fixed);
+    rows.push([...fixed.map((h) => hcell(h, 1, 2)), ...opts.groups.groups.map((g) => hcell(g.label, g.cols.length))]);
+    rows.push(opts.groups.groups.flatMap((g) => g.cols.map((c) => hcell(c))));
+  } else rows.push(opts.header.map((h) => hcell(h)));
+  for (const r of opts.body) rows.push(r.map(bcell));
+  return { tables: [{ rows }], sheetName: opts.sheetName };
+}
+export async function downloadAoaXlsx(opts: AoaOpts): Promise<void> {
+  await downloadXlsx(aoaModel(opts), opts.fileName);
+}

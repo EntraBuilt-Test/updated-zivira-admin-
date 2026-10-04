@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import * as XLSX from "xlsx";
+import { downloadAoaXlsx } from "@/lib/xlsx-export";
 import { apiClient, type Employee } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
 
@@ -112,10 +112,7 @@ export function LeaveStatusViewPanel({ masterKey: _masterKey }: { masterKey: str
       r.takenCl, r.takenPl, r.takenSl, r.takenLop,
       r.balanceCl, r.balancePl, r.balanceSl, r.balanceLop
     ]);
-    const ws = XLSX.utils.aoa_to_sheet([header, ...body]);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Leave Status View");
-    XLSX.writeFile(wb, "Leave_Status_View.xlsx");
+    void downloadAoaXlsx({ sheetName: "Leave Status View", fileName: "Leave_Status_View.xlsx", header, body });
   }
 
   return (

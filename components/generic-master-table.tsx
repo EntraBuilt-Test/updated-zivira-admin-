@@ -1014,18 +1014,9 @@ export function GenericMasterTable({
   async function exportToExcel() {
     if (!schema || rows.length === 0) return;
     const { headers, rows: dataRows } = buildExportMatrix();
-    const XLSX = await import("xlsx");
-    const worksheet = XLSX.utils.aoa_to_sheet([headers, ...dataRows]);
-    worksheet["!cols"] = headers.map((h, colIdx) => {
-      const longest = dataRows.reduce((max, r) => Math.max(max, (r[colIdx] ?? "").length), h.length);
-      // Clamp so one very long free-text cell can't blow the sheet out to an
-      // unreadable width; Excel still wraps/truncates gracefully within a cell.
-      return { wch: Math.min(Math.max(longest + 2, 10), 60) };
-    });
-    worksheet["!rows"] = [{ hpt: 20 }];
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, (schema.title || masterKey).slice(0, 31));
-    XLSX.writeFile(workbook, `${schema.title || masterKey}.xlsx`);
+    // Round 45 -- styled export through the shared exceljs writer (teal header, borders).
+    const { downloadAoaXlsx } = await import("@/lib/xlsx-export");
+    await downloadAoaXlsx({ sheetName: (schema.title || masterKey).slice(0, 31), fileName: `${schema.title || masterKey}.xlsx`, header: headers, body: dataRows });
   }
 
   // PDF export: column widths are computed from content length too (not left
