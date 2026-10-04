@@ -937,6 +937,29 @@ export type ReviewReportResult = {
 };
 export type AssessmentResult = { months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; cols: Record<string, Record<string, string>> };
 
+// ── Round 42 -- POB/Rx screens and Heat Analysis ───────────────────────
+export type PobRxEmployee = { employeeCode: string; name: string; designation: string; hq: string; doj: string | null } | null;
+export type PobRxProductWiseResult = {
+  mode: "Doctors" | "Chemists"; months: string[]; employee: PobRxEmployee;
+  products: { sno: number; name: string; pack: string; perMonth: Record<string, { qty: number; rate: number | null; value: number }>; total: { qty: number; value: number } }[];
+  totals: { perMonth: Record<string, { qty: number; value: number }>; total: { qty: number; value: number } };
+};
+export type PobRxFieldforceWiseResult = {
+  mode: "Doctors" | "Chemists"; months: string[]; employee: PobRxEmployee;
+  rows: { employeeCode: string; name: string; hq: string; designation: string; isManager: boolean; perMonth: Record<string, { qty: number; value: number }>; total: { qty: number; value: number } }[];
+};
+export type PobRxDayCell = { drs: number; che: number; qty: number; value: number };
+export type PobRxDayWiseResult = {
+  mode: "Datewise" | "Productwise"; month: string; days: number; employee: PobRxEmployee;
+  rows: { employeeCode: string; name: string; hq: string; designation: string; isManager: boolean; product?: string; perDay: PobRxDayCell[]; total: PobRxDayCell }[];
+};
+export type HeatKind = "drs" | "products" | "hqs";
+export type HeatResult = {
+  kind: HeatKind; months: number; from: string; to: string;
+  employee: { employeeCode: string; name: string; designation: string; hq: string };
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; cnt: number; isSelected: boolean }[];
+};
+
 export const apiClient = {
   // Round 39 item 1 -- fired when a login page opens so a sleeping backend
   // starts waking while the user types credentials.
@@ -2360,6 +2383,37 @@ export const apiClient = {
   },
   assessmentReport(params: { employeeCode: string; fromMonth: string; toMonth: string }) {
     return request<AssessmentResult>(`/company/mis/assessment?${new URLSearchParams(params).toString()}`);
+  },
+  pobrxProductWise(p: { employeeCode: string; fromMonth: string; toMonth: string; mode: string }) {
+    return request<PobRxProductWiseResult>(`/company/mis/pobrx/product-wise?${new URLSearchParams(p).toString()}`);
+  },
+  pobrxFieldforceWise(p: { employeeCode: string; fromMonth: string; toMonth: string; mode: string }) {
+    return request<PobRxFieldforceWiseResult>(`/company/mis/pobrx/fieldforce-wise?${new URLSearchParams(p).toString()}`);
+  },
+  pobrxDayWise(p: { employeeCode: string; month: string; withoutVacant: boolean; mode: string; products: string[] }) {
+    return request<PobRxDayWiseResult>(`/company/mis/pobrx/day-wise?${new URLSearchParams({ employeeCode: p.employeeCode, month: p.month, withoutVacant: String(p.withoutVacant), mode: p.mode, products: p.products.join("||") }).toString()}`);
+  },
+  heatReport(kind: HeatKind, p: { employeeCode: string; months: number }) {
+    return request<HeatResult>(`/company/mis/heat/${kind}?${new URLSearchParams({ employeeCode: p.employeeCode, months: String(p.months) }).toString()}`);
+  },
+  // Listed Dr/Chem Dump: the response IS the .xlsx file.
+  async downloadPobrxDump(p: { employeeCode: string; month: string; mode: string; products: string[]; checkVacant: boolean; option: string }) {
+    const token = getToken();
+    const qs = new URLSearchParams({ employeeCode: p.employeeCode, month: p.month, mode: p.mode, products: p.products.join("||"), checkVacant: String(p.checkVacant), option: p.option });
+    const response = await fetchWithTimeout(`${API_BASE_URL}/company/mis/pobrx/dump?${qs.toString()}`, { headers: token ? { Authorization: `Bearer ${token}` } : {} }, 180000);
+    if (!response.ok) {
+      let message = "Download failed";
+      try { message = (await response.json())?.error?.message ?? message; } catch { /* non-JSON error body */ }
+      throw new Error(message);
+    }
+    const blob = await response.blob();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `Dr_Che_POB_${p.month}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   },
   // DCR Analysis Dump: the file IS the output (CSV or real .xlsx), streamed
   // from the backend with the Bearer token and saved via a blob link.

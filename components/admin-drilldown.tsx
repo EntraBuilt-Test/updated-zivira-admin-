@@ -54,6 +54,8 @@ import { DcrNotApprovedReport, DcrNotSubmittedReport, DcrCountModewiseReport, Dc
 import { SurveyWorkspace } from "@/components/survey-workspace";
 import { CustomReportWorkspace } from "@/components/custom-report-workspace";
 import { HqCoveragewiseReport, CoverageAnalysis1Report, JointWorkwiseReport } from "@/components/manager-analysis-panels";
+import { PobRxProductWiseReport, PobRxFieldforceWiseReport, PobRxDayWiseReport, PobRxDumpReport } from "@/components/pob-rx-panels";
+import { NotAtAllVisitDrsReport, NotAtAllPromotedProductsReport, NotAtAllVisitHqsReport } from "@/components/heat-panels";
 import { DcrAnalysisReport, VisitAnalysisReport, SalesDetailsReport, PobWiseReport, PobPeriodicReport } from "@/components/mis-analysis-panels";
 import { WorkHygieneReport, ClassWiseViewReport, DcrAnalysisDumpReport, MissedCallReport, SingleDoctorReport, RepVsManagerReport, ReviewReport, AssessmentReport } from "@/components/mis-analysis-panels-2";
 import { FieldworkManagerAnalysisReport, ManagerWiseCoverageReport, SpecialityCategoryVisitReport } from "@/components/manager-analysis-panels-2";
@@ -883,6 +885,27 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
   if (pathStr.endsWith("mis-reports/analysis/sales-details")) {
     return <SalesDetailsReport />;
+  }
+  if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-product-wise")) {
+    return <PobRxProductWiseReport />;
+  }
+  if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-fieldforce-wise")) {
+    return <PobRxFieldforceWiseReport />;
+  }
+  if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-day-wise")) {
+    return <PobRxDayWiseReport />;
+  }
+  if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-dump")) {
+    return <PobRxDumpReport />;
+  }
+  if (pathStr.endsWith("mis-reports/heat-analysis/not-at-all-visited-drs")) {
+    return <NotAtAllVisitDrsReport />;
+  }
+  if (pathStr.endsWith("mis-reports/heat-analysis/not-at-all-promoted-products")) {
+    return <NotAtAllPromotedProductsReport />;
+  }
+  if (pathStr.endsWith("mis-reports/heat-analysis/not-at-all-visited-hqs")) {
+    return <NotAtAllVisitHqsReport />;
   }
   if (pathStr.endsWith("mis-reports/analysis/pob-wise")) {
     return <PobWiseReport />;
