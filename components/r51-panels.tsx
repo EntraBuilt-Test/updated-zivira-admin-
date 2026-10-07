@@ -8,21 +8,21 @@ import { apiClient, type AtGlanceResult, type ChemistUnlistedResult, type Listed
 // Round 51 -- MIS Reports > Visit Details / Product Exposure screens (legacy ASPX parity).
 // Green-header family (icon toolbar): At a Glance, Chemist/UnListed/Stockiest, Vacant-HQ manager visits.
 // Teal #0099b0 family (Print/Excel/Close): Territory wise, Product Exposure (+ unlisted), ListedDr - Product Visit.
-const CARD = "bg-surface-card rounded-xl shadow-sm p-5 space-y-4 max-w-5xl";
-const TEAL = "#0099b0";
-const TH = "border border-black px-1 py-0.5 text-xs font-bold text-center whitespace-nowrap";
-const TD = "border border-black px-1 py-0.5 text-xs";
-const prev = (): MY => (NOW.m === 1 ? { m: 12, y: NOW.y - 1 } : { m: NOW.m - 1, y: NOW.y });
-const dash = (n: number | null | undefined) => (n ? String(n) : "-");
+export const CARD = "bg-surface-card rounded-xl shadow-sm p-5 space-y-4 max-w-5xl";
+export const TEAL = "#0099b0";
+export const TH = "border border-black px-1 py-0.5 text-xs font-bold text-center whitespace-nowrap";
+export const TD = "border border-black px-1 py-0.5 text-xs";
+export const prev = (): MY => (NOW.m === 1 ? { m: 12, y: NOW.y - 1 } : { m: NOW.m - 1, y: NOW.y });
+export const dash = (n: number | null | undefined) => (n ? String(n) : "-");
 const f2 = (n: number | null) => (n === null ? "-" : n.toFixed(2));
-const ffLine = (e: R51Emp, label = "Field Force Name") => `${label} : ${e.name} - ${e.designation} - ${e.hq}`;
-const rangeLong = (months: string[]) => `${monthLong(months[0], " ")} To ${monthLong(months[months.length - 1], " ")}`;
-const rangeShort = (months: string[], to = "To") => `${monthShort(months[0], " ")} ${to} ${monthShort(months[months.length - 1], " ")}`;
-function Err({ msg }: { msg: string }) { return msg ? <p className="text-sm text-status-danger">{msg}</p> : null; }
-function Notes({ notes }: { notes: string[] }) { return <>{notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}</>; }
+export const ffLine = (e: R51Emp, label = "Field Force Name") => `${label} : ${e.name} - ${e.designation} - ${e.hq}`;
+export const rangeLong = (months: string[]) => `${monthLong(months[0], " ")} To ${monthLong(months[months.length - 1], " ")}`;
+export const rangeShort = (months: string[], to = "To") => `${monthShort(months[0], " ")} ${to} ${monthShort(months[months.length - 1], " ")}`;
+export function Err({ msg }: { msg: string }) { return msg ? <p className="text-sm text-status-danger">{msg}</p> : null; }
+export function Notes({ notes }: { notes: string[] }) { return <>{notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}</>; }
 
 // shared form state: filter+dropdown, From/To month+year, Go
-function RangeForm<T>({ title, run, button = "Go", defaultFrom, colorize, extra, extraReady = true, toLabel = "To", hideTo, noFilter, children }: {
+export function RangeForm<T>({ title, run, button = "Go", defaultFrom, colorize, extra, extraReady = true, toLabel = "To", hideTo, noFilter, children }: {
   title: string; run: (p: { code: string; range: Record<string, string>; from: MY; to: MY }) => Promise<T>; button?: string; defaultFrom?: MY; colorize?: boolean;
   extra?: ReactNode; extraReady?: boolean; toLabel?: string; hideTo?: boolean; noFilter?: boolean; children: (result: T, close: () => void) => ReactNode;
 }) {

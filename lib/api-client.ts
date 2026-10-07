@@ -587,6 +587,14 @@ export type PriorityWiseResult = R51Base & { product: string; slots: number[]; r
 export type SampleSource = "dcr" | "despatch" | "both";
 export type SampleDetailsResult = R51Base & { source: SampleSource; rows: { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; region: string; state: string; perMonth: Record<string, number>; total: number }[] };
 export type SampleDrillResult = { employeeCode: string; month: string; rows: { date: string; doctor: string; product: string; qty: number; source: string; ref: string }[] };
+export type InputDetailsResult = R51Base & { source: string; totals: Record<string, number>; grandTotal: number; rows: { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; region: string; state: string; perMonth: Record<string, number>; total: number }[] };
+export type SampleRxResult = R51Base & { mode: string; items: string[]; basis: string; rows: { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; multiple: number; unique: number; totalQty: number; perMonth: Record<string, Record<string, number>> }[]; total: { multiple: number; unique: number; totalQty: number; perMonth: Record<string, Record<string, number>> } };
+export type DelayedStatusResult = { month: string; employee: R51Emp; notes: string[]; rows: { sno: number; employeeCode: string; name: string; hq: string; designation: string; role: string; joiningDate: string; resignedDate: string; lastDcrDate: string; manager1: string; manager2: string; notReleased: string[]; released: string[] }[] };
+export type LeaveTally = { CL: number; PL: number; SL: number; LOP: number; total: number };
+export type LeaveActiveResult = R51Base & { rows: { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; perMonth: Record<string, LeaveTally>; totals: LeaveTally }[] };
+export type LeavePeriodicallyResult = { from: string; to: string; detailed: boolean; employee: R51Emp; notes: string[]; rows: (LeaveTally & { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; joiningDate: string; leaveDates: string[] })[] };
+export type MailStatusResult = { from: string; to: string; notes: string[]; rows: { sno: number; sentAt: string; to: string; toName: string; subject: string; mailType: string; status: string; error: string; channel: string }[] };
+export type TpDeviationLegacyResult = { month: string; employee: R51Emp; notes: string[]; rows: { date: string; day: string; asPerTp: string; asPerDcr: string }[] };
 export type ModewiseType = "category" | "speciality" | "class" | "campaign";
 export type ModewiseResult = {
   type: ModewiseType; months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; notes: string[]; groups?: string[];
@@ -2586,6 +2594,14 @@ export const apiClient = {
   priorityWise(p: Record<string, string>) { return request<PriorityWiseResult>(`/company/mis/product-priority-wise?${new URLSearchParams(p).toString()}`); },
   sampleDetails(p: Record<string, string>) { return request<SampleDetailsResult>(`/company/mis/sample-details?${new URLSearchParams(p).toString()}`); },
   sampleDetailsDrill(p: Record<string, string>) { return request<SampleDrillResult>(`/company/mis/sample-details/drill?${new URLSearchParams(p).toString()}`); },
+  inputDetails(p: Record<string, string>) { return request<InputDetailsResult>(`/company/mis/input-details?${new URLSearchParams(p).toString()}`); },
+  sampleRxProducts(mode: "product" | "brand") { return request<string[]>(`/company/mis/sample-rx-products?mode=${mode}`); },
+  sampleRxQuantity(p: Record<string, string>) { return request<SampleRxResult>(`/company/mis/sample-rx-quantity?${new URLSearchParams(p).toString()}`); },
+  delayedStatus(p: Record<string, string>) { return request<DelayedStatusResult>(`/company/mis/delayed-status?${new URLSearchParams(p).toString()}`); },
+  leaveStatusActive(p: Record<string, string>) { return request<LeaveActiveResult>(`/company/mis/leave-status-active?${new URLSearchParams(p).toString()}`); },
+  leaveStatusPeriodically(p: Record<string, string>) { return request<LeavePeriodicallyResult>(`/company/mis/leave-status-periodically?${new URLSearchParams(p).toString()}`); },
+  mailStatus(p: Record<string, string>) { return request<MailStatusResult>(`/company/mis/mail-status?${new URLSearchParams(p).toString()}`); },
+  tpDeviationBaselevel(p: Record<string, string>) { return request<TpDeviationLegacyResult>(`/company/mis/tp-deviation-baselevel?${new URLSearchParams(p).toString()}`); },
   modewise(p: { sfCode: string; type: ModewiseType; fromMonth: string; fromYear: string; toMonth?: string; toYear?: string; metric?: string }) { return request<ModewiseResult>(`/company/mis/modewise?${new URLSearchParams(p as Record<string, string>).toString()}`); },
   // Round 45
   quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {
