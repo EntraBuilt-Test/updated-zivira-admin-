@@ -17,15 +17,9 @@ const titleCls = "text-lg font-bold underline text-center";
 
 // ═══ 1) Input Details ═════════════════════════════════════════════════
 export function InputDetailsReport() {
-  const [source, setSource] = useState("dcr");
   return (
     <RangeForm<InputDetailsResult> title="Input Details" button="View" defaultFrom={NOW}
-      extra={(
-        <div className="flex flex-col gap-1"><span className={LABEL}>Source</span>
-          <select className={SELECT} value={source} onChange={(e) => setSource(e.target.value)}><option value="dcr">DCR inputs given</option><option value="despatch">Despatch (issued to rep)</option><option value="both">Both</option></select>
-        </div>
-      )}
-      run={async ({ range }) => (await apiClient.inputDetails({ ...range, source })).data}>
+      run={async ({ range }) => (await apiClient.inputDetails({ ...range })).data}>
       {(r, close) => {
         const bg = { background: TEAL, color: "#fff" };
         return (
@@ -68,7 +62,6 @@ export function SampleRxQuantityReport() {
   const [from, setFrom] = useState<MY>(prev());
   const [to, setTo] = useState<MY>(NOW);
   const [mode, setMode] = useState<"" | "product" | "brand">("");
-  const [basis, setBasis] = useState("sampled");
   const [options, setOptions] = useState<string[]>([]);
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const [result, setResult] = useState<SampleRxResult | null>(null);
@@ -84,7 +77,7 @@ export function SampleRxQuantityReport() {
   async function view() {
     if (!mode) return;
     setLoading(true); setError("");
-    try { setResult((await apiClient.sampleRxQuantity({ sfCode: code, ...mkRange(from, to), mode, basis, items: options.filter((o) => picked.has(o)).join("|") })).data); }
+    try { setResult((await apiClient.sampleRxQuantity({ sfCode: code, ...mkRange(from, to), mode, items: options.filter((o) => picked.has(o)).join("|") })).data); }
     catch (e) { setError(e instanceof Error ? e.message : "Unable to load report"); setResult(null); } finally { setLoading(false); }
   }
   return (
@@ -97,9 +90,6 @@ export function SampleRxQuantityReport() {
           <MonthYear label="To" v={to} onChange={setTo} />
           <div className="flex flex-col gap-1"><span className={LABEL}>Select Mode</span>
             <select className={SELECT} value={mode} onChange={(e) => setMode(e.target.value as "" | "product" | "brand")}><option value="">--Select--</option><option value="product">Product wise</option><option value="brand">Brand wise</option></select>
-          </div>
-          <div className="flex flex-col gap-1"><span className={LABEL}>Rx basis</span>
-            <select className={SELECT} value={basis} onChange={(e) => setBasis(e.target.value)}><option value="sampled">Sampled doctors only</option><option value="all">All Rx</option></select>
           </div>
         </div>
         {mode && (

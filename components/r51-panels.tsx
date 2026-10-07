@@ -476,20 +476,11 @@ export function ProductPriorityWiseReport() {
 
 // Sample Details (Sample / Input > Sample Issued - Fieldforce Wise)
 export function SampleDetailsReport() {
-  const [source, setSource] = useState<"dcr" | "despatch" | "both">("dcr");
   const [drill, setDrill] = useState<{ code: string; name: string; month: string } | null>(null);
   return (
     <>
       <RangeForm<import("@/lib/api-client").SampleDetailsResult> title="Sample Details" button="View" defaultFrom={NOW}
-        extra={(
-          <div className="flex flex-col gap-1">
-            <span className={LABEL}>Source</span>
-            <select className={SELECT} value={source} onChange={(e) => setSource(e.target.value as "dcr" | "despatch" | "both")}>
-              <option value="dcr">DCR samples given</option><option value="despatch">Despatch (issued to rep)</option><option value="both">Both</option>
-            </select>
-          </div>
-        )}
-        run={async ({ range }) => (await apiClient.sampleDetails({ ...range, source })).data}>
+        run={async ({ range }) => (await apiClient.sampleDetails({ ...range })).data}>
         {(r, close) => {
           const bg = { background: TEAL, color: "#fff" };
           return (
@@ -517,14 +508,14 @@ export function SampleDetailsReport() {
           );
         }}
       </RangeForm>
-      {drill && <SampleDrill d={drill} source={source} onClose={() => setDrill(null)} />}
+      {drill && <SampleDrill d={drill} onClose={() => setDrill(null)} />}
     </>
   );
 }
-function SampleDrill({ d, source, onClose }: { d: { code: string; name: string; month: string }; source: string; onClose: () => void }) {
+function SampleDrill({ d, onClose }: { d: { code: string; name: string; month: string }; onClose: () => void }) {
   const [res, setRes] = useState<import("@/lib/api-client").SampleDrillResult | null>(null);
   const [err, setErr] = useState("");
-  useEffect(() => { apiClient.sampleDetailsDrill({ sfCode: d.code, month: d.month, source }).then((r) => setRes(r.data)).catch((e) => setErr(e instanceof Error ? e.message : "Unable to load")); }, [d, source]);
+  useEffect(() => { apiClient.sampleDetailsDrill({ sfCode: d.code, month: d.month }).then((r) => setRes(r.data)).catch((e) => setErr(e instanceof Error ? e.message : "Unable to load")); }, [d]);
   const bg = { background: TEAL, color: "#fff" };
   return (
     <ReportModal title={`Samples - ${d.name}`} fileName="Sample_Details_Drilldown" onClose={onClose} textButtons>
