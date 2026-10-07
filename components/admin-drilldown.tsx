@@ -58,6 +58,7 @@ import { PobRxProductWiseReport, PobRxFieldforceWiseReport, PobRxDayWiseReport, 
 import { RcpaDumpReport, SkuDumpReport, VisitDrsDumpReport, SsDumpReport, ListeddrDumpReport, ChemistDumpReport, TransitBillsDumpReport, StockistDumpReport, ResignedUserStatusReport, JoinLeftDetailsReport, TpDeviationReport } from "@/components/r46-panels";
 import { QuizTestResultReport, DayWiseDumpReport, CallReportDumpReport, DetailingVisitWiseReport, BrandStarRatingReport, SlideAnalysisReport, DrsAnalysisReport } from "@/components/r45-panels";
 import { CatClsVisitDetailsReport, VisitDetailDateWiseReport } from "@/components/visit-details-panels";
+import { DoctorwisePeriodicallyReport, CallFeedbackwiseReport, FixationwiseByVisitReport } from "@/components/r48-panels";
 import { NotAtAllVisitDrsReport, NotAtAllPromotedProductsReport, NotAtAllVisitHqsReport } from "@/components/heat-panels";
 import { DcrAnalysisReport, VisitAnalysisReport, SalesDetailsReport, PobWiseReport, PobPeriodicReport } from "@/components/mis-analysis-panels";
 import { WorkHygieneReport, ClassWiseViewReport, DcrAnalysisDumpReport, MissedCallReport, SingleDoctorReport, RepVsManagerReport, ReviewReport, AssessmentReport } from "@/components/mis-analysis-panels-2";
@@ -921,6 +922,9 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/digital-detailing/drs-analysis")) return <DrsAnalysisReport />;
   if (pathStr.endsWith("mis-reports/visit-details/cat-cls-splty-lstdr-wise")) return <CatClsVisitDetailsReport />;
   if (pathStr.endsWith("mis-reports/visit-details/datewise")) return <VisitDetailDateWiseReport />;
+  if (pathStr.endsWith("mis-reports/visit-details/doctorwise-periodically")) return <DoctorwisePeriodicallyReport />;
+  if (pathStr.endsWith("mis-reports/visit-details/call-feedbackwise")) return <CallFeedbackwiseReport />;
+  if (pathStr.endsWith("mis-reports/visit-details/fixationwise-by-visit")) return <FixationwiseByVisitReport />;
   if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-product-wise")) {
     return <PobRxProductWiseReport />;
   }

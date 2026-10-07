@@ -985,6 +985,20 @@ export type DateWiseResult = {
       days: { day: number; weekday: string; status: string; calls: (DateWiseDoctor & { time: string; products: string })[] }[] }
 );
 
+// Round 48 -- Doctorwise (Periodically), Call Feedbackwise, Fixationwise (By Visit)
+export type DoctorwiseMode = "baselevel" | "baselevel-managers" | "deactivate" | "daywise-remarks" | "listed-remarks" | "core-mapwise" | "ii-level" | "core-periodically" | "campaignwise";
+export type DoctorwiseResult = { mode: DoctorwiseMode; kind: DoctorwiseMode; months: string[]; employee: DetailingBase; notes: string[]; rows?: any[]; days?: any[]; buckets?: string[]; baseLevel?: DetailingBase | null };
+export type CallFeedbackResult = {
+  months: string[]; employee: DetailingBase; notes: string[];
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; perMonth: Record<string, { tdrs: number; met: number; feedback: number }> }[];
+};
+export type FixationType = "Category" | "Speciality" | "Class" | "Campaign";
+export type FixationCell = { tdrs: number; v0: number; v1: number; v2: number; vm2: number; miss: number };
+export type FixationResult = {
+  type: FixationType; months: string[]; employee: DetailingBase; notes: string[]; values: { value: string; norm: number | null }[];
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; subDivision: string; isManager: boolean; nlDrs: number; perMonth: Record<string, Record<string, FixationCell>> }[];
+};
+
 // Round 45 -- Quiz Test Result, Summary dumps, Digital Detailing, Slide Analysis, Drs Analyis
 export type QuizResultResult = {
   month: string; scope: "Team" | "Individual"; days: { day: number; label: string }[];
@@ -2487,6 +2501,15 @@ export const apiClient = {
     if (p.week) qs.set("week", String(p.week));
     return request<DateWiseResult>(`/company/mis/visit-details/datewise?${qs.toString()}`);
   },
+  // Round 48
+  doctorwiseBaseLevels(employeeCode: string) { return request<DetailingBase[]>(`/company/mis/doctorwise/baselevels?${new URLSearchParams({ employeeCode }).toString()}`); },
+  doctorwisePeriodically(p: { mode: DoctorwiseMode; employeeCode: string; scope: "Team" | "Individual"; baseLevel?: string; fromMonth: string; toMonth: string }) {
+    const qs = new URLSearchParams({ mode: p.mode, employeeCode: p.employeeCode, scope: p.scope, fromMonth: p.fromMonth, toMonth: p.toMonth });
+    if (p.baseLevel) qs.set("baseLevel", p.baseLevel);
+    return request<DoctorwiseResult>(`/company/mis/doctorwise/periodically?${qs.toString()}`);
+  },
+  callFeedbackwise(p: { employeeCode: string; fromMonth: string; toMonth: string }) { return request<CallFeedbackResult>(`/company/mis/call-feedbackwise?${new URLSearchParams(p).toString()}`); },
+  fixationwise(p: { employeeCode: string; type: FixationType; fromMonth: string; toMonth: string }) { return request<FixationResult>(`/company/mis/fixationwise?${new URLSearchParams(p).toString()}`); },
   // Round 45
   quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {
     return request<QuizResultResult>(`/company/mis/quiz-result?${new URLSearchParams(p).toString()}`);
