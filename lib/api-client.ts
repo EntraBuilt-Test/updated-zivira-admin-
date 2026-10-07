@@ -595,6 +595,11 @@ export type LeaveActiveResult = R51Base & { rows: { sno: number; employeeCode: s
 export type LeavePeriodicallyResult = { from: string; to: string; detailed: boolean; employee: R51Emp; notes: string[]; rows: (LeaveTally & { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; joiningDate: string; leaveDates: string[] })[] };
 export type MailStatusResult = { from: string; to: string; notes: string[]; rows: { sno: number; sentAt: string; to: string; toName: string; subject: string; mailType: string; status: string; error: string; channel: string }[] };
 export type TpDeviationLegacyResult = { month: string; employee: R51Emp; notes: string[]; rows: { date: string; day: string; asPerTp: string; asPerDcr: string }[] };
+export type TpDevManagersResult = { month: string; employee: R51Emp; notes: string[]; rows: { sno: number; employeeCode: string; fieldForce: string; date: string; day: string; asPerTp: string; asPerDcr: string }[] };
+export type TpDevAtGlanceResult = R51Base & { rows: { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; perMonth: Record<string, number> }[] };
+export type TpDevDrillResult = { month: string; employee: R51Emp; rows: { date: string; day: string; asPerTp: string; asPerDcr: string }[] };
+export type DoctorsAddDeactResult = R51Base & { totals: Record<string, { added: number; deactivated: number }>; rows: { sno: number; employeeCode: string; name: string; hq: string; designation: string; division: string; level1: string; level2: string; level3: string; perMonth: Record<string, { added: number; deactivated: number }> }[] };
+export type DoctorsAddDeactDrillResult = { employeeCode: string; month: string; kind: string; rows: { doctorName: string; doctorCode: string; specialty: string; category: string; cls: string; date: string }[] };
 export type ModewiseType = "category" | "speciality" | "class" | "campaign";
 export type ModewiseResult = {
   type: ModewiseType; months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; notes: string[]; groups?: string[];
@@ -2602,6 +2607,11 @@ export const apiClient = {
   leaveStatusPeriodically(p: Record<string, string>) { return request<LeavePeriodicallyResult>(`/company/mis/leave-status-periodically?${new URLSearchParams(p).toString()}`); },
   mailStatus(p: Record<string, string>) { return request<MailStatusResult>(`/company/mis/mail-status?${new URLSearchParams(p).toString()}`); },
   tpDeviationBaselevel(p: Record<string, string>) { return request<TpDeviationLegacyResult>(`/company/mis/tp-deviation-baselevel?${new URLSearchParams(p).toString()}`); },
+  tpDeviationManagers(p: Record<string, string>) { return request<TpDevManagersResult>(`/company/mis/tp-deviation-managers?${new URLSearchParams(p).toString()}`); },
+  tpDeviationAtGlance(p: Record<string, string>) { return request<TpDevAtGlanceResult>(`/company/mis/tp-deviation-at-glance?${new URLSearchParams(p).toString()}`); },
+  tpDeviationDrill(p: Record<string, string>) { return request<TpDevDrillResult>(`/company/mis/tp-deviation-at-glance/drill?${new URLSearchParams(p).toString()}`); },
+  doctorsAddDeactivation(p: Record<string, string>) { return request<DoctorsAddDeactResult>(`/company/mis/doctors-add-deactivation?${new URLSearchParams(p).toString()}`); },
+  doctorsAddDeactDrill(p: Record<string, string>) { return request<DoctorsAddDeactDrillResult>(`/company/mis/doctors-add-deactivation/drill?${new URLSearchParams(p).toString()}`); },
   modewise(p: { sfCode: string; type: ModewiseType; fromMonth: string; fromYear: string; toMonth?: string; toYear?: string; metric?: string }) { return request<ModewiseResult>(`/company/mis/modewise?${new URLSearchParams(p as Record<string, string>).toString()}`); },
   // Round 45
   quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {

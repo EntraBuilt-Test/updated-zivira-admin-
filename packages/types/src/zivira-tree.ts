@@ -260,7 +260,9 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         node("Digital Detailing", "digital-detailing", "division", [node("Visit Wise", "visit-wise", "division"), node("Brand Wise Star Rating", "brand-wise-star-rating", "division"), node("Product Slide Analysis", "product-slide-analysis", "division"), node("Drs Analysis", "drs-analysis", "division")]),
         node("Summary", "summary", "division", [node("Day Wise Reports", "day-wise-reports", "division"), node("Call Report Dump", "call-report-dump", "division")]),
         node("Quiz Test Result", "quiz-test-result", "division"),
-        node("TP - Deviation For Baselevel", "tp-deviation-baselevel", "division")
+        node("TP - Deviation For Baselevel", "tp-deviation-baselevel", "division"),
+        node("TP - Deviation For Managers", "tp-deviation-managers", "division"),
+        node("TP - Deviation At A Glance", "tp-deviation-at-glance", "division")
       ]),
       node("Options", "division-options", "division", [
         node("Dashboard", "dashboard", "division"),

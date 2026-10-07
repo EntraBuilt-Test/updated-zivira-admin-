@@ -22,13 +22,13 @@ function useFieldForceList() {
   return { rows, loading };
 }
 
-export function FFPicker({ value, onChange, label = "Field Force Name", clearLabel = "---Select Clear---", colorize, noFilter, adminOption, baseOnly, filterAfterLoad }: { value: string; onChange: (code: string) => void; label?: string; clearLabel?: string; colorize?: boolean; noFilter?: boolean; adminOption?: boolean; baseOnly?: boolean; filterAfterLoad?: boolean }) {
+export function FFPicker({ value, onChange, label = "Field Force Name", clearLabel = "---Select Clear---", colorize, noFilter, adminOption, baseOnly, managersOnly, filterAfterLoad }: { value: string; onChange: (code: string) => void; label?: string; clearLabel?: string; colorize?: boolean; noFilter?: boolean; adminOption?: boolean; baseOnly?: boolean; managersOnly?: boolean; filterAfterLoad?: boolean }) {
   const [filter, setFilter] = useState("");
   const { rows: all, loading } = useFieldForceList();
   const shown = useMemo(() => {
     const f = filter.trim().toLowerCase();
-    return [...all].filter((e) => (!baseOnly || !MANAGER_DESIG.has(e.designation.trim().toUpperCase())) && (e.employeeCode === value || !f || fieldForceLabel(e).toLowerCase().includes(f))).sort((a, b) => a.name.localeCompare(b.name));
-  }, [all, filter, value, baseOnly]);
+    return [...all].filter((e) => (!baseOnly || !MANAGER_DESIG.has(e.designation.trim().toUpperCase())) && (!managersOnly || MANAGER_DESIG.has(e.designation.trim().toUpperCase())) && (e.employeeCode === value || !f || fieldForceLabel(e).toLowerCase().includes(f))).sort((a, b) => a.name.localeCompare(b.name));
+  }, [all, filter, value, baseOnly, managersOnly]);
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>{label}</span>

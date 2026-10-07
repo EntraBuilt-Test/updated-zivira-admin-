@@ -22,6 +22,7 @@ import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
 import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
 import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
 import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
+import { TpDeviationManagersReport, TpDeviationAtGlanceReport, DoctorsAddDeactReport } from "@/components/r54-panels";
 import { InputDetailsReport, SampleRxQuantityReport, DelayedStatusReport, LeaveStatusActiveReport, LeaveStatusPeriodicallyReport, MailStatusReport, TpDeviationBaselevelReport } from "@/components/r53-panels";
 import { AtAGlanceReport, VacantManagerVisitReport, ChemistUnlistedReport, TerritoryWiseReport, ProductExposureReport, ProductExposureUnlistedReport, ListedDrProductVisitReport, ProductPriorityWiseReport, SampleDetailsReport } from "@/components/r51-panels";
 import { ModeWiseVisitReport } from "@/components/mode-wise-panel";
@@ -917,6 +918,9 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/dump/listed-stockiest")) return <StockistDumpReport />;
   if (pathStr.endsWith("mis-reports/options/resigned-user-status")) return <ResignedUserStatusReport />;
   if (pathStr.endsWith("mis-reports/options/join-left-details")) return <JoinLeftDetailsReport />;
+  if (pathStr.endsWith("mis-reports/tp-deviation-managers")) return <TpDeviationManagersReport />;
+  if (pathStr.endsWith("mis-reports/tp-deviation-at-glance")) return <TpDeviationAtGlanceReport />;
+  if (pathStr.endsWith("mis-reports/doctor")) return <DoctorsAddDeactReport />;
   if (pathStr.endsWith("mis-reports/tp-deviation-baselevel")) return <TpDeviationBaselevelReport />;
   if (pathStr.endsWith("mis-reports/sample-input/input-issued-fieldforce-wise")) return <InputDetailsReport />;
   if (pathStr.endsWith("mis-reports/sample-input/sample-rx-quantity")) return <SampleRxQuantityReport />;
