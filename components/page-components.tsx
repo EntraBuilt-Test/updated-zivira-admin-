@@ -22,7 +22,7 @@ export function PageHeader({
         <div className="flex items-center gap-3 flex-wrap">
           <h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">{title}</h1>
         </div>
-        <p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2">{description}</p>
+        {description ? <p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2">{description}</p> : null}
       </div>
       {action && (
         <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">

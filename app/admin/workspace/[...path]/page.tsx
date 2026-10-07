@@ -137,12 +137,17 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
     );
   }
 
+  // Round 48 -- Options > Leave Status / Upload / Customer Upload / Information Upload leaves
+  // render their own real screens; the generic "Working modern page..." placeholder is dropped.
+  const isOptionsRealLeaf = /(^|\/)division-options\/(leave-status$|upload\/|customer-upload\/|information-upload\/)/.test(pathStr);
   return (
     <>
       <PageHeader
         title={node.title}
         description={
-          isWiredLeaf
+          isOptionsRealLeaf
+            ? ""
+            : isWiredLeaf
             ? `Live data — every row is saved to MongoDB via the ${node.title} collection. Add, edit, and deactivate records below.`
             : "Working modern page for this exact architecture tab. Data CRUD can be wired to its MongoDB collection."
         }
