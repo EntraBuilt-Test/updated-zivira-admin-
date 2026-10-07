@@ -571,6 +571,11 @@ export type DcrNotApprovedRow = { fieldForceName: string; region: string; pendin
 
 export type DcrNotSubmittedRow = { day: number; expected: string };
 
+export type ModewiseType = "category" | "speciality" | "class" | "campaign";
+export type ModewiseResult = {
+  type: ModewiseType; months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; notes: string[]; groups?: string[];
+  rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; role: string; isManager: boolean; cells?: Record<string, number>; perMonth?: Record<string, Record<string, { ttl: number; met: number; coverage: number | null }>> }[];
+};
 export type DcrCountModewiseChannel = { date: string; count: number };
 export type DcrCountModewiseRow = {
   employeeCode: string; name: string; hq: string; designation: string;
@@ -2552,6 +2557,7 @@ export const apiClient = {
   },
   callFeedbackwise(p: { employeeCode: string; fromMonth: string; toMonth: string }) { return request<CallFeedbackResult>(`/company/mis/call-feedbackwise?${new URLSearchParams(p).toString()}`); },
   fixationwise(p: { employeeCode: string; type: FixationType; fromMonth: string; toMonth: string }) { return request<FixationResult>(`/company/mis/fixationwise?${new URLSearchParams(p).toString()}`); },
+  modewise(p: { sfCode: string; type: ModewiseType; fromMonth: string; fromYear: string; toMonth?: string; toYear?: string }) { return request<ModewiseResult>(`/company/mis/modewise?${new URLSearchParams(p as Record<string, string>).toString()}`); },
   // Round 45
   quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {
     return request<QuizResultResult>(`/company/mis/quiz-result?${new URLSearchParams(p).toString()}`);

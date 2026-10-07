@@ -22,6 +22,7 @@ import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
 import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
 import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
 import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
+import { ModeWiseVisitReport } from "@/components/mode-wise-panel";
 import { InfoItemsPanel, TalkInbox } from "@/components/info-admin-panels";
 import { ListedDoctorUploadPanel } from "@/components/listed-doctor-upload-panel";
 import { ChemistUploadPanel } from "@/components/chemist-upload-panel";
@@ -926,6 +927,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/visit-details/datewise")) return <VisitDetailDateWiseReport />;
   if (pathStr.endsWith("mis-reports/visit-details/doctorwise-periodically")) return <DoctorwisePeriodicallyReport />;
   if (pathStr.endsWith("mis-reports/visit-details/call-feedbackwise")) return <CallFeedbackwiseReport />;
+  if (pathStr.endsWith("mis-reports/visit-details/based-on-modewise")) return <ModeWiseVisitReport />;
   if (pathStr.endsWith("mis-reports/visit-details/fixationwise-by-visit")) return <FixationwiseByVisitReport />;
   if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-product-wise")) {
     return <PobRxProductWiseReport />;
