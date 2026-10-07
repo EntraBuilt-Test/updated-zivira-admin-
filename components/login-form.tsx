@@ -19,6 +19,8 @@ export function LoginForm() {
     try {
       const response = await apiClient.login(username, password);
       setToken(response.data.token);
+      // Round 48 Part C -- warm the dropdown data the first screens need (cached by the api-client).
+      void apiClient.employees().catch(() => undefined);
       router.push("/admin/home");
     } catch (loginError) {
       setError(loginError instanceof Error ? loginError.message : "Unable to sign in");

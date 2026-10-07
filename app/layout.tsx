@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { WakingBanner } from "@/components/waking-banner";
 
 export const metadata: Metadata = {
   title: "Zivira Labs Company Admin",
@@ -15,7 +16,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <link crossOrigin="anonymous" href="https://fonts.gstatic.com" rel="preconnect" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="bg-surface-canvas font-body-md text-on-surface antialiased">{children}</body>
+      <body className="bg-surface-canvas font-body-md text-on-surface antialiased"><WakingBanner apiBase={process.env.NEXT_PUBLIC_API_URL ?? ""} tokenKey="zivira.company.token" />{children}</body>
     </html>
   );
 }

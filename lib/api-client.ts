@@ -1,4 +1,5 @@
 import type { ApiEnvelope, CompanyBranch, CompanyDashboard, DcrExtended, Doctor, DoctorCoverageRow, Employee, Product, TourPlan } from "@zivira/types";
+import { fetchWithRetry } from "@/lib/resilience";
 
 // Re-exported so other modules (e.g. manager-sfc-updation.tsx) can import
 // Employee straight from "@/lib/api-client" instead of reaching into
@@ -229,7 +230,7 @@ export function clearToken() {
 // forever (previously: no timeout at all, and a non-JSON 502 from the
 // host's proxy threw a cryptic "Unexpected token <").
 const REQUEST_TIMEOUT_MS = 30000;
-async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS) {
+async function fetchWithTimeoutOnce(url: string, init: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -243,6 +244,11 @@ async function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs: 
     clearTimeout(timer);
   }
 }
+// Round 48 Part C -- idempotent GETs retry with back-off while a sleeping host wakes (see lib/resilience.ts).
+function fetchWithTimeout(url: string, init: RequestInit = {}, timeoutMs: number = REQUEST_TIMEOUT_MS) {
+  return fetchWithRetry(() => fetchWithTimeoutOnce(url, init, timeoutMs), init.method ?? "GET");
+}
+
 async function readJson(response: Response) {
   try {
     return await response.json();
