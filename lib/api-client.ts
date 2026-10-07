@@ -583,6 +583,10 @@ export type ManagerCoverageResult = { fromMonth: string; toMonth: string; employ
 export type ProductExposureResult = R51Base & { product: string; codes: string[]; rows: (R51Head & { perMonth: Record<string, number> })[]; grand: Record<string, number>; dataAvailable?: boolean };
 export type ProductDrillResult = { product: string; month: string; rows: { doctorName: string; doctorCode: string; speciality: string; territory: string; employeeCode: string; dates: string[] }[] };
 export type ListedDrProductResult = R51Base & { rows: (R51Head & { taggedDrs: number; perMonth: Record<string, number> })[] };
+export type PriorityWiseResult = R51Base & { product: string; slots: number[]; rows: (R51Head & { perMonth: Record<string, Record<string, { drs: number; visited: number }>> })[] };
+export type SampleSource = "dcr" | "despatch" | "both";
+export type SampleDetailsResult = R51Base & { source: SampleSource; rows: { sno: number; employeeCode: string; name: string; designation: string; role: string; hq: string; region: string; state: string; perMonth: Record<string, number>; total: number }[] };
+export type SampleDrillResult = { employeeCode: string; month: string; rows: { date: string; doctor: string; product: string; qty: number; source: string; ref: string }[] };
 export type ModewiseType = "category" | "speciality" | "class" | "campaign";
 export type ModewiseResult = {
   type: ModewiseType; months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; notes: string[]; groups?: string[];
@@ -2579,6 +2583,9 @@ export const apiClient = {
   productExposureDrill(p: { codes: string; product: string; month: string }) { return request<ProductDrillResult>(`/company/mis/product-exposure/drill?${new URLSearchParams(p).toString()}`); },
   listedDrProductVisit(p: Record<string, string>) { return request<ListedDrProductResult>(`/company/mis/listeddr-product-visit?${new URLSearchParams(p).toString()}`); },
   productExposureUnlisted(p: Record<string, string>) { return request<ProductExposureResult>(`/company/mis/product-exposure-unlisted?${new URLSearchParams(p).toString()}`); },
+  priorityWise(p: Record<string, string>) { return request<PriorityWiseResult>(`/company/mis/product-priority-wise?${new URLSearchParams(p).toString()}`); },
+  sampleDetails(p: Record<string, string>) { return request<SampleDetailsResult>(`/company/mis/sample-details?${new URLSearchParams(p).toString()}`); },
+  sampleDetailsDrill(p: Record<string, string>) { return request<SampleDrillResult>(`/company/mis/sample-details/drill?${new URLSearchParams(p).toString()}`); },
   modewise(p: { sfCode: string; type: ModewiseType; fromMonth: string; fromYear: string; toMonth?: string; toYear?: string; metric?: string }) { return request<ModewiseResult>(`/company/mis/modewise?${new URLSearchParams(p as Record<string, string>).toString()}`); },
   // Round 45
   quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {

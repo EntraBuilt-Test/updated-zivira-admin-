@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useEffect, useState, type ReactNode } from "react";
-import { FFPicker, MonthYear, NOW, mkRange, monthLong, monthShort, rowBg, type MY } from "@/components/ff-filter-select";
+import { FFPicker, MonthYear, NOW, mkRange, monthLong, monthShort, rowBg, rowBgByDesignation, type MY } from "@/components/ff-filter-select";
 import { GO, LABEL, SELECT, ReportModal, ScreenTitle } from "@/components/mis-analysis-panels";
 import { apiClient, type AtGlanceResult, type ChemistUnlistedResult, type ListedDrProductResult, type ManagerCoverageResult, type ProductDrillResult, type ProductExposureResult, type R51Emp, type TerritoryResult, type VacantManagerResult } from "@/lib/api-client";
 
@@ -22,9 +22,9 @@ function Err({ msg }: { msg: string }) { return msg ? <p className="text-sm text
 function Notes({ notes }: { notes: string[] }) { return <>{notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}</>; }
 
 // shared form state: filter+dropdown, From/To month+year, Go
-function RangeForm<T>({ title, run, button = "Go", defaultFrom, colorize, extra, extraReady = true, toLabel = "To", hideTo, children }: {
+function RangeForm<T>({ title, run, button = "Go", defaultFrom, colorize, extra, extraReady = true, toLabel = "To", hideTo, noFilter, children }: {
   title: string; run: (p: { code: string; range: Record<string, string>; from: MY; to: MY }) => Promise<T>; button?: string; defaultFrom?: MY; colorize?: boolean;
-  extra?: ReactNode; extraReady?: boolean; toLabel?: string; hideTo?: boolean; children: (result: T, close: () => void) => ReactNode;
+  extra?: ReactNode; extraReady?: boolean; toLabel?: string; hideTo?: boolean; noFilter?: boolean; children: (result: T, close: () => void) => ReactNode;
 }) {
   const [code, setCode] = useState("");
   const [from, setFrom] = useState<MY>(defaultFrom ?? prev());
@@ -42,7 +42,7 @@ function RangeForm<T>({ title, run, button = "Go", defaultFrom, colorize, extra,
       <div className={CARD}>
         <ScreenTitle>{title}</ScreenTitle>
         <div className="flex flex-wrap items-end gap-4">
-          <FFPicker value={code} onChange={setCode} colorize={colorize} />
+          <FFPicker value={code} onChange={setCode} colorize={colorize} noFilter={noFilter} label={noFilter ? "Fieldforce Name" : undefined} clearLabel={noFilter ? "--- Select the Field force ---" : undefined} />
           {extra}
           <MonthYear label="From" v={from} onChange={setFrom} />
           {!hideTo && <MonthYear label={toLabel} v={to} onChange={setTo} />}
@@ -432,5 +432,109 @@ export function ListedDrProductVisitReport() {
         );
       }}
     </RangeForm>
+  );
+}
+
+// ═══ Round 52 ═════════════════════════════════════════════════════════
+// Product Prioritywise Analysis -- RESULT LAYOUT INFERRED (only the legacy form screenshot was available).
+export function ProductPriorityWiseReport() {
+  const products = useProducts();
+  const [product, setProduct] = useState("");
+  return (
+    <RangeForm<import("@/lib/api-client").PriorityWiseResult> title="Product Prioritywise Analysis" button="View" defaultFrom={NOW} noFilter
+      extra={<ProductPick value={product} onChange={setProduct} products={products} />} extraReady={!!product}
+      run={async ({ range }) => (await apiClient.priorityWise({ ...range, product })).data}>
+      {(r, close) => {
+        const bg = { background: TEAL, color: "#fff" };
+        return (
+          <ReportModal title="Product Prioritywise Analysis" fileName="Product_Prioritywise_Analysis" onClose={close} textButtons>
+            <h3 className="text-base font-bold">Product Prioritywise Analysis for the Period of {rangeShort(r.months)}</h3>
+            <p className="text-sm font-bold">{ffLine(r.employee, "Filed Force Name")}</p>
+            <p className="text-sm font-bold">Product Name : <span style={{ color: "red" }}>{productLabel(r.product)}</span></p>
+            <Notes notes={r.notes} />
+            <div style={{ overflowX: "auto" }}>
+              <table className="border-collapse">
+                <thead>
+                  <tr>{["S.No", "FieldForce Name", "Designation", "HQ"].map((h) => <th key={h} rowSpan={2} className={TH} style={bg}>{h}</th>)}{r.months.map((m) => <th key={m} colSpan={r.slots.length} className={TH} style={bg}>{monthLong(m, "-")}</th>)}</tr>
+                  <tr>{r.months.map((m) => r.slots.map((p) => <th key={m + p} className={TH} style={bg}>Priority {p}</th>))}</tr>
+                </thead>
+                <tbody>
+                  {r.rows.map((x) => (
+                    <tr key={x.employeeCode} style={{ background: rowBg(x.role) }}>
+                      <td className={TD + " text-center"}>{x.sno}</td><td className={TD}>{x.name}</td><td className={TD + " text-center"}>{x.designation}</td><td className={TD}>{x.hq}</td>
+                      {r.months.map((m) => r.slots.map((p) => { const c = x.perMonth[m][String(p)]; return <td key={m + p} className={TD + " text-center"}>{c.drs ? `${c.drs} (${c.visited})` : "-"}</td>; }))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </ReportModal>
+        );
+      }}
+    </RangeForm>
+  );
+}
+
+// Sample Details (Sample / Input > Sample Issued - Fieldforce Wise)
+export function SampleDetailsReport() {
+  const [source, setSource] = useState<"dcr" | "despatch" | "both">("dcr");
+  const [drill, setDrill] = useState<{ code: string; name: string; month: string } | null>(null);
+  return (
+    <>
+      <RangeForm<import("@/lib/api-client").SampleDetailsResult> title="Sample Details" button="View" defaultFrom={NOW}
+        extra={(
+          <div className="flex flex-col gap-1">
+            <span className={LABEL}>Source</span>
+            <select className={SELECT} value={source} onChange={(e) => setSource(e.target.value as "dcr" | "despatch" | "both")}>
+              <option value="dcr">DCR samples given</option><option value="despatch">Despatch (issued to rep)</option><option value="both">Both</option>
+            </select>
+          </div>
+        )}
+        run={async ({ range }) => (await apiClient.sampleDetails({ ...range, source })).data}>
+        {(r, close) => {
+          const bg = { background: TEAL, color: "#fff" };
+          return (
+            <ReportModal title="Sample Details" fileName="Sample_Details" onClose={close} textButtons>
+              <h3 className="text-lg font-bold underline text-center">Sample Details</h3>
+              <p className="text-sm font-bold">{ffLine(r.employee, "Filed Force Name")}</p>
+              <Notes notes={r.notes} />
+              <div style={{ overflowX: "auto" }}>
+                <table className="border-collapse">
+                  <thead>
+                    <tr>{["S.No", "FieldForce Name", "Designation", "HQ", "Region", "State"].map((h) => <th key={h} className={TH} style={bg}>{h}</th>)}{r.months.map((m) => <th key={m} className={TH} style={bg}>{monthLong(m, "-")}(Sample Count)</th>)}<th className={TH} style={bg}>Total</th></tr>
+                  </thead>
+                  <tbody>
+                    {r.rows.map((x) => (
+                      <tr key={x.employeeCode} style={{ background: rowBgByDesignation(x.designation, x.role) }}>
+                        <td className={TD + " text-center"}>{x.sno}</td><td className={TD}>{x.name}</td><td className={TD + " text-center"}>{x.designation}</td><td className={TD}>{x.hq}</td><td className={TD}>{x.region}</td><td className={TD}>{x.state}</td>
+                        {r.months.map((m) => <td key={m} className={TD + " text-center"}>{x.perMonth[m] ? <button type="button" className="underline" onClick={() => setDrill({ code: x.employeeCode, name: x.name, month: m })}>{x.perMonth[m]}</button> : "-"}</td>)}
+                        <td className={TD + " text-center"}>{x.total || ""}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </ReportModal>
+          );
+        }}
+      </RangeForm>
+      {drill && <SampleDrill d={drill} source={source} onClose={() => setDrill(null)} />}
+    </>
+  );
+}
+function SampleDrill({ d, source, onClose }: { d: { code: string; name: string; month: string }; source: string; onClose: () => void }) {
+  const [res, setRes] = useState<import("@/lib/api-client").SampleDrillResult | null>(null);
+  const [err, setErr] = useState("");
+  useEffect(() => { apiClient.sampleDetailsDrill({ sfCode: d.code, month: d.month, source }).then((r) => setRes(r.data)).catch((e) => setErr(e instanceof Error ? e.message : "Unable to load")); }, [d, source]);
+  const bg = { background: TEAL, color: "#fff" };
+  return (
+    <ReportModal title={`Samples - ${d.name}`} fileName="Sample_Details_Drilldown" onClose={onClose} textButtons>
+      <h3 className="text-base font-bold">{d.name} - {monthLong(d.month, "-")}</h3>
+      <Err msg={err} />
+      <table className="border-collapse">
+        <thead><tr>{["S.No", "Date", "Doctor", "Product", "Qty", "Source", "Docket"].map((h) => <th key={h} className={TH} style={bg}>{h}</th>)}</tr></thead>
+        <tbody>{res?.rows.map((x, i) => <tr key={i}><td className={TD + " text-center"}>{i + 1}</td><td className={TD}>{x.date}</td><td className={TD}>{x.doctor || "-"}</td><td className={TD}>{x.product}</td><td className={TD + " text-center"}>{x.qty}</td><td className={TD}>{x.source}</td><td className={TD}>{x.ref}</td></tr>)}</tbody>
+      </table>
+    </ReportModal>
   );
 }
