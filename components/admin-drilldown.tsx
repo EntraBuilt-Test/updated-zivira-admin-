@@ -22,6 +22,7 @@ import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
 import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
 import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
 import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
+import { InfoItemsPanel, TalkInbox } from "@/components/info-admin-panels";
 import { ListedDoctorUploadPanel } from "@/components/listed-doctor-upload-panel";
 import { ChemistUploadPanel } from "@/components/chemist-upload-panel";
 import { SampleDespatchUploadPanel } from "@/components/sample-despatch-upload-panel";
@@ -699,19 +700,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
-    return <FlashNewsPanel />;
+    return <InfoItemsPanel kind="FLASH" />;
   }
 
   if (pathStr.endsWith("information-upload/notice-board")) {
-    return <NoticeBoardPanel />;
+    return <InfoItemsPanel kind="NOTICE" />;
   }
 
   if (pathStr.endsWith("information-upload/quote-for-the-week")) {
-    return <QuoteOfTheWeekPanel />;
+    return <InfoItemsPanel kind="QUOTE" />;
   }
 
   if (pathStr.endsWith("information-upload/talk-to-us")) {
-    return <TalkToUsPanel />;
+    return <TalkInbox />;
   }
 
   if (pathStr.endsWith("information-upload/file-circular-desig-wise")) {

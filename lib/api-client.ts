@@ -2528,6 +2528,15 @@ export const apiClient = {
     if (p.week) qs.set("week", String(p.week));
     return request<DateWiseResult>(`/company/mis/visit-details/datewise?${qs.toString()}`);
   },
+  // Round 48 Part D
+  infoItems(kind?: string) { return request<Record<string, unknown>[]>(`/company/info/items${kind ? `?kind=${kind}` : ""}`); },
+  createInfoItem(body: Record<string, unknown>) { return request<Record<string, unknown>>("/company/info/items", { method: "POST", body: JSON.stringify(body) }); },
+  updateInfoItem(id: string, body: Record<string, unknown>) { return request<Record<string, unknown>>(`/company/info/items/${id}`, { method: "PATCH", body: JSON.stringify(body) }); },
+  deleteInfoItem(id: string) { return request<{ deleted: boolean }>(`/company/info/items/${id}`, { method: "DELETE" }); },
+  infoAudienceOptions() { return request<{ designations: string[]; divisions: string[]; hqs: string[] }>("/company/info/audience-options"); },
+  infoTickets(status?: string) { return request<Record<string, unknown>[]>(`/company/info/tickets${status ? `?status=${status}` : ""}`); },
+  replyTicket(id: string, message: string) { return request<Record<string, unknown>>(`/company/info/tickets/${id}/reply`, { method: "POST", body: JSON.stringify({ message }) }); },
+  setTicketStatus(id: string, status: string) { return request<Record<string, unknown>>(`/company/info/tickets/${id}/status`, { method: "PATCH", body: JSON.stringify({ status }) }); },
   // Round 48 Part B
   uploadTools() { return request<UploadToolMeta[]>("/company/upload-tools"); },
   async uploadToolValidate(key: string, file: File) { return uploadForm<UploadValidation>(`/company/upload-tools/${key}/validate`, [["file", file]]); },
