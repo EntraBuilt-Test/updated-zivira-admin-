@@ -571,6 +571,18 @@ export type DcrNotApprovedRow = { fieldForceName: string; region: string; pendin
 
 export type DcrNotSubmittedRow = { day: number; expected: string };
 
+export type R51Emp = { employeeCode: string; name: string; designation: string; hq: string };
+export type R51Head = R51Emp & { sno: number; role: string; isManager: boolean };
+export type R51Base = { months: string[]; employee: R51Emp; notes: string[] };
+export type AtGlanceMonth = { fwd: number; ttl: number; met: number; once: number; twice: number; seen: number; missed: number; unl: number; rpt: number; coverage: number | null; callAvg: number | null; missedPct: number | null; repeatedPct: number | null };
+export type AtGlanceResult = R51Base & { rows: (R51Head & { subDivision: string; lastDcrDate: string; perMonth: Record<string, AtGlanceMonth> })[] };
+export type VacantManagerResult = R51Base & { columns: string[]; rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; perMonth: Record<string, Record<string, number>> }[] };
+export type ChemistUnlistedResult = R51Base & { rows: (R51Head & { perMonth: Record<string, Record<"chemist" | "unlisted" | "stockist", { met: number; seen: number }>> })[] };
+export type TerritoryResult = { month: string; employee: R51Emp; notes: string[]; rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; territories: { territory: string; type: string; available: number; visited: number; days: number[]; missed: number }[] }[] };
+export type ManagerCoverageResult = { fromMonth: string; toMonth: string; employee: R51Emp; notes: string[]; rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; total: number; territories: { territory: string; type: string; available: number }[] }[] };
+export type ProductExposureResult = R51Base & { product: string; codes: string[]; rows: (R51Head & { perMonth: Record<string, number> })[]; grand: Record<string, number>; dataAvailable?: boolean };
+export type ProductDrillResult = { product: string; month: string; rows: { doctorName: string; doctorCode: string; speciality: string; territory: string; employeeCode: string; dates: string[] }[] };
+export type ListedDrProductResult = R51Base & { rows: (R51Head & { taggedDrs: number; perMonth: Record<string, number> })[] };
 export type ModewiseType = "category" | "speciality" | "class" | "campaign";
 export type ModewiseResult = {
   type: ModewiseType; months: string[]; employee: { employeeCode: string; name: string; designation: string; hq: string }; notes: string[]; groups?: string[];
@@ -2557,7 +2569,17 @@ export const apiClient = {
   },
   callFeedbackwise(p: { employeeCode: string; fromMonth: string; toMonth: string }) { return request<CallFeedbackResult>(`/company/mis/call-feedbackwise?${new URLSearchParams(p).toString()}`); },
   fixationwise(p: { employeeCode: string; type: FixationType; fromMonth: string; toMonth: string }) { return request<FixationResult>(`/company/mis/fixationwise?${new URLSearchParams(p).toString()}`); },
-  modewise(p: { sfCode: string; type: ModewiseType; fromMonth: string; fromYear: string; toMonth?: string; toYear?: string }) { return request<ModewiseResult>(`/company/mis/modewise?${new URLSearchParams(p as Record<string, string>).toString()}`); },
+  atGlance(p: Record<string, string>) { return request<AtGlanceResult>(`/company/mis/at-a-glance?${new URLSearchParams(p).toString()}`); },
+  vacantManagerVisits(p: Record<string, string>) { return request<VacantManagerResult>(`/company/mis/vacant-hq-manager-visits?${new URLSearchParams(p).toString()}`); },
+  chemistUnlisted(p: Record<string, string>) { return request<ChemistUnlistedResult>(`/company/mis/chemist-unlisted-stockist?${new URLSearchParams(p).toString()}`); },
+  territoryWise(p: Record<string, string>) { return request<TerritoryResult>(`/company/mis/territory-wise?${new URLSearchParams(p).toString()}`); },
+  managerCoverage(p: Record<string, string>) { return request<ManagerCoverageResult>(`/company/mis/territory-wise?${new URLSearchParams({ ...p, self: "1" }).toString()}`); },
+  productExposureOptions() { return request<string[]>("/company/mis/product-exposure/options"); },
+  productExposureAnalysis(p: Record<string, string>) { return request<ProductExposureResult>(`/company/mis/product-exposure?${new URLSearchParams(p).toString()}`); },
+  productExposureDrill(p: { codes: string; product: string; month: string }) { return request<ProductDrillResult>(`/company/mis/product-exposure/drill?${new URLSearchParams(p).toString()}`); },
+  listedDrProductVisit(p: Record<string, string>) { return request<ListedDrProductResult>(`/company/mis/listeddr-product-visit?${new URLSearchParams(p).toString()}`); },
+  productExposureUnlisted(p: Record<string, string>) { return request<ProductExposureResult>(`/company/mis/product-exposure-unlisted?${new URLSearchParams(p).toString()}`); },
+  modewise(p: { sfCode: string; type: ModewiseType; fromMonth: string; fromYear: string; toMonth?: string; toYear?: string; metric?: string }) { return request<ModewiseResult>(`/company/mis/modewise?${new URLSearchParams(p as Record<string, string>).toString()}`); },
   // Round 45
   quizResult(p: { employeeCode: string; scope: "Team" | "Individual"; month: string }) {
     return request<QuizResultResult>(`/company/mis/quiz-result?${new URLSearchParams(p).toString()}`);

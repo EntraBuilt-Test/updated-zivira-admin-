@@ -1,7 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { FieldForceSelect, fieldForceLabel, useFieldForceOptions } from "@/components/field-force-select";
+import { useState } from "react";
+import { FFPicker, MonthYear as MY2, type MY } from "@/components/ff-filter-select";
 import { GO, LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle } from "@/components/mis-analysis-panels";
 import { apiClient, type ModewiseResult, type ModewiseType } from "@/lib/api-client";
 
@@ -9,7 +9,6 @@ import { apiClient, type ModewiseResult, type ModewiseType } from "@/lib/api-cli
 // Campaign: one column per month (campaign-doctor calls). Category / Speciality / Class: per month, per group
 // Ttl Drs | Drs Met | Coverage. Speciality and Class layouts are inferred from the Category screen.
 const NOW_M = new Date().getMonth() + 1;
-const YEARS = [THIS_YEAR - 3, THIS_YEAR - 2, THIS_YEAR - 1, THIS_YEAR, THIS_YEAR + 1];
 const GREEN = "#006633";
 const TH = "border border-black px-1 py-0.5 text-xs font-bold text-white text-center whitespace-nowrap";
 const TD = "border border-black px-1 py-0.5 text-xs";
@@ -17,25 +16,7 @@ const TYPES: { key: ModewiseType; label: string }[] = [{ key: "category", label:
 const ROW_BG: Record<string, string> = { MR: "#ffccff", SR_MR: "#ffccff", ABM: "#ffff66", RBM: "#ffcc99", ZBM: "#ffff66" };
 const rowBg = (role: string) => ROW_BG[role] ?? "#ffcc99";
 const mLong = (m: string, sep: string) => { const [y, mm] = m.split("-").map(Number); return `${MONTH_NAMES[mm - 1]}${sep}${y}`; };
-type MY = { m: number; y: number };
-
-function MY({ label, v, onChange }: { label: string; v: MY; onChange: (v: MY) => void }) {
-  return (
-    <div className="flex items-end gap-2">
-      <div className="flex flex-col gap-1">
-        <span className={LABEL}>{label} Month</span>
-        <select className={SELECT} value={v.m} onChange={(e) => onChange({ ...v, m: parseInt(e.target.value, 10) })}>{MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}</select>
-      </div>
-      <div className="flex flex-col gap-1">
-        <span className={LABEL}>{label} Year</span>
-        <select className={SELECT} value={v.y} onChange={(e) => onChange({ ...v, y: parseInt(e.target.value, 10) })}>{YEARS.map((y) => <option key={y} value={y}>{y}</option>)}</select>
-      </div>
-    </div>
-  );
-}
-
 export function ModeWiseVisitReport() {
-  const [filter, setFilter] = useState("");
   const [code, setCode] = useState("");
   const [type, setType] = useState<ModewiseType | "">("");
   const [from, setFrom] = useState<MY>({ m: NOW_M, y: THIS_YEAR });
@@ -43,11 +24,6 @@ export function ModeWiseVisitReport() {
   const [result, setResult] = useState<ModewiseResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const all = useFieldForceOptions();
-  const shown = useMemo(() => {
-    const f = filter.trim().toLowerCase();
-    return all.filter((e) => e.employeeCode === code || !f || fieldForceLabel(e).toLowerCase().includes(f));
-  }, [all, filter, code]);
   const campaign = type === "campaign";
   async function go() {
     if (!type || !code) return;
@@ -61,13 +37,7 @@ export function ModeWiseVisitReport() {
       <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4 max-w-5xl">
         <ScreenTitle>Visit Details (Based On Mode Wise)</ScreenTitle>
         <div className="flex flex-wrap items-end gap-4">
-          <div className="flex flex-col gap-1">
-            <span className={LABEL}>Field Force Name</span>
-            <div className="flex gap-2">
-              <input className={SELECT} style={{ width: 90 }} placeholder="Filter" value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter field force" />
-              <FieldForceSelect value={code} onChange={setCode} employees={shown} hideLabel clearLabel="---Select Clear---" />
-            </div>
-          </div>
+          <FFPicker value={code} onChange={setCode} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Type</span>
             <select className={SELECT} value={type} onChange={(e) => { setType(e.target.value as ModewiseType | ""); setResult(null); }}>
@@ -75,9 +45,9 @@ export function ModeWiseVisitReport() {
               {TYPES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
             </select>
           </div>
-          <MY label="From" v={from} onChange={setFrom} />
-          {type && !campaign && <MY label="To" v={to} onChange={setTo} />}
-          <button type="button" className={GO} disabled={!code || !type || loading} onClick={() => void go()}>{loading ? "Loading..." : campaign ? "Go" : "View"}</button>
+          <MY2 label="From" v={from} onChange={setFrom} />
+          {type && !campaign && <MY2 label="To" v={to} onChange={setTo} />}
+          <button type="button" className={GO} disabled={!code || !type || loading} onClick={() => void go()}>{loading ? "Loading..." : "Go"}</button>
         </div>
         {error && <p className="text-sm text-status-danger">{error}</p>}
       </div>
