@@ -24,6 +24,7 @@ import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-p
 import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
 import { TpDeviationManagersReport, TpDeviationAtGlanceReport, DoctorsAddDeactReport } from "@/components/r54-panels";
 import { InputDetailsReport, SampleRxQuantityReport, DelayedStatusReport, LeaveStatusActiveReport, LeaveStatusPeriodicallyReport, MailStatusReport, TpDeviationBaselevelReport } from "@/components/r53-panels";
+import { ProductExposureSpecatReport } from "@/components/r55-panels";
 import { AtAGlanceReport, VacantManagerVisitReport, ChemistUnlistedReport, TerritoryWiseReport, ProductExposureReport, ProductExposureUnlistedReport, ListedDrProductVisitReport, ProductPriorityWiseReport, SampleDetailsReport } from "@/components/r51-panels";
 import { ModeWiseVisitReport } from "@/components/mode-wise-panel";
 import { InfoItemsPanel, TalkInbox } from "@/components/info-admin-panels";
@@ -918,10 +919,10 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/dump/listed-stockiest")) return <StockistDumpReport />;
   if (pathStr.endsWith("mis-reports/options/resigned-user-status")) return <ResignedUserStatusReport />;
   if (pathStr.endsWith("mis-reports/options/join-left-details")) return <JoinLeftDetailsReport />;
-  if (pathStr.endsWith("mis-reports/tp-deviation-managers")) return <TpDeviationManagersReport />;
-  if (pathStr.endsWith("mis-reports/tp-deviation-at-glance")) return <TpDeviationAtGlanceReport />;
+  if (pathStr.endsWith("mis-reports/exception/tp-deviation-managers")) return <TpDeviationManagersReport />;
+  if (pathStr.endsWith("mis-reports/exception/tp-deviation-at-glance")) return <TpDeviationAtGlanceReport />;
   if (pathStr.endsWith("mis-reports/doctor")) return <DoctorsAddDeactReport />;
-  if (pathStr.endsWith("mis-reports/tp-deviation-baselevel")) return <TpDeviationBaselevelReport />;
+  if (pathStr.endsWith("mis-reports/exception/tp-deviation-baselevel")) return <TpDeviationBaselevelReport />;
   if (pathStr.endsWith("mis-reports/sample-input/input-issued-fieldforce-wise")) return <InputDetailsReport />;
   if (pathStr.endsWith("mis-reports/sample-input/sample-rx-quantity")) return <SampleRxQuantityReport />;
   if (pathStr.endsWith("mis-reports/status/delayed")) return <DelayedStatusReport />;
@@ -945,6 +946,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/visit-details/territorywise-listed-doctor-visit")) return <TerritoryWiseReport />;
   if (pathStr.endsWith("mis-reports/product-exposure/priority-wise")) return <ProductPriorityWiseReport />;
   if (pathStr.endsWith("mis-reports/sample-input/sample-issued-fieldforce-wise")) return <SampleDetailsReport />;
+  if (pathStr.endsWith("mis-reports/product-exposure/speciality-category-wise")) return <ProductExposureSpecatReport />;
   if (pathStr.endsWith("mis-reports/product-exposure/analysis")) return <ProductExposureReport />;
   if (pathStr.endsWith("mis-reports/product-exposure/listeddr-productwise-visit")) return <ListedDrProductVisitReport />;
   if (pathStr.endsWith("mis-reports/product-exposure/analysis-unlisted-doctor")) return <ProductExposureUnlistedReport />;

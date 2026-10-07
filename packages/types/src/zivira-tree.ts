@@ -252,17 +252,14 @@ export const ziviraApplicationTree: ZiviraTreeNode[] = [
         node("Product Exposure", "product-exposure", "division", [node("Analysis", "analysis", "division"), node("Speciality/Category Wise", "speciality-category-wise", "division"), node("ListedDr - Productwise Visit", "listeddr-productwise-visit", "division"), node("Analysis - Unlisted Doctor", "analysis-unlisted-doctor", "division"), node("Priority Wise", "priority-wise", "division")]),
         node("Sample / Input", "sample-input", "division", [node("Sample Issued - Fieldforce Wise", "sample-issued-fieldforce-wise", "division"), node("Input Issued - Fieldforce Wise", "input-issued-fieldforce-wise", "division"), node("Sample Rx Quantity", "sample-rx-quantity", "division")]),
         node("Status", "status", "division", [node("Delayed", "delayed", "division"), node("Leave - Active Fieldforce", "leave-active-fieldforce", "division"), node("Leave - Periodically", "leave-periodically", "division"), node("Mail", "mail", "division")]),
-        node("Exception", "exception", "division", [node("Tour Plan - Baselevel", "tour-plan-baselevel", "division"), node("Tour Plan - Managers", "tour-plan-managers", "division"), node("At a Glance", "at-a-glance", "division")]),
+        node("Exception", "exception", "division", [node("Tour Plan - Baselevel", "tour-plan-baselevel", "division"), node("Tour Plan - Managers", "tour-plan-managers", "division"), node("At a Glance", "at-a-glance", "division"), node("TP - Deviation For Baselevel", "tp-deviation-baselevel", "division"), node("TP - Deviation For Managers", "tp-deviation-managers", "division"), node("TP - Deviation At A Glance", "tp-deviation-at-glance", "division")]),
         node("Options", "options", "division", [node("Resigned User Status", "resigned-user-status", "division"), node("Join/Left Details", "join-left-details", "division")]),
         node("Dump", "dump", "division", [node("Visit - Drs", "visit-drs", "division"), node("Secondary Sale", "secondary-sale", "division"), node("Listeddr", "listeddr", "division"), node("Chemist", "chemist", "division"), node("Transit Bills", "transit-bills", "division"), node("Listed Stockiest", "listed-stockiest", "division")]),
         node("Dump II", "dump-ii", "division", [node("RCPA", "rcpa", "division"), node("Product Exposure Analysis [SKU wise detailing secs]", "product-exposure-analysis-sku", "division")]),
         node("Doctor", "doctor", "division"),
         node("Digital Detailing", "digital-detailing", "division", [node("Visit Wise", "visit-wise", "division"), node("Brand Wise Star Rating", "brand-wise-star-rating", "division"), node("Product Slide Analysis", "product-slide-analysis", "division"), node("Drs Analysis", "drs-analysis", "division")]),
         node("Summary", "summary", "division", [node("Day Wise Reports", "day-wise-reports", "division"), node("Call Report Dump", "call-report-dump", "division")]),
-        node("Quiz Test Result", "quiz-test-result", "division"),
-        node("TP - Deviation For Baselevel", "tp-deviation-baselevel", "division"),
-        node("TP - Deviation For Managers", "tp-deviation-managers", "division"),
-        node("TP - Deviation At A Glance", "tp-deviation-at-glance", "division")
+        node("Quiz Test Result", "quiz-test-result", "division")
       ]),
       node("Options", "division-options", "division", [
         node("Dashboard", "dashboard", "division"),

@@ -217,7 +217,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -270,7 +270,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -375,7 +375,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -584,7 +584,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -793,7 +793,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -898,7 +898,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -1003,7 +1003,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -1056,7 +1056,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>
@@ -1109,7 +1109,7 @@ export function AdminOptionsDashboard({
               </div>
               <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Ready module
+                Open
               </span>
             </div>
             <div>

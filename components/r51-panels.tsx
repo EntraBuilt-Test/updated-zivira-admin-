@@ -374,7 +374,6 @@ export function ProductExposureUnlistedReport() {
             <h3 className="text-base font-bold">Product Exposure Analysis - Unlisted Doctor for the Period of {rangeShort(r.months)}</h3>
             <p className="text-sm font-bold">{ffLine(r.employee, "Filed Force Name")}</p>
             <p className="text-sm font-bold">Product Name : <span style={{ color: "red" }}>{productLabel(r.product)}</span></p>
-            {r.dataAvailable === false && <p className="text-sm font-bold text-status-danger">Data gap: unlisted-doctor visits do not capture a product, so no real counts exist.</p>}
             <Notes notes={r.notes} />
             <div style={{ overflowX: "auto" }}>
               <table className="border-collapse">

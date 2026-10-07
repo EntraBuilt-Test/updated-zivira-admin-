@@ -35,7 +35,7 @@ export function FFPicker({ value, onChange, label = "Field Force Name", clearLab
       <div className="flex gap-2">
         {!noFilter && !(filterAfterLoad && loading) && <input className={SELECT} style={{ width: 90 }} placeholder="Filter" value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter field force" />}
         <select className={SELECT} style={{ minWidth: 260 }} value={value} onChange={(e) => onChange(e.target.value)}>
-          <option value="">{clearLabel}</option>
+          <option value="">{filterAfterLoad && loading ? "--- Select the Field force ---" : clearLabel}</option>
           {adminOption && <option value="admin">admin</option>}
           {shown.map((e) => <option key={e.employeeCode} value={e.employeeCode} style={colorize ? { background: DESIG_BG[e.designation.toUpperCase()] } : undefined}>{fieldForceLabel(e)}</option>)}
         </select>

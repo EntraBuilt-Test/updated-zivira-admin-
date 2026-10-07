@@ -439,7 +439,7 @@ export function AdminMastersDashboard() {
                   </div>
                   <div>
                     <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Field Force</h3>
-                    <span className="font-label-sm text-[11px] text-text-muted">Ready module</span>
+                    <span className="font-label-sm text-[11px] text-text-muted">Open</span>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-[11px] font-semibold flex items-center gap-1">
@@ -563,7 +563,7 @@ export function AdminMastersDashboard() {
                   </div>
                   <div>
                     <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Input</h3>
-                    <span className="font-label-sm text-[11px] text-text-muted">Ready module</span>
+                    <span className="font-label-sm text-[11px] text-text-muted">Open</span>
                   </div>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-[11px] font-semibold flex items-center gap-1">
@@ -634,7 +634,7 @@ export function AdminMastersDashboard() {
                   </div>
                   <div>
                     <h3 className="font-headline-sm text-[16px] text-text-primary font-bold leading-tight">Campaign</h3>
-                    <span className="font-label-sm text-[11px] text-text-muted">Ready module</span>
+                    <span className="font-label-sm text-[11px] text-text-muted">Open</span>
                   </div>
                 </div>
               </div>

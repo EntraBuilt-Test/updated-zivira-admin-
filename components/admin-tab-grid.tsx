@@ -15,7 +15,7 @@ function Card({ node, parentPath }: { node: ZiviraTreeNode; parentPath: string[]
       <div className="flex items-start justify-between">
         <div>
           <h3 className="font-headline-sm text-headline-sm text-text-primary group-hover:text-primary transition-colors">{node.title}</h3>
-          <p className="font-body-sm text-body-sm text-text-muted mt-1">{node.children?.length ? `${node.children.length} sub tabs` : "Ready module"}</p>
+          <p className="font-body-sm text-body-sm text-text-muted mt-1">{node.children?.length ? `${node.children.length} sub tabs` : "Open"}</p>
         </div>
         <div className="w-8 h-8 rounded-lg bg-surface-subtle text-text-secondary flex items-center justify-center group-hover:bg-brand-primary-subtle group-hover:text-primary transition-colors">
           <span className="material-symbols-outlined text-[18px]">folder_open</span>

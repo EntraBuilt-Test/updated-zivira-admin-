@@ -581,6 +581,9 @@ export type ChemistUnlistedResult = R51Base & { rows: (R51Head & { perMonth: Rec
 export type TerritoryResult = { month: string; employee: R51Emp; notes: string[]; rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; territories: { territory: string; type: string; available: number; visited: number; days: number[]; missed: number }[] }[] };
 export type ManagerCoverageResult = { fromMonth: string; toMonth: string; employee: R51Emp; notes: string[]; rows: { sno: number; employeeCode: string; name: string; designation: string; hq: string; total: number; territories: { territory: string; type: string; available: number }[] }[] };
 export type ProductExposureResult = R51Base & { product: string; codes: string[]; rows: (R51Head & { perMonth: Record<string, number> })[]; grand: Record<string, number>; dataAvailable?: boolean };
+export type SpecatOptions = { specialities: string[]; categories: string[] };
+export type SpecatResult = R51Base & { product: string; mode: "speciality" | "category"; columns: string[]; rows: (R51Head & { perMonth: Record<string, Record<string, number>> })[] };
+export type SpecatDrillResult = { product: string; month: string; mode: string; value: string; rows: { doctorName: string; doctorCode: string; speciality: string; category: string; dates: string[] }[] };
 export type ProductDrillResult = { product: string; month: string; rows: { doctorName: string; doctorCode: string; speciality: string; territory: string; employeeCode: string; dates: string[] }[] };
 export type ListedDrProductResult = R51Base & { rows: (R51Head & { taggedDrs: number; perMonth: Record<string, number> })[] };
 export type PriorityWiseResult = R51Base & { product: string; slots: number[]; rows: (R51Head & { perMonth: Record<string, Record<string, { drs: number; visited: number }>> })[] };
@@ -2595,6 +2598,9 @@ export const apiClient = {
   productExposureAnalysis(p: Record<string, string>) { return request<ProductExposureResult>(`/company/mis/product-exposure?${new URLSearchParams(p).toString()}`); },
   productExposureDrill(p: { codes: string; product: string; month: string }) { return request<ProductDrillResult>(`/company/mis/product-exposure/drill?${new URLSearchParams(p).toString()}`); },
   listedDrProductVisit(p: Record<string, string>) { return request<ListedDrProductResult>(`/company/mis/listeddr-product-visit?${new URLSearchParams(p).toString()}`); },
+  productExposureSpecatOptions() { return request<SpecatOptions>("/company/mis/product-exposure-specat/options"); },
+  productExposureSpecat(p: Record<string, string>) { return request<SpecatResult>(`/company/mis/product-exposure-specat?${new URLSearchParams(p).toString()}`); },
+  productExposureSpecatDrill(p: Record<string, string>) { return request<SpecatDrillResult>(`/company/mis/product-exposure-specat/drill?${new URLSearchParams(p).toString()}`); },
   productExposureUnlisted(p: Record<string, string>) { return request<ProductExposureResult>(`/company/mis/product-exposure-unlisted?${new URLSearchParams(p).toString()}`); },
   priorityWise(p: Record<string, string>) { return request<PriorityWiseResult>(`/company/mis/product-priority-wise?${new URLSearchParams(p).toString()}`); },
   sampleDetails(p: Record<string, string>) { return request<SampleDetailsResult>(`/company/mis/sample-details?${new URLSearchParams(p).toString()}`); },
