@@ -43,6 +43,7 @@ import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
 import { SlideUploadEDetailingPanel } from "@/components/slide-upload-edetailing-panel";
 import { HomepageImageUploadPanel } from "@/components/homepage-image-upload-panel";
 import { HomepageFieldForcewisePanel } from "@/components/homepage-fieldforcewise-panel";
+import { UploadToolPanel } from "@/components/upload-tool-panel";
 import { LeaveStatusPanel } from "@/components/leave-status-panel";
 import { TransferMasterDetailsPanel } from "@/components/transfer-master-details-panel";
 import { UnlistedToListedConversionPanel } from "@/components/unlisted-to-listed-conversion-panel";
@@ -678,23 +679,23 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {
-    return <ListedDoctorUploadPanel masterKey="listedDoctorUploadLog" />;
+    return <UploadToolPanel toolKey="listed-doctor" />;
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {
-    return <ChemistUploadPanel masterKey="chemistUploadLog" />;
+    return <UploadToolPanel toolKey="chemist" />;
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
-    return <SampleDespatchUploadPanel masterKey="sampleDespatchUploadLog" />;
+    return <UploadToolPanel toolKey="sample" />;
   }
 
   if (pathStr.endsWith("customer-upload/input")) {
-    return <InputDespatchUploadPanel masterKey="inputDespatchUploadLog" />;
+    return <UploadToolPanel toolKey="input" />;
   }
 
   if (pathStr.endsWith("customer-upload/target")) {
-    return <TargetUploadPanel masterKey="targetUploadLog" />;
+    return <UploadToolPanel toolKey="target" />;
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
@@ -722,31 +723,31 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {
-    return <SalesforceUploadPanel masterKey="salesforceUploadLog" />;
+    return <UploadToolPanel toolKey="field-force" />;
   }
 
   if (pathStr.endsWith("division-options/upload/stockist")) {
-    return <StockistUploadPanel masterKey="stockistUploadLog" />;
+    return <UploadToolPanel toolKey="stockist" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product")) {
-    return <ProductUploadPanel masterKey="productUploadLog" />;
+    return <UploadToolPanel toolKey="product" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product-rate")) {
-    return <ProductRateUploadPanel masterKey="productRateUploadLog" />;
+    return <UploadToolPanel toolKey="product-rate" />;
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
-    return <SlideUploadEDetailingPanel />;
+    return <UploadToolPanel toolKey="slides-upload" />;
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
-    return <HolidayFixationUploadPanel masterKey="holidayFixationUploadLog" />;
+    return <UploadToolPanel toolKey="holiday-fixation" />;
   }
 
   if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
-    return <LeaveUploadPanel masterKey="leaveBulkUploadLog" />;
+    return <UploadToolPanel toolKey="leave-bulk-upload" />;
   }
 
   if (pathStr.endsWith("division-options/transaction-upload")) {

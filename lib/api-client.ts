@@ -251,6 +251,17 @@ async function readJson(response: Response) {
   }
 }
 
+// Round 48 Part B -- multipart POST with the shared timeout (long, uploads can be big) and error mapping.
+async function uploadForm<T>(path: string, parts: [string, File][]) {
+  const token = getToken();
+  const form = new FormData();
+  for (const [k, f] of parts) form.append(k, f);
+  const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {}, body: form }, 180000);
+  const payload = await readJson(response);
+  if (!response.ok) throw new Error(payload?.error?.message ?? "Upload failed");
+  return payload as ApiEnvelope<T>;
+}
+
 async function request<T>(path: string, init: RequestInit = {}) {
   const token = getToken();
   const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, {
@@ -984,6 +995,16 @@ export type DateWiseResult = {
   | { matrix: true; week: { week: number; from: number; to: number; label: string };
       days: { day: number; weekday: string; status: string; calls: (DateWiseDoctor & { time: string; products: string })[] }[] }
 );
+
+// Round 48 Part B -- bulk upload tools
+export type UploadToolMeta = { key: string; title: string; group: "Customer Upload" | "Upload"; headers: string[]; required: string[]; dateHeaders: string[]; note: string };
+export type UploadRowError = { row: number; field: string; reason: string };
+export type UploadValidation = {
+  fileName: string; fileErrors: string[]; total: number; valid: number; invalid: number; errors: UploadRowError[]; errorsTotal: number;
+  warnings: { row: number; reason: string }[]; preview: { row: number; cells: string[]; errors: string[] }[];
+};
+export type UploadImportResult = { fileName: string; total: number; ok: number; failed: number; inserted: number; updated: number; fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; historyId: string };
+export type UploadHistoryRow = { id: string; fileName: string; uploadedBy: string; uploadedAt: string; totalRows: number; okRows: number; failedRows: number; inserted: number; updated: number; fileErrors: string[]; errors: UploadRowError[] };
 
 // Round 48 -- Doctorwise (Periodically), Call Feedbackwise, Fixationwise (By Visit)
 export type DoctorwiseMode = "baselevel" | "baselevel-managers" | "deactivate" | "daywise-remarks" | "listed-remarks" | "core-mapwise" | "ii-level" | "core-periodically" | "campaignwise";
@@ -2501,6 +2522,12 @@ export const apiClient = {
     if (p.week) qs.set("week", String(p.week));
     return request<DateWiseResult>(`/company/mis/visit-details/datewise?${qs.toString()}`);
   },
+  // Round 48 Part B
+  uploadTools() { return request<UploadToolMeta[]>("/company/upload-tools"); },
+  async uploadToolValidate(key: string, file: File) { return uploadForm<UploadValidation>(`/company/upload-tools/${key}/validate`, [["file", file]]); },
+  async uploadToolImport(key: string, file: File) { return uploadForm<UploadImportResult>(`/company/upload-tools/${key}/import`, [["file", file]]); },
+  uploadToolHistory(key: string) { return request<UploadHistoryRow[]>(`/company/upload-tools/${key}/history`); },
+  async uploadSlideFiles(files: File[]) { return uploadForm<{ matched: string[]; unmatched: string[] }>("/company/upload-tools/slides-upload/files", files.map((f) => ["files", f] as [string, File])); },
   // Round 48
   doctorwiseBaseLevels(employeeCode: string) { return request<DetailingBase[]>(`/company/mis/doctorwise/baselevels?${new URLSearchParams({ employeeCode }).toString()}`); },
   doctorwisePeriodically(p: { mode: DoctorwiseMode; employeeCode: string; scope: "Team" | "Individual"; baseLevel?: string; fromMonth: string; toMonth: string }) {
