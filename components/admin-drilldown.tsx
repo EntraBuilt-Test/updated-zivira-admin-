@@ -50,6 +50,7 @@ import { SlideUploadEDetailingPanel } from "@/components/slide-upload-edetailing
 import { HomepageImageUploadPanel } from "@/components/homepage-image-upload-panel";
 import { HomepageFieldForcewisePanel } from "@/components/homepage-fieldforcewise-panel";
 import { LegacyUploadPage } from "@/components/legacy-upload-pages";
+import { ListedDoctorUploadPage } from "@/components/listed-doctor-upload-page";
 import { SlideUploadPage } from "@/components/slide-upload-page";
 import { LeaveStatusPanel } from "@/components/leave-status-panel";
 import { TransferMasterDetailsPanel } from "@/components/transfer-master-details-panel";
@@ -686,7 +687,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {
-    return <LegacyUploadPage toolKey="listed-doctor" />;
+    return <ListedDoctorUploadPage />;
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {

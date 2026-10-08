@@ -7,8 +7,8 @@ import { apiClient, type LegacyUploadResult, type UploadGenCol, type ProductRefe
 // Round 58 -- exact legacy (sanpharma.info) upload pages: light-blue dotted background, purple Verdana header lines,
 // purple bold underlined title, white bordered box. Wording is the legacy wording; every action calls the real backend.
 
-const PURPLE = "#8a2be2";
-const FONT = "Verdana, Arial, sans-serif";
+export const PURPLE = "#8a2be2";
+export const FONT = "Verdana, Arial, sans-serif";
 const COMPANY = "Zivira Labs Pvt Ltd";
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
@@ -22,11 +22,11 @@ const pageBg: CSSProperties = {
   minHeight: "70vh",
   padding: "6px 10px 40px"
 };
-const btn: CSSProperties = { border: "1px solid #767676", background: "#efefef", borderRadius: 3, padding: "1px 7px", fontSize: 14, color: "#000", cursor: "pointer" };
-const btnOff: CSSProperties = { ...btn, color: "#9a9a9a", borderColor: "#c7c7c7", background: "#f3f3f3", cursor: "default" };
+export const btn: CSSProperties = { border: "1px solid #767676", background: "#efefef", borderRadius: 3, padding: "1px 7px", fontSize: 14, color: "#000", cursor: "pointer" };
+export const btnOff: CSSProperties = { ...btn, color: "#9a9a9a", borderColor: "#c7c7c7", background: "#f3f3f3", cursor: "default" };
 const tanBtn: CSSProperties = { border: "2px outset #deb887", background: "#deb887", padding: "1px 10px", fontSize: 18, color: "#000", cursor: "pointer" };
-const link: CSSProperties = { color: "#0000ee", textDecoration: "underline", cursor: "pointer", background: "none", border: 0, padding: 0, font: "inherit" };
-const redLink: CSSProperties = { ...link, color: "#e00000" };
+export const link: CSSProperties = { color: "#0000ee", textDecoration: "underline", cursor: "pointer", background: "none", border: 0, padding: 0, font: "inherit" };
+export const redLink: CSSProperties = { ...link, color: "#e00000" };
 const box: CSSProperties = { background: "#fff", border: "1px solid #000", margin: "0 auto" };
 const noteBox: CSSProperties = { border: "1px solid #000", margin: "0 6px", padding: "4px 0 4px 100px", fontSize: 13 };
 
@@ -49,7 +49,7 @@ function Shell({ title, back, backgroundWhite, children }: { title: string; back
   );
 }
 
-function b64Download(base64: string, fileName: string) {
+export function b64Download(base64: string, fileName: string) {
   const bin = atob(base64);
   const bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
@@ -63,7 +63,7 @@ function b64Download(base64: string, fileName: string) {
   setTimeout(() => URL.revokeObjectURL(a.href), 2000);
 }
 
-function Result({ r, err }: { r: LegacyUploadResult | null; err: string }) {
+export function Result({ r, err }: { r: LegacyUploadResult | null; err: string }) {
   if (err) return <div style={{ color: "#e00000", textAlign: "center", margin: "10px 0", fontWeight: "bold" }}>{err}</div>;
   if (!r) return null;
   const good = r.uploaded && r.failed === 0;
@@ -94,7 +94,7 @@ function Result({ r, err }: { r: LegacyUploadResult | null; err: string }) {
   );
 }
 
-function useUploader(toolKey: string) {
+export function useUploader(toolKey: string) {
   const [file, setFile] = useState<File | null>(null);
   const [fileKey, setFileKey] = useState(0);
   const [busy, setBusy] = useState(false);
@@ -116,7 +116,7 @@ function useUploader(toolKey: string) {
   return { file, busy, result, err, submit, chooser };
 }
 
-function download(promise: Promise<unknown>, setErr: (m: string) => void) {
+export function download(promise: Promise<unknown>, setErr: (m: string) => void) {
   promise.catch((e) => setErr(e instanceof Error ? e.message : "Download failed"));
 }
 
