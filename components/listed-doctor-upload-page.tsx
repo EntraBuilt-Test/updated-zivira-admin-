@@ -169,9 +169,9 @@ export function ListedDoctorUploadPage() {
           {histErr && <div style={{ color: "#c00000", textAlign: "center", fontSize: 13 }}>{histErr}</div>}
           <div style={{ overflow: "auto", maxHeight: 460, border: "1px solid #cbd5e1" }}>
             <table className="ld-tbl" style={{ width: "100%" }}>
-              <thead><tr><th>S.No</th><th>Uploaded Time</th><th>File Name</th><th>Records</th><th>Uploaded by</th><th>Not Uploaded List</th></tr></thead>
+              <thead><tr><th>S.No</th><th>Uploaded Time</th><th>File Name</th><th>Records</th><th>Reason</th><th>Uploaded by</th><th>Not Uploaded List</th></tr></thead>
               <tbody>
-                {history && history.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", color: "#6b7280" }}>No uploads yet</td></tr>}
+                {history && history.length === 0 && <tr><td colSpan={7} style={{ textAlign: "center", color: "#6b7280" }}>No uploads yet</td></tr>}
                 {(history ?? []).map((h, i) => (
                   <tr key={h.id}>
                     <td>{i + 1}</td>
@@ -181,6 +181,7 @@ export function ListedDoctorUploadPage() {
                       <span style={{ ...CHIP, background: "#dcfce7", color: "#166534" }}>Success: {h.success}</span>{" "}
                       <span style={{ ...CHIP, background: "#fee2e2", color: "#991b1b" }}>Rejected: {h.rejected}</span>
                     </td>
+                    <td style={{ whiteSpace: "normal", fontSize: 13, color: h.topReason ? "#991b1b" : undefined }}>{h.topReason || "-"}</td>
                     <td>{h.uploadedBy}</td>
                     <td>{h.rejected > 0 ? <button type="button" style={blueLink} onClick={() => download(apiClient.doctorUploadNotUploaded(h.id, h.fileName), setMsg)}>Not Uploaded List</button> : ""}</td>
                   </tr>
@@ -188,6 +189,11 @@ export function ListedDoctorUploadPage() {
               </tbody>
             </table>
           </div>
+          {history && history[0] && history[0].read > 0 && history[0].rejected === history[0].read && history[0].topReasonRows === history[0].read && history[0].topReason && (
+            <div style={{ textAlign: "center", color: "#6b7280", fontSize: 12, margin: "6px 0 0" }}>
+              All {history[0].read} rows were rejected: {history[0].topReason}{/Field Force/.test(history[0].topReason) ? " (check the Field Force master has these employees)" : ""}
+            </div>
+          )}
         </div>
       </div>
       {popup && (

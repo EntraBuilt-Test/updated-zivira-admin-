@@ -1065,7 +1065,7 @@ export type LegacyUploadResult = {
 };
 export type UploadTally = { value: string; count: number };
 export type UploadRefSummary = { total: number; specialities?: UploadTally[]; categories: UploadTally[]; classes: UploadTally[] };
-export type DoctorUploadLogRow = { id: string; fileName: string; uploadedAt: string; uploadedBy: string; read: number; inserted: number; updated: number; success: number; rejected: number; note: string; hasNotUploaded: boolean };
+export type DoctorUploadLogRow = { id: string; fileName: string; uploadedAt: string; uploadedBy: string; read: number; inserted: number; updated: number; success: number; rejected: number; note: string; topReason: string; topReasonRows: number; hasNotUploaded: boolean };
 export type UploadResultTable = { columns: string[]; truncated: boolean; rows: { row: number; status: "Inserted" | "Updated" | "Rejected" | "Uploaded" | "Not uploaded"; reason: string; cells: string[] }[] };
 export type UploadGenCol = { label: string; mandatory: boolean; red?: boolean };
 export type ProductReference = { source: "product-master" | "legacy-fallback" | "mixed"; sources?: { categories: string; groups: string; brands: string }; categories: string[]; groups: string[]; brands: string[] };
