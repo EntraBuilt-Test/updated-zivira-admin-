@@ -2697,6 +2697,8 @@ export const apiClient = {
   resignedUsers(p: { fromMonth: string; toMonth: string }) { return request<ResignedUsersResult>(`/company/mis/resigned-users?${new URLSearchParams(p).toString()}`); },
   joinLeft(p: { fromMonth: string; toMonth: string }) { return request<JoinLeftResult>(`/company/mis/join-left?${new URLSearchParams(p).toString()}`); },
   tpDeviation(p: { employeeCode: string; month: string }) { return request<TpDeviationResult>(`/company/mis/tp-deviation?${new URLSearchParams(p).toString()}`); },
+  /** Round 60 "Complete details": PATCH an employee; setting employeeCode on a code-pending (auto-created manager) stub renames it and re-links every report (response.relinked). */
+  completeEmployee(employeeCode: string, body: Record<string, unknown>) { return request<Employee>(`/company/employees/${encodeURIComponent(employeeCode)}`, { method: "PATCH", body: JSON.stringify(body) }); },
   resignEmployee(employeeCode: string, leftDate: string) { return request<Employee>(`/company/employees/${encodeURIComponent(employeeCode)}/resign`, { method: "POST", body: JSON.stringify({ leftDate }) }); },
   // Generic authed file download (the response IS the file): Day Wise / Call Report dumps.
   async downloadMisFile(path: string, query: Record<string, string>, fileName: string) {

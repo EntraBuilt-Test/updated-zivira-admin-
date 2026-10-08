@@ -59,6 +59,29 @@ export function EmployeeManager() {
     status: "ACTIVE"
   });
   const [saving, setSaving] = useState(false);
+  // Round 60 -- "Code pending" managers (auto-created by the Salesforce upload): Complete details sets the real employee code and re-links the team.
+  const [completeFor, setCompleteFor] = useState<any | null>(null);
+  const [cf, setCf] = useState({ employeeCode: "", name: "", designation: "", territory: "", phone: "", email: "" });
+  const [completing, setCompleting] = useState(false);
+  const [notice, setNotice] = useState("");
+  function openComplete(e: any) { setCompleteFor(e); setCf({ employeeCode: "", name: e.name || "", designation: e.designation || "", territory: e.territory === "Pending" ? "" : e.territory || "", phone: e.phone && e.phone !== "9876543210" ? e.phone : "", email: e.email && !String(e.email).endsWith("@example.com") ? e.email : "" }); setError(""); }
+  async function confirmComplete() {
+    if (!completeFor) return;
+    const code = cf.employeeCode.trim();
+    if (!code) { setError("Enter the real Employee Code."); return; }
+    setCompleting(true); setError("");
+    try {
+      const body: Record<string, unknown> = { employeeCode: code, name: cf.name.trim() || completeFor.name };
+      if (cf.designation.trim()) body.designation = cf.designation.trim();
+      if (cf.territory.trim()) body.territory = cf.territory.trim();
+      if (cf.phone.trim()) body.phone = cf.phone.trim();
+      if (cf.email.trim()) body.email = cf.email.trim();
+      const res: any = await apiClient.completeEmployee(completeFor.employeeCode, body);
+      setNotice(`${completeFor.name} is now ${code}; ${res?.relinked ?? 0} report(s) re-linked to the new code.`);
+      setCompleteFor(null); await loadEmployees();
+    } catch (e) { setError(e instanceof Error ? e.message : "Unable to complete the details"); }
+    finally { setCompleting(false); }
+  }
   // Round 46 -- "Mark Resigned": records the left date and deactivates the ID.
   const [resignFor, setResignFor] = useState<any | null>(null);
   const [resignDate, setResignDate] = useState("");
@@ -165,6 +188,11 @@ export function EmployeeManager() {
           {loading ? "Refreshing" : "Refresh"}
         </button>
       </div>
+      {notice && (
+        <div style={{ margin: "8px 0", padding: "8px 12px", borderRadius: 8, background: "#ecfdf5", border: "1px solid #6ee7b7", color: "#065f46", fontSize: 13, display: "flex", justifyContent: "space-between", gap: 12 }}>
+          <span>{notice}</span><button type="button" onClick={() => setNotice("")} style={{ textDecoration: "underline" }}>Dismiss</button>
+        </div>
+      )}
       {error && (
         <div
           style={{
@@ -365,7 +393,7 @@ export function EmployeeManager() {
           <tbody className="divide-y divide-border-subtle">
             {filteredEmployees.map((employee, i) => (
               <tr className="hover:bg-surface-subtle/50 transition-colors group" key={employee.id || i}>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{employee.employeeCode}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{employee.employeeCode}{employee.codePending && <span title="Auto-created from a manager name in the Salesforce upload; the real code is not known yet" style={{ marginLeft: 8, padding: "1px 8px", borderRadius: 10, fontSize: 11, fontWeight: 700, background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d" }}>Code pending</span>}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{employee.name}</strong></td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.gender}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.dob)}</td>
@@ -395,7 +423,9 @@ export function EmployeeManager() {
                 </td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.leftDate ? formatDate(employee.leftDate) : "—"}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  {employee.status === "ACTIVE" ? (
+                  {employee.codePending ? (
+                    <button type="button" className="px-3 py-1 rounded bg-primary text-on-primary text-xs font-semibold" onClick={() => openComplete(employee)}>Complete details</button>
+                  ) : employee.status === "ACTIVE" ? (
                     <button type="button" className="px-3 py-1 rounded border border-border-subtle text-xs font-semibold hover:bg-surface-subtle" onClick={() => { setResignFor(employee); setResignDate(""); setError(""); }}>Mark Resigned</button>
                   ) : "—"}
                 </td>
@@ -411,6 +441,24 @@ export function EmployeeManager() {
           </tbody>
         </table>
       </div>
+      {completeFor ? (
+        <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center p-4">
+          <div className="bg-surface-card rounded-xl shadow-2xl border border-border-subtle w-full max-w-md p-5 space-y-3">
+            <h3 className="font-bold text-text-primary">Complete details - {completeFor.name}</h3>
+            <p className="text-sm text-text-secondary">This manager was auto-created from a name in the Salesforce upload (placeholder code {completeFor.employeeCode}). Enter the real Employee Code: the team that reports to this manager is re-linked automatically.</p>
+            {([["employeeCode", "Real Employee Code *"], ["name", "Name"], ["designation", "Designation"], ["territory", "HQ"], ["phone", "Mobile"], ["email", "Email"]] as const).map(([k, label]) => (
+              <label key={k} className="block text-sm">{label}
+                <input className="input mt-1 w-full" value={cf[k]} onChange={(e) => setCf({ ...cf, [k]: e.target.value })} />
+              </label>
+            ))}
+            {error ? <div style={{ color: "#c00000", fontSize: 13 }}>{error}</div> : null}
+            <div className="flex justify-end gap-2">
+              <button type="button" className="px-3 py-1.5 rounded border border-border-subtle text-sm" onClick={() => setCompleteFor(null)}>Cancel</button>
+              <button type="button" className="px-3 py-1.5 rounded bg-primary text-on-primary text-sm font-semibold disabled:opacity-50" disabled={completing} onClick={() => void confirmComplete()}>{completing ? "Saving..." : "Save"}</button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {resignFor ? (
         <div className="fixed inset-0 z-[70] bg-black/40 flex items-center justify-center p-4">
           <div className="bg-surface-card rounded-xl shadow-2xl border border-border-subtle w-full max-w-sm p-5 space-y-4">
