@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState, type CSSProperties, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { apiClient, type LegacyUploadResult, type UploadGenCol, type ProductReference } from "@/lib/api-client";
+import { apiClient, type LegacyUploadResult, type UploadGenCol, type ProductReference, type UploadRefSummary } from "@/lib/api-client";
 
 // Round 58 -- exact legacy (sanpharma.info) upload pages: light-blue dotted background, purple Verdana header lines,
 // purple bold underlined title, white bordered box. Wording is the legacy wording; every action calls the real backend.
@@ -84,8 +84,9 @@ function Result({ r, err }: { r: LegacyUploadResult | null; err: string }) {
       )}
       {r.warnings.length > 0 && (
         <div style={{ color: "#8a5a00", marginTop: 4 }}>
-          {r.warnings.slice(0, 5).map((w, i) => <div key={i}>{`Row ${w.row}: ${w.reason}`}</div>)}
-          {r.warnings.length > 5 && <div>{`... and ${r.warnings.length - 5} more warnings`}</div>}
+          {r.warnings.filter((w) => !w.row).map((w, i) => <div key={`n${i}`}>{`Notice: ${w.reason}`}</div>)}
+          {r.warnings.filter((w) => w.row).slice(0, 5).map((w, i) => <div key={i}>{`Row ${w.row}: ${w.reason}`}</div>)}
+          {r.warnings.filter((w) => w.row).length > 5 && <div>{`... and ${r.warnings.filter((w) => w.row).length - 5} more warnings`}</div>}
         </div>
       )}
       {r.notUploaded && <div style={{ marginTop: 6 }}><button type="button" style={link} onClick={() => b64Download(r.notUploaded!.base64, r.notUploaded!.fileName)}>Not Uploaded List</button></div>}
@@ -136,14 +137,22 @@ function GeneratePage({ toolKey }: { toolKey: "listed-doctor" | "chemist" }) {
   const [deactivate, setDeactivate] = useState(false);
   const [msg, setMsg] = useState("");
   const [loadErr, setLoadErr] = useState("");
+  const [popup, setPopup] = useState<null | "ref" | "help">(null);
+  const [refData, setRefData] = useState<UploadRefSummary | null>(null);
+  const [refErr, setRefErr] = useState("");
+  const openRef = () => {
+    setPopup("ref"); setRefData(null); setRefErr("");
+    apiClient.uploadToolReference(toolKey).then(setRefData).catch((e) => setRefErr(e instanceof Error ? e.message : "Could not load the reference"));
+  };
 
   useEffect(() => {
     apiClient.uploadToolColumns(toolKey).then((c) => {
       setCols(c);
       setPicked(new Set(c.filter((x) => x.mandatory).map((x) => x.label)));
     }).catch((e) => setLoadErr(e instanceof Error ? e.message : "Could not load the column list"));
-    try { const s = window.localStorage.getItem(meta.storeKey); if (s) setGenerated(JSON.parse(s) as string[]); } catch { /* storage unavailable */ }
-  }, [toolKey, meta.storeKey]);
+    // the Generate Excel state is kept on the server per admin user (survives refresh and other browsers)
+    apiClient.uploadToolGenerated(toolKey).then((g) => { if (g?.columns?.length) setGenerated(g.columns); }).catch(() => { /* no saved state */ });
+  }, [toolKey]);
 
   const fileName = `${meta.title.replace(/\s+/g, "_")}.xlsx`;
   const generate = async () => {
@@ -152,12 +161,11 @@ function GeneratePage({ toolKey }: { toolKey: "listed-doctor" | "chemist" }) {
       const labels = cols.filter((c) => c.mandatory || picked.has(c.label)).map((c) => c.label);
       await apiClient.uploadToolGenerate(toolKey, labels, fileName);
       setGenerated(labels);
-      try { window.localStorage.setItem(meta.storeKey, JSON.stringify(labels)); } catch { /* ignore */ }
     } catch (e) { setMsg(e instanceof Error ? e.message : "Could not generate the Excel file"); }
   };
-  const reset = () => {
+  const reset = async () => {
+    try { await apiClient.uploadToolClearGenerated(toolKey); } catch (e) { setMsg(e instanceof Error ? e.message : "Could not clear the saved Excel"); return; }
     setGenerated(null);
-    try { window.localStorage.removeItem(meta.storeKey); } catch { /* ignore */ }
     setPicked(new Set(cols.filter((x) => x.mandatory).map((x) => x.label)));
   };
   const downloadHere = () => {
@@ -171,8 +179,8 @@ function GeneratePage({ toolKey }: { toolKey: "listed-doctor" | "chemist" }) {
       <div style={meta.wide ? { ...box, maxWidth: 1536, width: "calc(100% - 20px)", padding: "6px 0 8px" } : { padding: "0 0 4px" }}>
         <div style={{ textAlign: "center", fontSize: 15 }}>{meta.title}</div>
         <div style={{ display: "flex", justifyContent: "space-between", margin: "10px 0 6px", padding: "0 150px", fontSize: 18 }}>
-          <button type="button" style={{ ...redLink, fontSize: 18 }} onClick={() => setMsg(`${meta.ref}: the allowed values are taken from your Speciality / Category (and Class) masters.`)}>{meta.ref}</button>
-          <button type="button" style={{ ...redLink, fontSize: 18 }} onClick={() => setMsg("Video help is not available in this installation.")}>? Video Help</button>
+          <button type="button" style={{ ...redLink, fontSize: 18 }} onClick={openRef}>{meta.ref}</button>
+          <button type="button" style={{ ...redLink, fontSize: 18 }} onClick={() => setPopup("help")}>? Video Help</button>
         </div>
         <div style={{ padding: "0 0 0 156px", fontFamily: FONT, fontWeight: "bold", fontSize: 14, color: "#555", margin: "10px 0 8px" }}>Select the Parameter to Upload</div>
         <div style={{ display: "grid", gridTemplateColumns: `repeat(${perRow}, auto)`, justifyContent: "center", gap: "5px 8px", padding: "0 10px", fontSize: 15 }}>
@@ -204,6 +212,48 @@ function GeneratePage({ toolKey }: { toolKey: "listed-doctor" | "chemist" }) {
         <div style={{ textAlign: "center", fontSize: 15 }}>Excel Format File <button type="button" style={generated ? link : { ...link, color: "#8a8a8a", textDecoration: "none", cursor: "default" }} disabled={!generated} onClick={downloadHere}>Download Here</button></div>
         {msg && <div style={{ textAlign: "center", color: "#e00000", margin: "8px 0" }}>{msg}</div>}
         <Result r={up.result} err={up.err} />
+        {popup && (
+          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setPopup(null)}>
+            <div style={{ background: "#fff", border: "1px solid #888", padding: 16, maxWidth: 760, width: "92%", maxHeight: "80vh", overflow: "auto", fontSize: 14 }} onClick={(e) => e.stopPropagation()}>
+              {popup === "ref" ? (
+                <>
+                  <h3 style={{ margin: "0 0 8px" }}>{meta.ref} (from your {toolKey === "chemist" ? "chemist" : "doctor"} master)</h3>
+                  {refErr && <div style={{ color: "#e00000" }}>{refErr}</div>}
+                  {!refData && !refErr && <div>Loading...</div>}
+                  {refData && (
+                    <>
+                      <div style={{ marginBottom: 8 }}>{refData.total} active record(s) in the master.</div>
+                      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                        {[...(refData.specialities ? [["Speciality", refData.specialities] as const] : []), [toolKey === "chemist" ? "Category" : "Category (Nil/Core/...)", refData.categories] as const, ["Class", refData.classes] as const].map(([head, list]) => (
+                          <table key={head} style={{ borderCollapse: "collapse", minWidth: 180, alignSelf: "flex-start" }}>
+                            <thead><tr><th style={{ border: "1px solid #000", padding: "3px 6px", textAlign: "left" }}>{head}</th><th style={{ border: "1px solid #000", padding: "3px 6px" }}>Count</th></tr></thead>
+                            <tbody>
+                              {list.length === 0 && <tr><td colSpan={2} style={{ border: "1px solid #000", padding: "3px 6px", color: "#777" }}>None in the master</td></tr>}
+                              {list.map((t) => <tr key={t.value}><td style={{ border: "1px solid #000", padding: "3px 6px" }}>{t.value}</td><td style={{ border: "1px solid #000", padding: "3px 6px", textAlign: "right" }}>{t.count}</td></tr>)}
+                            </tbody>
+                          </table>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h3 style={{ margin: "0 0 8px" }}>{meta.title} - how to use (in-app help, not a video)</h3>
+                  <ol style={{ paddingLeft: 20, lineHeight: "24px" }}>
+                    <li>Under &quot;Select the Parameter to Upload&quot;, tick the columns you want in your file{meta.redMandatory ? " (the red ones are mandatory and always included)" : " (mandatory columns are always included)"}. Available: {cols.map((c) => c.label).join(", ") || "loading..."}.</li>
+                    <li>Click &quot;Generate Excel&quot;. The Excel with exactly those columns downloads and the choice is saved for your login; the tick boxes lock.</li>
+                    <li>Fill the Excel (use &quot;{meta.ref}&quot; above to see the values already in your masters), save it, then pick it with &quot;Choose File&quot;.</li>
+                    <li>{meta.deactivate.split(" (")[0]}: tick the red box only if existing records should be deactivated first.</li>
+                    <li>Click &quot;Upload&quot;. The result shows how many rows were inserted, updated or not uploaded; use &quot;Not Uploaded List&quot; to fix and re-upload failed rows.</li>
+                    <li>&quot;Download Here&quot; re-downloads the Excel format. &quot;Delete and Generate New Excel&quot; clears the saved choice so you can pick different columns.</li>
+                  </ol>
+                </>
+              )}
+              <div style={{ textAlign: "right", marginTop: 10 }}><button type="button" style={{ ...btn, padding: "3px 14px" }} onClick={() => setPopup(null)}>Close</button></div>
+            </div>
+          </div>
+        )}
       </div>
     </Shell>
   );
@@ -360,10 +410,17 @@ function SimplePage({ toolKey }: { toolKey: string }) {
       {cfg.product ? (
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, flexWrap: "wrap" }}>
           {form}
-          <div style={{ display: "flex", gap: 6, marginRight: 100 }}>
-            <RefTable head="Category" rows={ref?.categories ?? []} />
-            <RefTable head="Group" rows={ref?.groups ?? []} />
-            <RefTable head="Brand" rows={ref?.brands ?? []} />
+          <div style={{ marginRight: 100 }}>
+            <div style={{ display: "flex", gap: 6 }}>
+              <RefTable head="Category" rows={ref?.categories ?? []} />
+              <RefTable head="Group" rows={ref?.groups ?? []} />
+              <RefTable head="Brand" rows={ref?.brands ?? []} />
+            </div>
+            {ref?.sources && (Object.values(ref.sources).some((x) => x !== "product-master")) && (
+              <div style={{ fontSize: 12, color: "#8a5a00", marginTop: 4, maxWidth: 480 }}>
+                {`Lists taken from the legacy defaults because your product master has no values for: ${(["categories", "groups", "brands"] as const).filter((k) => ref.sources![k] !== "product-master").join(", ")}.`}
+              </div>
+            )}
           </div>
         </div>
       ) : form}

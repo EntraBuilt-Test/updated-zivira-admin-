@@ -1,5 +1,6 @@
 "use client";
 
+import { approvalLabel } from "@/lib/approval-label";
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, X } from "lucide-react";
 import { apiClient, type MasterRecord } from "@/lib/api-client";
@@ -255,7 +256,7 @@ export function DcrBulkApproval() {
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.remarks ?? "—")}</td>
                         <td className="px-4 py-3 text-sm whitespace-nowrap">
                           <span className={`px-2 py-1 rounded-full text-xs font-medium ${status === "Approved" ? "bg-status-success/10 text-status-success" : status === "Rejected" ? "bg-status-danger/10 text-status-danger" : "bg-surface-subtle text-text-secondary"}`}>
-                            {status}
+                            {approvalLabel({ approvalStatus: row.approvalStatus, approval: (row as any).approval })}
                           </span>
                         </td>
                       </tr>

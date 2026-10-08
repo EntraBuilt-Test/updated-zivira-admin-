@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { apiClient, type Employee } from "@/lib/api-client";
+import { approvalDate } from "@/lib/approval-label";
 import { CustomSelect } from "@/components/custom-select";
 
 // Matches sanpharma.info's MasterFiles/MR/Leave_Status.aspx exactly: a
@@ -31,6 +32,22 @@ export function LeaveStatusPanel() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [viewRow, setViewRow] = useState<any | null>(null);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelError, setCancelError] = useState("");
+  const [cancelling, setCancelling] = useState(false);
+
+  async function doCancel() {
+    if (!viewRow) return;
+    if (!cancelReason.trim()) { setCancelError("A cancellation reason is required."); return; }
+    setCancelling(true); setCancelError("");
+    try {
+      await apiClient.cancelLeave(String(viewRow.id), cancelReason.trim());
+      setViewRow(null); setCancelReason("");
+      await view();
+    } catch (err) {
+      setCancelError(err instanceof Error ? err.message : "Failed to cancel leave");
+    } finally { setCancelling(false); }
+  }
 
   useEffect(() => {
     apiClient.employees().then((r) => setEmployees(r.data)).catch(() => {});
@@ -111,7 +128,7 @@ export function LeaveStatusPanel() {
                   <td className="px-4 py-2 text-sm">{r.toDate ? new Date(r.toDate).toLocaleDateString() : "-"}</td>
                   <td className="px-4 py-2 text-sm">{r.leaveInformation}</td>
                   <td className="px-4 py-2 text-sm">{r.type}</td>
-                  <td className="px-4 py-2 text-sm">{r.status}</td>
+                  <td className="px-4 py-2 text-sm">{r.statusLabel || r.status}{approvalDate(r.status === "Cancelled" ? { status: "CANCELLED", cancelledAt: r.cancelledAt } : { approval: { approvedAt: r.approvedAt } }) ? ` (${new Date(approvalDate(r.status === "Cancelled" ? { status: "CANCELLED", cancelledAt: r.cancelledAt } : { approval: { approvedAt: r.approvedAt } }) as string).toLocaleDateString("en-IN")})` : ""}</td>
                   <td className="px-4 py-2 text-sm">{r.approvedBy}</td>
                   <td className="px-4 py-2 text-sm">{r.reason}</td>
                   <td className="px-4 py-2 text-sm">
@@ -133,10 +150,27 @@ export function LeaveStatusPanel() {
             <h3 style={{ marginBottom: 12 }}>Leave Application Detail</h3>
             <p><strong>{viewRow.fieldForceName}</strong> ({viewRow.empCode})</p>
             <p>{viewRow.type} · {viewRow.fromDate ? new Date(viewRow.fromDate).toLocaleDateString() : "-"} to {viewRow.toDate ? new Date(viewRow.toDate).toLocaleDateString() : "-"}</p>
-            <p>Status: {viewRow.status} · Approved By: {viewRow.approvedBy}</p>
+            <p>Status: {viewRow.statusLabel || viewRow.status} · Approved By: {viewRow.approvedBy}</p>
             <p>Reason: {viewRow.reason}</p>
+            {viewRow.status === "Cancelled" ? <p>Cancelled{viewRow.cancelledAt ? ` on ${new Date(viewRow.cancelledAt).toLocaleDateString("en-IN")}` : ""}{viewRow.cancelReason ? ` - ${viewRow.cancelReason}` : ""}</p> : null}
+            {Array.isArray(viewRow.approvalHistory) && viewRow.approvalHistory.length > 0 ? (
+              <div style={{ fontSize: 12, marginTop: 8 }}>
+                <strong>History</strong>
+                {viewRow.approvalHistory.map((h: any, i: number) => (
+                  <div key={i}>{h.action} by {h.byRole === "ADMIN" ? "Admin" : h.byRole === "MANAGER" ? `Manager (${h.byName})` : h.byName} on {h.at ? new Date(h.at).toLocaleString("en-IN") : "-"}{h.remarks ? ` - ${h.remarks}` : ""}</div>
+                ))}
+              </div>
+            ) : null}
+            {viewRow.status === "Approved" ? (
+              <div style={{ marginTop: 12 }}>
+                <label style={{ fontSize: 12 }}>Cancel this approved leave - reason (required)</label>
+                <input className="input" style={{ width: "100%" }} value={cancelReason} onChange={(e) => setCancelReason(e.target.value)} />
+                {cancelError ? <div style={{ color: "var(--danger, #c00)", fontSize: 12 }}>{cancelError}</div> : null}
+                <button className="button" type="button" style={{ marginTop: 8 }} disabled={cancelling} onClick={doCancel}>{cancelling ? "Cancelling..." : "Cancel Leave"}</button>
+              </div>
+            ) : null}
             <div style={{ marginTop: 16, textAlign: "right" }}>
-              <button className="button button-secondary" type="button" onClick={() => setViewRow(null)}>Close</button>
+              <button className="button button-secondary" type="button" onClick={() => { setViewRow(null); setCancelReason(""); setCancelError(""); }}>Close</button>
             </div>
           </div>
         </div>

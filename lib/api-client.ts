@@ -628,7 +628,7 @@ export type DcrCountModewiseRow = {
 
 export type DcrRejectApproveRow = {
   fieldForceName: string; hq: string; designation: string; mode: "Approve" | "Reject";
-  actionDate: string | null; workType: string; reason: string; actedAt: string | null;
+  actionDate: string | null; workType: string; reason: string; actedAt: string | null; actedBy?: string; actedByRole?: string; label?: string;
 };
 
 export type DcrTimeStatusDay = {
@@ -1063,8 +1063,10 @@ export type LegacyUploadResult = {
   fileName: string; total: number; ok: number; failed: number; inserted: number; updated: number; skipped: number; deactivated: number; uploaded: boolean; outcome: string;
   fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; notUploaded: { fileName: string; base64: string } | null;
 };
+export type UploadTally = { value: string; count: number };
+export type UploadRefSummary = { total: number; specialities?: UploadTally[]; categories: UploadTally[]; classes: UploadTally[] };
 export type UploadGenCol = { label: string; mandatory: boolean; red?: boolean };
-export type ProductReference = { source: "product-master" | "legacy-fallback"; categories: string[]; groups: string[]; brands: string[] };
+export type ProductReference = { source: "product-master" | "legacy-fallback" | "mixed"; sources?: { categories: string; groups: string; brands: string }; categories: string[]; groups: string[]; brands: string[] };
 export type SlideMeta = {
   division: string; subDivisions: string[]; brands: string[]; brandRows: { name: string; subDivision: string }[];
   consumedBytes: number; allocatedBytes: number; remainingBytes: number; limitBytes: number; maxFileBytes: number;
@@ -1681,6 +1683,14 @@ export const apiClient = {
     return request<MasterRecord>(`/company/masters/${key}`, {
       method: "POST",
       body: JSON.stringify(input)
+    });
+  },
+
+  // Round 59 -- admin cancels an APPROVED leave (reason required; server guards non-approved / already cancelled).
+  cancelLeave(id: string, reason: string) {
+    return request<Record<string, unknown>>(`/company/leave/${id}/cancel`, {
+      method: "POST",
+      body: JSON.stringify({ reason })
     });
   },
 
@@ -2610,6 +2620,9 @@ export const apiClient = {
     if (!response.ok) { let m = "Could not generate the Excel file"; try { m = (await response.json())?.error?.message ?? m; } catch { /* non-JSON */ } throw new Error(m); }
     saveBlob(await response.blob(), fileName);
   },
+  uploadToolGenerated(key: string) { return request<{ columns: string[]; generatedAt: string | null } | null>(`/company/upload-tools/${key}/generated`).then((r) => r.data); },
+  uploadToolClearGenerated(key: string) { return request<{ cleared: boolean }>(`/company/upload-tools/${key}/generated`, { method: "DELETE" }).then((r) => r.data); },
+  uploadToolReference(key: "listed-doctor" | "chemist") { return request<UploadRefSummary>(`/company/upload-tools/${key}/reference`).then((r) => r.data); },
   productUploadReference() { return request<ProductReference>("/company/upload-tools/product/reference").then((r) => r.data); },
   productRateStates() { return request<{ states: string[]; default: string }>("/company/upload-tools/product-rate/states").then((r) => r.data); },
   slidesMeta() { return request<SlideMeta>("/company/upload-tools/slides/meta").then((r) => r.data); },

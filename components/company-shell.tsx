@@ -48,7 +48,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
   const [searchQuery, setSearchQuery] = useState("");
   
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Array<{ id: string; title: string; message: string; type: string; time: string; rawTime: string }>>([]);
+  const [notifications, setNotifications] = useState<Array<{ id: string; title: string; message: string; type: string; time: string; rawTime: string; link?: string }>>([]);
   // Item 5 (post-launch robustness round) -- this bell already opened and
   // loaded real data, but its unread dot was just "notifications.length >
   // 0" -- it never cleared after being viewed, unlike the manager/field
@@ -104,7 +104,8 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
               message: notice.message,
               type: notice.priority === "URGENT" ? "urgent" : "notice",
               time: new Date(notice.createdAt).toLocaleString(),
-              rawTime: notice.createdAt
+              rawTime: notice.createdAt,
+              link: typeof notice.link === "string" && notice.link.startsWith("/admin/") ? notice.link : undefined
             }))
           );
         }
@@ -493,7 +494,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
                           )}
                         </span>
                         <div className="flex-1">
-                          <strong className="block text-[13px] text-text-primary font-bold">{notif.title}</strong>
+                          <strong className="block text-[13px] text-text-primary font-bold">{notif.link ? <Link href={notif.link} onClick={() => setNotificationsOpen(false)} className="underline underline-offset-2">{notif.title}</Link> : notif.title}</strong>
                           <p className="m-0 mt-0.5 text-[12px] text-text-secondary leading-snug">{notif.message}</p>
                           <span className="block mt-1 text-[10px] text-text-muted">{notif.time}</span>
                         </div>

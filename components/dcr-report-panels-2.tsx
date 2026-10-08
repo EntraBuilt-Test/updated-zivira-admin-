@@ -267,7 +267,7 @@ function DcrRejectApproveReportInner() {
                     <td className="px-2 py-1 border-t border-border-subtle">{r.fieldForceName}</td>
                     <td className="px-2 py-1 border-t border-border-subtle">{r.hq}</td>
                     <td className="px-2 py-1 border-t border-border-subtle">{r.designation}</td>
-                    <td className="px-2 py-1 border-t border-border-subtle">{r.mode}</td>
+                    <td className="px-2 py-1 border-t border-border-subtle">{r.label || r.mode}</td>
                     <td className="px-2 py-1 border-t border-border-subtle">{r.actionDate ? new Date(r.actionDate).toLocaleDateString("en-IN") : "-"}</td>
                     <td className="px-2 py-1 border-t border-border-subtle">{r.workType || "-"}</td>
                     <td className="px-2 py-1 border-t border-border-subtle">{r.reason || "-"}</td>

@@ -1,5 +1,6 @@
 "use client";
 
+import { approvalLabel, approvalDate } from "@/lib/approval-label";
 import { useEffect, useState } from "react";
 import { Pencil, Ban, RotateCcw, X, AlertTriangle } from "lucide-react";
 import { apiClient, type MasterField, type MasterRecord, type MasterSchema } from "@/lib/api-client";
@@ -14,6 +15,15 @@ import { CustomDatePicker } from "@/components/custom-date-picker";
  * Approving/rejecting just updates the record's approvalStatus field —
  * same generic master API every other screen already uses.
  */
+// Round 59 -- who acted, from the shared label helper (mirror rows carry `approval` once acted on; older rows show plain Approved/Rejected).
+function rowLabel(row: Record<string, any>): string {
+  return approvalLabel({ approvalStatus: row.approvalStatus, approval: row.approval, cancelledBy: row.cancelledBy });
+}
+function rowDate(row: Record<string, any>): string {
+  const d = approvalDate({ status: String(row.approvalStatus ?? ""), approval: row.approval, cancelledAt: row.cancelledAt });
+  return d ? new Date(d).toLocaleDateString("en-IN") : "";
+}
+
 export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
   const [schema, setSchema] = useState<MasterSchema | null>(null);
   const [rows, setRows] = useState<MasterRecord[]>([]);
@@ -242,8 +252,24 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
               ))}
               <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px", paddingBottom: "6px" }}>
                 <span style={{ color: "var(--muted, #666)" }}>Approval Status</span>
-                <strong>{String(detailTarget.approvalStatus ?? "Pending")}</strong>
+                <strong>{rowLabel(detailTarget)}</strong>
               </div>
+              {rowDate(detailTarget) ? (
+                <div style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px", paddingBottom: "6px" }}>
+                  <span style={{ color: "var(--muted, #666)" }}>Decision Date</span>
+                  <strong>{rowDate(detailTarget)}</strong>
+                </div>
+              ) : null}
+              {Array.isArray(detailTarget.approvalHistory) && detailTarget.approvalHistory.length > 0 ? (
+                <div style={{ fontSize: "12px", borderTop: "1px solid var(--border)", paddingTop: "8px" }}>
+                  <div style={{ color: "var(--muted, #666)", marginBottom: "4px" }}>History</div>
+                  {(detailTarget.approvalHistory as any[]).map((h, i) => (
+                    <div key={i}>
+                      {String(h.action)} by {h.byRole === "ADMIN" ? "Admin" : h.byRole === "MANAGER" ? `Manager${h.byName ? ` (${h.byName})` : ""}` : String(h.byName ?? "")} on {h.at ? new Date(h.at).toLocaleString("en-IN") : "-"}{h.remarks ? ` - ${h.remarks}` : ""}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
             {String(detailTarget.approvalStatus ?? "Pending") === "Pending" ? (
               <div style={{ display: "flex", gap: "10px" }}>
@@ -402,10 +428,11 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
                             </button>
                           </div>
                         ) : (
-                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${status === "Approved" ? "bg-status-success/10 text-status-success" : "bg-status-danger/10 text-status-danger"}`}>
-                            {status}
+                          <span className={`px-2 py-1 rounded-full text-xs font-medium ${status === "Approved" ? "bg-status-success/10 text-status-success" : status === "Cancelled" ? "bg-surface-subtle text-text-secondary" : "bg-status-danger/10 text-status-danger"}`}>
+                            {rowLabel(row)}
                           </span>
                         )}
+                        {status !== "Pending" && rowDate(row) ? <div className="text-xs text-text-muted mt-1">{rowDate(row)}</div> : null}
                       </td>
                       <td className="px-4 py-3">
                         <button className="subdivision-icon-button" type="button" title="Edit" onClick={() => setFormRow({ ...row })}>

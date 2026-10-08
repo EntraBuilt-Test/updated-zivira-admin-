@@ -100,15 +100,16 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
 
   async function cancelSelected() {
     if (selected.size === 0) return;
-    if (!window.confirm(`Cancel ${selected.size} selected leave record(s)?`)) return;
+    const reason = (window.prompt(`Reason for cancelling ${selected.size} approved leave record(s) (required):`) ?? "").trim();
+    if (!reason) { setError("A cancellation reason is required."); return; }
     setCancelling(true);
     setError(null);
     try {
       const ids = Array.from(selected);
       for (const id of ids) {
-        await apiClient.updateMasterRecord(MASTER_KEY, id, { status: "Cancelled" });
+        await apiClient.updateMasterRecord(MASTER_KEY, id, { status: "Cancelled", reason });
       }
-      setAllRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, status: "Cancelled" } : r)));
+      setAllRows((prev) => prev.map((r) => (selected.has(r.id) ? { ...r, status: "Cancelled", cancelReason: reason, cancelledBy: { name: "Admin", role: "ADMIN" }, cancelledAt: new Date().toISOString() } : r)));
       setSelected(new Set());
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to cancel leave");
@@ -196,7 +197,7 @@ export function LeaveCancellationPanel({ masterKey: _masterKey }: { masterKey: s
                             disabled={isCancelled}
                             onChange={() => toggleOne(row.id)}
                           />
-                          {isCancelled ? <span className="ml-2 text-xs text-text-muted">(Cancelled)</span> : null}
+                          {isCancelled ? <span className="ml-2 text-xs text-text-muted">(Leave cancelled by {String((row as any).cancelledBy?.role === "MANAGER" ? "Manager" : "Admin")}{(row as any).cancelledAt ? ` on ${new Date(String((row as any).cancelledAt)).toLocaleDateString("en-IN")}` : ""}{(row as any).cancelReason ? ` - ${String((row as any).cancelReason)}` : ""})</span> : null}
                         </td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(emp?.employeeCode ?? row.employeeId ?? "")}</td>
                         <td className="px-4 py-3 text-sm text-text-primary">{String(row.fieldForceName ?? "")}</td>
