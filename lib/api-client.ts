@@ -1071,9 +1071,10 @@ export type UploadGenCol = { label: string; mandatory: boolean; red?: boolean };
 export type ProductReference = { source: "product-master" | "legacy-fallback" | "mixed"; sources?: { categories: string; groups: string; brands: string }; categories: string[]; groups: string[]; brands: string[] };
 export type SlideMeta = {
   division: string; subDivisions: string[]; brands: string[]; brandRows: { name: string; subDivision: string }[];
+  productRows?: { name: string; brand: string; subDivision: string }[]; specialities?: string[]; therapies?: string[]; legacySlides?: number;
   consumedBytes: number; allocatedBytes: number; remainingBytes: number; limitBytes: number; maxFileBytes: number;
 };
-export type SlideRow = { id: string; fileName: string; brand: string; subDivision: string; division: string; uploadedOn: string | null; pages: number | null; size: number | null; mimeType: string; order: number | null };
+export type SlideRow = { id: string; fileName: string; brand: string; subDivision: string; division: string; uploadedOn: string | null; pages: number | null; size: number | null; mimeType: string; order: number | null; products?: string[]; specialities?: string[]; therapies?: string[] };
 export type UploadHistoryRow = { id: string; fileName: string; uploadedBy: string; uploadedAt: string; totalRows: number; okRows: number; failedRows: number; inserted: number; updated: number; fileErrors: string[]; errors: UploadRowError[] };
 
 // Round 48 -- Doctorwise (Periodically), Call Feedbackwise, Fixationwise (By Visit)
@@ -2629,7 +2630,30 @@ export const apiClient = {
   productUploadReference() { return request<ProductReference>("/company/upload-tools/product/reference").then((r) => r.data); },
   productRateStates() { return request<{ states: string[]; default: string }>("/company/upload-tools/product-rate/states").then((r) => r.data); },
   slidesMeta() { return request<SlideMeta>("/company/upload-tools/slides/meta").then((r) => r.data); },
-  slidesList(q: { subDivision?: string; brands?: string[] }) { return request<SlideRow[]>(`/company/upload-tools/slides/list?${new URLSearchParams({ subDivision: q.subDivision ?? "", brands: (q.brands ?? []).join("|") }).toString()}`).then((r) => r.data); },
+  slidesList(q: { subDivision?: string; brands?: string[]; products?: string[]; specialities?: string[]; therapies?: string[] }) { return request<SlideRow[]>(`/company/upload-tools/slides/list?${new URLSearchParams({ subDivision: q.subDivision ?? "", brands: (q.brands ?? []).join("|"), products: (q.products ?? []).join("|"), specialities: (q.specialities ?? []).join("|"), therapies: (q.therapies ?? []).join("|") }).toString()}`).then((r) => r.data); },
+  slidesOrder(ids: string[]) { return request<{ ordered: number }>("/company/upload-tools/slides/order", { method: "POST", body: JSON.stringify({ ids }) }); },
+  slidesMigrate() { return request<Record<string, unknown>>("/company/upload-tools/slides/migrate", { method: "POST", body: "{}" }).then((r) => r.data); },
+  saveSlidePriorityOrder(input: { type: "Brand" | "Product" | "Speciality" | "Therapy"; subDivision: string; items: string[] }) { return request<{ success: boolean }>("/company/masters/slideUploadEDetailing/action/priority-order", { method: "POST", body: JSON.stringify(input) }); },
+  // one file at a time with real byte progress (XHR), used by the slide uploader queue
+  slidesUploadOne(file: File, fields: Record<string, string>, onProgress: (pct: number) => void) {
+    return new Promise<void>((resolve, reject) => {
+      const x = new XMLHttpRequest();
+      x.open("POST", `${API_BASE_URL}/company/upload-tools/slides/upload`);
+      const token = getToken();
+      if (token) x.setRequestHeader("Authorization", `Bearer ${token}`);
+      x.upload.onprogress = (e) => { if (e.lengthComputable) onProgress(Math.round((e.loaded / e.total) * 100)); };
+      x.onload = () => {
+        if (x.status >= 200 && x.status < 300) { onProgress(100); resolve(); return; }
+        let m = "Upload failed"; try { m = JSON.parse(x.responseText)?.error?.message ?? m; } catch { /* keep default */ }
+        reject(new Error(m));
+      };
+      x.onerror = () => reject(new Error("Network error during upload"));
+      const form = new FormData();
+      for (const [k, v] of Object.entries(fields)) form.append(k, v);
+      form.append("files", file);
+      x.send(form);
+    });
+  },
   async slidesUpload(files: File[], fields: Record<string, string>) { return (await uploadForm<{ saved: { fileName: string; brand: string }[]; usage: { consumedBytes: number; remainingBytes: number } }>("/company/upload-tools/slides/upload", files.map((f) => ["files", f] as [string, File]), fields)).data; },
   slidesDelete(id: string) { return request<{ deleted: boolean }>(`/company/upload-tools/slides/${id}`, { method: "DELETE" }); },
   async slidesDownload(id: string, fileName: string) { return apiClient.downloadMisFile(`/company/upload-tools/slides/${id}/download`, {}, fileName); },
