@@ -2,8 +2,8 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
-import { apiClient, type UploadGenCol, type UploadRefSummary } from "@/lib/api-client";
-import { Result, useUploader, download, link, redLink, FONT, PURPLE } from "@/components/legacy-upload-pages";
+import { apiClient, type UploadGenCol, type UploadRefSummary, type DoctorUploadLogRow } from "@/lib/api-client";
+import { useUploader, download, link, redLink, FONT, PURPLE } from "@/components/legacy-upload-pages";
 
 // Round 61 -- Listed Doctor Upload Tool: ONLY the legacy page content inside the admin tab (no copied "Welcome / company" banner,
 // logo, nav bar or dotted wrapper). Blue (primary) / orange (upload) buttons, centred 1180px box, equal-width checkbox grid.
@@ -48,10 +48,9 @@ const outlineBlue: CSSProperties = { ...bBase, background: "#fff", color: BLUE, 
 const outlineBlueOff: CSSProperties = { ...bBase, background: "#fff", color: BLUE_FADED, borderColor: BLUE_FADED, cursor: "not-allowed" };
 const blueLink: CSSProperties = { ...link, font: "15px Arial, Helvetica, sans-serif", color: BLUE };
 const blueLinkOff: CSSProperties = { font: "15px Arial, Helvetica, sans-serif", color: BLUE_FADED, textDecoration: "underline", background: "none", border: 0, padding: 0, cursor: "not-allowed" };
-const STATUS_STYLE: Record<string, CSSProperties> = {
-  Inserted: { background: "#dcfce7", color: "#166534" }, Updated: { background: "#dbeafe", color: "#1e40af" }, Rejected: { background: "#fee2e2", color: "#991b1b" },
-  Uploaded: { background: "#e2e8f0", color: "#334155" }, "Not uploaded": { background: "#e2e8f0", color: "#334155" }
-};
+const CHIP: CSSProperties = { display: "inline-block", padding: "1px 9px", borderRadius: 10, fontWeight: 600, fontSize: 13 };
+const pad2 = (n: number) => String(n).padStart(2, "0");
+const fmtTime = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? "" : `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
 const LAST_UPLOAD_KEY = "r61.lastUpload.listed-doctor";
 /** "Territory/Cluster(For DCR)" -> two nowrap pieces so a long label breaks cleanly before "(" and never mid-phrase. */
 const pieces = (label: string) => label.split(/(?=\()/);
@@ -83,7 +82,11 @@ export function ListedDoctorUploadPage() {
   }, []);
 
   const r = up.result;
-  const tableRows = r?.resultTable?.rows ?? [];
+  const [history, setHistory] = useState<DoctorUploadLogRow[] | null>(null);
+  const [histErr, setHistErr] = useState("");
+  const loadHistory = () => apiClient.doctorUploadLog().then((h) => { setHistory(h); setHistErr(""); }).catch((e) => setHistErr(e instanceof Error ? e.message : "Could not load the upload history"));
+  useEffect(() => { loadHistory(); }, []);
+  useEffect(() => { if (r || up.err) loadHistory(); }, [r, up.err]);
   const uploaded = !!r && r.uploaded && r.inserted + r.updated > 0;
   useEffect(() => {
     if (uploaded && r) {
@@ -109,8 +112,6 @@ export function ListedDoctorUploadPage() {
   };
   const downloadHere = () => { if (generated) download(apiClient.uploadToolGenerate(toolKey, generated, fileName), setMsg); };
   const on = !!generated;
-  const counts = { Inserted: 0, Updated: 0, Rejected: 0 } as Record<string, number>;
-  for (const t of tableRows) if (t.status in counts) counts[t.status]++;
 
   return (
     <div className="ld-page" style={{ padding: "6px 0 28px", minWidth: 0 }}>
@@ -154,40 +155,40 @@ export function ListedDoctorUploadPage() {
         </div>
         <div style={{ textAlign: "center" }}>Excel Format File <button type="button" style={on ? blueLink : blueLinkOff} disabled={!on} onClick={downloadHere}>Download Here</button></div>
         {msg && <div style={{ textAlign: "center", color: "#e00000", margin: "10px 0", fontSize: 14 }}>{msg}</div>}
-        <div style={{ maxWidth: 940, margin: "14px auto 0" }}>
-          <Result r={up.result} err={up.err} />
-        </div>
-        {r && tableRows.length > 0 && !r.fileErrors.length && (
-          <div style={{ marginTop: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
-              <div style={{ fontSize: 14 }}>
-                <strong>Rows of {r.fileName}</strong>{`: ${tableRows.length}${r.resultTable?.truncated ? " shown (first 1000)" : ""} - `}
-                <span style={{ color: "#166534" }}>{counts.Inserted} inserted</span>, <span style={{ color: "#1e40af" }}>{counts.Updated} updated</span>, <span style={{ color: "#991b1b" }}>{counts.Rejected} rejected</span>
-              </div>
-              {uploaded && <button type="button" style={primary} onClick={() => router.push(MASTER_PATH)}>Go to Listed Doctor list</button>}
-            </div>
-            <div style={{ overflow: "auto", maxHeight: 440, border: "1px solid #cbd5e1" }}>
-              <table className="ld-tbl">
-                <thead>
-                  <tr><th>Row</th><th>Status</th>{(r.resultTable?.columns ?? []).map((h, i) => <th key={i}>{h}</th>)}<th>Reason</th></tr>
-                </thead>
-                <tbody>
-                  {tableRows.map((t) => (
-                    <tr key={t.row}>
-                      <td>{t.row}</td>
-                      <td><span style={{ ...(STATUS_STYLE[t.status] ?? {}), padding: "1px 8px", borderRadius: 10, fontWeight: 600 }}>{t.status}</span></td>
-                      {t.cells.map((v, i) => <td key={i}>{v}</td>)}
-                      <td style={{ color: "#991b1b", whiteSpace: "normal", minWidth: 280 }}>{t.reason}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div style={{ textAlign: "center", color: "#6b7280", fontSize: 12, margin: "8px auto 0", maxWidth: 900 }}>User Name must be an Employee Code or exact name from the Field Force master. Category must be Nil / CORE / N CORE / S CORE. Class is A / B / C.</div>
+        {(up.err || r) && (
+          <div style={{ textAlign: "center", margin: "14px 0 4px", fontWeight: "bold", fontSize: 16, color: up.err || !r || r.failed > 0 || !r.uploaded ? "#c00000" : "#067a06" }}>
+            {up.err ? up.err : r && r.fileErrors.length ? `Upload failed - ${r.fileErrors[0]}` : r && r.uploaded && r.failed === 0 ? "Upload completed" : "Upload completed with rejected records"}
           </div>
         )}
-        {uploaded && tableRows.length === 0 && (
-          <div style={{ textAlign: "center", marginTop: 10 }}><button type="button" style={primary} onClick={() => router.push(MASTER_PATH)}>Go to Listed Doctor list</button></div>
-        )}
+        <div style={{ textAlign: "center", margin: "8px 0 14px" }}>
+          <button type="button" style={primary} onClick={() => router.push(MASTER_PATH)}>Go to Listed Doctor list</button>
+        </div>
+        <div style={{ maxWidth: 940, margin: "0 auto" }}>
+          <div style={{ fontWeight: 700, fontSize: 16, margin: "0 0 6px", textAlign: "center" }}>Upload History</div>
+          {histErr && <div style={{ color: "#c00000", textAlign: "center", fontSize: 13 }}>{histErr}</div>}
+          <div style={{ overflow: "auto", maxHeight: 460, border: "1px solid #cbd5e1" }}>
+            <table className="ld-tbl" style={{ width: "100%" }}>
+              <thead><tr><th>S.No</th><th>Uploaded Time</th><th>File Name</th><th>Records</th><th>Uploaded by</th><th>Not Uploaded List</th></tr></thead>
+              <tbody>
+                {history && history.length === 0 && <tr><td colSpan={6} style={{ textAlign: "center", color: "#6b7280" }}>No uploads yet</td></tr>}
+                {(history ?? []).map((h, i) => (
+                  <tr key={h.id}>
+                    <td>{i + 1}</td>
+                    <td>{fmtTime(h.uploadedAt)}</td>
+                    <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{h.fileName}</td>
+                    <td>
+                      <span style={{ ...CHIP, background: "#dcfce7", color: "#166534" }}>Success: {h.success}</span>{" "}
+                      <span style={{ ...CHIP, background: "#fee2e2", color: "#991b1b" }}>Rejected: {h.rejected}</span>
+                    </td>
+                    <td>{h.uploadedBy}</td>
+                    <td>{h.rejected > 0 ? <button type="button" style={blueLink} onClick={() => download(apiClient.doctorUploadNotUploaded(h.id, h.fileName), setMsg)}>Not Uploaded List</button> : ""}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
       {popup && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setPopup(null)}>
@@ -222,7 +223,7 @@ export function ListedDoctorUploadPage() {
                   <li>Click &quot;Generate Excel&quot;. An Excel with exactly those columns downloads (mandatory headers in yellow) and the choice is saved for your login; the tick boxes lock.</li>
                   <li>Fill the Excel (use &quot;Speciality / Category&quot; to see the values already in your masters), save it, then pick it with &quot;Choose File&quot;.</li>
                   <li>Tick &quot;Deactivate Existing Doctor List&quot; only if all existing doctors should be deactivated first.</li>
-                  <li>Click &quot;Upload&quot;. The result shows inserted, updated and not-uploaded rows; use &quot;Not Uploaded List&quot; to fix and re-upload failed rows. &quot;Go to Listed Doctor list&quot; opens the master.</li>
+                  <li>Click &quot;Upload&quot;. A one-line result is shown and the upload is added to the Upload History; open &quot;Not Uploaded List&quot; against an upload to see which rows were rejected and why, then fix and re-upload failed rows. &quot;Go to Listed Doctor list&quot; opens the master.</li>
                   <li>&quot;Download Here&quot; re-downloads the Excel format. &quot;Delete and Generate New Excel&quot; clears the saved choice so you can pick different columns.</li>
                 </ol>
               </>

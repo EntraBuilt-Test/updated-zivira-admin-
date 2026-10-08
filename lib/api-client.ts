@@ -1065,6 +1065,7 @@ export type LegacyUploadResult = {
 };
 export type UploadTally = { value: string; count: number };
 export type UploadRefSummary = { total: number; specialities?: UploadTally[]; categories: UploadTally[]; classes: UploadTally[] };
+export type DoctorUploadLogRow = { id: string; fileName: string; uploadedAt: string; uploadedBy: string; read: number; inserted: number; updated: number; success: number; rejected: number; note: string; hasNotUploaded: boolean };
 export type UploadResultTable = { columns: string[]; truncated: boolean; rows: { row: number; status: "Inserted" | "Updated" | "Rejected" | "Uploaded" | "Not uploaded"; reason: string; cells: string[] }[] };
 export type UploadGenCol = { label: string; mandatory: boolean; red?: boolean };
 export type ProductReference = { source: "product-master" | "legacy-fallback" | "mixed"; sources?: { categories: string; groups: string; brands: string }; categories: string[]; groups: string[]; brands: string[] };
@@ -2632,6 +2633,8 @@ export const apiClient = {
   async slidesUpload(files: File[], fields: Record<string, string>) { return (await uploadForm<{ saved: { fileName: string; brand: string }[]; usage: { consumedBytes: number; remainingBytes: number } }>("/company/upload-tools/slides/upload", files.map((f) => ["files", f] as [string, File]), fields)).data; },
   slidesDelete(id: string) { return request<{ deleted: boolean }>(`/company/upload-tools/slides/${id}`, { method: "DELETE" }); },
   async slidesDownload(id: string, fileName: string) { return apiClient.downloadMisFile(`/company/upload-tools/slides/${id}/download`, {}, fileName); },
+  doctorUploadLog() { return request<DoctorUploadLogRow[]>(`/company/upload-tools/listed-doctor/uploads`).then((r) => r.data); },
+  doctorUploadNotUploaded(id: string, fileName: string) { return apiClient.downloadMisFile(`/company/upload-tools/listed-doctor/uploads/${id}/not-uploaded`, {}, `Not_Uploaded_List_${fileName.replace(/\.[^.]+$/, "")}.xlsx`); },
   uploadToolHistory(key: string) { return request<UploadHistoryRow[]>(`/company/upload-tools/${key}/history`); },
   async uploadSlideFiles(files: File[]) { return uploadForm<{ matched: string[]; unmatched: string[] }>("/company/upload-tools/slides-upload/files", files.map((f) => ["files", f] as [string, File])); },
   // Round 48
