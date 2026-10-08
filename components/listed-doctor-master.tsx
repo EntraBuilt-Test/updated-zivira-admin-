@@ -5,6 +5,11 @@ import { RotateCcw, SlidersHorizontal, Trash2, Pencil, Ban, X, AlertTriangle } f
 import { useState, useEffect } from "react";
 import { apiClient, type Dealer, type PaginationInfo } from "@/lib/api-client";
 import { PaginationControls } from "./pagination-controls";
+
+// Round 61 -- the Listed Doctor Upload Tool leaves a note here so this master opens with the just-uploaded doctors first.
+const LAST_UPLOAD_KEY = "r61.lastUpload.listed-doctor";
+type LastUpload = { at: string; fileName: string; inserted: number; updated: number };
+function readLastUpload(): LastUpload | null { try { const s = window.sessionStorage.getItem(LAST_UPLOAD_KEY); return s ? (JSON.parse(s) as LastUpload) : null; } catch { return null; } }
 type ListedDoctorRow = {
   id: string;
   code: string;
@@ -34,13 +39,15 @@ export function ListedDoctorMaster() {
   const [pagination, setPagination] = useState<PaginationInfo>({ page: 1, limit: 10, total: 0, totalPages: 0 });
   const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
   const [statusFilter, setStatusFilter] = useState("All");
+  const [lastUpload, setLastUpload] = useState<LastUpload | null>(null);
   useEffect(() => {
+    setLastUpload(readLastUpload());
     fetchData(pagination.page);
   }, []);
   async function fetchData(page: number) {
     try {
       setLoading(true);
-      const res = await apiClient.doctors({ page, limit: pagination.limit });
+      const res = await apiClient.doctors({ page, limit: pagination.limit, ...(readLastUpload() ? { sort: "updated" as const } : {}) });
       setList(res.data);
       setPagination(res.pagination);
     } catch (err: any) {
@@ -596,6 +603,14 @@ export function ListedDoctorMaster() {
           onChange={e => setSearch(e.target.value)}
         />
       </div>
+      {lastUpload && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-900">
+          <span>
+            <strong>{lastUpload.inserted + lastUpload.updated} doctors from your last upload</strong> ({lastUpload.fileName}: {lastUpload.inserted} new, {lastUpload.updated} updated, {new Date(lastUpload.at).toLocaleString("en-IN")}) are listed first and highlighted.
+          </span>
+          <button type="button" className="underline" onClick={() => { try { window.sessionStorage.removeItem(LAST_UPLOAD_KEY); } catch { /* ignore */ } setLastUpload(null); void fetchData(1); }}>Dismiss</button>
+        </div>
+      )}
       <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm mt-4 overflow-x-auto overflow-y-auto custom-scrollbar">
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--muted)" }}>Loading doctors...</div>
@@ -659,7 +674,7 @@ export function ListedDoctorMaster() {
             </thead>
             <tbody className="divide-y divide-border-subtle">
               {filtered.map((row, idx) => (
-                <tr className="hover:bg-surface-subtle/50 transition-colors group" key={row.id}>
+                <tr className={`hover:bg-surface-subtle/50 transition-colors group ${lastUpload && row.updatedAt && new Date(row.updatedAt).getTime() >= new Date(lastUpload.at).getTime() ? "bg-blue-50/60" : ""}`} key={row.id}>
                   <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ color: "var(--muted)", fontWeight: 500 }}>{(pagination.page - 1) * pagination.limit + idx + 1}</td>
                   <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{row.doctorCode || row.code || "-"}</td>
                   <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.name}</strong></td>

@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
 import { apiClient, type UploadGenCol, type UploadRefSummary } from "@/lib/api-client";
 import { Result, useUploader, download, link, redLink, FONT, PURPLE } from "@/components/legacy-upload-pages";
 
 // Round 61 -- Listed Doctor Upload Tool: ONLY the legacy page content inside the admin tab (no copied "Welcome / company" banner,
-// logo, nav bar or dotted wrapper). Native-looking controls (grey bordered buttons, default file input) and the legacy fonts/sizes.
+// logo, nav bar or dotted wrapper). Blue (primary) / orange (upload) buttons, centred 1180px box, equal-width checkbox grid.
 // Every action is real: columns, Generate Excel (server remembers it per admin), upload, deactivate, result + Not Uploaded List.
 
 const TITLE = "Listed Doctor Upload Tool";
@@ -14,33 +14,55 @@ const MASTER_PATH = "/admin/workspace/division-dashboard/division-navigation-tab
 const ARIAL = "Arial, Helvetica, sans-serif";
 
 // Scoped reset so the app's global orange file button / label styling does not leak into the legacy controls.
+const BLUE = "#2563eb", BLUE_FADED = "#a9c1f5", ORANGE = "#ea580c", ORANGE_FADED = "#f7bfa3";
 const NATIVE_CSS = `
-.legacy-native, .legacy-native * { box-sizing: border-box; }
-.legacy-native { font-family: ${ARIAL}; color: #000; background: #fff; }
-.legacy-native label { font-family: ${ARIAL}; font-size: 16px; font-weight: normal; color: #000; display: flex; align-items: center; gap: 3px; margin: 0; }
-.legacy-native input[type="checkbox"] { width: 13px; height: 13px; margin: 3px 3px 3px 4px; accent-color: #1a73e8; }
-.legacy-native input[type="file"] { font: 13.3333px Arial; color: #000; padding: 0; }
-.legacy-native input[type="file"]::file-selector-button,
-.legacy-native input[type="file"]::-webkit-file-upload-button {
-  background: #efefef; color: #000; border: 1px solid #767676; border-radius: 3px; padding: 1px 6px; font: 13.3333px Arial;
-  box-shadow: none; margin-right: 4px; cursor: pointer; --tw-shadow: 0 0 #0000;
+.ld-page, .ld-page * { box-sizing: border-box; }
+.ld-page { font-family: ${ARIAL}; color: #000; font-size: 15px; }
+.ld-box { background: #fff; border: 1px solid #000; max-width: 1180px; margin: 0 auto; padding: 14px 16px 18px; }
+.ld-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px 12px; margin: 0 auto; max-width: 1148px; }
+@media (max-width: 1250px) { .ld-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+@media (max-width: 1000px) { .ld-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.ld-page label.ld-cb { font-family: ${ARIAL}; font-size: 14.5px; font-weight: normal; color: #000; display: flex; align-items: center; gap: 6px; margin: 0; min-height: 22px; cursor: pointer; }
+.ld-page label.ld-cb span.t { display: inline-block; line-height: 1.2; }
+.ld-page label.ld-cb span.t > span { white-space: nowrap; }
+.ld-page input[type="checkbox"] { width: 15px; height: 15px; margin: 0; flex: none; accent-color: ${BLUE}; cursor: pointer; }
+.ld-page input[type="file"] { font: 14px ${ARIAL}; color: #222; padding: 0; max-width: 300px; }
+.ld-page input[type="file"]::file-selector-button,
+.ld-page input[type="file"]::-webkit-file-upload-button {
+  background: #fff7ed; color: #c2410c; border: 1.5px solid ${ORANGE}; border-radius: 6px; padding: 5px 14px; font: 600 14px ${ARIAL};
+  box-shadow: none; margin-right: 10px; cursor: pointer;
 }
-.legacy-native input[type="file"]:disabled::file-selector-button,
-.legacy-native input[type="file"]:disabled::-webkit-file-upload-button { background: #efefef; color: #9a9a9a; border-color: #c7c7c7; cursor: default; }
-.legacy-native button { font-family: ${ARIAL}; }
+.ld-page input[type="file"]:disabled::file-selector-button,
+.ld-page input[type="file"]:disabled::-webkit-file-upload-button { background: #fff7ed; color: ${ORANGE_FADED}; border-color: ${ORANGE_FADED}; cursor: not-allowed; }
+.ld-page button { font-family: ${ARIAL}; }
+.ld-tbl { border-collapse: collapse; font-size: 13px; width: max-content; min-width: 100%; }
+.ld-tbl th, .ld-tbl td { border: 1px solid #cbd5e1; padding: 4px 8px; white-space: nowrap; text-align: left; }
+.ld-tbl th { background: #f1f5f9; position: sticky; top: 0; z-index: 1; }
 `;
-const nbtn: CSSProperties = { font: "16px Arial, Helvetica, sans-serif", border: "1px solid #767676", background: "#efefef", color: "#000", borderRadius: 3, padding: "1px 6px", cursor: "pointer" };
-const nbtnOff: CSSProperties = { ...nbtn, color: "#9a9a9a", borderColor: "#c7c7c7", background: "#efefef", cursor: "default" };
-const nlink: CSSProperties = { ...link, font: "16px Arial, Helvetica, sans-serif", color: "#0000ee" };
-const nlinkOff: CSSProperties = { font: "16px Arial, Helvetica, sans-serif", color: "#9a9a9a", textDecoration: "none" };
+const bBase: CSSProperties = { font: "600 15px Arial, Helvetica, sans-serif", borderRadius: 6, padding: "7px 20px", cursor: "pointer", border: "1.5px solid transparent" };
+const primary: CSSProperties = { ...bBase, background: BLUE, color: "#fff", borderColor: BLUE };
+const primaryOff: CSSProperties = { ...bBase, background: BLUE_FADED, color: "#fff", borderColor: BLUE_FADED, cursor: "not-allowed" };
+const orange: CSSProperties = { ...bBase, background: ORANGE, color: "#fff", borderColor: ORANGE };
+const orangeOff: CSSProperties = { ...bBase, background: ORANGE_FADED, color: "#fff", borderColor: ORANGE_FADED, cursor: "not-allowed" };
+const outlineBlue: CSSProperties = { ...bBase, background: "#fff", color: BLUE, borderColor: BLUE };
+const outlineBlueOff: CSSProperties = { ...bBase, background: "#fff", color: BLUE_FADED, borderColor: BLUE_FADED, cursor: "not-allowed" };
+const blueLink: CSSProperties = { ...link, font: "15px Arial, Helvetica, sans-serif", color: BLUE };
+const blueLinkOff: CSSProperties = { font: "15px Arial, Helvetica, sans-serif", color: BLUE_FADED, textDecoration: "underline", background: "none", border: 0, padding: 0, cursor: "not-allowed" };
+const STATUS_STYLE: Record<string, CSSProperties> = {
+  Inserted: { background: "#dcfce7", color: "#166534" }, Updated: { background: "#dbeafe", color: "#1e40af" }, Rejected: { background: "#fee2e2", color: "#991b1b" },
+  Uploaded: { background: "#e2e8f0", color: "#334155" }, "Not uploaded": { background: "#e2e8f0", color: "#334155" }
+};
+const LAST_UPLOAD_KEY = "r61.lastUpload.listed-doctor";
+/** "Territory/Cluster(For DCR)" -> two nowrap pieces so a long label breaks cleanly before "(" and never mid-phrase. */
+const pieces = (label: string) => label.split(/(?=\()/);
 
 export function ListedDoctorUploadPage() {
   const router = useRouter();
   const toolKey = "listed-doctor";
   const up = useUploader(toolKey);
   const [cols, setCols] = useState<UploadGenCol[]>([]);
-  const [picked, setPicked] = useState<Set<string>>(new Set());
-  const [generated, setGenerated] = useState<string[] | null>(null);     // columns of the Excel generated earlier: kept on the server per admin user
+  const [picked, setPicked] = useState<Set<string>>(new Set());            // only what the user ticks; always empty at first
+  const [generated, setGenerated] = useState<string[] | null>(null);       // the columns of the Excel generated earlier: kept on the server per admin user
   const [deactivate, setDeactivate] = useState(false);
   const [msg, setMsg] = useState("");
   const [loadErr, setLoadErr] = useState("");
@@ -48,14 +70,26 @@ export function ListedDoctorUploadPage() {
   const [refData, setRefData] = useState<UploadRefSummary | null>(null);
   const [refErr, setRefErr] = useState("");
   const fileName = `${TITLE.replace(/\s+/g, "_")}.xlsx`;
+  const always = useMemo(() => cols.filter((c) => c.mandatory).map((c) => c.label), [cols]);
 
   useEffect(() => {
     apiClient.uploadToolColumns(toolKey).then((c) => {
       setCols(c);
-      setPicked(new Set(c.filter((x) => x.mandatory).map((x) => x.label)));
+      // restore what was ticked for the Excel generated earlier (state is on the server)
+      apiClient.uploadToolGenerated(toolKey).then((g) => {
+        if (g?.columns?.length) { setGenerated(g.columns); setPicked(new Set(g.columns.filter((l) => !c.some((x) => x.label === l && x.mandatory)))); }
+      }).catch(() => { /* nothing saved */ });
     }).catch((e) => setLoadErr(e instanceof Error ? e.message : "Could not load the column list"));
-    apiClient.uploadToolGenerated(toolKey).then((g) => { if (g?.columns?.length) setGenerated(g.columns); }).catch(() => { /* nothing saved */ });
   }, []);
+
+  const r = up.result;
+  const tableRows = r?.resultTable?.rows ?? [];
+  const uploaded = !!r && r.uploaded && r.inserted + r.updated > 0;
+  useEffect(() => {
+    if (uploaded && r) {
+      try { window.sessionStorage.setItem(LAST_UPLOAD_KEY, JSON.stringify({ at: r.startedAt || new Date().toISOString(), fileName: r.fileName, inserted: r.inserted, updated: r.updated })); } catch { /* storage unavailable */ }
+    }
+  }, [uploaded, r]);
 
   const openRef = () => {
     setPopup("ref"); setRefData(null); setRefErr("");
@@ -64,64 +98,95 @@ export function ListedDoctorUploadPage() {
   const generate = async () => {
     setMsg("");
     try {
-      const labels = cols.filter((c) => c.mandatory || picked.has(c.label)).map((c) => c.label);
-      await apiClient.uploadToolGenerate(toolKey, labels, fileName);       // downloads the xlsx and stores the state server-side
-      setGenerated(labels);
+      const labels = cols.filter((c) => picked.has(c.label)).map((c) => c.label);     // the always-included columns are added by the server
+      await apiClient.uploadToolGenerate(toolKey, labels, fileName);                  // downloads the xlsx and stores the state server-side
+      setGenerated([...new Set([...always, ...labels])]);
     } catch (e) { setMsg(e instanceof Error ? e.message : "Could not generate the Excel file"); }
   };
   const reset = async () => {
     try { await apiClient.uploadToolClearGenerated(toolKey); } catch (e) { setMsg(e instanceof Error ? e.message : "Could not clear the saved Excel"); return; }
-    setGenerated(null); setMsg("");
-    setPicked(new Set(cols.filter((x) => x.mandatory).map((x) => x.label)));
+    setGenerated(null); setMsg(""); setPicked(new Set());
   };
   const downloadHere = () => { if (generated) download(apiClient.uploadToolGenerate(toolKey, generated, fileName), setMsg); };
-  const uploaded = !!up.result && up.result.uploaded && up.result.inserted + up.result.updated > 0;
   const on = !!generated;
+  const counts = { Inserted: 0, Updated: 0, Rejected: 0 } as Record<string, number>;
+  for (const t of tableRows) if (t.status in counts) counts[t.status]++;
 
   return (
-    <div className="legacy-native" style={{ padding: "6px 0 24px", minWidth: 0 }}>
+    <div className="ld-page" style={{ padding: "6px 0 28px", minWidth: 0 }}>
       <style>{NATIVE_CSS}</style>
-      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 19, color: PURPLE, textDecoration: "underline", margin: "6px 0 24px", background: "transparent" }}>{TITLE}</div>
-      <div style={{ background: "#fff", border: "1px solid #000", maxWidth: 1536, margin: "0 auto", padding: "6px 0 14px" }}>
-        <div style={{ textAlign: "center", fontSize: 16, lineHeight: "20px" }}>{TITLE}</div>
-        <div style={{ display: "flex", justifyContent: "space-between", margin: "8px 0 6px", padding: "0 148px", fontSize: 20 }}>
-          <button type="button" style={{ ...redLink, font: "20px Arial, Helvetica, sans-serif" }} onClick={openRef}>Speciality / Category</button>
-          <button type="button" style={{ ...redLink, font: "20px Arial, Helvetica, sans-serif" }} onClick={() => setPopup("help")}>? Video Help</button>
+      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 19, color: PURPLE, textDecoration: "underline", margin: "6px 0 18px" }}>{TITLE}</div>
+      <div className="ld-box">
+        <div style={{ textAlign: "center", fontSize: 15, marginBottom: 10 }}>{TITLE}</div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1148, margin: "0 auto 12px" }}>
+          <button type="button" style={{ ...redLink, font: "16px Arial, Helvetica, sans-serif" }} onClick={openRef}>Speciality / Category</button>
+          <button type="button" style={{ ...redLink, font: "16px Arial, Helvetica, sans-serif" }} onClick={() => setPopup("help")}>? Video Help</button>
         </div>
-        <div style={{ padding: "0 0 0 157px", fontFamily: ARIAL, fontWeight: "bold", fontSize: 16, color: "#555", margin: "6px 0 8px" }}>Select the Parameter to Upload</div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, auto)", justifyContent: "center", gap: "2px 12px", padding: "0 10px" }}>
+        <div style={{ textAlign: "center", fontWeight: "bold", fontSize: 15, color: "#555", margin: "0 0 10px" }}>Select the Parameter to Upload</div>
+        <div className="ld-grid">
           {cols.map((c) => (
-            <label key={c.label} style={{ color: c.mandatory ? "#e00000" : "#000", fontWeight: c.mandatory ? "bold" : "normal" }}>
-              <input type="checkbox" checked={c.mandatory || picked.has(c.label)} disabled={c.mandatory || on}
+            <label key={c.label} className="ld-cb" title={c.label}>
+              <input type="checkbox" checked={picked.has(c.label)}
                 onChange={(e) => setPicked((p) => { const n = new Set(p); if (e.target.checked) n.add(c.label); else n.delete(c.label); return n; })} />
-              {c.label}
+              <span className="t">{pieces(c.label).map((t, i) => <span key={i}>{t}</span>)}</span>
             </label>
           ))}
         </div>
-        {loadErr && <div style={{ color: "#e00000", textAlign: "center" }}>{loadErr}</div>}
-        <div style={{ textAlign: "center", margin: "30px 0 26px" }}>
-          <button type="button" style={on ? nbtnOff : nbtn} disabled={on || !cols.length} onClick={generate}>Generate Excel</button>
-          <span style={{ marginLeft: 14 }}>
-            {on ? <button type="button" style={nlink} onClick={reset}>Delete and Generate New Excel</button> : <span style={nlinkOff}>Delete and Generate New Excel</span>}
-          </span>
+        {loadErr && <div style={{ color: "#e00000", textAlign: "center", marginTop: 8 }}>{loadErr}</div>}
+        {always.length > 0 && (
+          <div style={{ textAlign: "center", fontSize: 13, color: "#475569", margin: "12px auto 0", maxWidth: 1000, lineHeight: "18px" }}>
+            {always.join(", ")} are always included (highlighted yellow in the Excel).
+          </div>
+        )}
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 16, margin: "22px 0 20px", flexWrap: "wrap" }}>
+          <button type="button" style={on ? primaryOff : primary} disabled={on || !cols.length} onClick={generate}>Generate Excel</button>
+          <button type="button" style={on ? outlineBlue : outlineBlueOff} disabled={!on} onClick={reset}>Delete and Generate New Excel</button>
         </div>
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 60, margin: "8px 0" }}>
-          <span style={{ fontSize: 16, display: "flex", alignItems: "center", gap: 20 }}>Excel file {up.chooser(!on)}</span>
-          <label style={{ color: "#e00000", fontSize: 16, fontFamily: FONT }}>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 36, margin: "8px 0 16px", flexWrap: "wrap" }}>
+          <span style={{ display: "flex", alignItems: "center", gap: 12 }}>Excel file {up.chooser(!on)}</span>
+          <label className="ld-cb" style={{ color: "#c00000" }}>
             <input type="checkbox" checked={deactivate} onChange={(e) => setDeactivate(e.target.checked)} />
             Deactivate Existing Doctor List ( if Yes then Check this Option )
           </label>
         </div>
-        <div style={{ textAlign: "center", margin: "18px 0 6px" }}>
-          <button type="button" style={on && !up.busy ? nbtn : nbtnOff} disabled={!on || up.busy} onClick={() => up.submit(deactivate ? { deactivate: "true" } : {})}>{up.busy ? "Uploading..." : "Upload"}</button>
+        <div style={{ textAlign: "center", margin: "0 0 10px" }}>
+          <button type="button" style={on && !up.busy ? orange : orangeOff} disabled={!on || up.busy} onClick={() => up.submit(deactivate ? { deactivate: "true" } : {})}>{up.busy ? "Uploading..." : "Upload"}</button>
         </div>
-        <div style={{ textAlign: "center", fontSize: 16 }}>Excel Format File <button type="button" style={on ? nlink : { ...nlinkOff, background: "none", border: 0, padding: 0, cursor: "default" }} disabled={!on} onClick={downloadHere}>Download Here</button></div>
-        {msg && <div style={{ textAlign: "center", color: "#e00000", margin: "8px 0", fontSize: 14 }}>{msg}</div>}
-        <Result r={up.result} err={up.err} />
-        {uploaded && (
-          <div style={{ textAlign: "center", margin: "6px 0 2px" }}>
-            <button type="button" style={nbtn} onClick={() => router.push(MASTER_PATH)}>Go to Listed Doctor list</button>
+        <div style={{ textAlign: "center" }}>Excel Format File <button type="button" style={on ? blueLink : blueLinkOff} disabled={!on} onClick={downloadHere}>Download Here</button></div>
+        {msg && <div style={{ textAlign: "center", color: "#e00000", margin: "10px 0", fontSize: 14 }}>{msg}</div>}
+        <div style={{ maxWidth: 940, margin: "14px auto 0" }}>
+          <Result r={up.result} err={up.err} />
+        </div>
+        {r && tableRows.length > 0 && !r.fileErrors.length && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap", marginBottom: 6 }}>
+              <div style={{ fontSize: 14 }}>
+                <strong>Rows of {r.fileName}</strong>{`: ${tableRows.length}${r.resultTable?.truncated ? " shown (first 1000)" : ""} - `}
+                <span style={{ color: "#166534" }}>{counts.Inserted} inserted</span>, <span style={{ color: "#1e40af" }}>{counts.Updated} updated</span>, <span style={{ color: "#991b1b" }}>{counts.Rejected} rejected</span>
+              </div>
+              {uploaded && <button type="button" style={primary} onClick={() => router.push(MASTER_PATH)}>Go to Listed Doctor list</button>}
+            </div>
+            <div style={{ overflow: "auto", maxHeight: 440, border: "1px solid #cbd5e1" }}>
+              <table className="ld-tbl">
+                <thead>
+                  <tr><th>Row</th><th>Status</th>{(r.resultTable?.columns ?? []).map((h, i) => <th key={i}>{h}</th>)}<th>Reason</th></tr>
+                </thead>
+                <tbody>
+                  {tableRows.map((t) => (
+                    <tr key={t.row}>
+                      <td>{t.row}</td>
+                      <td><span style={{ ...(STATUS_STYLE[t.status] ?? {}), padding: "1px 8px", borderRadius: 10, fontWeight: 600 }}>{t.status}</span></td>
+                      {t.cells.map((v, i) => <td key={i}>{v}</td>)}
+                      <td style={{ color: "#991b1b", whiteSpace: "normal", minWidth: 280 }}>{t.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
+        )}
+        {uploaded && tableRows.length === 0 && (
+          <div style={{ textAlign: "center", marginTop: 10 }}><button type="button" style={primary} onClick={() => router.push(MASTER_PATH)}>Go to Listed Doctor list</button></div>
         )}
       </div>
       {popup && (
@@ -162,7 +227,7 @@ export function ListedDoctorUploadPage() {
                 </ol>
               </>
             )}
-            <div style={{ textAlign: "right", marginTop: 10 }}><button type="button" style={nbtn} onClick={() => setPopup(null)}>Close</button></div>
+            <div style={{ textAlign: "right", marginTop: 10 }}><button type="button" style={primary} onClick={() => setPopup(null)}>Close</button></div>
           </div>
         </div>
       )}

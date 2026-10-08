@@ -1061,10 +1061,11 @@ export type UploadImportResult = { fileName: string; total: number; ok: number; 
 // Round 58 -- legacy upload pages
 export type LegacyUploadResult = {
   fileName: string; total: number; ok: number; failed: number; inserted: number; updated: number; skipped: number; deactivated: number; uploaded: boolean; outcome: string;
-  fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; notUploaded: { fileName: string; base64: string } | null;
+  fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; resultTable?: UploadResultTable; startedAt?: string; notUploaded: { fileName: string; base64: string } | null;
 };
 export type UploadTally = { value: string; count: number };
 export type UploadRefSummary = { total: number; specialities?: UploadTally[]; categories: UploadTally[]; classes: UploadTally[] };
+export type UploadResultTable = { columns: string[]; truncated: boolean; rows: { row: number; status: "Inserted" | "Updated" | "Rejected" | "Uploaded" | "Not uploaded"; reason: string; cells: string[] }[] };
 export type UploadGenCol = { label: string; mandatory: boolean; red?: boolean };
 export type ProductReference = { source: "product-master" | "legacy-fallback" | "mixed"; sources?: { categories: string; groups: string; brands: string }; categories: string[]; groups: string[]; brands: string[] };
 export type SlideMeta = {
@@ -1339,8 +1340,9 @@ export const apiClient = {
     });
   },
 
-  doctors(params?: { page?: number; limit?: number }) {
+  doctors(params?: { page?: number; limit?: number; sort?: "updated" }) {
     const query = new URLSearchParams();
+    if (params?.sort) query.set("sort", params.sort);
     if (params?.page) query.set("page", String(params.page));
     if (params?.limit) query.set("limit", String(params.limit));
     const qs = query.toString();
