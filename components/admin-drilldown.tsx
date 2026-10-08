@@ -49,7 +49,8 @@ import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
 import { SlideUploadEDetailingPanel } from "@/components/slide-upload-edetailing-panel";
 import { HomepageImageUploadPanel } from "@/components/homepage-image-upload-panel";
 import { HomepageFieldForcewisePanel } from "@/components/homepage-fieldforcewise-panel";
-import { UploadToolPanel } from "@/components/upload-tool-panel";
+import { LegacyUploadPage } from "@/components/legacy-upload-pages";
+import { SlideUploadPage } from "@/components/slide-upload-page";
 import { LeaveStatusPanel } from "@/components/leave-status-panel";
 import { TransferMasterDetailsPanel } from "@/components/transfer-master-details-panel";
 import { UnlistedToListedConversionPanel } from "@/components/unlisted-to-listed-conversion-panel";
@@ -685,23 +686,23 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/listed-doctor")) {
-    return <UploadToolPanel toolKey="listed-doctor" />;
+    return <LegacyUploadPage toolKey="listed-doctor" />;
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {
-    return <UploadToolPanel toolKey="chemist" />;
+    return <LegacyUploadPage toolKey="chemist" />;
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
-    return <UploadToolPanel toolKey="sample" />;
+    return <LegacyUploadPage toolKey="sample" />;
   }
 
   if (pathStr.endsWith("customer-upload/input")) {
-    return <UploadToolPanel toolKey="input" />;
+    return <LegacyUploadPage toolKey="input" />;
   }
 
   if (pathStr.endsWith("customer-upload/target")) {
-    return <UploadToolPanel toolKey="target" />;
+    return <LegacyUploadPage toolKey="target" />;
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
@@ -729,31 +730,31 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {
-    return <UploadToolPanel toolKey="field-force" />;
+    return <LegacyUploadPage toolKey="field-force" />;
   }
 
   if (pathStr.endsWith("division-options/upload/stockist")) {
-    return <UploadToolPanel toolKey="stockist" />;
+    return <LegacyUploadPage toolKey="stockist" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product")) {
-    return <UploadToolPanel toolKey="product" />;
+    return <LegacyUploadPage toolKey="product" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product-rate")) {
-    return <UploadToolPanel toolKey="product-rate" />;
+    return <LegacyUploadPage toolKey="product-rate" />;
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
-    return <UploadToolPanel toolKey="slides-upload" />;
+    return <SlideUploadPage />;
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
-    return <UploadToolPanel toolKey="holiday-fixation" />;
+    return <LegacyUploadPage toolKey="holiday-fixation" />;
   }
 
   if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
-    return <UploadToolPanel toolKey="leave-bulk-upload" />;
+    return <LegacyUploadPage toolKey="leave-bulk-upload" />;
   }
 
   if (pathStr.endsWith("division-options/transaction-upload")) {

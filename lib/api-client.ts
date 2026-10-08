@@ -257,10 +257,21 @@ async function readJson(response: Response) {
   }
 }
 
+function saveBlob(blob: Blob, fileName: string) {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
 // Round 48 Part B -- multipart POST with the shared timeout (long, uploads can be big) and error mapping.
-async function uploadForm<T>(path: string, parts: [string, File][]) {
+async function uploadForm<T>(path: string, parts: [string, File][], fields: Record<string, string> = {}) {
   const token = getToken();
   const form = new FormData();
+  for (const [k, v] of Object.entries(fields)) form.append(k, v);
   for (const [k, f] of parts) form.append(k, f);
   const response = await fetchWithTimeout(`${API_BASE_URL}${path}`, { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {}, body: form }, 180000);
   const payload = await readJson(response);
@@ -1047,6 +1058,18 @@ export type UploadValidation = {
   warnings: { row: number; reason: string }[]; preview: { row: number; cells: string[]; errors: string[] }[];
 };
 export type UploadImportResult = { fileName: string; total: number; ok: number; failed: number; inserted: number; updated: number; fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; historyId: string };
+// Round 58 -- legacy upload pages
+export type LegacyUploadResult = {
+  fileName: string; total: number; ok: number; failed: number; inserted: number; updated: number; skipped: number; deactivated: number; uploaded: boolean; outcome: string;
+  fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; notUploaded: { fileName: string; base64: string } | null;
+};
+export type UploadGenCol = { label: string; mandatory: boolean; red?: boolean };
+export type ProductReference = { source: "product-master" | "legacy-fallback"; categories: string[]; groups: string[]; brands: string[] };
+export type SlideMeta = {
+  division: string; subDivisions: string[]; brands: string[]; brandRows: { name: string; subDivision: string }[];
+  consumedBytes: number; allocatedBytes: number; remainingBytes: number; limitBytes: number; maxFileBytes: number;
+};
+export type SlideRow = { id: string; fileName: string; brand: string; subDivision: string; division: string; uploadedOn: string | null; pages: number | null; size: number | null; mimeType: string; order: number | null };
 export type UploadHistoryRow = { id: string; fileName: string; uploadedBy: string; uploadedAt: string; totalRows: number; okRows: number; failedRows: number; inserted: number; updated: number; fileErrors: string[]; errors: UploadRowError[] };
 
 // Round 48 -- Doctorwise (Periodically), Call Feedbackwise, Fixationwise (By Visit)
@@ -2578,6 +2601,22 @@ export const apiClient = {
   uploadTools() { return request<UploadToolMeta[]>("/company/upload-tools"); },
   async uploadToolValidate(key: string, file: File) { return uploadForm<UploadValidation>(`/company/upload-tools/${key}/validate`, [["file", file]]); },
   async uploadToolImport(key: string, file: File) { return uploadForm<UploadImportResult>(`/company/upload-tools/${key}/import`, [["file", file]]); },
+  async legacyUploadImport(key: string, file: File, fields: Record<string, string> = {}) { return (await uploadForm<LegacyUploadResult>(`/company/upload-tools/${key}/import`, [["file", file]], fields)).data; },
+  uploadToolColumns(key: string) { return request<UploadGenCol[]>(`/company/upload-tools/${key}/columns`).then((r) => r.data); },
+  uploadToolTemplate(key: string, query: Record<string, string>, fileName: string) { return apiClient.downloadMisFile(`/company/upload-tools/${key}/template`, query, fileName); },
+  async uploadToolGenerate(key: string, columns: string[], fileName: string) {
+    const token = getToken();
+    const response = await fetchWithTimeout(`${API_BASE_URL}/company/upload-tools/${key}/generate`, { method: "POST", headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ columns }) }, 60000);
+    if (!response.ok) { let m = "Could not generate the Excel file"; try { m = (await response.json())?.error?.message ?? m; } catch { /* non-JSON */ } throw new Error(m); }
+    saveBlob(await response.blob(), fileName);
+  },
+  productUploadReference() { return request<ProductReference>("/company/upload-tools/product/reference").then((r) => r.data); },
+  productRateStates() { return request<{ states: string[]; default: string }>("/company/upload-tools/product-rate/states").then((r) => r.data); },
+  slidesMeta() { return request<SlideMeta>("/company/upload-tools/slides/meta").then((r) => r.data); },
+  slidesList(q: { subDivision?: string; brands?: string[] }) { return request<SlideRow[]>(`/company/upload-tools/slides/list?${new URLSearchParams({ subDivision: q.subDivision ?? "", brands: (q.brands ?? []).join("|") }).toString()}`).then((r) => r.data); },
+  async slidesUpload(files: File[], fields: Record<string, string>) { return (await uploadForm<{ saved: { fileName: string; brand: string }[]; usage: { consumedBytes: number; remainingBytes: number } }>("/company/upload-tools/slides/upload", files.map((f) => ["files", f] as [string, File]), fields)).data; },
+  slidesDelete(id: string) { return request<{ deleted: boolean }>(`/company/upload-tools/slides/${id}`, { method: "DELETE" }); },
+  async slidesDownload(id: string, fileName: string) { return apiClient.downloadMisFile(`/company/upload-tools/slides/${id}/download`, {}, fileName); },
   uploadToolHistory(key: string) { return request<UploadHistoryRow[]>(`/company/upload-tools/${key}/history`); },
   async uploadSlideFiles(files: File[]) { return uploadForm<{ matched: string[]; unmatched: string[] }>("/company/upload-tools/slides-upload/files", files.map((f) => ["files", f] as [string, File])); },
   // Round 48
