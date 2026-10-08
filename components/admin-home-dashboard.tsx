@@ -308,21 +308,20 @@ export function AdminHomeDashboard() {
         setNotices(noticePayload.data.slice(0, 5));
       }
       
-      // 3b. Flash News / Quote of the Week -- real admin-settings values,
-      // shown right here instead of only living in the edit form.
+      // 3b. Flash News / Notice Board / Quote of the Week -- the same Information Upload items the field and manager portals receive
+      // (active ones; the admin sees every audience), not the old single-document settings.
       try {
-        const [flashRes, quoteRes] = await Promise.all([
-          apiClient.getAdminSetting<{ content: string; setAsHomePage: boolean }>("flashNews"),
-          apiClient.getAdminSetting<{ quote: string; setAsHomePage: boolean }>("quoteOfTheWeek")
-        ]);
-        setFlashNews(flashRes.data?.content?.trim() || null);
-        setQuoteOfWeek(quoteRes.data?.quote?.trim() || null);
-        const [noticeRes, talkRes] = await Promise.all([
-          apiClient.getAdminSetting<{ content1: string; content2: string; content3: string }>("noticeBoard"),
+        const [fl, nt, qt, talkRes] = await Promise.all([
+          apiClient.infoItems("FLASH"), apiClient.infoItems("NOTICE"), apiClient.infoItems("QUOTE"),
           apiClient.getAdminSetting<{ content: string }>("talkToUs")
         ]);
-        const notices = [noticeRes.data?.content1, noticeRes.data?.content2, noticeRes.data?.content3].map((s) => s?.trim()).filter((s): s is string => !!s);
-        setNoticeBoard(notices.length ? notices : null);
+        const live = (r: { data: Record<string, unknown>[] }) => r.data.filter((i) => i.active !== false);
+        const flash = live(fl).map((i) => String(i.body ?? "").trim()).filter(Boolean);
+        setFlashNews(flash.length ? flash.join("   |   ") : null);
+        const q = live(qt)[0];
+        setQuoteOfWeek(q ? String(q.body ?? "").trim() || null : null);
+        const notes = live(nt).map((i) => [i.title, i.body].filter(Boolean).join(": ")).filter(Boolean).slice(0, 3);
+        setNoticeBoard(notes.length ? notes : null);
         setTalkToUs(talkRes.data?.content?.trim() || null);
       } catch {
         setFlashNews(null);
