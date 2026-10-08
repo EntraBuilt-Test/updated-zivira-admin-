@@ -24,7 +24,12 @@ function formatChemistCode(sourceSNo: unknown): string {
   if (!Number.isFinite(n) || n <= 0) return "-";
   return `CH${String(n).padStart(3, "0")}`;
 }
+const LAST_UPLOAD_KEY = "r62.lastUpload.chemist";
+type LastUpload = { at: string; fileName: string; inserted: number; updated: number };
+const readLastUpload = (): LastUpload | null => { try { const v = window.sessionStorage.getItem(LAST_UPLOAD_KEY); return v ? (JSON.parse(v) as LastUpload) : null; } catch { return null; } };
 export function ChemistMaster() {
+  const [lastUpload, setLastUpload] = useState<LastUpload | null>(null);
+  useEffect(() => { setLastUpload(readLastUpload()); }, []);
   const [list, setList] = useState<any[]>([]);
   const [view, setView] = useState<"list" | "add" | "edit">("list");
   const [activeFormTab, setActiveFormTab] = useState<number>(1);
@@ -246,6 +251,9 @@ export function ChemistMaster() {
     }
     return statusMatch && searchMatch && colMatch;
   });
+  // chemists of the last upload come first (most recently updated first) and are highlighted
+  const fromLast = (x: any) => !!lastUpload && !!x.updatedAt && new Date(x.updatedAt).getTime() >= new Date(lastUpload.at).getTime();
+  if (lastUpload) filtered.sort((a: any, b: any) => (fromLast(b) ? 1 : 0) - (fromLast(a) ? 1 : 0) || new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime());
   return (
     <section className="subdivision-console">
       {error && (
@@ -278,6 +286,14 @@ export function ChemistMaster() {
           <button className="button" onClick={handleAdd} type="button"> Add Chemist</button>
         </div>
       </div>
+      {lastUpload && view === "list" && (
+        <div className="mt-4 flex items-center justify-between gap-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-2 text-sm text-blue-900">
+          <span>
+            <strong>{lastUpload.inserted + lastUpload.updated} chemists from your last upload</strong> ({lastUpload.fileName}: {lastUpload.inserted} new, {lastUpload.updated} updated, {new Date(lastUpload.at).toLocaleString("en-IN")}) are listed first and highlighted.
+          </span>
+          <button type="button" className="underline" onClick={() => { try { window.sessionStorage.removeItem(LAST_UPLOAD_KEY); } catch { /* ignore */ } setLastUpload(null); }}>Dismiss</button>
+        </div>
+      )}
       <div className="subdivision-stats">
         <article>
           <span>Total Records</span>
@@ -514,7 +530,7 @@ export function ChemistMaster() {
               </thead>
               <tbody className="divide-y divide-border-subtle">
                 {filtered.map((row, idx) => (
-                  <tr key={row.id} className="hover:bg-surface-subtle/50 border-b border-border-subtle transition-colors">
+                  <tr key={row.id} className={`hover:bg-surface-subtle/50 border-b border-border-subtle transition-colors ${fromLast(row) ? "bg-blue-50/60" : ""}`}>
                     <td className="text-left px-4 py-3 text-sm whitespace-nowrap text-text-primary" style={{ color: "var(--muted)", fontWeight: 500 }}>{idx + 1}</td>
                     <td className="text-left px-4 py-3 text-sm whitespace-nowrap text-text-primary" style={{ fontWeight: 600 }}>{formatChemistCode(row.sourceSNo)}</td>
                     <td className="text-left px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{row.dealerName}</strong></td>

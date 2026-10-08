@@ -29,6 +29,7 @@ import { AtAGlanceReport, VacantManagerVisitReport, ChemistUnlistedReport, Terri
 import { ModeWiseVisitReport } from "@/components/mode-wise-panel";
 import { InfoItemsPanel, TalkInbox } from "@/components/info-admin-panels";
 import { ListedDoctorUploadPanel } from "@/components/listed-doctor-upload-panel";
+import { ChemistUploadPage } from "@/components/chemist-upload-page";
 import { ChemistUploadPanel } from "@/components/chemist-upload-panel";
 import { SampleDespatchUploadPanel } from "@/components/sample-despatch-upload-panel";
 import { InputDespatchUploadPanel } from "@/components/input-despatch-upload-panel";
@@ -691,7 +692,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/chemist")) {
-    return <LegacyUploadPage toolKey="chemist" />;
+    return <ChemistUploadPage />;
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
