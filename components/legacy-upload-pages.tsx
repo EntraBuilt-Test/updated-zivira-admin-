@@ -111,7 +111,7 @@ export function useUploader(toolKey: string) {
     finally { setBusy(false); }
   }, [file, toolKey]);
   const chooser = (disabled = false) => (
-    <input key={fileKey} type="file" accept=".xlsx,.xls" disabled={disabled} onChange={(e) => { setFile(e.target.files?.[0] ?? null); setResult(null); setErr(""); }} />
+    <input key={fileKey} type="file" accept=".xlsx,.xls,.csv" disabled={disabled} onChange={(e) => { setFile(e.target.files?.[0] ?? null); setResult(null); setErr(""); }} />
   );
   return { file, busy, result, err, submit, chooser };
 }

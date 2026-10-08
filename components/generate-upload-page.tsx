@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { useRouter } from "next/navigation";
-import { apiClient, type UploadGenCol, type UploadRefSummary, type UploadLogRow } from "@/lib/api-client";
+import { apiClient, type UploadGenCol, type UploadRefSummary } from "@/lib/api-client";
 import { useUploader, download, link, redLink, FONT, PURPLE } from "@/components/legacy-upload-pages";
+import { UploadHistory } from "@/components/upload-kit";
 
 // Round 61/62 -- shared "Generate Excel" upload page (Listed Doctor, Chemists, ...): ONLY the legacy page content inside the admin tab
 // (no copied "Welcome / company" banner, logo, nav bar or dotted wrapper). Blue (primary) / orange (upload) buttons, centred 1180px box,
@@ -51,9 +52,6 @@ const outlineBlue: CSSProperties = { ...bBase, background: "#fff", color: BLUE, 
 const outlineBlueOff: CSSProperties = { ...bBase, background: "#fff", color: BLUE_FADED, borderColor: BLUE_FADED, cursor: "not-allowed" };
 const blueLink: CSSProperties = { ...link, font: "15px Arial, Helvetica, sans-serif", color: BLUE };
 const blueLinkOff: CSSProperties = { font: "15px Arial, Helvetica, sans-serif", color: BLUE_FADED, textDecoration: "underline", background: "none", border: 0, padding: 0, cursor: "not-allowed" };
-const CHIP: CSSProperties = { display: "inline-block", padding: "1px 9px", borderRadius: 10, fontWeight: 600, fontSize: 13 };
-const pad2 = (n: number) => String(n).padStart(2, "0");
-const fmtTime = (iso: string) => { const d = new Date(iso); return Number.isNaN(d.getTime()) ? "" : `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`; };
 /** "Territory/Cluster(For DCR)" -> two nowrap pieces so a long label breaks cleanly before "(" and never mid-phrase. */
 const pieces = (label: string) => label.split(/(?=\()/);
 
@@ -84,11 +82,6 @@ export function GenerateUploadPage({ cfg }: { cfg: GenerateUploadConfig }) {
   }, []);
 
   const r = up.result;
-  const [history, setHistory] = useState<UploadLogRow[] | null>(null);
-  const [histErr, setHistErr] = useState("");
-  const loadHistory = () => apiClient.uploadLog(toolKey).then((h) => { setHistory(h); setHistErr(""); }).catch((e) => setHistErr(e instanceof Error ? e.message : "Could not load the upload history"));
-  useEffect(() => { loadHistory(); }, []);
-  useEffect(() => { if (r || up.err) loadHistory(); }, [r, up.err]);
   const uploaded = !!r && r.uploaded && r.inserted + r.updated > 0;
   useEffect(() => {
     if (uploaded && r) {
@@ -167,37 +160,7 @@ export function GenerateUploadPage({ cfg }: { cfg: GenerateUploadConfig }) {
         <div style={{ textAlign: "center", margin: "8px 0 14px" }}>
           <button type="button" style={primary} onClick={() => router.push(MASTER_PATH)}>Go to {cfg.masterLabel}</button>
         </div>
-        <div style={{ maxWidth: 940, margin: "0 auto" }}>
-          <div style={{ fontWeight: 700, fontSize: 16, margin: "0 0 6px", textAlign: "center" }}>Upload History</div>
-          {histErr && <div style={{ color: "#c00000", textAlign: "center", fontSize: 13 }}>{histErr}</div>}
-          <div style={{ overflow: "auto", maxHeight: 460, border: "1px solid #cbd5e1" }}>
-            <table className="ld-tbl" style={{ width: "100%" }}>
-              <thead><tr><th>S.No</th><th>Uploaded Time</th><th>File Name</th><th>Records</th><th>Reason</th><th>Uploaded by</th><th>Not Uploaded List</th></tr></thead>
-              <tbody>
-                {history && history.length === 0 && <tr><td colSpan={7} style={{ textAlign: "center", color: "#6b7280" }}>No uploads yet</td></tr>}
-                {(history ?? []).map((h, i) => (
-                  <tr key={h.id}>
-                    <td>{i + 1}</td>
-                    <td>{fmtTime(h.uploadedAt)}</td>
-                    <td style={{ whiteSpace: "normal", wordBreak: "break-word" }}>{h.fileName}</td>
-                    <td>
-                      <span style={{ ...CHIP, background: "#dcfce7", color: "#166534" }}>Success: {h.success}</span>{" "}
-                      <span style={{ ...CHIP, background: "#fee2e2", color: "#991b1b" }}>Rejected: {h.rejected}</span>
-                    </td>
-                    <td style={{ whiteSpace: "normal", fontSize: 13, color: h.topReason ? "#991b1b" : undefined }}>{h.topReason || "-"}</td>
-                    <td>{h.uploadedBy}</td>
-                    <td>{h.rejected > 0 ? <button type="button" style={blueLink} onClick={() => download(apiClient.uploadLogNotUploaded(toolKey, h.id, h.fileName), setMsg)}>Not Uploaded List</button> : ""}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {history && history[0] && history[0].read > 0 && history[0].rejected === history[0].read && history[0].topReasonRows === history[0].read && history[0].topReason && (
-            <div style={{ textAlign: "center", color: "#6b7280", fontSize: 12, margin: "6px 0 0" }}>
-              All {history[0].read} rows were rejected: {history[0].topReason}{/Field Force/.test(history[0].topReason) ? " (check the Field Force master has these employees)" : ""}
-            </div>
-          )}
-        </div>
+        <UploadHistory toolKey={toolKey} refresh={up.result ?? up.err} />
       </div>
       {popup && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", justifyContent: "center", alignItems: "center" }} onClick={() => setPopup(null)}>

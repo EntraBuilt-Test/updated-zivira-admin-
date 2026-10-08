@@ -50,7 +50,7 @@ import { DynamicAppLinkPanel } from "@/components/dynamic-app-link-panel";
 import { SlideUploadEDetailingPanel } from "@/components/slide-upload-edetailing-panel";
 import { HomepageImageUploadPanel } from "@/components/homepage-image-upload-panel";
 import { HomepageFieldForcewisePanel } from "@/components/homepage-fieldforcewise-panel";
-import { LegacyUploadPage } from "@/components/legacy-upload-pages";
+import { DespatchUploadPage, TargetUploadPage, SimpleUploadPage, ProductRateUploadPage, HolidayUploadPage } from "@/components/upload-tools-pages";
 import { ListedDoctorUploadPage } from "@/components/listed-doctor-upload-page";
 import { SlideUploadPage } from "@/components/slide-upload-page";
 import { LeaveStatusPanel } from "@/components/leave-status-panel";
@@ -696,15 +696,15 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("customer-upload/sample")) {
-    return <LegacyUploadPage toolKey="sample" />;
+    return <DespatchUploadPage toolKey="sample" />;
   }
 
   if (pathStr.endsWith("customer-upload/input")) {
-    return <LegacyUploadPage toolKey="input" />;
+    return <DespatchUploadPage toolKey="input" />;
   }
 
   if (pathStr.endsWith("customer-upload/target")) {
-    return <LegacyUploadPage toolKey="target" />;
+    return <TargetUploadPage />;
   }
 
   if (pathStr.endsWith("information-upload/flash-news")) {
@@ -732,19 +732,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/field-force")) {
-    return <LegacyUploadPage toolKey="field-force" />;
+    return <SimpleUploadPage toolKey="field-force" />;
   }
 
   if (pathStr.endsWith("division-options/upload/stockist")) {
-    return <LegacyUploadPage toolKey="stockist" />;
+    return <SimpleUploadPage toolKey="stockist" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product")) {
-    return <LegacyUploadPage toolKey="product" />;
+    return <SimpleUploadPage toolKey="product" />;
   }
 
   if (pathStr.endsWith("division-options/upload/product-rate")) {
-    return <LegacyUploadPage toolKey="product-rate" />;
+    return <ProductRateUploadPage />;
   }
 
   if (pathStr.endsWith("division-options/upload/slides-upload")) {
@@ -752,11 +752,11 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("division-options/upload/holiday-fixation")) {
-    return <LegacyUploadPage toolKey="holiday-fixation" />;
+    return <HolidayUploadPage />;
   }
 
   if (pathStr.endsWith("division-options/upload/leave-bulk-upload")) {
-    return <LegacyUploadPage toolKey="leave-bulk-upload" />;
+    return <SimpleUploadPage toolKey="leave-bulk-upload" />;
   }
 
   if (pathStr.endsWith("division-options/transaction-upload")) {

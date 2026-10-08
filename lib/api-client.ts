@@ -1061,7 +1061,7 @@ export type UploadImportResult = { fileName: string; total: number; ok: number; 
 // Round 58 -- legacy upload pages
 export type LegacyUploadResult = {
   fileName: string; total: number; ok: number; failed: number; inserted: number; updated: number; skipped: number; deactivated: number; uploaded: boolean; outcome: string;
-  fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; resultTable?: UploadResultTable; startedAt?: string; notUploaded: { fileName: string; base64: string } | null;
+  fileErrors: string[]; errors: UploadRowError[]; warnings: { row: number; reason: string }[]; resultTable?: UploadResultTable; startedAt?: string; autoCreatedManagers?: { code: string; name: string; role: string }[]; mergedManagers?: { code: string; name: string }[]; notUploaded: { fileName: string; base64: string } | null;
 };
 export type UploadTally = { value: string; count: number };
 export type UploadRefSummary = { total: number; specialities?: UploadTally[]; categories: UploadTally[]; classes: UploadTally[] };
