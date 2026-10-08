@@ -31,6 +31,18 @@ function MultiPick({ label, options, value, onChange }: { label: string; options
   );
 }
 
+// Same clean-up the server does (so an older backend cannot bring duplicates back): trim, drop "test"/"testing", de-duplicate case-insensitively keeping the properly cased spelling.
+const tidy = (xs: string[] = []) => {
+  const best = new Map<string, string>();
+  for (const raw of xs) {
+    const v = String(raw ?? "").trim().replace(/\s+/g, " ");
+    if (!v || /^(test|testing)$/i.test(v)) continue;
+    const k = v.toLowerCase(), cur = best.get(k);
+    if (!cur || (cur === cur.toLowerCase() && v !== v.toLowerCase())) best.set(k, v);
+  }
+  return [...best.values()].sort((a, b) => a.localeCompare(b));
+};
+
 export function InfoItemsPanel({ kind }: { kind: Kind }) {
   const [items, setItems] = useState<AdminItem[]>([]);
   const [aud, setAud] = useState<Audience>({ designations: [], divisions: [], hqs: [] });
@@ -44,7 +56,7 @@ export function InfoItemsPanel({ kind }: { kind: Kind }) {
   const load = useCallback(async () => {
     try { setItems((await apiClient.infoItems(kind)).data as unknown as AdminItem[]); setError(""); } catch (e) { setError(e instanceof Error ? e.message : "Could not load"); }
   }, [kind]);
-  useEffect(() => { void load(); apiClient.infoAudienceOptions().then((r) => setAud(r.data)).catch(() => undefined); }, [load]);
+  useEffect(() => { void load(); apiClient.infoAudienceOptions().then((r) => setAud({ designations: tidy(r.data.designations), divisions: tidy(r.data.divisions), hqs: tidy(r.data.hqs) })).catch(() => undefined); }, [load]);
 
   const edit = (i: AdminItem) => { setEditing(i.id); setOpen(true); setForm({ title: i.title, body: i.body, author: i.author, priority: i.priority, pinned: i.pinned, active: i.active, startDate: i.startDate ?? "", endDate: i.endDate ?? "", designations: i.designations, divisions: i.divisions, hqs: i.hqs, attachmentUrl: i.attachmentUrl, attachmentName: i.attachmentName }); };
   const reset = () => { setEditing(null); setForm(blank); setOpen(false); };

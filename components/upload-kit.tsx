@@ -17,6 +17,13 @@ export const KIT_CSS = `
 .ut-box { background: #fff; border: 1px solid #000; max-width: 1100px; margin: 0 auto; padding: 18px 20px 22px; }
 .ut-row { display: flex; justify-content: center; align-items: center; gap: 14px; margin: 10px 0; flex-wrap: wrap; }
 .ut-lbl { min-width: 96px; text-align: right; }
+.ut-form { display: grid; grid-template-columns: 130px auto; column-gap: 14px; row-gap: 10px; justify-content: center; align-items: center; margin: 4px auto 6px; font-size: 15px; }
+.ut-form .ut-lbl { min-width: 0; text-align: right; }
+.ut-form .ut-ctl { justify-self: start; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; min-width: 0; }
+.ut-form select { display: inline-block !important; width: 130px !important; min-width: 0 !important; max-width: 130px !important; flex: none; height: 30px; font-size: 15px; }
+.ut-form select.ut-fy { width: 160px !important; max-width: 160px !important; }
+.ut-form input[type="file"] { max-width: 300px; }
+@media (max-width: 520px) { .ut-form { grid-template-columns: auto; } .ut-form .ut-lbl { text-align: left; } }
 .ut-page select { font: 15px ${ARIAL}; min-width: 190px; height: 32px; border: 1px solid #94a3b8; border-radius: 4px; padding: 0 8px; background: #fff; }
 .ut-page input[type="file"] { font: 14px ${ARIAL}; color: #222; max-width: 320px; }
 .ut-page input[type="file"]::file-selector-button,

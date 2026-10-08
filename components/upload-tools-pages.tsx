@@ -44,12 +44,15 @@ export function DespatchUploadPage({ toolKey }: { toolKey: "sample" | "input" })
   return (
     <UploadFrame title={isSample ? "Sample Despatch Upload" : "Input Despatch Upload"}>
       <div className="ut-box">
-        <div className="ut-row"><span className="ut-lbl">{req}Month</span><select value={month} onChange={(e) => setMonth(Number(e.target.value))}>{MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}</select></div>
-        <div className="ut-row"><span className="ut-lbl">{req}Year</span><select value={year} onChange={(e) => setYear(Number(e.target.value))}>{years.map((y) => <option key={y} value={y}>{y}</option>)}</select></div>
-        <div className="ut-row"><span className="ut-lbl">{req}Excel file</span><span style={{ minWidth: 190 }}>{up.chooser()}</span></div>
-        <div className="ut-row">
-          <label className="ut-opt"><input type="radio" name={`mode-${toolKey}`} checked={mode === "overwrite"} onChange={() => setMode("overwrite")} />OverWite with Existing Records</label>
-          <label className="ut-opt"><input type="radio" name={`mode-${toolKey}`} checked={mode === "insert"} onChange={() => setMode("insert")} />Only Insert</label>
+        <div className="ut-form">
+          <span className="ut-lbl">{req}Month</span><span className="ut-ctl"><select value={month} onChange={(e) => setMonth(Number(e.target.value))}>{MONTHS.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}</select></span>
+          <span className="ut-lbl">{req}Year</span><span className="ut-ctl"><select value={year} onChange={(e) => setYear(Number(e.target.value))}>{years.map((y) => <option key={y} value={y}>{y}</option>)}</select></span>
+          <span className="ut-lbl">{req}Excel file</span><span className="ut-ctl">{up.chooser()}</span>
+          <span />
+          <span className="ut-ctl" style={{ gap: 22 }}>
+            <label className="ut-opt"><input type="radio" name={`mode-${toolKey}`} checked={mode === "overwrite"} onChange={() => setMode("overwrite")} />OverWite with Existing Records</label>
+            <label className="ut-opt"><input type="radio" name={`mode-${toolKey}`} checked={mode === "insert"} onChange={() => setMode("insert")} />Only Insert</label>
+          </span>
         </div>
         <div className="ut-row"><UploadButton up={up} onClick={() => up.submit({ month: String(month), year: String(year), mode })} /></div>
         {isSample && <div style={{ textAlign: "left", maxWidth: 640, margin: "6px auto 0" }}><span style={{ color: RED }}>Note: </span>&nbsp;1) Sheet Name Must be &apos;Upl_Despatch_Master&apos;</div>}
@@ -81,8 +84,10 @@ export function TargetUploadPage() {
   return (
     <UploadFrame title="Target Upload">
       <div className="ut-box">
-        <div className="ut-row"><span className="ut-lbl">{req}Year</span><select value={fy} onChange={(e) => setFy(Number(e.target.value))}>{fys.map((y) => <option key={y} value={y}>{`${y} - ${y + 1}`}</option>)}</select></div>
-        <div className="ut-row"><span className="ut-lbl">{req}Excel file</span><span style={{ minWidth: 190 }}>{up.chooser()}</span></div>
+        <div className="ut-form">
+          <span className="ut-lbl">{req}Year</span><span className="ut-ctl"><select className="ut-fy" value={fy} onChange={(e) => setFy(Number(e.target.value))}>{fys.map((y) => <option key={y} value={y}>{`${y} - ${y + 1}`}</option>)}</select></span>
+          <span className="ut-lbl">{req}Excel file</span><span className="ut-ctl">{up.chooser()}</span>
+        </div>
         <div className="ut-row" style={{ marginTop: 18 }}><UploadButton up={up} onClick={() => up.submit({ fy: String(fy) })} /></div>
         <DownloadHere onClick={() => download(apiClient.uploadToolTemplate("target", { fy: String(fy) }, "Upl_Target_Master.xlsx"), setMsg)} />
         <Err msg={msg} />
