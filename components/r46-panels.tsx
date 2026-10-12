@@ -17,9 +17,9 @@ import { apiClient, type Employee, type JoinLeftResult, type ResignedUsersResult
 const DIVISION_NAME = "Zivira Labs Pvt Ltd";
 const WORKSPACE = "/admin/workspace/division-dashboard/division-navigation-tabs";
 const MANAGER_ROLES = new Set(["ABM", "RBM", "ZBM", "BH", "NBH"]);
-const BTN_GREY = "h-8 px-4 rounded border border-gray-400 bg-gray-100 text-sm font-semibold text-gray-800 disabled:opacity-50";
+const BTN_GREY = "h-8 px-4 rounded border border-gray-400 bg-gray-100 hover:bg-gray-200 text-sm font-semibold text-gray-800 disabled:opacity-50 cursor-pointer shadow-sm inline-flex items-center justify-center transition-colors";
 const BTN_BLUE = "h-9 px-6 rounded border border-slate-500 bg-slate-100 text-sm font-semibold text-slate-800 disabled:opacity-50";
-const DL_LINK = "text-blue-700 underline font-bold cursor-pointer disabled:opacity-50 disabled:no-underline text-left";
+const DL_LINK = BTN_GREY;
 const ADMIN_OPT = [{ value: "admin", label: "admin - Admin -" }];
 
 function useManagers(): Employee[] {
@@ -86,7 +86,7 @@ export function RcpaDumpReport() {
   return (
     <div className="space-y-5">
       <div className={CARD}>
-        <TitleBar back>All Managers - RCPA</TitleBar>
+        <ScreenTitle>All Managers - RCPA</ScreenTitle>
         <div className="flex flex-wrap items-end gap-4">
           <FieldForceSelect value={code} onChange={setCode} employees={managers} label="Filed Force Name" />
           <MonthSel label="Month" value={my.m} onChange={my.setM} />
@@ -109,7 +109,6 @@ export function SkuDumpReport() {
   const dl = useDownload();
   return (
     <div className="space-y-5">
-      <div className="flex justify-end max-w-5xl"><BackButton /></div>
       <div className={CARD}>
         <ScreenTitle>Product Exposure Analysis [SKU Wise Detailing Secs]</ScreenTitle>
         <div className="flex flex-wrap items-end gap-4">
@@ -117,7 +116,9 @@ export function SkuDumpReport() {
           <MonthSel label="From Month" value={my.m} onChange={my.setM} />
           <YearSel label="From Year" value={my.y} onChange={my.setY} />
         </div>
-        <button type="button" className={DL_LINK} disabled={!!dl.busy} onClick={() => void dl.run("x", "/company/mis/sku-dump", { employeeCode: "admin", month: my.key }, `SKU_Wise_Detailing_${my.key}.xls`)}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        <div>
+          <button type="button" className={BTN_GREY} disabled={!!dl.busy} onClick={() => void dl.run("x", "/company/mis/sku-dump", { employeeCode: "admin", month: my.key }, `SKU_Wise_Detailing_${my.key}.xls`)}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        </div>
         <Err msg={dl.error} />
         <Note>Tab-separated text (.xls) with one row per slide view of the company in the month: doctor or chemist, brand, product, slide name, duration in seconds, start and end time.</Note>
       </div>
@@ -140,7 +141,9 @@ function ManagerMonthDump({ title, back, path, fileName, note, noMonth }: { titl
           {!noMonth && <MonthSel label="From Month" value={my.m} onChange={my.setM} />}
           {!noMonth && <YearSel label="From Year" value={my.y} onChange={my.setY} />}
         </div>
-        <button type="button" className={DL_LINK} disabled={!code || !!dl.busy} onClick={() => void dl.run("x", path, { employeeCode: code, month: my.key }, fileName(my.key))}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        <div>
+          <button type="button" className={BTN_GREY} disabled={!code || !!dl.busy} onClick={() => void dl.run("x", path, { employeeCode: code, month: my.key }, fileName(my.key))}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        </div>
         <Err msg={dl.error} />
         <Note>{note}</Note>
       </div>
@@ -168,9 +171,9 @@ export function ListeddrDumpReport() {
       <div className={CARD}>
         <TitleBar>Listeddr - Dump</TitleBar>
         <div className="flex flex-wrap items-end gap-4"><FieldForceSelect value={code} onChange={setCode} employees={managers} label="Filed Force Name" /></div>
-        <div className="flex flex-col gap-1">
-          <button type="button" className={DL_LINK} disabled={!code || !!dl.busy} onClick={() => void dl.run("csv", "/company/mis/listeddr-dump", { employeeCode: code, format: "csv" }, "Dump.csv")}>{dl.busy === "csv" ? "Preparing..." : "Download Excel"}</button>
-          <button type="button" className="text-xs text-blue-700 underline text-left disabled:opacity-50" disabled={!code || !!dl.busy} onClick={() => void dl.run("xlsx", "/company/mis/listeddr-dump", { employeeCode: code, format: "xlsx" }, "Listeddr_Dump.xlsx")}>{dl.busy === "xlsx" ? "Preparing..." : "Download Excel (.xlsx)"}</button>
+        <div className="flex gap-3">
+          <button type="button" className={BTN_GREY} disabled={!code || !!dl.busy} onClick={() => void dl.run("csv", "/company/mis/listeddr-dump", { employeeCode: code, format: "csv" }, "Dump.csv")}>{dl.busy === "csv" ? "Preparing..." : "Download Excel"}</button>
+          <button type="button" className={BTN_GREY} disabled={!code || !!dl.busy} onClick={() => void dl.run("xlsx", "/company/mis/listeddr-dump", { employeeCode: code, format: "xlsx" }, "Listeddr_Dump.xlsx")}>{dl.busy === "xlsx" ? "Preparing..." : "Download Excel (.xlsx)"}</button>
         </div>
         <Err msg={dl.error} />
         <Note>66 columns for every listed doctor of the manager&apos;s team. &quot;Download Excel&quot; gives Dump.csv in the legacy format (every field double-quoted, CRLF); the second link gives the same data as a real .xlsx.</Note>
@@ -195,7 +198,9 @@ export function TransitBillsDumpReport() {
           <MonthSel label="From Month" value={my.m} onChange={my.setM} />
           <YearSel label="From Year" value={my.y} onChange={my.setY} />
         </div>
-        <button type="button" className={DL_LINK} disabled={!!dl.busy} onClick={() => void dl.run("x", "/company/mis/transit-bills-dump", { month: my.key }, `Transit_Bills_${my.key}.xlsx`)}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        <div>
+          <button type="button" className={BTN_GREY} disabled={!!dl.busy} onClick={() => void dl.run("x", "/company/mis/transit-bills-dump", { month: my.key }, `Transit_Bills_${my.key}.xlsx`)}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        </div>
         <Err msg={dl.error} />
         <Note>Bills are entered or imported under Masters &gt; Sales &gt; Transit Bills.</Note>
       </div>
@@ -210,12 +215,14 @@ export function StockistDumpReport() {
   return (
     <div className="space-y-5">
       <div className={CARD}>
-        <TitleBar back>Stockist - Dump</TitleBar>
+        <ScreenTitle>Stockist - Dump</ScreenTitle>
         <div className="flex flex-col gap-1 w-72">
           <span className={LABEL}>Division Name</span>
           <select className={SELECT} value={division} onChange={(e) => setDivision(e.target.value)}><option value="ALL">ALL</option><option value={DIVISION_NAME}>{DIVISION_NAME}</option></select>
         </div>
-        <button type="button" className={DL_LINK} disabled={!!dl.busy} onClick={() => void dl.run("x", "/company/mis/stockist-dump", { division }, "Stockist_Dump.xlsx")}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        <div>
+          <button type="button" className={BTN_GREY} disabled={!!dl.busy} onClick={() => void dl.run("x", "/company/mis/stockist-dump", { division }, "Stockist_Dump.xlsx")}>{dl.busy ? "Preparing..." : "Download Excel"}</button>
+        </div>
         <Err msg={dl.error} />
       </div>
     </div>
