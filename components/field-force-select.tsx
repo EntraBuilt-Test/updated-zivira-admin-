@@ -2,14 +2,11 @@
 
 import { memo, useEffect, useMemo, useState } from "react";
 import { apiClient } from "@/lib/api-client";
+import { CustomSelect } from "@/components/custom-select";
 
-// Round 39 item 9 -- the single shared field-force dropdown for every admin
-// report screen. A real native <select> (instant open, no layout shift, no
-// type-ahead text box) listing the real employee list as
-// "NAME - DESIGNATION - HQ", with the legacy "---Select Clear---" default.
-// Backed by apiClient.employees() (30s shared cache, so many pickers on one
-// screen cost one request), or by an explicit `employees` list when the
-// caller already holds a hierarchy-scoped one (e.g. managers only).
+// Round 39 item 9 -- shared field-force dropdown for admin report screens.
+// Upgraded to use CustomSelect for a modern, unified look with checkmarks,
+// rounded styling, and smooth scrolling while preserving the same API.
 
 export type FieldForceOption = { employeeCode: string; name: string; designation: string; territory: string };
 
@@ -48,29 +45,50 @@ type Props = {
 function FieldForceSelectImpl({ value, onChange, label = "Filed Force Name", employees, extraOptions, clearLabel = "---Select Clear---", minWidth = 260, hideLabel, disabled }: Props) {
   const fetched = useFieldForceOptions();
   const rows = employees ?? fetched;
-  const options = useMemo(
-    () =>
-      [...rows]
-        .sort((a, b) => a.name.localeCompare(b.name))
-        .map((e) => (
-          <option key={e.employeeCode} value={e.employeeCode}>{fieldForceLabel(e)}</option>
-        )),
-    [rows]
+
+  const allOptions = useMemo(() => {
+    const list: { value: string; label: string }[] = [];
+    if (clearLabel) {
+      list.push({ value: "", label: clearLabel });
+    }
+    if (extraOptions) {
+      for (const opt of extraOptions) {
+        list.push(opt);
+      }
+    }
+    const sorted = [...rows].sort((a, b) => a.name.localeCompare(b.name));
+    for (const e of sorted) {
+      list.push({ value: e.employeeCode, label: fieldForceLabel(e) });
+    }
+    return list;
+  }, [rows, clearLabel, extraOptions]);
+
+  const selectedEntry = useMemo(
+    () => allOptions.find((o) => o.value === value),
+    [allOptions, value]
   );
+
+  const displayValue = selectedEntry?.label ?? (value ? value : (clearLabel || "Select"));
+  const optionLabels = useMemo(() => allOptions.map((o) => o.label), [allOptions]);
+
+  function handleSelect(chosenLabel: string) {
+    const found = allOptions.find((o) => o.label === chosenLabel);
+    if (found) {
+      onChange(found.value);
+    }
+  }
+
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1" style={{ opacity: disabled ? 0.6 : 1, pointerEvents: disabled ? "none" : "auto" }}>
       {!hideLabel && <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">{label}</span>}
-      <select
-        className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
-        style={{ minWidth }}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.value)}
-      >
-        <option value="">{clearLabel}</option>
-        {extraOptions?.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        {options}
-      </select>
+      <div style={{ minWidth: minWidth || undefined }}>
+        <CustomSelect
+          value={displayValue}
+          options={optionLabels}
+          onChange={handleSelect}
+          placeholder={clearLabel}
+        />
+      </div>
     </div>
   );
 }

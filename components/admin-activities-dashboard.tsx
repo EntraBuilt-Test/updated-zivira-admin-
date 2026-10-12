@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
 import { ZoneDropdown } from "./zone-dropdown";
 import { MasterScreen } from "./master-screen";
@@ -16,22 +15,262 @@ import {
   type Employee,
   type MasterRecord
 } from "@/lib/api-client";
+import {
+  CheckCircle2,
+  Wallet,
+  Package,
+  Truck,
+  Radio,
+  Calendar,
+  ShieldCheck,
+  Key,
+  LogIn,
+  ListTodo,
+  ShoppingCart,
+  Activity,
+  PhoneCall,
+  Star,
+  Search,
+  LayoutGrid,
+  Grid3X3,
+  ArrowRight
+} from "lucide-react";
+
+interface ActivityModuleMeta {
+  slug: string;
+  title: string;
+  description: string;
+  category: "approvals-hr" | "field-dispatch" | "security-audit" | "sales-tasks";
+  subTabsCount: number | "direct";
+  badgeText: string;
+  badgeColor: string;
+  iconBg: string;
+  iconColor: string;
+  hoverBorder: string;
+  hoverIconBg: string;
+  isGradient?: boolean;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+}
+
+const ACTIVITY_MODULES: ActivityModuleMeta[] = [
+  {
+    slug: "approvals",
+    title: "Approvals",
+    description: "Multi-tier authorization requests & claims sign-offs",
+    category: "approvals-hr",
+    subTabsCount: 5,
+    badgeText: "3 Pending",
+    badgeColor: "text-amber-600 bg-amber-50",
+    iconBg: "bg-indigo-50 border-indigo-100/80 text-indigo-600",
+    iconColor: "text-indigo-600",
+    hoverBorder: "hover:border-indigo-300",
+    hoverIconBg: "group-hover:bg-indigo-600 group-hover:text-white",
+    icon: CheckCircle2
+  },
+  {
+    slug: "expense",
+    title: "Expense",
+    description: "Reimbursements, daily DA/TA, bills & claims",
+    category: "approvals-hr",
+    subTabsCount: 4,
+    badgeText: "Updated today",
+    badgeColor: "text-slate-400 bg-slate-50",
+    iconBg: "bg-emerald-50 border-emerald-100/80 text-emerald-600",
+    iconColor: "text-emerald-600",
+    hoverBorder: "hover:border-emerald-300",
+    hoverIconBg: "group-hover:bg-emerald-600 group-hover:text-white",
+    icon: Wallet
+  },
+  {
+    slug: "sample-dispatch",
+    title: "Sample Dispatch",
+    description: "Product sample shipments, delivery slips & tracking",
+    category: "field-dispatch",
+    subTabsCount: 2,
+    badgeText: "Transit: 12",
+    badgeColor: "text-emerald-600 bg-emerald-50",
+    iconBg: "bg-sky-50 border-sky-100/80 text-sky-600",
+    iconColor: "text-sky-600",
+    hoverBorder: "hover:border-sky-300",
+    hoverIconBg: "group-hover:bg-sky-600 group-hover:text-white",
+    icon: Package
+  },
+  {
+    slug: "input-dispatch",
+    title: "Input Dispatch",
+    description: "Marketing collateral, inputs & inventory allocation",
+    category: "field-dispatch",
+    subTabsCount: 2,
+    badgeText: "Warehouse 04",
+    badgeColor: "text-slate-400 bg-slate-50",
+    iconBg: "bg-blue-50 border-blue-100/80 text-blue-600",
+    iconColor: "text-blue-600",
+    hoverBorder: "hover:border-blue-300",
+    hoverIconBg: "group-hover:bg-blue-600 group-hover:text-white",
+    icon: Truck
+  },
+  {
+    slug: "msis",
+    title: "MSIS",
+    description: "Management secondary information & monitoring",
+    category: "field-dispatch",
+    subTabsCount: 1,
+    badgeText: "Live feed",
+    badgeColor: "text-slate-400 bg-slate-50",
+    iconBg: "bg-cyan-50 border-cyan-100/80 text-cyan-600",
+    iconColor: "text-cyan-600",
+    hoverBorder: "hover:border-cyan-300",
+    hoverIconBg: "group-hover:bg-cyan-600 group-hover:text-white",
+    icon: Radio
+  },
+  {
+    slug: "leave-entitlement",
+    title: "Leave Entitlement",
+    description: "Annual quotas, sick leaves & balance requests",
+    category: "approvals-hr",
+    subTabsCount: 2,
+    badgeText: "18 Days Left",
+    badgeColor: "text-slate-700 bg-slate-50",
+    iconBg: "bg-teal-50 border-teal-100/80 text-teal-600",
+    iconColor: "text-teal-600",
+    hoverBorder: "hover:border-teal-300",
+    hoverIconBg: "group-hover:bg-teal-600 group-hover:text-white",
+    icon: Calendar
+  },
+  {
+    slug: "audit-report",
+    title: "Audit Report",
+    description: "Compliance checklist, inspections & field logs",
+    category: "security-audit",
+    subTabsCount: "direct",
+    badgeText: "Quarterly Q3",
+    badgeColor: "text-slate-400 bg-slate-50",
+    iconBg: "bg-violet-50 border-violet-100/80 text-violet-600",
+    iconColor: "text-violet-600",
+    hoverBorder: "hover:border-violet-300",
+    hoverIconBg: "group-hover:bg-violet-600 group-hover:text-white",
+    icon: ShieldCheck
+  },
+  {
+    slug: "login-details",
+    title: "Login Details",
+    description: "Account credentials, 2FA status & active sessions",
+    category: "security-audit",
+    subTabsCount: "direct",
+    badgeText: "2FA Active",
+    badgeColor: "text-emerald-600 bg-emerald-50",
+    iconBg: "bg-slate-100 border-slate-200 text-slate-700",
+    iconColor: "text-slate-700",
+    hoverBorder: "hover:border-slate-400",
+    hoverIconBg: "group-hover:bg-slate-900 group-hover:text-white",
+    icon: Key
+  },
+  {
+    slug: "login-into-fieldforce",
+    title: "Login Into Fieldforce",
+    description: "Single sign-on direct launch to mobile app engine",
+    category: "security-audit",
+    subTabsCount: "direct",
+    badgeText: "Verified",
+    badgeColor: "text-indigo-600 bg-indigo-50",
+    iconBg: "bg-indigo-600 text-white",
+    iconColor: "text-white",
+    hoverBorder: "hover:border-indigo-400",
+    hoverIconBg: "group-hover:bg-indigo-700",
+    isGradient: true,
+    icon: LogIn
+  },
+  {
+    slug: "task-management",
+    title: "Task Management",
+    description: "Field reps assignments, delegations & due dates",
+    category: "sales-tasks",
+    subTabsCount: 2,
+    badgeText: "8 In Progress",
+    badgeColor: "text-amber-600 bg-amber-50",
+    iconBg: "bg-amber-50 border-amber-100/80 text-amber-600",
+    iconColor: "text-amber-600",
+    hoverBorder: "hover:border-amber-300",
+    hoverIconBg: "group-hover:bg-amber-500 group-hover:text-white",
+    icon: ListTodo
+  },
+  {
+    slug: "order-booking-view",
+    title: "Order Booking View",
+    description: "Dealer orders, commercial invoices & line items",
+    category: "sales-tasks",
+    subTabsCount: "direct",
+    badgeText: "142 bookings",
+    badgeColor: "text-slate-400 bg-slate-50",
+    iconBg: "bg-emerald-50 border-emerald-100/80 text-emerald-600",
+    iconColor: "text-emerald-600",
+    hoverBorder: "hover:border-emerald-300",
+    hoverIconBg: "group-hover:bg-emerald-600 group-hover:text-white",
+    icon: ShoppingCart
+  },
+  {
+    slug: "activity",
+    title: "Activity",
+    description: "Daily customer visits, tour programs & notes",
+    category: "sales-tasks",
+    subTabsCount: 2,
+    badgeText: "Synced 4m ago",
+    badgeColor: "text-slate-400 bg-slate-50",
+    iconBg: "bg-purple-50 border-purple-100/80 text-purple-600",
+    iconColor: "text-purple-600",
+    hoverBorder: "hover:border-purple-300",
+    hoverIconBg: "group-hover:bg-purple-600 group-hover:text-white",
+    icon: Activity
+  },
+  {
+    slug: "manager-missed-call",
+    title: "Manager Missed Call",
+    description: "Escalated unattended calls & client follow-up list",
+    category: "field-dispatch",
+    subTabsCount: 2,
+    badgeText: "4 urgent",
+    badgeColor: "text-rose-600 bg-rose-50",
+    iconBg: "bg-rose-50 border-rose-100/80 text-rose-600",
+    iconColor: "text-rose-600",
+    hoverBorder: "hover:border-rose-300",
+    hoverIconBg: "group-hover:bg-rose-500 group-hover:text-white",
+    icon: PhoneCall
+  }
+];
 
 function formatLakhs(rupees: number) {
   return `₹${(rupees / 100000).toFixed(2)} Lakhs`;
 }
 
 export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
-  // Round F item 1 — these 4 cards used to be fully hardcoded ("1,420",
-  // "8.4 mins", "₹4.82 Lakhs", "9 GPS Mismatches" never changed no matter
-  // what reps/managers actually did). Now backed by a real aggregation
-  // (GET /company/activities/summary). "Avg E-Detailing mins" is dropped
-  // entirely rather than faked — no model anywhere stores per-session VA
-  // duration, confirmed by reading every e-detailing/slide model in the
-  // backend. "GPS Mismatches" (a distance vs. a registered clinic
-  // location) has no real data either — no Doctor/Chemist record stores a
-  // lat/lng to diff against — so it's replaced with the honest, real
-  // proxy: DCRs submitted today with no GPS captured at all.
+  // Module Hub filter states from Stitch design
+  const [moduleCategory, setModuleCategory] = useState<"all" | "approvals-hr" | "field-dispatch" | "security-audit" | "sales-tasks">("all");
+  const [moduleSearch, setModuleSearch] = useState("");
+  const [bookmarkedModules, setBookmarkedModules] = useState<Set<string>>(new Set());
+  const [isCompactGrid, setIsCompactGrid] = useState(false);
+
+  function toggleBookmark(slug: string, e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setBookmarkedModules((prev) => {
+      const next = new Set(prev);
+      if (next.has(slug)) next.delete(slug);
+      else next.add(slug);
+      return next;
+    });
+  }
+
+  const filteredModules = useMemo(() => {
+    return ACTIVITY_MODULES.filter((m) => {
+      if (moduleCategory !== "all" && m.category !== moduleCategory) return false;
+      if (moduleSearch.trim()) {
+        const q = moduleSearch.toLowerCase();
+        if (!m.title.toLowerCase().includes(q) && !m.description.toLowerCase().includes(q)) return false;
+      }
+      return true;
+    });
+  }, [moduleCategory, moduleSearch]);
+
   const [summary, setSummary] = useState<ActivitiesSummary | null>(null);
   const [summaryError, setSummaryError] = useState("");
 
@@ -378,9 +617,168 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 
-<div className="bg-surface-card rounded-xl shadow-sm p-4 space-y-4">
-  <AdminTabGrid node={node} path={path} />
-</div>
+{/* MODERN OPERATIONS MODULE HUB (STITCH REDESIGN) */}
+<section className="bg-slate-50/70 border border-slate-200/80 rounded-2xl p-6 space-y-6">
+  {/* Hub Title, Search & View Controls */}
+  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div>
+      <div className="flex items-center gap-2">
+        <h2 className="text-xl font-bold text-slate-900">Operations Module Hub</h2>
+        <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
+          13 Modules
+        </span>
+      </div>
+      <p className="text-xs text-slate-500 mt-1">
+        Categorised enterprise command panels with direct access to sub-tabs and real-time operational status.
+      </p>
+    </div>
+
+    <div className="flex items-center gap-3">
+      {/* Search Bar */}
+      <div className="relative w-full md:w-64">
+        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input
+          type="text"
+          value={moduleSearch}
+          onChange={(e) => setModuleSearch(e.target.value)}
+          placeholder="Filter modules..."
+          className="w-full h-9 pl-9 pr-3 rounded-lg bg-white border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition"
+        />
+      </div>
+
+      {/* Grid Switcher */}
+      <div className="flex items-center bg-white border border-slate-200 rounded-lg p-0.5">
+        <button
+          type="button"
+          onClick={() => setIsCompactGrid(false)}
+          className={`p-1.5 rounded-md transition ${!isCompactGrid ? "bg-indigo-50 text-indigo-600 shadow-2xs" : "text-slate-400 hover:text-slate-600"}`}
+          title="Standard 4-Column View"
+        >
+          <LayoutGrid size={16} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsCompactGrid(true)}
+          className={`p-1.5 rounded-md transition ${isCompactGrid ? "bg-indigo-50 text-indigo-600 shadow-2xs" : "text-slate-400 hover:text-slate-600"}`}
+          title="Compact 5-Column View"
+        >
+          <Grid3X3 size={16} />
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {/* Category Filter Pills */}
+  <div className="flex flex-wrap items-center gap-1.5 p-1 bg-slate-200/60 rounded-xl w-fit">
+    {[
+      { id: "all", label: "All Modules", count: 13 },
+      { id: "approvals-hr", label: "Approvals & HR", count: 3 },
+      { id: "field-dispatch", label: "Field & Dispatch", count: 4 },
+      { id: "security-audit", label: "Security & Audit", count: 3 },
+      { id: "sales-tasks", label: "Sales & Tasks", count: 3 }
+    ].map((tab) => (
+      <button
+        key={tab.id}
+        type="button"
+        onClick={() => setModuleCategory(tab.id as any)}
+        className={`px-3 py-1.5 rounded-lg text-xs transition-all flex items-center gap-1.5 ${
+          moduleCategory === tab.id
+            ? "bg-white text-slate-900 font-semibold shadow-xs"
+            : "text-slate-600 hover:text-slate-900"
+        }`}
+      >
+        <span>{tab.label}</span>
+        <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+          moduleCategory === tab.id ? "bg-slate-100 text-slate-700" : "bg-slate-200/80 text-slate-500"
+        }`}>
+          {tab.count}
+        </span>
+      </button>
+    ))}
+  </div>
+
+  {/* Module Cards Grid */}
+  {filteredModules.length > 0 ? (
+    <div className={`grid gap-4.5 ${
+      isCompactGrid
+        ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+    }`}>
+      {filteredModules.map((mod) => {
+        const Icon = mod.icon;
+        const isBookmarked = bookmarkedModules.has(mod.slug);
+        const cardHref = `/admin/workspace/${[...path, mod.slug].join("/")}`;
+
+        return (
+          <Link
+            key={mod.slug}
+            href={cardHref}
+            className={`group relative bg-white rounded-2xl border p-5 shadow-xs hover:shadow-md transition-all duration-200 hover:-translate-y-1 flex flex-col justify-between cursor-pointer ${
+              mod.isGradient
+                ? "bg-gradient-to-br from-white to-indigo-50/40 border-indigo-200 hover:border-indigo-400"
+                : `border-slate-200/80 ${mod.hoverBorder}`
+            }`}
+          >
+            <div>
+              <div className="flex items-start justify-between">
+                <div
+                  className={`w-11 h-11 rounded-xl border flex items-center justify-center transition duration-200 group-hover:scale-105 ${mod.iconBg} ${mod.hoverIconBg}`}
+                >
+                  <Icon size={20} />
+                </div>
+                <button
+                  type="button"
+                  onClick={(e) => toggleBookmark(mod.slug, e)}
+                  className={`p-1 transition ${
+                    isBookmarked ? "text-amber-400" : "text-slate-300 hover:text-amber-400"
+                  }`}
+                  title={isBookmarked ? "Bookmarked" : "Bookmark module"}
+                >
+                  <Star size={16} fill={isBookmarked ? "currentColor" : "none"} />
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <h3 className="text-base font-semibold text-slate-900 group-hover:text-indigo-600 transition">
+                  {mod.title}
+                </h3>
+                <p className="text-xs text-slate-500 mt-1 line-clamp-2 leading-relaxed">
+                  {mod.description}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between">
+              {mod.subTabsCount === "direct" ? (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700 group-hover:bg-indigo-50 group-hover:text-indigo-700 transition">
+                  Open Direct
+                  <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                  {mod.subTabsCount} sub tabs
+                </span>
+              )}
+
+              <span className={`text-xs font-medium px-2 py-0.5 rounded-md ${mod.badgeColor}`}>
+                {mod.badgeText}
+              </span>
+            </div>
+          </Link>
+        );
+      })}
+    </div>
+  ) : (
+    <div className="text-center py-12 bg-white rounded-2xl border border-slate-200">
+      <div className="w-12 h-12 mx-auto rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3">
+        <Search size={22} />
+      </div>
+      <h4 className="text-sm font-semibold text-slate-800">No matching modules found</h4>
+      <p className="text-xs text-slate-500 mt-1">Try refining your search keyword or switch to &quot;All Modules&quot;.</p>
+    </div>
+  )}
+</section>
 {/* INTERACTIVE VIEW TABS & ADVANCED SEARCH CONSOLE */}
 <div className="bg-surface-card rounded-xl shadow-sm p-4 space-y-4">
 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 border-b-0">

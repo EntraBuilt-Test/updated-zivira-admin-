@@ -1,212 +1,699 @@
+"use client";
+
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ToolbarDropdown } from "./toolbar-dropdown";
-import { AdminTabGrid } from "./admin-tab-grid";
 import type { ZiviraTreeNode } from "@zivira/types";
+import {
+  CheckCircle2,
+  AlertTriangle,
+  MapPin,
+  UserCheck,
+  Users,
+  BarChart3,
+  Crosshair,
+  Flame,
+  ShoppingBag,
+  Eye,
+  Package,
+  ShieldCheck,
+  AlertCircle,
+  Tablet,
+  Award,
+  FileText,
+  Database,
+  Archive,
+  Settings,
+  ArrowRight,
+  Download,
+  Search
+} from "lucide-react";
+
+interface MisReportCard {
+  slug: string;
+  title: string;
+  desc: string;
+  badge: {
+    text: string;
+    className: string;
+    hasPing?: boolean;
+  };
+  icon: React.ComponentType<{ className?: string; size?: number }>;
+  iconContainerClass: string;
+  cardBorderClass?: string;
+  metricSnippet?: React.ReactNode;
+  tags?: string[];
+  titleBadge?: string;
+  footerLeft: {
+    text: string;
+    isPill?: boolean;
+    className?: string;
+  };
+  footerRight: {
+    label: string;
+    className: string;
+    isDownload?: boolean;
+  };
+}
+
+interface MisGroup {
+  id: string;
+  title: string;
+  subtitle: string;
+  colorBarClass: string;
+  countText: string;
+  gridColsClass?: string;
+  modules: MisReportCard[];
+}
+
+const MIS_GROUPS: MisGroup[] = [
+  {
+    id: "core-ops",
+    title: "Daily Reporting & Core Operations",
+    subtitle: "Primary operational logs filed daily by field representatives",
+    colorBarClass: "bg-emerald-500",
+    countText: "4 Modules",
+    gridColsClass: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+    modules: [
+      {
+        slug: "mis-dcr",
+        title: "DCR",
+        desc: "Daily Call Report submission & verification stream",
+        badge: {
+          text: "Live Sync",
+          className: "bg-emerald-100/70 text-emerald-800",
+          hasPing: true
+        },
+        icon: CheckCircle2,
+        iconContainerClass: "bg-emerald-50 border border-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center justify-between">
+            <span>Last log: <span className="font-medium text-slate-700">14 mins ago</span></span>
+            <span className="text-emerald-600 font-semibold">100% active</span>
+          </div>
+        ),
+        footerLeft: { text: "Open Tab", isPill: true },
+        footerRight: { label: "Launch", className: "text-indigo-600 hover:text-indigo-800" }
+      },
+      {
+        slug: "missed-call-report",
+        title: "Missed Call Report",
+        desc: "Uncontacted target HCPs & schedule exceptions",
+        badge: {
+          text: "3 Pending",
+          className: "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20 font-bold"
+        },
+        icon: AlertTriangle,
+        iconContainerClass: "bg-rose-50 border border-rose-100 text-rose-600 group-hover:bg-rose-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-rose-50/50 p-2 rounded-lg border border-rose-100/60">
+            <span className="text-rose-700 font-medium">Attention needed</span> for Western Region
+          </div>
+        ),
+        footerLeft: { text: "Open Tab", isPill: true },
+        footerRight: { label: "Review", className: "text-rose-600 hover:text-rose-800" }
+      },
+      {
+        slug: "visit-details",
+        title: "Visit Details",
+        desc: "Doctor visits, Chemist meetings, Joint work & GPS",
+        badge: {
+          text: "10 sub tabs",
+          className: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10"
+        },
+        icon: MapPin,
+        iconContainerClass: "bg-blue-50 border border-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
+        tags: ["HCP Visit", "Chemist", "Joint Work", "+7 more"],
+        footerLeft: { text: "Comprehensive", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Explore", className: "text-blue-600 hover:text-blue-800" }
+      },
+      {
+        slug: "doctor",
+        title: "Doctor",
+        desc: "HCP Master Registry, Class A/B Tiering & Call Coverage",
+        badge: {
+          text: "Master List",
+          className: "bg-teal-50 text-teal-700 ring-1 ring-inset ring-teal-700/10"
+        },
+        icon: UserCheck,
+        iconContainerClass: "bg-teal-50 border border-teal-100 text-teal-600 group-hover:bg-teal-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100 flex items-center justify-between">
+            <span>Total Registry: <strong className="text-slate-800">4,820 HCPs</strong></span>
+          </div>
+        ),
+        footerLeft: { text: "Open Tab", isPill: true },
+        footerRight: { label: "View HCPs", className: "text-teal-600 hover:text-teal-800" }
+      }
+    ]
+  },
+  {
+    id: "field-analysis",
+    title: "Field Analysis & Leadership",
+    subtitle: "Multidimensional manager KPIs, rep scorecards, and territorial heatmaps",
+    colorBarClass: "bg-indigo-600",
+    countText: "4 Modules",
+    gridColsClass: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+    modules: [
+      {
+        slug: "manager-analysis",
+        title: "Manager Analysis",
+        desc: "Area & Regional manager coaching metrics & tour plan adherence",
+        badge: {
+          text: "6 sub tabs",
+          className: "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-700/10"
+        },
+        icon: Users,
+        iconContainerClass: "bg-indigo-50 border border-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-indigo-50/40 p-2 rounded-lg border border-indigo-100/50">
+            Includes: Joint work ratio, Team strike rate
+          </div>
+        ),
+        footerLeft: { text: "Leadership View", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Inspect", className: "text-indigo-600 hover:text-indigo-800" }
+      },
+      {
+        slug: "analysis",
+        title: "Analysis",
+        desc: "Macro performance drill-down, frequency & call averages",
+        badge: {
+          text: "8 sub tabs",
+          className: "bg-violet-50 text-violet-700 ring-1 ring-inset ring-violet-700/10"
+        },
+        icon: BarChart3,
+        iconContainerClass: "bg-violet-50 border border-violet-100 text-violet-600 group-hover:bg-violet-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
+            Target vs Actual · Call frequency curve
+          </div>
+        ),
+        footerLeft: { text: "Deep Dive", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Explore", className: "text-violet-600 hover:text-violet-800" }
+      },
+      {
+        slug: "single-analysis",
+        title: "Single Analysis",
+        desc: "Individual Medical Representative (MR) isolated 360° scorecard",
+        badge: {
+          text: "4 sub tabs",
+          className: "bg-purple-50 text-purple-700 ring-1 ring-inset ring-purple-700/10"
+        },
+        icon: Crosshair,
+        iconContainerClass: "bg-purple-50 border border-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
+            Rep-level productivity & territory index
+          </div>
+        ),
+        footerLeft: { text: "Rep Scorecard", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "View Rep", className: "text-purple-600 hover:text-purple-800" }
+      },
+      {
+        slug: "heat-analysis",
+        title: "Heat Analysis",
+        desc: "Geographic density, call frequency distribution & cold zones",
+        badge: {
+          text: "3 sub tabs",
+          className: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-700/10"
+        },
+        icon: Flame,
+        iconContainerClass: "bg-amber-50 border border-amber-100 text-amber-600 group-hover:bg-amber-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-amber-50/50 p-2 rounded-lg border border-amber-100/60">
+            High density: Tier-1 Hubs · Low: Outer Belts
+          </div>
+        ),
+        footerLeft: { text: "Geo Intel", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Heatmap", className: "text-amber-600 hover:text-amber-800" }
+      }
+    ]
+  },
+  {
+    id: "product-sales",
+    title: "Product & Sales Performance",
+    subtitle: "Commercial conversion, prescription audits, detailing voice & sample dispatch",
+    colorBarClass: "bg-cyan-600",
+    countText: "3 Modules",
+    gridColsClass: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+    modules: [
+      {
+        slug: "pob-rx",
+        title: "POB / Rx",
+        titleBadge: "+12% MoM",
+        desc: "Personal Order Booking, Chemist Rx audits & chemist order sync",
+        badge: {
+          text: "4 sub tabs",
+          className: "bg-cyan-50 text-cyan-700 ring-1 ring-inset ring-cyan-700/10"
+        },
+        icon: ShoppingBag,
+        iconContainerClass: "bg-cyan-50 border border-cyan-100 text-cyan-600 group-hover:bg-cyan-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100 flex justify-between">
+            <span>Orders Logged: <strong className="text-slate-800">₹42.8 Lakh</strong></span>
+            <span className="text-cyan-600 font-medium">92% Target</span>
+          </div>
+        ),
+        footerLeft: { text: "Order Audit", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Track Orders", className: "text-cyan-600 hover:text-cyan-800" }
+      },
+      {
+        slug: "product-exposure",
+        title: "Product Exposure",
+        desc: "Brand Share of Voice, focus brand airtime & detailing priority",
+        badge: {
+          text: "5 sub tabs",
+          className: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10"
+        },
+        icon: Eye,
+        iconContainerClass: "bg-blue-50 border border-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100">
+            Primary Focus: Cardiopulse & Neuroshield
+          </div>
+        ),
+        footerLeft: { text: "Share of Voice", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Analyze", className: "text-blue-600 hover:text-blue-800" }
+      },
+      {
+        slug: "sample-input",
+        title: "Sample / Input",
+        desc: "Physician sample distribution, promo input burn rate & balance",
+        badge: {
+          text: "3 sub tabs",
+          className: "bg-orange-50 text-orange-700 ring-1 ring-inset ring-orange-700/10"
+        },
+        icon: Package,
+        iconContainerClass: "bg-orange-50 border border-orange-100 text-orange-600 group-hover:bg-orange-600 group-hover:text-white",
+        metricSnippet: (
+          <div className="text-[11px] text-slate-500 bg-slate-50 p-2 rounded-lg border border-slate-100 flex justify-between">
+            <span>Remaining Quota: <strong className="text-slate-800">68%</strong></span>
+            <span className="text-emerald-600 font-medium">Audited</span>
+          </div>
+        ),
+        footerLeft: { text: "Inventory Logs", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Audit", className: "text-orange-600 hover:text-orange-800" }
+      }
+    ]
+  },
+  {
+    id: "compliance-data",
+    title: "Compliance, Digital & Raw Data Extracts",
+    subtitle: "Exceptions, digital detailing tablet telemetry, tests, and raw warehouse dumps",
+    colorBarClass: "bg-slate-700",
+    countText: "8 Modules",
+    gridColsClass: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4",
+    modules: [
+      {
+        slug: "status",
+        title: "Status",
+        desc: "Tour programme approvals, leave logs & submission locks",
+        badge: {
+          text: "4 sub tabs",
+          className: "bg-slate-100 text-slate-700"
+        },
+        icon: ShieldCheck,
+        iconContainerClass: "bg-slate-100 border border-slate-200 text-slate-700 group-hover:bg-slate-800 group-hover:text-white",
+        footerLeft: { text: "Approval Workflow", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Open", className: "text-slate-700 hover:text-slate-900" }
+      },
+      {
+        slug: "exception",
+        title: "Exception",
+        desc: "Out-of-territory calls, non-core doctor visits & TP violations",
+        badge: {
+          text: "3 sub tabs",
+          className: "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20 font-semibold"
+        },
+        icon: AlertCircle,
+        iconContainerClass: "bg-rose-50 border border-rose-200 text-rose-600 group-hover:bg-rose-600 group-hover:text-white",
+        cardBorderClass: "border-rose-200/80",
+        footerLeft: { text: "Flagged Audits", isPill: false, className: "text-rose-600 font-medium" },
+        footerRight: { label: "Resolve", className: "text-rose-600 hover:text-rose-800" }
+      },
+      {
+        slug: "digital-detailing",
+        title: "Digital Detailing",
+        desc: "e-Detailing slide retention, slide dwell time, HCP engagement",
+        badge: {
+          text: "4 sub tabs",
+          className: "bg-sky-50 text-sky-700"
+        },
+        icon: Tablet,
+        iconContainerClass: "bg-sky-50 border border-sky-100 text-sky-600 group-hover:bg-sky-600 group-hover:text-white",
+        footerLeft: { text: "Tablet Telemetry", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "View", className: "text-sky-600 hover:text-sky-800" }
+      },
+      {
+        slug: "quiz-test-result",
+        title: "Quiz Test Result",
+        desc: "Therapeutic knowledge evaluation & clinical exam results",
+        badge: {
+          text: "Avg 88.5%",
+          className: "bg-emerald-50 text-emerald-700 font-semibold"
+        },
+        icon: Award,
+        iconContainerClass: "bg-emerald-50 border border-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white",
+        footerLeft: { text: "Medical Training", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Scores", className: "text-emerald-600 hover:text-emerald-800" }
+      },
+      {
+        slug: "summary",
+        title: "Summary",
+        desc: "High-level executive rollups, month-end consolidations",
+        badge: {
+          text: "2 sub tabs",
+          className: "bg-indigo-50 text-indigo-700"
+        },
+        icon: FileText,
+        iconContainerClass: "bg-indigo-50 border border-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white",
+        footerLeft: { text: "Executive Deck", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Generate", className: "text-indigo-600 hover:text-indigo-800" }
+      },
+      {
+        slug: "dump",
+        title: "Dump",
+        desc: "Primary raw transactions, complete master call table export",
+        badge: {
+          text: "6 sub tabs",
+          className: "bg-slate-100 text-slate-700"
+        },
+        icon: Database,
+        iconContainerClass: "bg-slate-100 border border-slate-200 text-slate-700 group-hover:bg-slate-800 group-hover:text-white",
+        footerLeft: { text: "CSV / XLS Export", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Download", className: "text-slate-700 hover:text-slate-900", isDownload: true }
+      },
+      {
+        slug: "dump-ii",
+        title: "Dump II",
+        desc: "Secondary sales, stockist movement & replenishment dump",
+        badge: {
+          text: "2 sub tabs",
+          className: "bg-slate-100 text-slate-700"
+        },
+        icon: Archive,
+        iconContainerClass: "bg-slate-100 border border-slate-200 text-slate-700 group-hover:bg-slate-800 group-hover:text-white",
+        footerLeft: { text: "Secondary Logs", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Download", className: "text-slate-700 hover:text-slate-900", isDownload: true }
+      },
+      {
+        slug: "options",
+        title: "Options",
+        desc: "Territory boundaries, custom fields, module access switches",
+        badge: {
+          text: "2 sub tabs",
+          className: "bg-slate-100 text-slate-700"
+        },
+        icon: Settings,
+        iconContainerClass: "bg-slate-100 border border-slate-200 text-slate-700 group-hover:bg-slate-800 group-hover:text-white",
+        footerLeft: { text: "Preferences", isPill: false, className: "text-slate-400" },
+        footerRight: { label: "Configure", className: "text-slate-700 hover:text-slate-900" }
+      }
+    ]
+  }
+];
 
 export function AdminMisReportsDashboard({ node, path }: { node: ZiviraTreeNode; path: string[] }) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredGroups = useMemo(() => {
+    if (!searchQuery.trim()) return MIS_GROUPS;
+    const query = searchQuery.toLowerCase().trim();
+
+    return MIS_GROUPS.map((group) => {
+      const matchingModules = group.modules.filter(
+        (m) =>
+          m.title.toLowerCase().includes(query) ||
+          m.desc.toLowerCase().includes(query) ||
+          m.badge.text.toLowerCase().includes(query) ||
+          (m.tags && m.tags.some((t) => t.toLowerCase().includes(query)))
+      );
+      return {
+        ...group,
+        modules: matchingModules
+      };
+    }).filter((group) => group.modules.length > 0);
+  }, [searchQuery]);
+
+  const totalModulesCount = useMemo(() => {
+    return filteredGroups.reduce((acc, g) => acc + g.modules.length, 0);
+  }, [filteredGroups]);
+
   return (
     <div className="flex flex-col w-full space-y-6">
-      
+      <div className="flex flex-col w-full">
+        <div className="space-y-6">
+        {/* Top Utility Ribbon & Executive Header */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-surface-card p-card-padding-standard rounded-xl shadow-sm">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
+              <span className="hover:text-primary transition-colors">Platform</span>
+              <span className="material-symbols-outlined text-[14px]">chevron_right</span>
+              <span className="text-primary font-semibold">MIS Reports</span>
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm ml-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
+                Live HQ Sync • 1m ago
+              </span>
+            </div>
+            <h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Management Information System (MIS)</h1>
+            <p className="font-body-sm text-body-sm text-text-secondary max-w-3xl">
+              Consolidated executive telemetry: secondary sales variance, territory field productivity, tier-1 doctor frequency adherence, and brand-level margin realization.
+            </p>
+          </div>
+        </div>
 
-<div className="flex flex-col w-full">
-{/* Dynamic Workspace Container */}
-<div className="space-y-6">
-{/* Top Utility Ribbon & Executive Header */}
-<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-surface-card p-card-padding-standard rounded-xl shadow-sm">
-<div className="space-y-1">
-<div className="flex items-center gap-2 font-label-sm text-label-sm text-text-muted uppercase tracking-wider">
-<a className="hover:text-primary transition-colors" href="#">Platform</a>
-<span className="material-symbols-outlined text-[14px]">chevron_right</span>
-<span className="text-primary font-semibold">MIS Reports</span>
-<span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm ml-2">
-<span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse"></span>
-            Live HQ Sync • 1m ago
-          </span>
-</div>
-<h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Management Information System (MIS)</h1>
-<p className="font-body-sm text-body-sm text-text-secondary max-w-3xl">
-          Consolidated executive telemetry: secondary sales variance, territory field productivity, tier-1 doctor frequency adherence, and brand-level margin realization.
-        </p>
-</div>
-{/* Quick Actions Toolbar */}
-<div className="flex flex-wrap items-center gap-2.5">
-<button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle hover:bg-surface-variant text-text-secondary font-label-md text-label-md transition-colors shadow-sm" type="button">
-<span className="material-symbols-outlined text-[18px]">schedule_send</span>
-<span className="">Schedule Dispatch</span>
-</button>
-<div className="relative inline-block text-left" id="exportMenuWrapper">
-<button className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-surface-subtle hover:bg-surface-variant text-text-secondary font-label-md text-label-md transition-colors shadow-sm" type="button">
-<span className="material-symbols-outlined text-[18px]">sim_card_download</span>
-<span className="">Export MIS</span>
-<span className="material-symbols-outlined text-[16px]">expand_more</span>
-</button>
-<div className="hidden absolute right-0 mt-1.5 w-48 rounded-lg bg-surface-card shadow-xl py-1 z-30" id="exportMenu">
-<a className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
-<span className="material-symbols-outlined text-[16px] text-status-success">table_chart</span> Executive Excel (XLSX)
-            </a>
-<a className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
-<span className="material-symbols-outlined text-[16px] text-status-danger">picture_as_pdf</span> Executive Boardpack (PDF)
-            </a>
-<a className="flex items-center gap-2 px-3 py-2 text-text-secondary hover:bg-surface-subtle font-body-sm text-body-sm" href="#">
-<span className="material-symbols-outlined text-[16px] text-status-info">terminal</span> Direct SQL Query Dump
-            </a>
-</div>
-</div>
-<button className="button" type="button">
-<span className="material-symbols-outlined text-[18px]">tune</span>
-<span className="">Build Custom Query</span>
-</button>
-</div>
-</div>
+        {/* Executive KPI Metric Cards (4-Column Bento Row) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-grid-gutter">
+          {/* Card 1: Net Secondary Sales Achievement */}
+          <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Secondary Sales (MTD)</span>
+              <div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">currency_rupee</span>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="flex items-baseline gap-2">
+                <span className="font-metric-value text-metric-value text-text-primary">₹4.86 Cr</span>
+                <span className="font-label-md text-label-md text-text-secondary">/ ₹5.10 Cr Target</span>
+              </div>
+              {/* Progress micro-bar */}
+              <div className="w-full bg-surface-subtle h-2 rounded-full mt-2.5 overflow-hidden">
+                <div className="bg-primary h-full rounded-full transition-all duration-500" style={{ "width": "95.3%" }}></div>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
+              <span className="inline-flex items-center gap-1 font-semibold text-status-success">
+                <span className="material-symbols-outlined text-[16px]">trending_up</span> +14.2% MoM
+              </span>
+              <span className="text-text-muted">Gap: <strong className="text-status-warning font-semibold">₹24.0 Lakh</strong></span>
+            </div>
+          </div>
+          {/* Card 2: Field Productivity Ratio */}
+          <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Field Rep Productivity</span>
+              <div className="w-8 h-8 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">speed</span>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="flex items-baseline gap-2">
+                <span className="font-metric-value text-metric-value text-text-primary">11.2</span>
+                <span className="font-label-md text-label-md text-text-secondary">Calls/MR/Day</span>
+              </div>
+              <div className="flex items-center justify-between mt-1 text-text-secondary font-body-sm text-body-sm">
+                <span className="">Avg POB: <strong>₹38,400 / Day</strong></span>
+                <span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-subtle">Norm: 10.0</span>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
+              <span className="text-text-muted">Active Force: <strong>420 / 438</strong></span>
+              <span className="inline-flex items-center gap-1 font-semibold text-status-success">
+                <span className="material-symbols-outlined text-[16px]">trending_up</span> +6.8% vs Q2
+              </span>
+            </div>
+          </div>
+          {/* Card 3: Doctor Coverage & Frequency Adherence */}
+          <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">HCP List Coverage</span>
+              <div className="w-8 h-8 rounded-lg bg-status-success-bg text-status-success flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">person_check</span>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="flex items-baseline gap-2">
+                <span className="font-metric-value text-metric-value text-text-primary">92.4%</span>
+                <span className="font-label-md text-label-md text-status-success font-semibold">Tier-1 Optimal</span>
+              </div>
+              <div className="w-full bg-surface-subtle h-2 rounded-full mt-2.5 overflow-hidden">
+                <div className="bg-status-success h-full rounded-full transition-all duration-500" style={{ "width": "92.4%" }}></div>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
+              <span className="text-text-muted">A+ Tier Coverage: <strong>97.1%</strong></span>
+              <span className="text-text-muted">Repeat Adh: <strong className="text-text-primary">88.6%</strong></span>
+            </div>
+          </div>
+          {/* Card 4: Sample & Detailing Yield */}
+          <div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="flex items-center justify-between">
+              <span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Sample Conversion ROI</span>
+              <div className="w-8 h-8 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center">
+                <span className="material-symbols-outlined text-[18px]">vaccines</span>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="flex items-baseline gap-2">
+                <span className="font-metric-value text-metric-value text-text-primary">3.42x</span>
+                <span className="font-label-md text-label-md text-text-secondary">Yield Ratio</span>
+              </div>
+              <div className="flex items-center justify-between mt-1 text-text-secondary font-body-sm text-body-sm">
+                <span className="">₹18.2L Out <span className="material-symbols-outlined text-[14px] align-middle text-text-muted">arrow_forward</span> ₹62.4L Rx</span>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
+              <span className="text-status-danger font-semibold flex items-center gap-1">
+                <span className="material-symbols-outlined text-[16px]">warning</span> 14 Reps Zero-POB Flag
+              </span>
+              <a className="text-primary hover:underline font-label-sm text-label-sm" href="#">Audit</a>
+            </div>
+          </div>
+        </div>
 
-<div className="bg-surface-card rounded-xl shadow-sm p-4 space-y-4 mb-6">
-  <AdminTabGrid node={node} path={path} />
-</div>
-{/* Period & Temporal Switcher Strip */}
-<div className="flex flex-wrap items-center justify-between gap-3 bg-surface-card px-4 py-2.5 rounded-xl shadow-sm">
-<div className="flex items-center gap-1 overflow-x-auto py-0.5">
-<span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider mr-2 hidden sm:inline">Timeline:</span>
-<button className="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">Today</button>
-<button className="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">This Week</button>
-<button className="px-3 py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm" type="button">MTD (Sep FY26)</button>
-<button className="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">Q3 FY26</button>
-<button className="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">YTD Consolidated</button>
-<button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
-<span className="material-symbols-outlined text-[16px]">calendar_today</span>
-<span className="">Custom</span>
-</button>
-</div>
-<div className="flex items-center gap-3">
-<div className="text-text-secondary font-body-sm text-body-sm flex items-center gap-1.5">
-<span className="material-symbols-outlined text-[16px] text-text-muted">account_tree</span>
-<span className="">Scope: <strong>All Divisions (Cardio, Diabetic, Derma)</strong></span>
-</div>
-<div className="h-4 w-px bg-surface-subtle"></div>
-<span className="font-label-sm text-label-sm text-text-muted">Working Days Passed: <strong>21 / 25</strong></span>
-</div>
-</div>
-{/* Executive KPI Metric Cards (4-Column Bento Row) */}
-<div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-grid-gutter">
-{/* Card 1: Net Secondary Sales Achievement */}
-<div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-<div className="flex items-center justify-between">
-<span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Secondary Sales (MTD)</span>
-<div className="w-8 h-8 rounded-lg bg-brand-primary-subtle text-primary flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">currency_rupee</span>
-</div>
-</div>
-<div className="mt-3">
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">₹4.86 Cr</span>
-<span className="font-label-md text-label-md text-text-secondary">/ ₹5.10 Cr Target</span>
-</div>
-{/* Progress micro-bar */}
-<div className="w-full bg-surface-subtle h-2 rounded-full mt-2.5 overflow-hidden">
-<div className="bg-primary h-full rounded-full transition-all duration-500" style={{ "width": "95.3%" }}></div>
-</div>
-</div>
-<div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
-<span className="inline-flex items-center gap-1 font-semibold text-status-success">
-<span className="material-symbols-outlined text-[16px]">trending_up</span> +14.2% MoM
-          </span>
-<span className="text-text-muted">Gap: <strong className="text-status-warning font-semibold">₹24.0 Lakh</strong></span>
-</div>
-</div>
-{/* Card 2: Field Productivity Ratio */}
-<div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-<div className="flex items-center justify-between">
-<span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Field Rep Productivity</span>
-<div className="w-8 h-8 rounded-lg bg-status-info-bg text-status-info flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">speed</span>
-</div>
-</div>
-<div className="mt-3">
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">11.2</span>
-<span className="font-label-md text-label-md text-text-secondary">Calls/MR/Day</span>
-</div>
-<div className="flex items-center justify-between mt-1 text-text-secondary font-body-sm text-body-sm">
-<span className="">Avg POB: <strong>₹38,400 / Day</strong></span>
-<span className="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-subtle">Norm: 10.0</span>
-</div>
-</div>
-<div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
-<span className="text-text-muted">Active Force: <strong>420 / 438</strong></span>
-<span className="inline-flex items-center gap-1 font-semibold text-status-success">
-<span className="material-symbols-outlined text-[16px]">trending_up</span> +6.8% vs Q2
-          </span>
-</div>
-</div>
-{/* Card 3: Doctor Coverage & Frequency Adherence */}
-<div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-<div className="flex items-center justify-between">
-<span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">HCP List Coverage</span>
-<div className="w-8 h-8 rounded-lg bg-status-success-bg text-status-success flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">person_check</span>
-</div>
-</div>
-<div className="mt-3">
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">92.4%</span>
-<span className="font-label-md text-label-md text-status-success font-semibold">Tier-1 Optimal</span>
-</div>
-<div className="w-full bg-surface-subtle h-2 rounded-full mt-2.5 overflow-hidden">
-<div className="bg-status-success h-full rounded-full transition-all duration-500" style={{ "width": "92.4%" }}></div>
-</div>
-</div>
-<div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
-<span className="text-text-muted">A+ Tier Coverage: <strong>97.1%</strong></span>
-<span className="text-text-muted">Repeat Adh: <strong className="text-text-primary">88.6%</strong></span>
-</div>
-</div>
-{/* Card 4: Sample & Detailing Yield */}
-<div className="bg-surface-card rounded-xl p-card-padding-standard shadow-sm flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-shadow">
-<div className="flex items-center justify-between">
-<span className="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Sample Conversion ROI</span>
-<div className="w-8 h-8 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center">
-<span className="material-symbols-outlined text-[18px]">vaccines</span>
-</div>
-</div>
-<div className="mt-3">
-<div className="flex items-baseline gap-2">
-<span className="font-metric-value text-metric-value text-text-primary">3.42x</span>
-<span className="font-label-md text-label-md text-text-secondary">Yield Ratio</span>
-</div>
-<div className="flex items-center justify-between mt-1 text-text-secondary font-body-sm text-body-sm">
-<span className="">₹18.2L Out <span className="material-symbols-outlined text-[14px] align-middle text-text-muted">arrow_forward</span> ₹62.4L Rx</span>
-</div>
-</div>
-<div className="mt-4 pt-3 flex items-center justify-between border-t border-surface-subtle font-body-sm text-body-sm">
-<span className="text-status-danger font-semibold flex items-center gap-1">
-<span className="material-symbols-outlined text-[16px]">warning</span> 14 Reps Zero-POB Flag
-          </span>
-<a className="text-primary hover:underline font-label-sm text-label-sm" href="#">Audit</a>
-</div>
-</div>
-</div>
-{/* Navigation Sub-Tabs for MIS Multi-Perspective Analysis */}
-<div className="bg-surface-card rounded-xl p-1.5 shadow-sm flex flex-wrap items-center gap-1">
-<button className="button" type="button">
-<span className="material-symbols-outlined text-[18px]">hub</span>
-<span className="">Division &amp; Territory Sales Variance</span>
-</button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
-<span className="material-symbols-outlined text-[18px]">grid_view</span>
-<span className="">HQ Productivity Matrix</span>
-</button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
-<span className="material-symbols-outlined text-[18px]">pie_chart</span>
-<span className="">Brand Basket Performance</span>
-</button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
-<span className="material-symbols-outlined text-[18px]">query_stats</span>
-<span className="">Doctor Detailing Yield &amp; ROI</span>
-</button>
-<button className="flex items-center gap-2 px-4 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-md text-label-md transition-colors" type="button">
-<span className="material-symbols-outlined text-[18px]">mark_email_read</span>
-<span className="">Scheduled Automated MIS Reports</span>
-</button>
-</div>
+        {/* MIS MODULES HUB (Applied from Stitch Design) */}
+        <div className="bg-slate-50/70 rounded-2xl border border-slate-200/80 p-5 space-y-6 shadow-xs">
+          {/* Module Filter & Search Ribbon */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/60">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">MIS Reporting Hub</span>
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                {totalModulesCount} {totalModulesCount === 1 ? "Module" : "Modules"}
+              </span>
+            </div>
+            <div className="relative w-full sm:w-72">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search MIS modules..."
+                className="w-full h-8 pl-9 pr-3 rounded-lg bg-white border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition"
+              />
+            </div>
+          </div>
+
+          {/* Group Sections */}
+          {filteredGroups.length === 0 ? (
+            <div className="p-8 text-center bg-white rounded-xl border border-slate-200">
+              <p className="text-xs font-medium text-slate-500">No MIS modules found matching &quot;{searchQuery}&quot;</p>
+              <button
+                onClick={() => setSearchQuery("")}
+                className="mt-2 text-xs font-semibold text-indigo-600 hover:underline"
+              >
+                Clear search filter
+              </button>
+            </div>
+          ) : (
+            filteredGroups.map((group) => (
+              <section key={group.id} className="space-y-3.5" id={group.id}>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className={`w-2 h-5 rounded-full ${group.colorBarClass}`}></div>
+                    <div>
+                      <h2 className="text-sm font-bold text-slate-900 tracking-tight">{group.title}</h2>
+                      <p className="text-[11px] text-slate-500">{group.subtitle}</p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                    {group.modules.length} {group.modules.length === 1 ? "Module" : "Modules"}
+                  </span>
+                </div>
+
+                <div className={`grid ${group.gridColsClass ?? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"} gap-4`}>
+                  {group.modules.map((mod) => {
+                    const Icon = mod.icon;
+                    const href = `/admin/workspace/${[...path, mod.slug].join("/")}`;
+                    return (
+                      <Link
+                        key={mod.slug}
+                        href={href}
+                        className={`group relative bg-white rounded-xl border ${
+                          mod.cardBorderClass ?? "border-slate-200/90"
+                        } shadow-xs hover:shadow-md p-4 flex flex-col justify-between transition-all duration-200 hover:-translate-y-0.5 cursor-pointer`}
+                      >
+                        <div className="space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors ${mod.iconContainerClass}`}>
+                              <Icon size={18} />
+                            </div>
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold ${mod.badge.className}`}>
+                              {mod.badge.hasPing && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping"></span>
+                              )}
+                              {mod.badge.text}
+                            </span>
+                          </div>
+
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <h3 className="text-sm font-semibold text-slate-900 group-hover:text-indigo-600 transition">
+                                {mod.title}
+                              </h3>
+                              {mod.titleBadge && (
+                                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-1.5 py-0.2 rounded">
+                                  {mod.titleBadge}
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
+                              {mod.desc}
+                            </p>
+                          </div>
+
+                          {mod.metricSnippet && mod.metricSnippet}
+
+                          {mod.tags && (
+                            <div className="flex flex-wrap gap-1 text-[10px] text-slate-600">
+                              {mod.tags.map((tag, idx) => (
+                                <span key={idx} className="bg-slate-100 px-1.5 py-0.5 rounded font-medium">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                          {mod.footerLeft.isPill ? (
+                            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-slate-100 text-slate-700">
+                              {mod.footerLeft.text}
+                            </span>
+                          ) : (
+                            <span className={`text-[11px] ${mod.footerLeft.className ?? "text-slate-400"}`}>
+                              {mod.footerLeft.text}
+                            </span>
+                          )}
+
+                          <span className={`text-xs font-semibold inline-flex items-center gap-1 transition-colors ${mod.footerRight.className}`}>
+                            {mod.footerRight.label}
+                            {mod.footerRight.isDownload ? (
+                              <Download size={13} className="transition group-hover:translate-y-0.5" />
+                            ) : (
+                              <ArrowRight size={13} className="transition group-hover:translate-x-0.5" />
+                            )}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </section>
+            ))
+          )}
+        </div>
+
 {/* Main Data Table Container with Filters & Controls */}
 <div className="bg-surface-card rounded-xl shadow-sm overflow-hidden flex flex-col">
 {/* Filter Bar & Search Sub-Header */}

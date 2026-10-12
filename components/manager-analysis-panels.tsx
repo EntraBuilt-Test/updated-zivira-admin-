@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { useRouter, useSearchParams } from "next/navigation";
 import { withExcel } from "@/components/with-excel";
+import { CustomSelect } from "@/components/custom-select";
 import {
   apiClient,
   type ManagerAnalysisManager,
@@ -42,32 +43,47 @@ export function ManagerPicker({ managers, value, onChange }: { managers: Manager
 export function MonthYearRangePicker({
   fromMonth, fromYear, toMonth, toYear, onChange
 }: { fromMonth: number; fromYear: number; toMonth: number; toYear: number; onChange: (v: { fromMonth: number; fromYear: number; toMonth: number; toYear: number }) => void }) {
-  const sel = "h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm";
   return (
     <>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">From Month</span>
-        <select className={sel} value={fromMonth} onChange={(e) => onChange({ fromMonth: parseInt(e.target.value, 10), fromYear, toMonth, toYear })}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-        </select>
+        <div style={{ minWidth: 120 }}>
+          <CustomSelect
+            value={MONTH_NAMES[fromMonth - 1] ?? MONTH_NAMES[0]}
+            onChange={(v) => onChange({ fromMonth: MONTH_NAMES.indexOf(v) + 1, fromYear, toMonth, toYear })}
+            options={MONTH_NAMES}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">From Year</span>
-        <select className={sel} value={fromYear} onChange={(e) => onChange({ fromMonth, fromYear: parseInt(e.target.value, 10), toMonth, toYear })}>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 90 }}>
+          <CustomSelect
+            value={String(fromYear)}
+            onChange={(v) => onChange({ fromMonth, fromYear: parseInt(v, 10), toMonth, toYear })}
+            options={YEARS.map(String)}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">To Month</span>
-        <select className={sel} value={toMonth} onChange={(e) => onChange({ fromMonth, fromYear, toMonth: parseInt(e.target.value, 10), toYear })}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-        </select>
+        <div style={{ minWidth: 120 }}>
+          <CustomSelect
+            value={MONTH_NAMES[toMonth - 1] ?? MONTH_NAMES[0]}
+            onChange={(v) => onChange({ fromMonth, fromYear, toMonth: MONTH_NAMES.indexOf(v) + 1, toYear })}
+            options={MONTH_NAMES}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">To Year</span>
-        <select className={sel} value={toYear} onChange={(e) => onChange({ fromMonth, fromYear, toMonth, toYear: parseInt(e.target.value, 10) })}>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 90 }}>
+          <CustomSelect
+            value={String(toYear)}
+            onChange={(v) => onChange({ fromMonth, fromYear, toMonth, toYear: parseInt(v, 10) })}
+            options={YEARS.map(String)}
+          />
+        </div>
       </div>
     </>
   );
@@ -122,12 +138,13 @@ function HqCoveragewiseReportInner() {
           <MonthYearRangePicker fromMonth={fromMonth} fromYear={fromYear} toMonth={toMonth} toYear={toYear} onChange={(v) => { setFromMonth(v.fromMonth); setFromYear(v.fromYear); setToMonth(v.toMonth); setToYear(v.toYear); }} />
           <div className="flex flex-col gap-1">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Mode</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={mode} onChange={(e) => setMode(e.target.value)}>
-              <option>---Select---</option>
-              <option>Days/Calls Only</option>
-              <option>HQ/EX/OS wise</option>
-              <option>Detail</option>
-            </select>
+            <div style={{ minWidth: 180 }}>
+              <CustomSelect
+                value={mode}
+                onChange={setMode}
+                options={["---Select---", "Days/Calls Only", "HQ/EX/OS wise", "Detail"]}
+              />
+            </div>
           </div>
           <button type="button" onClick={handleView} disabled={!employeeCode || mode === "---Select---" || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{loading ? "Loading..." : "View"}</button>
         </div>
@@ -398,10 +415,13 @@ function JointWorkwiseReportInner() {
           <MonthYearRangePicker fromMonth={fromMonth} fromYear={fromYear} toMonth={toMonth} toYear={toYear} onChange={(v) => { setFromMonth(v.fromMonth); setFromYear(v.fromYear); setToMonth(v.toMonth); setToYear(v.toYear); }} />
           <div className="flex flex-col gap-1">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Mode</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={mode} onChange={(e) => setMode(e.target.value)}>
-              <option>Based on MGR - DCR</option>
-              <option>Based on MR - DCR</option>
-            </select>
+            <div style={{ minWidth: 200 }}>
+              <CustomSelect
+                value={mode}
+                onChange={setMode}
+                options={["Based on MGR - DCR", "Based on MR - DCR"]}
+              />
+            </div>
           </div>
           <button type="button" onClick={handleView} disabled={!employeeCode || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{loading ? "Loading..." : "View"}</button>
         </div>

@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { FFPicker, MonthYear, NOW, mkRange, monthLong, monthShort, rowBg, rowBgByDesignation, type MY } from "@/components/ff-filter-select";
 import { GO, LABEL, SELECT, ReportModal, ScreenTitle } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type AtGlanceResult, type ChemistUnlistedResult, type ListedDrProductResult, type ManagerCoverageResult, type ProductDrillResult, type ProductExposureResult, type R51Emp, type TerritoryResult, type VacantManagerResult } from "@/lib/api-client";
 
 // Round 51 -- MIS Reports > Visit Details / Product Exposure screens (legacy ASPX parity).
@@ -69,7 +70,7 @@ export function AtAGlanceReport() {
         const bg = { background: "#99ff99" };
         return (
           <ReportModal title={title} fileName="Visit_Details_At_a_Glance" onClose={close}>
-            <h3 className="text-base font-bold underline">{title}</h3>
+            <h3 className="text-base font-bold">{title}</h3>
             <p className="text-sm font-bold">{ffLine(r.employee)}</p>
             <Notes notes={r.notes} />
             <div style={{ overflowX: "auto" }}>
@@ -149,7 +150,7 @@ export function ChemistUnlistedReport() {
         const bg = { background: "#99ff99" };
         return (
           <ReportModal title={title} fileName="Chemist_UnListed_Stockiest_Visit" onClose={close}>
-            <h3 className="text-base font-bold underline">{title}</h3>
+            <h3 className="text-base font-bold">{title}</h3>
             <p className="text-sm font-bold">{ffLine(r.employee)}</p>
             <Notes notes={r.notes} />
             <div style={{ overflowX: "auto" }}>
@@ -285,14 +286,17 @@ function CoverageView({ r, onClose }: { r: ManagerCoverageResult; onClose: () =>
 
 // ═══ 6) Product Exposure Analysis (+ 8) Unlisted variant) ═════════════
 function ProductPick({ value, onChange, products }: { value: string; onChange: (v: string) => void; products: string[] }) {
+  const displayVal = value === "ALL" ? "All Product" : value || "---Select the Product---";
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>Product Name</span>
-      <select className={SELECT} style={{ minWidth: 200 }} value={value} onChange={(e) => onChange(e.target.value)}>
-        <option value="">---Select the Product---</option>
-        <option value="ALL" style={{ color: "red" }}>All Product</option>
-        {products.map((p) => <option key={p} value={p}>{p}</option>)}
-      </select>
+      <div style={{ minWidth: 220 }}>
+        <CustomSelect
+          value={displayVal}
+          onChange={(v) => onChange(v === "---Select the Product---" ? "" : v === "All Product" ? "ALL" : v)}
+          options={["---Select the Product---", "All Product", ...products]}
+        />
+      </div>
     </div>
   );
 }
@@ -485,7 +489,7 @@ export function SampleDetailsReport() {
           const bg = { background: TEAL, color: "#fff" };
           return (
             <ReportModal title="Sample Details" fileName="Sample_Details" onClose={close} textButtons>
-              <h3 className="text-lg font-bold underline text-center">Sample Details</h3>
+              <h3 className="text-lg font-bold text-center">Sample Details</h3>
               <p className="text-sm font-bold">{ffLine(r.employee, "Filed Force Name")}</p>
               <Notes notes={r.notes} />
               <div style={{ overflowX: "auto" }}>

@@ -3,6 +3,7 @@
 import { Fragment as Fragment2, useEffect, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { GO, LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle, ym } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type CatClsVisitResult, type DateWiseResult, type VisitCell, type VisitDetailOptions, type VisitMode } from "@/lib/api-client";
 
 // Round 44 -- MIS Reports > Visit Details:
@@ -18,16 +19,25 @@ const dash = (n: number) => (n ? String(n) : "-");
 function Err({ msg }: { msg: string }) { return msg ? <p className="text-sm text-status-danger">{msg}</p> : null; }
 
 function MonthYear({ label, month, year, onChange }: { label: string; month: number; year: number; onChange: (m: number, y: number) => void }) {
+  const shortMonths = MONTH_NAMES.map((m) => m.slice(0, 3));
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>{label}</span>
       <div className="flex gap-2">
-        <select className={SELECT} value={month} onChange={(e) => onChange(parseInt(e.target.value, 10), year)}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}
-        </select>
-        <select className={SELECT} value={year} onChange={(e) => onChange(month, parseInt(e.target.value, 10))}>
-          {YEAR_LIST.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 88 }}>
+          <CustomSelect
+            value={shortMonths[month - 1] ?? shortMonths[0]}
+            onChange={(v) => onChange(shortMonths.indexOf(v) + 1, year)}
+            options={shortMonths}
+          />
+        </div>
+        <div style={{ minWidth: 92 }}>
+          <CustomSelect
+            value={String(year)}
+            onChange={(v) => onChange(month, parseInt(v, 10))}
+            options={YEAR_LIST.map(String)}
+          />
+        </div>
       </div>
     </div>
   );
@@ -72,15 +82,18 @@ export function CatClsVisitDetailsReport() {
   return (
     <div className="space-y-5">
       <div className={CARD}>
-        <h2 className="text-xl font-bold text-purple-800 underline decoration-purple-800 text-center leading-snug">Category/Class/Speciality &amp;<br />Listed Doctor Wise Visit Details</h2>
+        <h2 className="text-xl font-bold text-black text-center leading-snug">Category/Class/Speciality &amp;<br />Listed Doctor Wise Visit Details</h2>
         <div className="flex flex-wrap items-end gap-4">
           <FieldForceSelect value={code} onChange={setCode} label="Filed Force Name" clearLabel={FF_LABEL} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Select Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => { setMode(e.target.value as VisitMode | ""); setTicked([]); }}>
-              <option value="">---Select---</option>
-              {MODES.map((m) => <option key={m} value={m}>{m}</option>)}
-            </select>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={mode || "---Select---"}
+                onChange={(v) => { setMode(v === "---Select---" ? "" : (v as VisitMode)); setTicked([]); }}
+                options={["---Select---", ...MODES]}
+              />
+            </div>
           </div>
           <MonthYear label="From Month & Year" month={from.m} year={from.y} onChange={(m, y) => setFrom({ m, y })} />
           <MonthYear label="To Month & Year" month={to.m} year={to.y} onChange={(m, y) => setTo({ m, y })} />
@@ -123,7 +136,7 @@ function CatClsResult({ result, from, to, onClose }: { result: CatClsVisitResult
   );
   return (
     <ReportModal title={title} fileName="Visit_Details" onClose={onClose}>
-      <h3 className="text-base font-bold underline">{title}</h3>
+      <h3 className="text-base font-bold">{title}</h3>
       <p className="text-sm font-bold">Field Force Name : {result.employee.name} - {result.employee.designation} - {result.employee.hq}</p>
       <table className="border-collapse">
         <thead>
@@ -214,21 +227,40 @@ export function VisitDetailDateWiseReport() {
           <FieldForceSelect value={code} onChange={setCode} label="Fieldforce Name" clearLabel={FF_LABEL} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Month</span>
-            <select className={SELECT} value={month} onChange={(e) => { setMonth(parseInt(e.target.value, 10)); setWeek(1); }}>
-              {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}
-            </select>
+            <div style={{ minWidth: 88 }}>
+              <CustomSelect
+                value={MONTH_NAMES[month - 1]?.slice(0, 3) ?? "Jan"}
+                onChange={(v) => {
+                  const idx = MONTH_NAMES.findIndex((m) => m.slice(0, 3) === v);
+                  setMonth(idx + 1);
+                  setWeek(1);
+                }}
+                options={MONTH_NAMES.map((m) => m.slice(0, 3))}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Year</span>
-            <select className={SELECT} value={year} onChange={(e) => { setYear(parseInt(e.target.value, 10)); setWeek(1); }}>
-              {YEAR_LIST.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
+            <div style={{ minWidth: 92 }}>
+              <CustomSelect
+                value={String(year)}
+                onChange={(v) => { setYear(parseInt(v, 10)); setWeek(1); }}
+                options={YEAR_LIST.map(String)}
+              />
+            </div>
           </div>
           <label className="flex items-center gap-2 text-sm h-9"><input type="checkbox" checked={matrix} onChange={(e) => setMatrix(e.target.checked)} />Visit Matrix</label>
           {matrix && (
-            <select className={SELECT} value={week} onChange={(e) => setWeek(parseInt(e.target.value, 10))}>
-              {weeks.map((w) => <option key={w.week} value={w.week}>{w.label}</option>)}
-            </select>
+            <div style={{ minWidth: 140 }}>
+              <CustomSelect
+                value={weeks.find((w) => w.week === week)?.label ?? weeks[0]?.label ?? ""}
+                onChange={(v) => {
+                  const found = weeks.find((w) => w.label === v);
+                  if (found) setWeek(found.week);
+                }}
+                options={weeks.map((w) => w.label)}
+              />
+            </div>
           )}
           <button type="button" className={GO} disabled={!code || loading} onClick={view}>{loading ? "Loading..." : "View"}</button>
         </div>
@@ -246,7 +278,7 @@ function DateWiseResultView({ result, onClose }: { result: DateWiseResult; onClo
   const th = (bg = TEAL) => ({ background: bg });
   return (
     <ReportModal title="Visit Detail - DateWise" fileName="Visit_Detail_DateWise" onClose={onClose} textButtons>
-      <h3 className="text-base font-bold underline">{title}</h3>
+      <h3 className="text-base font-bold">{title}</h3>
       <p className="text-sm">Filed Force Name : <b>{result.employee.name}</b> - {result.employee.designation} - {result.employee.hq}</p>
       {!result.matrix ? (
         <table className="border-collapse w-full">

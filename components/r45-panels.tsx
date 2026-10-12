@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { GO, LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle, ym, link, tealHead } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import {
   apiClient,
   type DetailingOptions, type DetailingVisitResult, type DrsAnalysisResult, type QuizResultResult, type SlideAnalysisOptions,
@@ -33,12 +34,25 @@ function BackButton() {
   return <button type="button" className="h-8 px-4 rounded-lg border border-border-subtle text-sm font-semibold" onClick={() => router.back()}>Back</button>;
 }
 function MonthYear({ label, month, year, onChange }: { label: string; month: number; year: number; onChange: (m: number, y: number) => void }) {
+  const shortMonths = MONTH_NAMES.map((m) => m.slice(0, 3));
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>{label}</span>
       <div className="flex gap-2">
-        <select className={SELECT} value={month} onChange={(e) => onChange(parseInt(e.target.value, 10), year)}>{MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}</select>
-        <select className={SELECT} value={year} onChange={(e) => onChange(month, parseInt(e.target.value, 10))}>{YEARS.map((y) => <option key={y} value={y}>{y}</option>)}</select>
+        <div style={{ minWidth: 88 }}>
+          <CustomSelect
+            value={shortMonths[month - 1] ?? shortMonths[0]}
+            onChange={(v) => onChange(shortMonths.indexOf(v) + 1, year)}
+            options={shortMonths}
+          />
+        </div>
+        <div style={{ minWidth: 92 }}>
+          <CustomSelect
+            value={String(year)}
+            onChange={(v) => onChange(month, parseInt(v, 10))}
+            options={YEARS.map(String)}
+          />
+        </div>
       </div>
     </div>
   );
@@ -82,7 +96,13 @@ export function QuizTestResultReport() {
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Filed Force Name</span>
             <div className="flex gap-2">
-              <select className={SELECT + " w-24"} value={scope} onChange={(e) => setScope(e.target.value as "Team" | "Individual")}><option>Team</option><option>Individual</option></select>
+              <div style={{ minWidth: 120 }}>
+                <CustomSelect
+                  value={scope}
+                  onChange={(v) => setScope(v as "Team" | "Individual")}
+                  options={["Team", "Individual"]}
+                />
+              </div>
               <FieldForceSelect value={code} onChange={setCode} hideLabel clearLabel={SELECT_FF} />
             </div>
           </div>
@@ -93,7 +113,7 @@ export function QuizTestResultReport() {
       </div>
       {result && (
         <ReportModal title="Quiz Test Result" fileName={`Quiz_Result_${result.month}`} onClose={() => setResult(null)} textButtons hidePrint>
-          <h3 className="text-lg font-bold underline text-purple-800">Quiz Result - {monthName(result.month)} {result.month.slice(0, 4)}</h3>
+          <h3 className="text-lg font-bold text-black">Quiz Result - {monthName(result.month)} {result.month.slice(0, 4)}</h3>
           <p className="text-sm font-bold">Field Force Name : {result.employee.name} - {result.employee.designation} - {result.employee.hq}</p>
           <div className="overflow-x-auto -mx-4">
             <table className="border-collapse">
@@ -243,7 +263,14 @@ export function DetailingVisitWiseReport() {
           <FieldForceSelect value={code} onChange={setCode} label="FieldForce Name" clearLabel="admin (whole company)" extraOptions={ADMIN_OPT} />
           <MonthYear label="Month-Year" month={my.v.m} year={my.v.y} onChange={my.set} />
           <div className="flex flex-col gap-1"><span className={LABEL}>Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => { setMode(e.target.value as "" | "Brand" | "Product"); setPicked([]); }}><option value="">---Select---</option><option>Brand</option><option>Product</option></select></div>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={mode || "---Select---"}
+                onChange={(v) => { setMode(v === "---Select---" ? "" : (v as "Brand" | "Product")); setPicked([]); }}
+                options={["---Select---", "Brand", "Product"]}
+              />
+            </div>
+          </div>
         </div>
         {mode && <div className="space-y-2"><p className="text-sm font-bold">{mode}</p><CheckGrid items={items} selected={picked} onToggle={toggleIn(setPicked)} /></div>}
         <div className="flex justify-center"><button type="button" className={GO} disabled={loading} onClick={go}>{loading ? "Loading..." : "Go"}</button></div>
@@ -252,7 +279,7 @@ export function DetailingVisitWiseReport() {
       {result && (
         <ReportModal title="Detailing Drs-Visit wise" fileName={`Detailing_Drs_Visit_wise_${result.month}`} onClose={() => setResult(null)} textButtons hidePrint>
           <div className="bg-sky-100 p-3 space-y-3">
-            <h3 className="text-center text-base font-bold underline">Detailing Drs-Visit wise for the Month of {monthName(result.month)} - {result.month.slice(0, 4)}</h3>
+            <h3 className="text-center text-base font-bold">Detailing Drs-Visit wise for the Month of {monthName(result.month)} - {result.month.slice(0, 4)}</h3>
             <ThreePart e={result.employee} />
             <table className="border-collapse w-full">
               <thead>
@@ -303,7 +330,14 @@ export function BrandStarRatingReport() {
           <FieldForceSelect value={code} onChange={setCode} label="FieldForce Name" clearLabel="admin (whole company)" extraOptions={ADMIN_OPT} />
           <MonthYear label="Month-Year" month={my.v.m} year={my.v.y} onChange={my.set} />
           <div className="flex flex-col gap-1"><span className={LABEL}>Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => { setMode(e.target.value); setPicked([]); }}><option value="">---Select---</option><option>Brand</option></select></div>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={mode || "---Select---"}
+                onChange={(v) => { setMode(v === "---Select---" ? "" : v); setPicked([]); }}
+                options={["---Select---", "Brand"]}
+              />
+            </div>
+          </div>
         </div>
         {mode === "Brand" && <div className="space-y-2"><p className="text-sm font-bold">Brand</p><CheckGrid items={opts?.brands ?? []} selected={picked} onToggle={toggleIn(setPicked)} /></div>}
         <div className="flex justify-center"><button type="button" className={GO} disabled={loading} onClick={go}>{loading ? "Loading..." : "Go"}</button></div>
@@ -312,7 +346,7 @@ export function BrandStarRatingReport() {
       </div>
       {result && (
         <ReportModal title="Brand wise Star Rating" fileName={`Brand_wise_Star_Rating_${result.month}`} onClose={() => setResult(null)} textButtons hidePrint>
-          <h3 className="text-center text-base font-bold underline">Brand wise Star Rating for the Month of {monthName(result.month)} - {result.month.slice(0, 4)}</h3>
+          <h3 className="text-center text-base font-bold">Brand wise Star Rating for the Month of {monthName(result.month)} - {result.month.slice(0, 4)}</h3>
           <ThreePart e={result.employee} />
           <table className="border-collapse w-full">
             <thead>
@@ -375,13 +409,23 @@ export function SlideAnalysisReport() {
         <div className="flex justify-center"><button type="button" className={GO} disabled={loading} onClick={run}>{loading ? "Loading..." : "Go"}</button></div>
         <div className="flex flex-wrap items-end gap-3">
           <div className="flex flex-col gap-1"><span className={LABEL}>Filter</span>
-            <select className={SELECT} value={kind} onChange={(e) => { setKind(e.target.value as SlideFilterKind); setValue(""); }}>{FILTERS.map((f) => <option key={f}>{f}</option>)}</select></div>
+            <div style={{ minWidth: 150 }}>
+              <CustomSelect
+                value={kind}
+                onChange={(v) => { setKind(v as SlideFilterKind); setValue(""); }}
+                options={FILTERS as unknown as string[]}
+              />
+            </div>
+          </div>
           {kind !== "ALL" && (
             <>
-              <select className={SELECT} value={value} onChange={(e) => setValue(e.target.value)}>
-                <option value="">---Select---</option>
-                {(opts?.[kind] ?? []).map((v) => <option key={v}>{v}</option>)}
-              </select>
+              <div style={{ minWidth: 180 }}>
+                <CustomSelect
+                  value={value || "---Select---"}
+                  onChange={(v) => setValue(v === "---Select---" ? "" : v)}
+                  options={["---Select---", ...(opts?.[kind] ?? [])]}
+                />
+              </div>
               <button type="button" className="h-9 px-4 rounded-lg bg-primary text-on-primary text-sm" disabled={loading || !value} onClick={run}>Go</button>
             </>
           )}

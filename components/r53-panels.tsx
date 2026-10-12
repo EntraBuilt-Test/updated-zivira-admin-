@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { FFPicker, MonthYear, NOW, mkRange, monthLong, monthShort, rowBg, type MY } from "@/components/ff-filter-select";
 import { GO, LABEL, SELECT, MONTH_NAMES, ReportModal, ScreenTitle } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type DelayedStatusResult, type InputDetailsResult, type LeaveActiveResult, type LeavePeriodicallyResult, type MailStatusResult, type SampleRxResult, type TpDeviationLegacyResult } from "@/lib/api-client";
 import { CARD, TEAL, TH, TD, dash, ffLine, prev, Err, Notes, RangeForm } from "@/components/r51-panels";
 
@@ -13,7 +14,7 @@ const toDMY = (iso: string) => (iso ? `${iso.slice(8, 10)}/${iso.slice(5, 7)}/${
 const todayIso = () => new Date().toISOString().slice(0, 10);
 const addDays = (iso: string, n: number) => new Date(Date.parse(`${iso}T00:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
 const red = { color: "red", fontWeight: 700 } as const;
-const titleCls = "text-lg font-bold underline text-center";
+const titleCls = "text-lg font-bold text-center";
 
 // ═══ 1) Input Details ═════════════════════════════════════════════════
 export function InputDetailsReport() {
@@ -89,7 +90,13 @@ export function SampleRxQuantityReport() {
           <MonthYear label="From" v={from} onChange={setFrom} />
           <MonthYear label="To" v={to} onChange={setTo} />
           <div className="flex flex-col gap-1"><span className={LABEL}>Select Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => setMode(e.target.value as "" | "product" | "brand")}><option value="">--Select--</option><option value="product">Product wise</option><option value="brand">Brand wise</option></select>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={mode === "product" ? "Product wise" : mode === "brand" ? "Brand wise" : "--Select--"}
+                onChange={(v) => setMode(v === "Product wise" ? "product" : v === "Brand wise" ? "brand" : "")}
+                options={["--Select--", "Product wise", "Brand wise"]}
+              />
+            </div>
           </div>
         </div>
         {mode && (
@@ -177,7 +184,7 @@ export function DelayedStatusReport() {
       </div>
       {result && (
         <ReportModal title="Delayed Status" fileName="Delayed_Status" onClose={() => setResult(null)} textButtons>
-          <h3 className="text-sm font-bold underline" style={{ color: "red" }}>Delayed Status for the month of {MONTH_NAMES[Number(result.month.slice(5, 7)) - 1]} - {result.month.slice(0, 4)}</h3>
+          <h3 className="text-sm font-bold" style={{ color: "red" }}>Delayed Status for the month of {MONTH_NAMES[Number(result.month.slice(5, 7)) - 1]} - {result.month.slice(0, 4)}</h3>
           <Notes notes={result.notes} />
           <div style={{ overflowX: "auto" }}>
             <table className="border-collapse">

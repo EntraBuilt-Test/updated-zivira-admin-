@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
 import { CustomSelect } from "@/components/custom-select";
+import { Pencil, Eye, Ban, X, Plus } from "lucide-react";
 
 // Round 8 items 11-12 — real "Create - Activity" + "Activity - Add
 // Parameter" tabs, backed by the new ActivityModel / ActivityParameterModel
@@ -31,8 +32,6 @@ const PARAMETER_TYPES = [
   "Currency Converter"
 ];
 
-const cell: React.CSSProperties = { border: "1px solid #94a3b8", padding: "6px 8px", textAlign: "center", fontSize: 12 };
-const head: React.CSSProperties = { ...cell, background: "#0e7490", color: "#fff", fontWeight: 600 };
 
 type Activity = {
   id: string; shortName: string; name: string; mode: string; activityFor: string[]; status: string;
@@ -166,51 +165,107 @@ function CreateActivityTab() {
         {error && <div className="text-sm text-red-600">{error}</div>}
       </div>
 
-      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 overflow-x-auto">
-        <h3 className="text-lg font-bold mb-3">Activity List</h3>
-        <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
-          <thead>
-            <tr>
-              <th style={head}>S.No</th>
-              <th style={head}>Short Name</th>
-              <th style={head}>Name</th>
-              <th style={head}>Type</th>
-              <th style={head}>Edit</th>
-              <th style={head}>Preview</th>
-              <th style={head}>Deactivate</th>
-            </tr>
-          </thead>
-          <tbody>
-            {!loading && activities.length === 0 && <tr><td style={cell} colSpan={7}>No Records Found</td></tr>}
-            {activities.map((a, i) => (
-              <tr key={a.id}>
-                <td style={cell}>{i + 1}</td>
-                <td style={cell}>{a.shortName}</td>
-                <td style={{ ...cell, fontWeight: 600 }}>{a.name}</td>
-                <td style={cell}>{a.mode}</td>
-                <td style={cell}><button className="button button-secondary" type="button" onClick={() => startEdit(a)}>Edit</button></td>
-                <td style={cell}><button className="button button-secondary" type="button" onClick={() => setPreviewRow(a)}>Preview</button></td>
-                <td style={cell}>
-                  <button className="button button-secondary" type="button" disabled={a.status === "INACTIVE"} onClick={() => deactivate(a.id)}>
-                    {a.status === "INACTIVE" ? "Inactive" : "Deactivate"}
-                  </button>
-                </td>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+          <h3 className="text-base font-bold text-text-primary">Activity List</h3>
+          <span className="text-xs text-text-muted font-medium">Total: {activities.length}</span>
+        </div>
+        <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-16">S.No</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Short Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Type</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-24">Edit</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-28">Preview</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-32">Status / Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-border-subtle">
+              {loading && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-8 text-center text-text-muted text-sm">Loading...</td>
+                </tr>
+              )}
+              {!loading && activities.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td>
+                </tr>
+              )}
+              {activities.map((a, i) => (
+                <tr key={a.id} className="hover:bg-surface-subtle/50 transition-colors">
+                  <td className="px-4 py-3.5 text-sm text-text-muted text-center font-medium">{i + 1}</td>
+                  <td className="px-4 py-3.5 text-sm font-semibold text-text-primary">{a.shortName}</td>
+                  <td className="px-4 py-3.5 text-sm font-medium text-text-primary">{a.name}</td>
+                  <td className="px-4 py-3.5 text-sm text-text-secondary">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-surface-subtle border border-border-subtle text-text-secondary">
+                      {a.mode}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3.5 text-center">
+                    <button
+                      className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer"
+                      type="button"
+                      onClick={() => startEdit(a)}
+                    >
+                      <Pencil size={13} className="text-text-muted" />
+                      Edit
+                    </button>
+                  </td>
+                  <td className="px-4 py-3.5 text-center">
+                    <button
+                      className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer"
+                      type="button"
+                      onClick={() => setPreviewRow(a)}
+                    >
+                      <Eye size={13} className="text-text-muted" />
+                      Preview
+                    </button>
+                  </td>
+                  <td className="px-4 py-3.5 text-center">
+                    {a.status === "INACTIVE" ? (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-600 border border-red-200">
+                        Inactive
+                      </span>
+                    ) : (
+                      <button
+                        className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 hover:!border-red-300 hover:!text-red-600 hover:!bg-red-50 cursor-pointer"
+                        type="button"
+                        onClick={() => deactivate(a.id)}
+                      >
+                        <Ban size={13} className="text-red-500" />
+                        Deactivate
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {previewRow && (
-        <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-col gap-2">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold">Preview - {previewRow.shortName}</h3>
-            <button className="button button-secondary" type="button" onClick={() => setPreviewRow(null)}>Close</button>
+        <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-col gap-3">
+          <div className="flex items-center justify-between pb-3 border-b border-border-subtle">
+            <h3 className="text-base font-bold text-text-primary">Preview - {previewRow.shortName}</h3>
+            <button className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1 cursor-pointer" type="button" onClick={() => setPreviewRow(null)}>
+              <X size={13} /> Close
+            </button>
           </div>
-          <p><b>Name:</b> {previewRow.name}</p>
-          <p><b>Mode:</b> {previewRow.mode}</p>
-          <p><b>For:</b> {previewRow.activityFor?.join(", ") || "-"}</p>
-          <p><b>Status:</b> {previewRow.status}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+            <div><span className="text-xs text-text-muted block">Name</span><span className="font-semibold text-text-primary">{previewRow.name}</span></div>
+            <div><span className="text-xs text-text-muted block">Mode</span><span className="font-semibold text-text-primary">{previewRow.mode}</span></div>
+            <div><span className="text-xs text-text-muted block">For</span><span className="font-semibold text-text-primary">{previewRow.activityFor?.join(", ") || "—"}</span></div>
+            <div>
+              <span className="text-xs text-text-muted block">Status</span>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${previewRow.status === "INACTIVE" ? "bg-red-50 text-red-600 border border-red-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
+                {previewRow.status}
+              </span>
+            </div>
+          </div>
         </div>
       )}
     </div>
@@ -401,56 +456,76 @@ function AddParameterTab() {
         {error && <div className="text-sm text-red-600">{error}</div>}
       </div>
 
-      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 overflow-x-auto">
-        <h3 className="text-lg font-bold mb-3">{activities.find((a) => a.id === activityId)?.name || "--Select Activity--"}</h3>
-        <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
-          <thead>
-            <tr>
-              <th style={head}>S.No</th>
-              <th style={head}>Caption</th>
-              <th style={head}>Activity Name</th>
-              <th style={head}>Control</th>
-              <th style={head}>Mandatory</th>
-              <th style={head}>For</th>
-              <th style={head}>Edit</th>
-              <th style={head}>Deactivate</th>
-              <th style={head}>Existing Order</th>
-              <th style={head}>New Order</th>
-            </tr>
-          </thead>
-          <tbody>
-            {parameters.length === 0 && <tr><td style={cell} colSpan={10}>No Records Found</td></tr>}
-            {parameters.map((p, i) => (
-              <tr key={p.id}>
-                <td style={cell}>{i + 1}</td>
-                <td style={{ ...cell, fontWeight: 600 }}>{p.caption}</td>
-                <td style={cell}>{p.activityName}</td>
-                <td style={cell}>{p.parameterType}</td>
-                <td style={cell}>{p.mandatory ? "Yes" : "No"}</td>
-                <td style={cell}>{p.activityFor || "-"}</td>
-                <td style={cell}><button className="button button-secondary" type="button" onClick={() => startEdit(p)}>Edit</button></td>
-                <td style={cell}>
-                  <button className="button button-secondary" type="button" disabled={p.status === "INACTIVE"} onClick={() => deactivate(p.id)}>
-                    {p.status === "INACTIVE" ? "Inactive" : "Deactivate"}
-                  </button>
-                </td>
-                <td style={cell}>{p.existingOrder}</td>
-                <td style={cell}>
-                  <input
-                    className="input"
-                    style={{ width: 64, textAlign: "center", padding: "2px 4px" }}
-                    type="number"
-                    value={orderEdits[p.id] ?? ""}
-                    onChange={(e) => setOrderEdits((prev) => ({ ...prev, [p.id]: e.target.value }))}
-                  />
-                </td>
+      <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col overflow-hidden">
+        <div className="p-4 border-b border-border-subtle flex items-center justify-between">
+          <h3 className="text-base font-bold text-text-primary">{activities.find((a) => a.id === activityId)?.name || "Parameters List"}</h3>
+          <span className="text-xs text-text-muted font-medium">Total: {parameters.length}</span>
+        </div>
+        <div className="overflow-x-auto overflow-y-auto custom-scrollbar" style={{ maxHeight: "480px" }}>
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
+              <tr>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-16">S.No</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Caption</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Activity Name</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Control</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Mandatory</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">For</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-20">Edit</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-28">Status / Action</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-28">Existing Order</th>
+                <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-28">New Order</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-        <div className="flex gap-2 mt-3">
+            </thead>
+            <tbody className="divide-y divide-border-subtle">
+              {parameters.length === 0 && (
+                <tr><td colSpan={10} className="px-4 py-10 text-center text-text-muted text-sm">No Records Found</td></tr>
+              )}
+              {parameters.map((p, i) => (
+                <tr key={p.id} className="hover:bg-surface-subtle/50 transition-colors">
+                  <td className="px-4 py-3 text-sm text-text-muted text-center">{i + 1}</td>
+                  <td className="px-4 py-3 text-sm font-semibold text-text-primary">{p.caption}</td>
+                  <td className="px-4 py-3 text-sm text-text-secondary">{p.activityName}</td>
+                  <td className="px-4 py-3 text-sm text-text-secondary">{p.parameterType}</td>
+                  <td className="px-4 py-3 text-sm text-text-secondary">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${p.mandatory ? "bg-amber-50 text-amber-700 border border-amber-200" : "bg-slate-50 text-slate-600 border border-slate-200"}`}>
+                      {p.mandatory ? "Yes" : "No"}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-text-secondary">{p.activityFor || "-"}</td>
+                  <td className="px-4 py-3 text-center">
+                    <button className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 cursor-pointer" type="button" onClick={() => startEdit(p)}>
+                      <Pencil size={13} className="text-text-muted" /> Edit
+                    </button>
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {p.status === "INACTIVE" ? (
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-600 border border-red-200">
+                        Inactive
+                      </span>
+                    ) : (
+                      <button className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 hover:!border-red-300 hover:!text-red-600 hover:!bg-red-50 cursor-pointer" type="button" onClick={() => deactivate(p.id)}>
+                        <Ban size={13} className="text-red-500" /> Deactivate
+                      </button>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-center text-text-muted font-medium">{p.existingOrder}</td>
+                  <td className="px-4 py-3 text-center">
+                    <input
+                      className="border border-border-subtle rounded-md text-sm text-center px-2 py-1 w-16 bg-surface-card"
+                      type="number"
+                      value={orderEdits[p.id] ?? ""}
+                      onChange={(e) => setOrderEdits((prev) => ({ ...prev, [p.id]: e.target.value }))}
+                    />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="p-4 border-t border-border-subtle flex items-center gap-2">
           <button className="button" type="button" onClick={generateSlNo} disabled={!parameters.length}>Generate - Sl No</button>
-          <button className="button button-secondary" type="button" onClick={clearOrderEdits} disabled={!parameters.length}>Clear</button>
+          <button className="button-secondary" type="button" onClick={clearOrderEdits} disabled={!parameters.length}>Clear</button>
         </div>
       </div>
     </div>
@@ -567,49 +642,54 @@ function CustomizedMasterTab() {
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       {selected && (
-        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm p-4 flex flex-col gap-3">
-          <h3 className="text-lg font-bold">{selected.name}</h3>
-          <div className="overflow-x-auto">
-            <table style={{ borderCollapse: "collapse", width: "max-content", minWidth: "100%" }}>
-              <thead>
+        <div className="bg-surface-card rounded-xl border border-border-subtle shadow-sm flex flex-col overflow-hidden">
+          <div className="p-4 border-b border-border-subtle">
+            <h3 className="text-base font-bold text-text-primary">{selected.name}</h3>
+          </div>
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse">
+              <thead className="bg-surface-subtle sticky top-0 z-10 shadow-sm">
                 <tr>
-                  <th style={head}>Sl No</th>
-                  <th style={head}>Short Name</th>
-                  <th style={head}>Name</th>
-                  <th style={head}>Deactivate</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-16">Sl No</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Short Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle">Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider border-b border-border-subtle text-center w-32">Status / Action</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-border-subtle">
                 {rows.map((r, i) => (
-                  <tr key={r.id || `new-${i}`}>
-                    <td style={cell}>{i + 1}</td>
-                    <td style={cell}>
-                      <input className="input" style={{ minWidth: 140 }} value={r.shortName} onChange={(e) => updateRow(i, "shortName", e.target.value)} disabled={!r.active} />
+                  <tr key={r.id || `new-${i}`} className="hover:bg-surface-subtle/50 transition-colors">
+                    <td className="px-4 py-3 text-sm text-center text-text-muted font-medium">{i + 1}</td>
+                    <td className="px-4 py-3">
+                      <input className="input w-full" value={r.shortName} onChange={(e) => updateRow(i, "shortName", e.target.value)} disabled={!r.active} />
                     </td>
-                    <td style={cell}>
-                      <input className="input" style={{ minWidth: 200 }} value={r.name} onChange={(e) => updateRow(i, "name", e.target.value)} disabled={!r.active} />
+                    <td className="px-4 py-3">
+                      <input className="input w-full" value={r.name} onChange={(e) => updateRow(i, "name", e.target.value)} disabled={!r.active} />
                     </td>
-                    <td style={cell}>
+                    <td className="px-4 py-3 text-center">
                       {r.active ? (
-                        <button className="button button-secondary" type="button" onClick={() => deactivateRow(i)}>Deactivate</button>
+                        <button className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1.5 hover:!border-red-300 hover:!text-red-600 hover:!bg-red-50 cursor-pointer" type="button" onClick={() => deactivateRow(i)}>
+                          <Ban size={13} className="text-red-500" /> Deactivate
+                        </button>
                       ) : (
-                        "Inactive"
+                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-red-50 text-red-600 border border-red-200">
+                          Inactive
+                        </span>
                       )}
                     </td>
                   </tr>
                 ))}
-                <tr>
-                  <td style={cell} colSpan={3}>
-                    <button className="button button-secondary" type="button" onClick={addRow}>Add New Row</button>
-                  </td>
-                  <td style={cell} />
-                </tr>
               </tbody>
             </table>
           </div>
-          <div className="flex gap-2">
-            <button className="button" type="button" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
-            <button className="button button-secondary" type="button" onClick={clear}>Clear</button>
+          <div className="p-4 border-t border-border-subtle flex items-center justify-between gap-3">
+            <button className="button-secondary text-xs px-3 py-1.5 inline-flex items-center gap-1 cursor-pointer" type="button" onClick={addRow}>
+              <Plus size={14} /> Add New Row
+            </button>
+            <div className="flex items-center gap-2">
+              <button className="button" type="button" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</button>
+              <button className="button-secondary" type="button" onClick={clear}>Clear</button>
+            </div>
           </div>
         </div>
       )}

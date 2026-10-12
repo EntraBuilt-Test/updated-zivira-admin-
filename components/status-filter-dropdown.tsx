@@ -83,7 +83,6 @@ export function StatusFilterDropdown({
           {options.map((opt) => {
             const isSelected = opt.value === value || (value === "Active" && opt.value === "ACTIVE") || (value === "Inactive" && opt.value === "INACTIVE");
             const isActive = opt.value === "ACTIVE";
-            const tint = isActive ? "#10b981" : "#ef4444";
             return (
               <button
                 key={opt.value}
@@ -92,30 +91,78 @@ export function StatusFilterDropdown({
                   onChange(opt.value);
                   setOpen(false);
                 }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  gap: "10px",
+                  width: "100%",
+                  padding: "8px 12px",
+                  textAlign: "left",
+                  fontSize: "13px",
+                  fontWeight: isSelected ? 600 : 500,
+                  color: isSelected
+                    ? (isActive ? "#059669" : "#dc2626")
+                    : "var(--text-primary)",
+                  background: isSelected
+                    ? (isActive ? "rgba(16, 185, 129, 0.12)" : "rgba(239, 68, 68, 0.12)")
+                    : "transparent",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                  transition: "background-color 0.15s ease, color 0.15s ease",
+                  outline: "none"
+                }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "var(--line)";
+                  if (!isSelected) e.currentTarget.style.background = "var(--line, rgba(0,0,0,0.05))";
                 }}
                 onMouseLeave={(e) => {
                   if (!isSelected) e.currentTarget.style.background = "transparent";
                 }}
               >
-                {isActive ? <CheckCircle2 size={16} color="#10b981" /> : <XCircle size={16} color="#ef4444" />}
-                {opt.label}
+                <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", flexShrink: 0 }}>
+                  {isActive ? <CheckCircle2 size={16} color="#10b981" /> : <XCircle size={16} color="#ef4444" />}
+                </span>
+                <span style={{ fontSize: "13px", lineHeight: "18px" }}>{opt.label}</span>
               </button>
             );
           })}
-          <div style={{ height: "1px", background: "var(--border)", margin: "2px 6px" }} />
+          <div style={{ height: "1px", background: "var(--border)", margin: "4px 6px" }} />
           <button
             type="button"
             onClick={() => {
               onChange("All");
               setOpen(false);
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--line)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = value === "All" ? "var(--line)" : "transparent")}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start",
+              gap: "10px",
+              width: "100%",
+              padding: "8px 12px",
+              textAlign: "left",
+              fontSize: "13px",
+              fontWeight: (!value || value === "All") ? 600 : 500,
+              color: (!value || value === "All") ? "var(--brand, #ea580c)" : "var(--text-muted)",
+              background: (!value || value === "All") ? "rgba(234, 88, 12, 0.08)" : "transparent",
+              border: "none",
+              borderRadius: "6px",
+              cursor: "pointer",
+              transition: "background-color 0.15s ease, color 0.15s ease",
+              outline: "none"
+            }}
+            onMouseEnter={(e) => {
+              if (value && value !== "All") e.currentTarget.style.background = "var(--line, rgba(0,0,0,0.05))";
+            }}
+            onMouseLeave={(e) => {
+              if (value && value !== "All") e.currentTarget.style.background = "transparent";
+            }}
           >
-            <ListFilter size={16} />
-            Clear Filter
+            <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", flexShrink: 0 }}>
+              <ListFilter size={16} color={(!value || value === "All") ? "var(--brand, #ea580c)" : "var(--text-muted)"} />
+            </span>
+            <span style={{ fontSize: "13px", lineHeight: "18px" }}>Clear Filter</span>
           </button>
         </div>
       )}

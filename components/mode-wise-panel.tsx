@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FFPicker, MonthYear as MY2, type MY } from "@/components/ff-filter-select";
 import { GO, LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type ModewiseResult, type ModewiseType } from "@/lib/api-client";
 
 // Round 50 -- MIS Reports > Visit Details > Based on Mode Wise (legacy Visit_Details_Basedon_ModeWise.aspx).
@@ -40,10 +41,17 @@ export function ModeWiseVisitReport() {
           <FFPicker value={code} onChange={setCode} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Type</span>
-            <select className={SELECT} value={type} onChange={(e) => { setType(e.target.value as ModewiseType | ""); setResult(null); }}>
-              <option value="">---Select---</option>
-              {TYPES.map((t) => <option key={t.key} value={t.key}>{t.label}</option>)}
-            </select>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={TYPES.find((t) => t.key === type)?.label ?? "---Select---"}
+                onChange={(v) => {
+                  const found = TYPES.find((t) => t.label === v);
+                  setType(found ? found.key : "");
+                  setResult(null);
+                }}
+                options={["---Select---", ...TYPES.map((t) => t.label)]}
+              />
+            </div>
           </div>
           <MY2 label="From" v={from} onChange={setFrom} />
           {type && !campaign && <MY2 label="To" v={to} onChange={setTo} />}
@@ -70,7 +78,7 @@ function ModeWiseView({ result, onClose }: { result: ModewiseResult; onClose: ()
   );
   return (
     <ReportModal title={result.type === "campaign" ? "Visit Details Field Report" : heading} fileName={`ModeWise_${label}_Visit_Details`} onClose={onClose}>
-      <h3 className="text-base font-bold underline">{heading}</h3>
+      <h3 className="text-base font-bold">{heading}</h3>
       <p className="text-sm font-bold">Field Force Name : {e.name} - {e.designation} - {e.hq}</p>
       {result.notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}
       <div style={{ overflowX: "auto" }}>

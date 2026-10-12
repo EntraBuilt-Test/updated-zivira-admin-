@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { fieldForceLabel, type FieldForceOption } from "@/components/field-force-select";
 import { apiClient } from "@/lib/api-client";
+import { CustomSelect } from "@/components/custom-select";
 import { LABEL, SELECT, MONTH_NAMES, THIS_YEAR } from "@/components/mis-analysis-panels";
 
 // Round 51 -- legacy-style Field Force picker (small filter text box + dropdown), shared by the Visit Details family,
@@ -29,16 +30,43 @@ export function FFPicker({ value, onChange, label = "Field Force Name", clearLab
     const f = filter.trim().toLowerCase();
     return [...all].filter((e) => (!baseOnly || !MANAGER_DESIG.has(e.designation.trim().toUpperCase())) && (!managersOnly || MANAGER_DESIG.has(e.designation.trim().toUpperCase())) && (e.employeeCode === value || !f || fieldForceLabel(e).toLowerCase().includes(f))).sort((a, b) => a.name.localeCompare(b.name));
   }, [all, filter, value, baseOnly, managersOnly]);
+
+  const defaultClear = filterAfterLoad && loading ? "--- Select the Field force ---" : clearLabel;
+  const options = useMemo(() => {
+    const opts = [defaultClear];
+    if (adminOption) opts.push("admin");
+    for (const e of shown) {
+      opts.push(fieldForceLabel(e));
+    }
+    return opts;
+  }, [defaultClear, adminOption, shown]);
+
+  const selectedDisplay = useMemo(() => {
+    if (!value) return defaultClear;
+    if (value === "admin") return "admin";
+    const found = all.find((e) => e.employeeCode === value);
+    return found ? fieldForceLabel(found) : defaultClear;
+  }, [value, defaultClear, all]);
+
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>{label}</span>
-      <div className="flex gap-2">
+      <div className="flex gap-2 items-center">
         {!noFilter && !(filterAfterLoad && loading) && <input className={SELECT} style={{ width: 90 }} placeholder="Filter" value={filter} onChange={(e) => setFilter(e.target.value)} aria-label="Filter field force" />}
-        <select className={SELECT} style={{ minWidth: 260 }} value={value} onChange={(e) => onChange(e.target.value)}>
-          <option value="">{filterAfterLoad && loading ? "--- Select the Field force ---" : clearLabel}</option>
-          {adminOption && <option value="admin">admin</option>}
-          {shown.map((e) => <option key={e.employeeCode} value={e.employeeCode} style={colorize ? { background: DESIG_BG[e.designation.toUpperCase()] } : undefined}>{fieldForceLabel(e)}</option>)}
-        </select>
+        <div style={{ minWidth: 260 }}>
+          <CustomSelect
+            value={selectedDisplay}
+            options={options}
+            onChange={(selected) => {
+              if (selected === defaultClear) onChange("");
+              else if (selected === "admin") onChange("admin");
+              else {
+                const found = all.find((e) => fieldForceLabel(e) === selected);
+                onChange(found ? found.employeeCode : "");
+              }
+            }}
+          />
+        </div>
         {loading && <span role="status" className="flex items-center gap-1 text-sm font-bold" style={{ color: "red" }}><span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />Loading Please Wait...</span>}
       </div>
     </div>
@@ -48,18 +76,40 @@ export function FFPicker({ value, onChange, label = "Field Force Name", clearLab
 export type MY = { m: number; y: number };
 const YEARS = [THIS_YEAR - 3, THIS_YEAR - 2, THIS_YEAR - 1, THIS_YEAR, THIS_YEAR + 1];
 export function MonthYear({ label, v, onChange, monthOnly, yearOnly }: { label: string; v: MY; onChange: (v: MY) => void; monthOnly?: boolean; yearOnly?: boolean }) {
+  const monthLabels = useMemo(() => MONTH_NAMES.map((m) => m.slice(0, 3)), []);
+  const currentMonth = MONTH_NAMES[v.m - 1]?.slice(0, 3) || "";
+  const yearOptions = useMemo(() => YEARS.map(String), []);
+
   return (
     <div className="flex items-end gap-2">
       {!yearOnly && (
         <div className="flex flex-col gap-1">
-          <span className={LABEL}>{label} Month</span>
-          <select className={SELECT} value={v.m} onChange={(e) => onChange({ ...v, m: parseInt(e.target.value, 10) })}>{MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}</select>
+          <span className={LABEL}>{label ? `${label} Month` : "Month"}</span>
+          <div style={{ minWidth: 88 }}>
+            <CustomSelect
+              value={currentMonth}
+              options={monthLabels}
+              onChange={(selected) => {
+                const idx = monthLabels.indexOf(selected);
+                if (idx !== -1) onChange({ ...v, m: idx + 1 });
+              }}
+            />
+          </div>
         </div>
       )}
       {!monthOnly && (
         <div className="flex flex-col gap-1">
-          <span className={LABEL}>{label} Year</span>
-          <select className={SELECT} value={v.y} onChange={(e) => onChange({ ...v, y: parseInt(e.target.value, 10) })}>{YEARS.map((y) => <option key={y} value={y}>{y}</option>)}</select>
+          <span className={LABEL}>{label ? `${label} Year` : "Year"}</span>
+          <div style={{ minWidth: 96 }}>
+            <CustomSelect
+              value={String(v.y)}
+              options={yearOptions}
+              onChange={(selected) => {
+                const y = parseInt(selected, 10);
+                if (!isNaN(y)) onChange({ ...v, y });
+              }}
+            />
+          </div>
         </div>
       )}
     </div>

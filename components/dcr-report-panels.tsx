@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
@@ -111,15 +112,23 @@ function DcrViewWorkspaceInner() {
           </label>
           <div className="flex flex-col gap-1">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Month</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={month} onChange={(e) => setMonth(parseInt(e.target.value, 10))}>
-              {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-            </select>
+            <div style={{ minWidth: 140 }}>
+              <CustomSelect
+                value={MONTH_NAMES[month - 1]}
+                options={MONTH_NAMES}
+                onChange={(m) => setMonth(MONTH_NAMES.indexOf(m) + 1)}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Year</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={year} onChange={(e) => setYear(parseInt(e.target.value, 10))}>
-              {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-            </select>
+            <div style={{ minWidth: 100 }}>
+              <CustomSelect
+                value={String(year)}
+                options={YEARS.map(String)}
+                onChange={(y) => setYear(parseInt(y, 10))}
+              />
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-2">
@@ -351,15 +360,23 @@ function DcrStatusReportInner() {
             <>
               <div className="flex flex-col gap-1">
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Month</span>
-                <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={month} onChange={(e) => setMonth(parseInt(e.target.value, 10))}>
-                  {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-                </select>
+                <div style={{ minWidth: 140 }}>
+                  <CustomSelect
+                    value={MONTH_NAMES[month - 1]}
+                    options={MONTH_NAMES}
+                    onChange={(m) => setMonth(MONTH_NAMES.indexOf(m) + 1)}
+                  />
+                </div>
               </div>
               <div className="flex flex-col gap-1">
                 <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Year</span>
-                <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={year} onChange={(e) => setYear(parseInt(e.target.value, 10))}>
-                  {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-                </select>
+                <div style={{ minWidth: 100 }}>
+                  <CustomSelect
+                    value={String(year)}
+                    options={YEARS.map(String)}
+                    onChange={(y) => setYear(parseInt(y, 10))}
+                  />
+                </div>
               </div>
             </>
           ) : (
@@ -391,7 +408,7 @@ function DcrStatusReportInner() {
           {!error && result && (
             <div className="space-y-3">
               <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-                <h2 className="font-headline-sm text-headline-sm text-text-primary underline">
+                <h2 className="font-headline-sm text-headline-sm text-text-primary">
                   Daily Call Status for {result.periodwise ? `${result.rangeStart} to ${result.rangeEnd}` : `the Month of ${MONTH_NAMES[month-1]} - ${year}`}
                 </h2>
               </div>

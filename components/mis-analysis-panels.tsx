@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Printer, FileSpreadsheet, X } from "lucide-react";
 import { exportElementToXlsx } from "@/lib/xlsx-export";
 import { FieldForceSelect, useFieldForceOptions } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import { MonthYearRangePicker, useManagers, th as baseTh, td as baseTd } from "@/components/manager-analysis-panels";
 import {
   apiClient,
@@ -108,23 +109,41 @@ export function ReportModal({ title, fileName, onClose, children, textButtons, h
 }
 
 export function ScreenTitle({ children }: { children: ReactNode }) {
-  return <h2 className="text-xl font-bold text-purple-800 underline decoration-purple-800">{children}</h2>;
+  return <h2 className="text-xl font-bold text-black">{children}</h2>;
 }
 
 export function MonthYearSelect({ month, year, onChange }: { month: number; year: number; onChange: (month: number, year: number) => void }) {
+  const monthLabels = useMemo(() => MONTH_NAMES.map((m) => m.slice(0, 3)), []);
+  const currentMonthLabel = MONTH_NAMES[month - 1]?.slice(0, 3) || "";
+  const yearOptions = useMemo(() => YEARS.map(String), []);
+
   return (
     <>
       <div className="flex flex-col gap-1">
         <span className={LABEL}>Month</span>
-        <select className={SELECT} value={month} onChange={(e) => onChange(parseInt(e.target.value, 10), year)}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}
-        </select>
+        <div style={{ minWidth: 88 }}>
+          <CustomSelect
+            value={currentMonthLabel}
+            options={monthLabels}
+            onChange={(selected) => {
+              const idx = monthLabels.indexOf(selected);
+              if (idx !== -1) onChange(idx + 1, year);
+            }}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className={LABEL}>Year</span>
-        <select className={SELECT} value={year} onChange={(e) => onChange(month, parseInt(e.target.value, 10))}>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 96 }}>
+          <CustomSelect
+            value={String(year)}
+            options={yearOptions}
+            onChange={(selected) => {
+              const y = parseInt(selected, 10);
+              if (!isNaN(y)) onChange(month, y);
+            }}
+          />
+        </div>
       </div>
     </>
   );
@@ -172,7 +191,7 @@ function DcrAnalysisBlock({ report }: { report: DcrAnalysisReportData }) {
   const [y, m] = report.month.split("-").map((v) => parseInt(v, 10));
   return (
     <div className="space-y-3 border-b border-border-subtle pb-6">
-      <h3 className="text-center text-lg font-bold text-purple-800">DCR Analysis For the Month of : {MONTH_NAMES[m - 1]} - {y}</h3>
+      <h3 className="text-center text-lg font-bold text-black">DCR Analysis For the Month of : {MONTH_NAMES[m - 1]} - {y}</h3>
       <div className="grid grid-cols-3 text-sm font-semibold bg-pink-200 px-3 py-1.5 rounded">
         <span>FieldForce Name : {report.employee.name} - ( {report.employee.designation} )</span>
         <span className="text-center">Emp Code : {report.employee.employeeCode}</span>
@@ -364,7 +383,7 @@ export function VisitAnalysisReport() {
       </div>
       {result && (
         <ReportModal title="Visit Analysis" fileName={`visit-analysis-${result.type.toLowerCase()}`} onClose={() => setResult(null)}>
-          <h3 className="text-center text-lg font-bold text-purple-800">Visit Analysis Of {result.type} Wise Between - {shortMonth(result.months[0])} To {shortMonth(result.months[result.months.length - 1])}</h3>
+          <h3 className="text-center text-lg font-bold text-black">Visit Analysis Of {result.type} Wise Between - {shortMonth(result.months[0])} To {shortMonth(result.months[result.months.length - 1])}</h3>
           <p className="text-center text-sm font-semibold text-red-600">Field Force Name : {result.fieldForceName} - {result.designation} - {result.hq}</p>
           {!result.campaignsAvailable && (
             <p className="text-sm text-status-warning bg-surface-subtle rounded p-2">No Doctor - Campaign mappings exist for this team (Doctor - Campaign Map master is empty), so there is no Campaign grouping to show. Nothing has been fabricated.</p>
@@ -473,7 +492,13 @@ export function SalesDetailsReport() {
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => { setMode(e.target.value); setResult(null); }}><option>Statewise</option><option>Managerwise</option></select>
+            <div style={{ minWidth: 150 }}>
+              <CustomSelect
+                value={mode}
+                options={["Statewise", "Managerwise"]}
+                onChange={(m) => { setMode(m); setResult(null); }}
+              />
+            </div>
           </div>
           {mode === "Managerwise" && <FieldForceSelect value={employeeCode} onChange={setEmployeeCode} employees={managers} label="Fieldforce Name" />}
           <MonthYearSelect month={month} year={year} onChange={(mo, yr) => { setMonth(mo); setYear(yr); }} />
@@ -485,7 +510,7 @@ export function SalesDetailsReport() {
       </div>
       {result && (
         <ReportModal title={title} fileName={`sales-details-${key}`} onClose={() => { setResult(null); setDrill(null); }}>
-          <h3 className="text-center text-lg font-bold text-purple-800">{title}</h3>
+          <h3 className="text-center text-lg font-bold text-black">{title}</h3>
           {result.mode === "Statewise" && !drill && result.states && (
             <>
               <p className="text-center text-sm font-semibold text-red-600">Fieldforce Name: admin</p>
@@ -590,7 +615,7 @@ export function PobWiseReport() {
       </div>
       {result && (
         <ReportModal title="POB Wise Report" fileName="pob-wise" onClose={() => setResult(null)}>
-          <h3 className="text-center text-lg font-bold text-purple-800">{result.mode === "With Produc POB/Rx" ? "Product POB Wise Report" : "POB Wise Report"} for the month of {fromLabel} To {toLabel}</h3>
+          <h3 className="text-center text-lg font-bold text-black">{result.mode === "With Produc POB/Rx" ? "Product POB Wise Report" : "POB Wise Report"} for the month of {fromLabel} To {toLabel}</h3>
           <p className="text-center text-sm font-semibold text-red-600">Field Force Name : {result.fieldForceName} - {result.designation} - {result.hq}</p>
           <table className="w-full text-sm border-collapse">
             <thead className={tealHead}>
@@ -674,7 +699,7 @@ export function PobPeriodicReport() {
       </div>
       {result && (
         <ReportModal title="Rx Report" fileName="pob-wise-periodically" onClose={() => setResult(null)}>
-          <h3 className="text-center text-lg font-bold text-purple-800">Rx Report between <span className="text-red-600">{pretty(result.from)}</span> To <span className="text-red-600">{pretty(result.to)}</span></h3>
+          <h3 className="text-center text-lg font-bold text-black">Rx Report between <span className="text-red-600">{pretty(result.from)}</span> To <span className="text-red-600">{pretty(result.to)}</span></h3>
           <p className="text-center text-sm font-semibold text-red-600">Field Force Name : {result.fieldForceName} - {result.designation} - {result.hq}</p>
           <table className="w-full text-sm border-collapse">
             <thead className={tealHead}>

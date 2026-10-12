@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { FFPicker, MonthYear, NOW, mkRange, monthLong, rowBg, type MY } from "@/components/ff-filter-select";
 import { GO, LABEL, SELECT, ReportModal, ScreenTitle } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { CARD, TEAL, TH, TD, Err, Notes, ffLine, rangeShort } from "@/components/r51-panels";
 import { apiClient, type SpecatDrillResult, type SpecatOptions, type SpecatResult } from "@/lib/api-client";
 
@@ -46,19 +47,28 @@ export function ProductExposureSpecatReport() {
           <FFPicker value={code} onChange={setCode} label="Fieldforce Name" clearLabel="---Select Clear---" filterAfterLoad />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Product Name</span>
-            <select className={SELECT} style={{ minWidth: 200 }} value={product} onChange={(e) => setProduct(e.target.value)}>
-              <option value="">---Select the Product---</option>
-              <option value="ALL" style={{ color: "red" }}>All Product</option>
-              {products.map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
+            <div style={{ minWidth: 220 }}>
+              <CustomSelect
+                value={product === "ALL" ? "All Product" : product || "---Select the Product---"}
+                onChange={(v) => setProduct(v === "---Select the Product---" ? "" : v === "All Product" ? "ALL" : v)}
+                options={["---Select the Product---", "All Product", ...products]}
+              />
+            </div>
           </div>
           <MonthYear label="From" v={from} onChange={setFrom} />
           <MonthYear label="To" v={to} onChange={setTo} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Select Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => { setMode(e.target.value as Mode); setPicked(new Set()); }}>
-              <option value="">--Select--</option><option value="speciality">Speciality</option><option value="category">Category</option>
-            </select>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={mode === "speciality" ? "Speciality" : mode === "category" ? "Category" : "--Select--"}
+                onChange={(v) => {
+                  setMode(v === "Speciality" ? "speciality" : v === "Category" ? "category" : "");
+                  setPicked(new Set());
+                }}
+                options={["--Select--", "Speciality", "Category"]}
+              />
+            </div>
           </div>
         </div>
         {mode && (
@@ -74,7 +84,7 @@ export function ProductExposureSpecatReport() {
       </div>
       {result && (
         <ReportModal title="Product Exposure Analysis" fileName="Product_Exposure_Speciality_Category" onClose={() => setResult(null)} textButtons>
-          <h3 className="text-base font-bold underline">Product Exposure Analysis for the Period of {rangeShort(result.months, "To")}</h3>
+          <h3 className="text-base font-bold">Product Exposure Analysis for the Period of {rangeShort(result.months, "To")}</h3>
           <div className="flex justify-between gap-4">
             <p className="text-sm font-bold">{ffLine(result.employee, "Filed Force Name")}</p>
             <p className="text-sm font-bold" style={{ color: "red" }}>Product Name : {productLabel(result.product)}</p>

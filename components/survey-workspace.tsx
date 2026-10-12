@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import {
   apiClient,
   type SurveyQuestion,
@@ -154,20 +155,18 @@ function QuestionCreationScreen({ onToast }: { onToast: (msg: string) => void })
         <h2 className="font-headline-sm text-headline-sm text-text-primary">Question Creation</h2>
         <div className="space-y-1.5">
           <label className="font-label-sm text-label-sm text-text-muted">Question Type</label>
-          <select
-            className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
-            value={controlType}
-            onChange={(e) => {
-              const v = e.target.value as SurveyQuestionControlType | "";
+          <CustomSelect
+            value={controlType || "-- Select Question Type--"}
+            options={["-- Select Question Type--", ...CONTROL_TYPES]}
+            onChange={(val) => {
+              const v = (val === "-- Select Question Type--" ? "" : val) as SurveyQuestionControlType | "";
               setControlType(v);
               setMaxLength("");
               setNoOfOptions("");
               setOptionLabels([]);
             }}
-          >
-            <option value="">-- Select Question Type--</option>
-            {CONTROL_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-          </select>
+            placeholder="-- Select Question Type--"
+          />
         </div>
         <div className="space-y-1.5">
           <label className="font-label-sm text-label-sm text-text-muted">Question Text</label>
@@ -634,11 +633,11 @@ function SurveyViewScreen() {
         <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={employees} label="Filed Force Name" minWidth={0} />
         <div className="space-y-1.5">
           <label className="font-label-sm text-label-sm text-text-muted">Mode</label>
-          <select
-            className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
+          <CustomSelect
             value={mode}
-            onChange={(e) => {
-              const next = e.target.value as "Question Wise" | "Answer Wise";
+            options={["Question Wise", "Answer Wise"]}
+            onChange={(nextVal) => {
+              const next = nextVal as "Question Wise" | "Answer Wise";
               setMode(next);
               if (viewed && employeeCode && surveyId) {
                 setLoading(true);
@@ -648,21 +647,21 @@ function SurveyViewScreen() {
                   .finally(() => setLoading(false));
               }
             }}
-          >
-            <option value="Question Wise">Question Wise</option>
-            <option value="Answer Wise">Answer Wise</option>
-          </select>
+          />
         </div>
         <div className="space-y-1.5">
           <label className="font-label-sm text-label-sm text-text-muted">Survey Name</label>
-          <select
-            className="w-full h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
-            value={surveyId}
-            onChange={(e) => { setSurveyId(e.target.value); setViewed(false); }}
-          >
-            {surveys.length === 0 && <option value="">No surveys created yet</option>}
-            {surveys.map((s) => <option key={s.id} value={s.id}>{s.title}</option>)}
-          </select>
+          <CustomSelect
+            value={surveys.find((s) => s.id === surveyId)?.title || (surveys.length === 0 ? "No surveys created yet" : "Select Survey")}
+            options={surveys.length === 0 ? ["No surveys created yet"] : surveys.map((s) => s.title)}
+            onChange={(title) => {
+              const found = surveys.find((s) => s.title === title);
+              if (found) {
+                setSurveyId(found.id);
+                setViewed(false);
+              }
+            }}
+          />
         </div>
         {error && <p className="text-status-danger text-sm">{error}</p>}
         <button
@@ -679,7 +678,7 @@ function SurveyViewScreen() {
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Survey - View</h2>
+              <h2 className="font-headline-sm text-headline-sm text-text-primary">Survey - View</h2>
               <p className="font-body-sm text-body-sm text-text-secondary">Field Force Name: {selectedEmployee?.name} - {selectedEmployee?.designation} - {selectedEmployee?.territory}</p>
               <p className="font-body-sm text-body-sm text-text-muted italic mt-1">
                 {mode === "Question Wise"

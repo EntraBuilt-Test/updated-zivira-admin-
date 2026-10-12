@@ -2,6 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
@@ -35,15 +36,23 @@ function MonthYear({ month, year, onMonth, onYear }: { month: number; year: numb
     <>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Month</span>
-        <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={month} onChange={(e) => onMonth(parseInt(e.target.value, 10))}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-        </select>
+        <div style={{ minWidth: 140 }}>
+          <CustomSelect
+            value={MONTH_NAMES[month - 1]}
+            options={MONTH_NAMES}
+            onChange={(m) => onMonth(MONTH_NAMES.indexOf(m) + 1)}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Year</span>
-        <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={year} onChange={(e) => onYear(parseInt(e.target.value, 10))}>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 100 }}>
+          <CustomSelect
+            value={String(year)}
+            options={YEARS.map(String)}
+            onChange={(y) => onYear(parseInt(y, 10))}
+          />
+        </div>
       </div>
     </>
   );
@@ -74,7 +83,7 @@ function DcrNotApprovedReportInner() {
       {viewed && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4">
           <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-            <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Not Approved DCR View for the month of {MONTH_NAMES[month - 1]} - {year}</h2>
+            <h2 className="font-headline-sm text-headline-sm text-text-primary">Not Approved DCR View for the month of {MONTH_NAMES[month - 1]} - {year}</h2>
           </div>
           <div className="overflow-x-auto rounded-lg border border-border-subtle">
             <table className="w-full text-left font-table-cell text-table-cell text-text-primary">
@@ -172,18 +181,23 @@ function DcrCountModewiseReportInner() {
         <MonthYear month={month} year={year} onMonth={setMonth} onYear={setYear} />
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Mode</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={mode} onChange={(e) => { setMode(e.target.value as "" | "countwise" | "datewise"); setViewed(false); }}>
-            <option value="">---Select---</option>
-            <option value="countwise">CountWise</option>
-            <option value="datewise">DateWise</option>
-          </select>
+          <div style={{ minWidth: 150 }}>
+            <CustomSelect
+              value={mode === "countwise" ? "CountWise" : mode === "datewise" ? "DateWise" : "---Select---"}
+              options={["---Select---", "CountWise", "DateWise"]}
+              onChange={(m) => {
+                setMode(m === "CountWise" ? "countwise" : m === "DateWise" ? "datewise" : "");
+                setViewed(false);
+              }}
+            />
+          </div>
         </div>
         <button type="button" onClick={handleGo} disabled={!employeeCode || !mode || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{loading ? "Loading..." : "Go"}</button>
       </div>
 
       {viewed && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-3">
-          <h2 className="font-headline-sm text-headline-sm text-text-primary underline text-center">DCR - Status (Count - Modewise)</h2>
+          <h2 className="font-headline-sm text-headline-sm text-text-primary text-center">DCR - Status (Count - Modewise)</h2>
           {mode === "countwise" || !rows || rows.length === 0 ? (
             <p className="text-text-muted text-sm text-center py-8">No record found</p>
           ) : (
@@ -254,7 +268,7 @@ function DcrRejectApproveReportInner() {
       {viewed && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-3">
           <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-            <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Reject/Approve View From {MONTH_NAMES[month - 1]}- {year}</h2>
+            <h2 className="font-headline-sm text-headline-sm text-text-primary">Reject/Approve View From {MONTH_NAMES[month - 1]}- {year}</h2>
           </div>
           <p className="text-xs text-status-warning">Round 36: a real Reason field and a real append-only audit log now back every NEW approve/reject action -- a rep whose date is rejected then later re-approved now shows both real events below, with the real reason the manager typed (when they typed one). Actions taken before this round have no reason on file (the field did not exist yet) and are shown as a single fallback event from the prior snapshot, exactly as before.</p>
           <div className="overflow-x-auto rounded-lg border border-border-subtle">
@@ -322,7 +336,7 @@ function DcrTimeStatusReportInner() {
       {viewed && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-3">
           <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-            <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Fieldforce Working Hours for - {MONTH_NAMES[month - 1]} {year}</h2>
+            <h2 className="font-headline-sm text-headline-sm text-text-primary">Fieldforce Working Hours for - {MONTH_NAMES[month - 1]} {year}</h2>
             <p className="font-body-md text-body-md text-status-danger font-semibold">FieldForce Name : {employees.find((e) => e.employeeCode === employeeCode)?.name}</p>
           </div>
           {(!rows || rows.length === 0) ? (
@@ -393,10 +407,14 @@ function DcrCheckinCheckoutReportInner() {
         <MonthYear month={month} year={year} onMonth={setMonth} onYear={setYear} />
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">check Mode</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={checkMode} onChange={(e) => { setCheckMode(e.target.value); setViewed(false); }}>
-            <option value="">--Select--</option>
-            {CHECK_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
-          </select>
+          <div style={{ minWidth: 160 }}>
+            <CustomSelect
+              value={checkMode || "--Select--"}
+              options={["--Select--", ...CHECK_MODES]}
+              onChange={(m) => { setCheckMode(m === "--Select--" ? "" : m); setViewed(false); }}
+              placeholder="--Select--"
+            />
+          </div>
         </div>
         <button type="button" onClick={handleView} disabled={!employeeCode || !checkMode || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{loading ? "Loading..." : "View"}</button>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { FieldForceSelect } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type Employee, type TerritoryView, type TerritoryStatusRow } from "@/lib/api-client";
 import { downloadXlsx, parseNumeric, type TableModel } from "@/lib/xlsx-export";
 import { withExcel } from "@/components/with-excel";
@@ -71,6 +71,26 @@ function TerritoryViewReportInner() {
     return employees.find((e) => e.employeeCode === selected.reportingManager) || null;
   }, [selected, employees]);
 
+  const fieldForceOptions = useMemo(
+    () => visibleEmployees.map((e) => `${e.name} - ${e.designation} - ${e.territory}`),
+    [visibleEmployees]
+  );
+
+  const selectedRepLabel = useMemo(() => {
+    const found = visibleEmployees.find((e) => e.employeeCode === employeeCode);
+    return found ? `${found.name} - ${found.designation} - ${found.territory}` : (fieldForceOptions[0] ?? "");
+  }, [visibleEmployees, employeeCode, fieldForceOptions]);
+
+  function handleEmployeeChange(label: string) {
+    const found = visibleEmployees.find(
+      (e) => `${e.name} - ${e.designation} - ${e.territory}` === label
+    );
+    if (found) {
+      setEmployeeCode(found.employeeCode);
+      setViewed(false);
+    }
+  }
+
   async function handleView() {
     if (!employeeCode) return;
     setLoading(true);
@@ -93,23 +113,32 @@ function TerritoryViewReportInner() {
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Filter By</span>
           <div className="flex items-center gap-2">
-            <select
-              className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm"
-              value={team}
-              onChange={(e) => handleTeamChange(e.target.value)}
-            >
-              {teamOptions.map((t) => (
-                <option key={t} value={t}>{t === ALL_TEAMS ? "Team" : t}</option>
-              ))}
-            </select>
-            <FieldForceSelect value={employeeCode} onChange={(code) => { setEmployeeCode(code); setViewed(false); }} employees={visibleEmployees} label="FieldForce Name" hideLabel />
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={team === ALL_TEAMS ? "Team" : team}
+                options={teamOptions.map((t) => (t === ALL_TEAMS ? "Team" : t))}
+                onChange={(next) => handleTeamChange(next === "Team" ? ALL_TEAMS : next)}
+              />
+            </div>
+            <div style={{ minWidth: 260 }}>
+              <CustomSelect
+                value={selectedRepLabel || "Select Field Rep"}
+                options={fieldForceOptions}
+                onChange={handleEmployeeChange}
+                placeholder="Select Field Rep"
+              />
+            </div>
           </div>
         </div>
         <div className="flex flex-col gap-1">
           <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Base Level</span>
-          <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm min-w-[200px]" value={baseLevelManager?.name ?? ""} onChange={() => {}}>
-            <option value={baseLevelManager?.name ?? ""}>{baseLevelManager?.name ?? "No reporting manager on file"}</option>
-          </select>
+          <div style={{ minWidth: 230 }}>
+            <CustomSelect
+              value={baseLevelManager?.name ?? "No reporting manager on file"}
+              options={[baseLevelManager?.name ?? "No reporting manager on file"]}
+              onChange={() => {}}
+            />
+          </div>
         </div>
         <button
           type="button"
@@ -128,7 +157,7 @@ function TerritoryViewReportInner() {
           {!error && result && (
             <div className="space-y-6">
               <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-                <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Listed Doctor wise - Territory View</h2>
+                <h2 className="font-headline-sm text-headline-sm text-text-primary">Listed Doctor wise - Territory View</h2>
               </div>
               <div className="flex items-center justify-between font-body-md text-body-md">
                 <span className="text-status-danger font-semibold">Field Force Name: {result.fieldForceName} - {result.designation}</span>
@@ -188,6 +217,25 @@ export function TerritoryStatusReport() {
     apiClient.employees().then((r) => setEmployees(r.data)).catch(() => setEmployees([]));
   }, []);
 
+  const ffOptions = useMemo(
+    () => ["All Field Reps", ...employees.map((e) => `${e.name} - ${e.designation} - ${e.territory}`)],
+    [employees]
+  );
+  const selectedLabel = useMemo(() => {
+    if (employeeCode === "ALL") return "All Field Reps";
+    const found = employees.find((e) => e.employeeCode === employeeCode);
+    return found ? `${found.name} - ${found.designation} - ${found.territory}` : "All Field Reps";
+  }, [employeeCode, employees]);
+
+  function handleFFChange(val: string) {
+    if (val === "All Field Reps") {
+      setEmployeeCode("ALL");
+    } else {
+      const found = employees.find((e) => `${e.name} - ${e.designation} - ${e.territory}` === val);
+      if (found) setEmployeeCode(found.employeeCode);
+    }
+  }
+
   // Legacy behavior (confirmed from the reference screenshots): picking a
   // single Field Force Name in the dropdown ("admin - Admin -") still
   // returned every field rep's row, not a filtered single row. The real
@@ -229,7 +277,14 @@ export function TerritoryStatusReport() {
     <div className="space-y-5">
       <div className="bg-surface-card rounded-xl shadow-sm p-5 flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-1">
-          <FieldForceSelect value={employeeCode} onChange={(code) => setEmployeeCode(code)} employees={employees} label="Field Force Name" extraOptions={[{ value: "ALL", label: "All Field Reps" }]} />
+          <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Field Force Name</span>
+          <div style={{ minWidth: 280 }}>
+            <CustomSelect
+              value={selectedLabel}
+              options={ffOptions}
+              onChange={handleFFChange}
+            />
+          </div>
         </div>
         <button
           type="button"
@@ -244,7 +299,7 @@ export function TerritoryStatusReport() {
       {viewedFor && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Territory Status for {viewedFor}</h2>
+            <h2 className="font-headline-sm text-headline-sm text-text-primary">Territory Status for {viewedFor}</h2>
             <div className="flex items-center gap-2">
               <button type="button" onClick={() => window.print()} className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container-high text-text-secondary font-label-sm text-label-sm transition-colors">Print</button>
               <button type="button" onClick={exportExcel} disabled={!rows || rows.length === 0} className="px-3 py-1.5 rounded-lg bg-surface-subtle hover:bg-surface-container-high text-text-secondary font-label-sm text-label-sm transition-colors disabled:opacity-40">Excel</button>

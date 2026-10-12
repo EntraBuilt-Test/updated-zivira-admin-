@@ -111,7 +111,7 @@ export function GenerateUploadPage({ cfg }: { cfg: GenerateUploadConfig }) {
   return (
     <div className="ld-page" style={{ padding: "6px 0 28px", minWidth: 0 }}>
       <style>{NATIVE_CSS}</style>
-      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 19, color: PURPLE, textDecoration: "underline", margin: "6px 0 18px" }}>{TITLE}</div>
+      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 19, color: PURPLE, margin: "6px 0 18px" }}>{TITLE}</div>
       <div className="ld-box">
         {cfg.back && <div style={{ textAlign: "right", maxWidth: 1148, margin: "0 auto 4px" }}><button type="button" style={primary} onClick={() => router.back()}>Back</button></div>}
         <div style={{ textAlign: "center", fontSize: 15, marginBottom: 10 }}>{TITLE}</div>

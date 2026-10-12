@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import {
   GO, LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle, MonthYearSelect, useRange, ym, th, td, tealHead, link
 } from "@/components/mis-analysis-panels";
@@ -62,9 +63,13 @@ function ModeSelect({ value, onChange, options }: { value: string; onChange: (v:
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>Mode</span>
-      <select className={SELECT} value={value} onChange={(e) => onChange(e.target.value)}>
-        {options.map((o) => <option key={o} value={o === "---Select---" ? "" : o}>{o}</option>)}
-      </select>
+      <div style={{ minWidth: 160 }}>
+        <CustomSelect
+          value={value || "---Select---"}
+          onChange={(v) => onChange(v === "---Select---" ? "" : v)}
+          options={options}
+        />
+      </div>
     </div>
   );
 }
@@ -74,7 +79,7 @@ function ProductWiseTable({ result }: { result: PobRxProductWiseResult }) {
   const c = result.mode === "Chemists" ? "Chemistwise" : "Doctorwise";
   return (
     <>
-      <h3 className="text-center text-lg font-bold underline">Listed {c} {result.mode === "Chemists" ? "POB" : "Rx"} Details From {long(result.months[0])} to {long(result.months[result.months.length - 1])}</h3>
+      <h3 className="text-center text-lg font-bold">Listed {c} {result.mode === "Chemists" ? "POB" : "Rx"} Details From {long(result.months[0])} to {long(result.months[result.months.length - 1])}</h3>
       <ForceLine employee={result.employee} />
       <table className="w-full text-sm border-collapse">
         <thead>
@@ -183,7 +188,7 @@ export function PobRxFieldforceWiseReport() {
       </div>
       {result && (
         <ReportModal title="Rx/POB Details (FieldForce Wise)" fileName={`Rx_POB_FieldForceWise_${fromKey}_${toKey}`} onClose={() => setResult(null)}>
-          <h3 className="text-center text-lg font-bold underline">Listed {result.mode === "Chemists" ? "Chemistwise POB" : "Doctorwise Rx"} Details From {long(result.months[0])} to {long(result.months[result.months.length - 1])}</h3>
+          <h3 className="text-center text-lg font-bold">Listed {result.mode === "Chemists" ? "Chemistwise POB" : "Doctorwise Rx"} Details From {long(result.months[0])} to {long(result.months[result.months.length - 1])}</h3>
           <ForceLine employee={result.employee} />
           <table className="w-full text-sm border-collapse">
             <thead>
@@ -311,7 +316,7 @@ function DayWiseResult({ result, onClose }: { result: PobRxDayWiseResult; onClos
   const fixed = productwise ? 6 : 5;
   return (
     <ReportModal title="Rx/POB Details (Day Wise)" fileName={`Rx_POB_DayWise_${result.month}`} onClose={onClose}>
-      <h3 className="text-center text-lg font-bold underline">Listed Dr/Che wise {productwise ? "Product " : ""}Rx Details For {long(result.month)}</h3>
+      <h3 className="text-center text-lg font-bold">Listed Dr/Che wise {productwise ? "Product " : ""}Rx Details For {long(result.month)}</h3>
       <ForceLine employee={result.employee} />
       <div className="overflow-auto max-h-[70vh]">
         <table className="text-xs border-collapse">

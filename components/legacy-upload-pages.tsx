@@ -7,7 +7,7 @@ import { apiClient, type LegacyUploadResult, type UploadGenCol, type ProductRefe
 // Round 58 -- exact legacy (sanpharma.info) upload pages: light-blue dotted background, purple Verdana header lines,
 // purple bold underlined title, white bordered box. Wording is the legacy wording; every action calls the real backend.
 
-export const PURPLE = "#8a2be2";
+export const PURPLE = "#000000";
 export const FONT = "Verdana, Arial, sans-serif";
 const COMPANY = "Zivira Labs Pvt Ltd";
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -43,7 +43,7 @@ function Shell({ title, back, backgroundWhite, children }: { title: string; back
           <button type="button" onClick={() => (window.history.length > 1 ? router.back() : router.push("/admin/home"))} style={{ background: "#9dd6dc", border: "2px outset #8ccad1", padding: "2px 14px", fontSize: 14, cursor: "pointer" }}>Back</button>
         </div>
       )}
-      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 18, color: PURPLE, textDecoration: "underline", margin: "8px 0 28px" }}>{title}</div>
+      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 18, color: PURPLE, margin: "8px 0 28px" }}>{title}</div>
       <div style={backgroundWhite ? { background: "#fff", padding: "6px 0 24px" } : undefined}>{children}</div>
     </div>
   );

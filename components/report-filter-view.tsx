@@ -317,49 +317,81 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
           {personField && (
             <div style={{ minWidth: "220px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">{personField.label}</span>
-              <CustomSelect value={personFilter} options={personOptions} onChange={setPersonFilter} placeholder={`All ${personField.label}`} />
+              <CustomSelect
+                value={personFilter || `All ${personField.label}`}
+                options={[`All ${personField.label}`, ...personOptions]}
+                onChange={(v) => setPersonFilter(v === `All ${personField.label}` ? "" : v)}
+              />
             </div>
           )}
           {hasMonth && (
             <div style={{ minWidth: "160px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">Month</span>
-              <CustomSelect value={monthFilter} options={MONTHS} onChange={setMonthFilter} placeholder="All Months" />
+              <CustomSelect
+                value={monthFilter || "All Months"}
+                options={["All Months", ...MONTHS]}
+                onChange={(v) => setMonthFilter(v === "All Months" ? "" : v)}
+              />
             </div>
           )}
           {hasYear && (
             <div style={{ minWidth: "120px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">Year</span>
-              <CustomSelect value={yearFilter} options={YEARS} onChange={setYearFilter} placeholder="All Years" />
+              <CustomSelect
+                value={yearFilter || "All Years"}
+                options={["All Years", ...YEARS]}
+                onChange={(v) => setYearFilter(v === "All Years" ? "" : v)}
+              />
             </div>
           )}
           {fromMonthField && (
             <div style={{ minWidth: "150px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">{fromMonthField.label}</span>
-              <CustomSelect value={fromMonthFilter} options={MONTHS} onChange={setFromMonthFilter} placeholder="From Month" />
+              <CustomSelect
+                value={fromMonthFilter || "From Month"}
+                options={["From Month", ...MONTHS]}
+                onChange={(v) => setFromMonthFilter(v === "From Month" ? "" : v)}
+              />
             </div>
           )}
           {fromYearField && (
             <div style={{ minWidth: "120px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">{fromYearField.label}</span>
-              <CustomSelect value={fromYearFilter} options={YEARS} onChange={setFromYearFilter} placeholder="From Year" />
+              <CustomSelect
+                value={fromYearFilter || "From Year"}
+                options={["From Year", ...YEARS]}
+                onChange={(v) => setFromYearFilter(v === "From Year" ? "" : v)}
+              />
             </div>
           )}
           {toMonthField && (
             <div style={{ minWidth: "150px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">{toMonthField.label}</span>
-              <CustomSelect value={toMonthFilter} options={MONTHS} onChange={setToMonthFilter} placeholder="To Month" />
+              <CustomSelect
+                value={toMonthFilter || "To Month"}
+                options={["To Month", ...MONTHS]}
+                onChange={(v) => setToMonthFilter(v === "To Month" ? "" : v)}
+              />
             </div>
           )}
           {toYearField && (
             <div style={{ minWidth: "120px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">{toYearField.label}</span>
-              <CustomSelect value={toYearFilter} options={YEARS} onChange={setToYearFilter} placeholder="To Year" />
+              <CustomSelect
+                value={toYearFilter || "To Year"}
+                options={["To Year", ...YEARS]}
+                onChange={(v) => setToYearFilter(v === "To Year" ? "" : v)}
+              />
             </div>
           )}
           {modeField && (
             <div style={{ minWidth: "180px" }}>
               <span className="block text-xs font-medium text-text-muted mb-1">{modeField.label}</span>
-              <CustomSelect value={modeFilter} options={modeField.options ?? []} onChange={setModeFilter} placeholder={`All ${modeField.label}`} />
+              <CustomSelect
+                value={modeFilter || `All ${modeField.label}`}
+                options={modeField.options ? [`All ${modeField.label}`, ...modeField.options] : []}
+                onChange={(v) => setModeFilter(v === `All ${modeField.label}` ? "" : v)}
+              />
             </div>
           )}
           {hasAtAGlance && (

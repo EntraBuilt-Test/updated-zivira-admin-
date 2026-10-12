@@ -9,6 +9,7 @@ import {
 } from "@/lib/api-client";
 import { useManagers, ManagerPicker, MonthYearRangePicker, monthLabel, th, td } from "./manager-analysis-panels";
 import { withExcel } from "@/components/with-excel";
+import { CustomSelect } from "@/components/custom-select";
 
 const THIS_YEAR = new Date().getFullYear();
 
@@ -232,10 +233,13 @@ function SpecialityCategoryVisitReportInner() {
           <MonthYearRangePicker fromMonth={fromMonth} fromYear={fromYear} toMonth={toMonth} toYear={toYear} onChange={(v) => { setFromMonth(v.fromMonth); setFromYear(v.fromYear); setToMonth(v.toMonth); setToYear(v.toYear); }} />
           <div className="flex flex-col gap-1">
             <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Mode</span>
-            <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={mode} onChange={(e) => setMode(e.target.value as "Specialitywise Visit" | "Categorywise Visit")}>
-              <option>Specialitywise Visit</option>
-              <option>Categorywise Visit</option>
-            </select>
+            <div style={{ minWidth: 200 }}>
+              <CustomSelect
+                value={mode}
+                onChange={(v) => setMode(v as "Specialitywise Visit" | "Categorywise Visit")}
+                options={["Specialitywise Visit", "Categorywise Visit"]}
+              />
+            </div>
           </div>
           <button type="button" onClick={handleView} disabled={!employeeCode || loading} className="h-9 px-5 rounded-lg bg-primary text-on-primary font-label-md text-label-md shadow-sm disabled:opacity-50">{loading ? "Loading..." : "View"}</button>
         </div>

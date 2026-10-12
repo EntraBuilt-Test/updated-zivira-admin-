@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { GO, LABEL, SELECT, ReportModal, ScreenTitle, th, td, tealHead } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type HeatKind, type HeatResult, type HqVisitColor, type HqVisitResult } from "@/lib/api-client";
 
 // Round 42 -- MIS Reports > Heat Analysis: Not At All Visit Drs, Not At All
@@ -55,10 +56,16 @@ function HeatReport({ kind }: { kind: HeatKind }) {
           <FieldForceSelect value={code} onChange={setCode} label="Filed Force Name" clearLabel="---Select Clear---" />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Mode</span>
-            <select className={SELECT} value={months} onChange={(e) => setMonths(e.target.value)}>
-              <option value="">--Select--</option>
-              {MODES.map((n) => <option key={n} value={n}>More than {n} Month</option>)}
-            </select>
+            <div style={{ minWidth: 180 }}>
+              <CustomSelect
+                value={months ? `More than ${months} Month` : "--Select--"}
+                onChange={(v) => {
+                  const found = MODES.find((n) => `More than ${n} Month` === v);
+                  setMonths(found !== undefined ? String(found) : "");
+                }}
+                options={["--Select--", ...MODES.map((n) => `More than ${n} Month`)]}
+              />
+            </div>
           </div>
           <button type="button" className={GO} disabled={loading} onClick={view}>{loading ? "Loading..." : "View"}</button>
         </div>
@@ -66,7 +73,7 @@ function HeatReport({ kind }: { kind: HeatKind }) {
       </div>
       {result && (
         <ReportModal title={cfg.title} fileName={cfg.title.replace(/\s+/g, "_")} onClose={() => setResult(null)}>
-          <h3 className="text-center text-lg font-bold underline">{cfg.resultTitle} for MR &amp; Manager From More than {result.months} Month{result.months > 1 ? "s" : ""}</h3>
+          <h3 className="text-center text-lg font-bold">{cfg.resultTitle} for MR &amp; Manager From More than {result.months} Month{result.months > 1 ? "s" : ""}</h3>
           <p className="text-sm font-bold">Field Force Name : {result.employee.name} - {result.employee.designation} - {result.employee.hq}</p>
           {kind === "drs" && (
             <div className="space-y-1">
@@ -127,10 +134,16 @@ export function NotAtAllVisitHqsReport() {
           <FieldForceSelect value={code} onChange={setCode} label="Filed Force Name" clearLabel="---Select Clear---" />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Mode</span>
-            <select className={SELECT} value={months} onChange={(e) => setMonths(e.target.value)}>
-              <option value="">--Select--</option>
-              {HQ_MODES.map((m) => <option key={m.n} value={m.n}>{m.label}</option>)}
-            </select>
+            <div style={{ minWidth: 180 }}>
+              <CustomSelect
+                value={months ? (HQ_MODES.find((m) => String(m.n) === String(months))?.label ?? "--Select--") : "--Select--"}
+                onChange={(v) => {
+                  const found = HQ_MODES.find((m) => m.label === v);
+                  setMonths(found ? String(found.n) : "");
+                }}
+                options={["--Select--", ...HQ_MODES.map((m) => m.label)]}
+              />
+            </div>
           </div>
           <button type="button" className={GO} disabled={loading || !months} onClick={view}>{loading ? "Loading..." : "View"}</button>
         </div>
@@ -138,7 +151,7 @@ export function NotAtAllVisitHqsReport() {
       </div>
       {result && (
         <ReportModal title="Not At All Visit HQs" fileName="Not_At_All_Visit_HQs" onClose={() => setResult(null)}>
-          <h3 className="text-center text-lg font-bold underline">Managers - Not at all Visited HQs for Last {result.months} Month{result.months > 1 ? "s" : ""}</h3>
+          <h3 className="text-center text-lg font-bold">Managers - Not at all Visited HQs for Last {result.months} Month{result.months > 1 ? "s" : ""}</h3>
           <p className="text-sm font-bold">Field Force Name : {result.employee.name} - {result.employee.designation} - {result.employee.hq}</p>
           <table className="border-collapse text-xs"><tbody>
             <tr>{HQ_LEGEND.map((l) => <td key={l.c} className="border border-black w-10 h-5" style={{ background: HQ_FILL[l.c] }} />)}</tr>

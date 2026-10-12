@@ -570,12 +570,14 @@ function ModeCreationTab() {
             onChange={(e) => setTaskName(e.target.value)}
           />
         </div>
-        <button className="button" type="button" onClick={submit} disabled={saving}>
-          {saving ? "Saving..." : editingId ? "Update" : "Submit"}
-        </button>
-        <button className="button-secondary" type="button" onClick={reset} disabled={saving}>
-          Reset
-        </button>
+        <div className="flex items-center gap-2">
+          <button className="button h-[38px] px-5" type="button" onClick={submit} disabled={saving}>
+            {saving ? "Saving..." : editingId ? "Update" : "Submit"}
+          </button>
+          <button className="button-secondary h-[38px] px-5" type="button" onClick={reset} disabled={saving}>
+            Reset
+          </button>
+        </div>
       </div>
 
       {error && <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{error}</div>}
@@ -601,7 +603,7 @@ function ModeCreationTab() {
                   <td className="px-4 py-3 text-sm text-text-primary">{m.shortName}</td>
                   <td className="px-4 py-3 text-sm text-text-primary">{m.taskName}</td>
                   <td className="px-4 py-3 text-sm">
-                    <button className="button-secondary" type="button" onClick={() => startEdit(m)}>Edit</button>
+                    <button className="button-secondary text-xs px-3 py-1" type="button" onClick={() => startEdit(m)}>Edit</button>
                   </td>
                 </tr>
               ))}

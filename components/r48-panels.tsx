@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { FieldForceSelect, fieldForceLabel, useFieldForceOptions } from "@/components/field-force-select";
 import { GO, LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle, ym } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { apiClient, type DoctorwiseMode, type DoctorwiseResult, type CallFeedbackResult, type FixationResult, type FixationType } from "@/lib/api-client";
 
 // Round 48 -- MIS Reports > Visit Details:
@@ -20,16 +21,25 @@ type MY = { m: number; y: number };
 
 function Err({ msg }: { msg: string }) { return msg ? <p className="text-sm text-status-danger">{msg}</p> : null; }
 function MonthYear({ label, v, onChange }: { label: string; v: MY; onChange: (v: MY) => void }) {
+  const shortMonths = MONTH_NAMES.map((m) => m.slice(0, 3));
   return (
     <div className="flex flex-col gap-1">
       <span className={LABEL}>{label}</span>
       <div className="flex gap-2">
-        <select className={SELECT} value={v.m} onChange={(e) => onChange({ ...v, m: parseInt(e.target.value, 10) })}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}
-        </select>
-        <select className={SELECT} value={v.y} onChange={(e) => onChange({ ...v, y: parseInt(e.target.value, 10) })}>
-          {YEAR_LIST.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 88 }}>
+          <CustomSelect
+            value={shortMonths[v.m - 1] ?? shortMonths[0]}
+            onChange={(val) => onChange({ ...v, m: shortMonths.indexOf(val) + 1 })}
+            options={shortMonths}
+          />
+        </div>
+        <div style={{ minWidth: 92 }}>
+          <CustomSelect
+            value={String(v.y)}
+            onChange={(val) => onChange({ ...v, y: parseInt(val, 10) })}
+            options={YEAR_LIST.map(String)}
+          />
+        </div>
       </div>
     </div>
   );
@@ -106,18 +116,28 @@ export function DoctorwisePeriodicallyReport() {
         <div className="flex flex-wrap items-end gap-4">
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Mode</span>
-            <select className={SELECT} style={{ minWidth: 280 }} value={mode} onChange={(e) => pickMode(e.target.value as DoctorwiseMode | "")}>
-              <option value="">---Select---</option>
-              {MODES.map((m) => <option key={m.key} value={m.key}>{m.label}</option>)}
-            </select>
+            <div style={{ minWidth: 280 }}>
+              <CustomSelect
+                value={MODES.find((m) => m.key === mode)?.label ?? "---Select---"}
+                onChange={(val) => {
+                  const found = MODES.find((m) => m.label === val);
+                  pickMode(found ? found.key : "");
+                }}
+                options={["---Select---", ...MODES.map((m) => m.label)]}
+              />
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <span className={LABEL}>FieldForce Name</span>
             <div className="flex gap-2">
               {!(mode && NO_SCOPE.includes(mode)) && (
-                <select className={SELECT} value={scope} onChange={(e) => setScope(e.target.value as "Team" | "Individual")}>
-                  <option value="Team">Team</option><option value="Individual">Individual</option>
-                </select>
+                <div style={{ minWidth: 120 }}>
+                  <CustomSelect
+                    value={scope}
+                    onChange={(val) => setScope(val as "Team" | "Individual")}
+                    options={["Team", "Individual"]}
+                  />
+                </div>
               )}
               <FieldForceSelect value={code} onChange={setCode} hideLabel clearLabel="---Select Clear---" />
             </div>
@@ -125,10 +145,16 @@ export function DoctorwisePeriodicallyReport() {
           {needsBase && (
             <div className="flex flex-col gap-1">
               <span className={LABEL}>Base Level</span>
-              <select className={SELECT} style={{ minWidth: 240 }} value={base} onChange={(e) => setBase(e.target.value)}>
-                <option value="">---Select---</option>
-                {bases.map((b) => <option key={b.employeeCode} value={b.employeeCode}>{b.name} - {b.designation} - {b.hq}</option>)}
-              </select>
+              <div style={{ minWidth: 240 }}>
+                <CustomSelect
+                  value={bases.find((b) => b.employeeCode === base) ? `${bases.find((b) => b.employeeCode === base)!.name} - ${bases.find((b) => b.employeeCode === base)!.designation} - ${bases.find((b) => b.employeeCode === base)!.hq}` : "---Select---"}
+                  onChange={(val) => {
+                    const found = bases.find((b) => `${b.name} - ${b.designation} - ${b.hq}` === val);
+                    setBase(found ? found.employeeCode : "");
+                  }}
+                  options={["---Select---", ...bases.map((b) => `${b.name} - ${b.designation} - ${b.hq}`)]}
+                />
+              </div>
             </div>
           )}
           <MonthYear label={single ? "Month & Year" : "From Month & Year"} v={from} onChange={setFrom} />
@@ -175,7 +201,7 @@ function DoctorwiseResultView({ result, onClose }: { result: DoctorwiseResult; o
 
   return (
     <ReportModal title={title} fileName="Listed_Doctor_Visit_Periodically" onClose={onClose} textButtons>
-      <h3 className="text-base font-bold underline">{title}</h3>
+      <h3 className="text-base font-bold">{title}</h3>
       {kind !== "daywise-remarks" || true ? <p className="text-sm font-bold">{ffLine(result.employee)}</p> : null}
       {(result as any).baseLevel && <p className="text-sm font-bold">Base Level : {(result as any).baseLevel.name} - {(result as any).baseLevel.designation} - {(result as any).baseLevel.hq}</p>}
       {result.notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}
@@ -297,9 +323,13 @@ export function CallFeedbackwiseReport() {
           <MonthYear label="To Month & Year" v={to} onChange={setTo} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Mode</span>
-            <select className={SELECT} value={mode} onChange={(e) => setMode(e.target.value)}>
-              <option value="">---Select---</option><option value="feedback">Call feedbackwise</option>
-            </select>
+            <div style={{ minWidth: 180 }}>
+              <CustomSelect
+                value={mode === "feedback" ? "Call feedbackwise" : "---Select---"}
+                onChange={(val) => setMode(val === "Call feedbackwise" ? "feedback" : "")}
+                options={["---Select---", "Call feedbackwise"]}
+              />
+            </div>
           </div>
           <button type="button" className={GO} disabled={!code || !mode || loading} onClick={() => void view()}>{loading ? "Loading..." : "View"}</button>
         </div>
@@ -316,7 +346,7 @@ function CallFeedbackView({ result, onClose }: { result: CallFeedbackResult; onC
   const bg = { background: TEAL };
   return (
     <ReportModal title={title} fileName="ListedDr_Call_Feedbackwise" onClose={onClose} textButtons>
-      <h3 className="text-base font-bold underline">{title}</h3>
+      <h3 className="text-base font-bold">{title}</h3>
       <p className="text-sm font-bold">{ffLine(result.employee)}</p>
       {result.notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}
       <table className="border-collapse">
@@ -366,10 +396,13 @@ export function FixationwiseByVisitReport() {
           <MonthYear label="To Month & Year" v={to} onChange={setTo} />
           <div className="flex flex-col gap-1">
             <span className={LABEL}>Type</span>
-            <select className={SELECT} value={type} onChange={(e) => setType(e.target.value as FixationType | "")}>
-              <option value="">---Select---</option>
-              {FX_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={type || "---Select---"}
+                onChange={(val) => setType(val === "---Select---" ? "" : (val as FixationType))}
+                options={["---Select---", ...FX_TYPES]}
+              />
+            </div>
           </div>
           <button type="button" className={GO} disabled={!code || !type || loading} onClick={() => void view()}>{loading ? "Loading..." : "View"}</button>
         </div>
@@ -389,7 +422,7 @@ function FixationView({ result, onClose }: { result: FixationResult; onClose: ()
   ] as [number, string | undefined][];
   return (
     <ReportModal title={title} fileName="Fixationwise_Visit_Details" onClose={onClose}>
-      <h3 className="text-base font-bold underline">{title}</h3>
+      <h3 className="text-base font-bold">{title}</h3>
       <p className="text-sm font-bold">{ffLine(result.employee)}</p>
       {result.notes.map((n, i) => <p key={i} className="text-xs italic text-text-muted">{n}</p>)}
       <div style={{ overflowX: "auto" }}>

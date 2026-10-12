@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { FieldForceSelect } from "@/components/field-force-select";
 import { LABEL, SELECT, MONTH_NAMES, THIS_YEAR, ReportModal, ScreenTitle, ym, link } from "@/components/mis-analysis-panels";
+import { CustomSelect } from "@/components/custom-select";
 import { BackButton, CARD, Err, Note, NOW_M, SELECT_FF, YEARS } from "@/components/r45-panels";
 import { apiClient, type Employee, type JoinLeftResult, type ResignedUsersResult, type TpDeviationResult } from "@/lib/api-client";
 
@@ -32,10 +33,33 @@ function useManagers(): Employee[] {
 }
 function useMonthYear() { const [v, set] = useState({ m: NOW_M, y: THIS_YEAR }); return { m: v.m, y: v.y, key: ym(v.y, v.m), setM: (m: number) => set((p) => ({ ...p, m })), setY: (y: number) => set((p) => ({ ...p, y })) }; }
 function MonthSel({ label, value, onChange }: { label: string; value: number; onChange: (m: number) => void }) {
-  return <div className="flex flex-col gap-1"><span className={LABEL}>{label}</span><select className={SELECT} value={value} onChange={(e) => onChange(parseInt(e.target.value, 10))}>{MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m.slice(0, 3)}</option>)}</select></div>;
+  const shortMonths = MONTH_NAMES.map((m) => m.slice(0, 3));
+  return (
+    <div className="flex flex-col gap-1">
+      <span className={LABEL}>{label}</span>
+      <div style={{ minWidth: 88 }}>
+        <CustomSelect
+          value={shortMonths[value - 1] ?? shortMonths[0]}
+          onChange={(v) => onChange(shortMonths.indexOf(v) + 1)}
+          options={shortMonths}
+        />
+      </div>
+    </div>
+  );
 }
 function YearSel({ label, value, onChange }: { label: string; value: number; onChange: (y: number) => void }) {
-  return <div className="flex flex-col gap-1"><span className={LABEL}>{label}</span><select className={SELECT} value={value} onChange={(e) => onChange(parseInt(e.target.value, 10))}>{YEARS.map((y) => <option key={y} value={y}>{y}</option>)}</select></div>;
+  return (
+    <div className="flex flex-col gap-1">
+      <span className={LABEL}>{label}</span>
+      <div style={{ minWidth: 92 }}>
+        <CustomSelect
+          value={String(value)}
+          onChange={(v) => onChange(parseInt(v, 10))}
+          options={YEARS.map(String)}
+        />
+      </div>
+    </div>
+  );
 }
 function TitleBar({ children, back = false }: { children: ReactNode; back?: boolean }) {
   return <div className="flex items-start justify-between"><ScreenTitle>{children}</ScreenTitle>{back && <BackButton />}</div>;
@@ -254,9 +278,16 @@ export function ResignedUserStatusReport() {
       <RangeForm title="Resigned User Status" range={range} loading={loading} onView={() => void view()} error={error} />
       {data && (
         <ReportModal title={title} fileName={`Resigned_Users_${data.from}_${data.to}`} onClose={() => setData(null)} textButtons>
-          <h3 className="text-center text-lg font-bold underline" style={{ color: "#b0124d" }}>{title}</h3>
+          <h3 className="text-center text-lg font-bold text-black">{title}</h3>
           <div className="flex items-center gap-2 text-sm"><span className="font-semibold">HQ Wise Filter</span>
-            <select className={SELECT} value={hq} onChange={(e) => setHq(e.target.value)}><option value="All">All</option>{hqs.map((h) => <option key={h} value={h}>{h}</option>)}</select></div>
+            <div style={{ minWidth: 160 }}>
+              <CustomSelect
+                value={hq}
+                onChange={setHq}
+                options={["All", ...hqs]}
+              />
+            </div>
+          </div>
           <table className="w-full border-collapse">
             <thead><tr>
               <th className={TH_TEAL}>S.No</th><th className={TH_TEAL}>Employee Code</th>{sortHead("name", "FieldForce Name")}{sortHead("designation", "Designation")}{sortHead("hq", "HQ")}
@@ -305,7 +336,7 @@ export function JoinLeftDetailsReport() {
       <RangeForm title="Join/Left Details" range={range} loading={loading} onView={() => void view()} error={error} />
       {data && (
         <ReportModal title={`Join / Left Details ${span}`} fileName={`Join_Left_${data.from}_${data.to}`} onClose={() => setData(null)} textButtons>
-          <h3 className="font-bold underline text-black text-lg">New Join Details For {span}</h3>
+          <h3 className="font-bold text-black text-lg">New Join Details For {span}</h3>
           <table className="w-full border-collapse">
             <Head cols={["S.No", "Employee Code", "FieldForceName", "HQ", "Designation", "Date of Join", "DCR StartDate", "Created ID", "Division"]} />
             <tbody>
@@ -315,7 +346,7 @@ export function JoinLeftDetailsReport() {
               {data.joined.length === 0 && <tr><td className={TD_ROW} colSpan={9}>No new joinees in this period.</td></tr>}
             </tbody>
           </table>
-          <h3 className="font-bold underline text-black text-lg pt-4">Left Out Details For {span}</h3>
+          <h3 className="font-bold text-black text-lg pt-4">Left Out Details For {span}</h3>
           <table className="w-full border-collapse">
             <Head cols={["S.No", "Employee Code", "FieldForceName", "HQ", "Designation", "Date of Left", "DCR Last Date", "Deactive Date", "Division"]} />
             <tbody>
@@ -361,7 +392,7 @@ export function TpDeviationReport() {
       </div>
       {data && (
         <ReportModal title={title} fileName={`TP_Deviation_${data.month}`} onClose={() => setData(null)} textButtons>
-          <h3 className="text-center text-lg font-bold underline" style={{ color: "#6b21a8" }}>{title}</h3>
+          <h3 className="text-center text-lg font-bold text-black">{title}</h3>
           <table className="w-full border-collapse">
             <thead><tr><th className={TH_TEAL}>S.No</th><th className={TH_TEAL}>Emp.Code</th><th className={TH_TEAL}>FieldForce Name</th><th className={TH_TEAL}>Designation</th><th className={TH_TEAL}>HQ</th><th className={TH_TEAL}>Days Planned</th><th className={TH_TEAL}>Deviation Days</th></tr></thead>
             <tbody>

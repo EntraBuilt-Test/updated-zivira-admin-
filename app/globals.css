@@ -22,6 +22,10 @@
     --ink: var(--text-primary);
     --muted: var(--text-muted);
     --line: var(--surface-subtle);
+    --brand: #EA580C;
+    --brand-primary: #EA580C;
+    --brand-hover: #C2410C;
+    --brand-soft: rgba(234, 88, 12, 0.08);
   }
 
   .dark {
@@ -37,6 +41,10 @@
     --status-danger-bg: #7f1d1d;
     --status-warning-bg: #78350f;
     --status-info-bg: #1e3a8a;
+    --brand: #FB923C;
+    --brand-primary: #FB923C;
+    --brand-hover: #F97316;
+    --brand-soft: rgba(251, 146, 60, 0.15);
   }
 
   html, body { margin: 0; padding: 0; }
@@ -81,7 +89,7 @@
     @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors bg-brand-primary text-white shadow-sm border border-brand-primary hover:bg-brand-primary/90 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-4;
   }
   .button-secondary {
-    @apply border border-border-subtle bg-surface-subtle text-text-primary shadow-none hover:bg-border-subtle;
+    @apply px-4 py-2 rounded-lg font-medium text-sm transition-colors border border-border-subtle bg-surface-card hover:bg-surface-subtle text-text-primary shadow-sm inline-flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   /* BUG FIX (item 9 — Leave Status "Click Here to View" popup, and every
@@ -217,5 +225,20 @@
 /* Round 39 item 8 -- native selects open instantly: no colour transition,
    and custom option lists get cheap CSS hover instead of JS style mutation. */
 select { transition: none !important; }
-.cs-option:hover { background: rgba(249, 115, 22, 0.1); }
-.cs-option-selected, .cs-option-selected:hover { background: var(--brand); color: white; }
+.cs-option {
+  color: var(--text-primary);
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cs-option:hover {
+  background: rgba(249, 115, 22, 0.1) !important;
+  color: var(--text-primary) !important;
+}
+.cs-option-selected, .cs-option-selected:hover {
+  background: var(--brand, #ea580c) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}

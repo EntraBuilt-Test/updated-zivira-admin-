@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { FieldForceSelect } from "@/components/field-force-select";
+import { CustomSelect } from "@/components/custom-select";
 import { withExcel } from "@/components/with-excel";
 import {
   apiClient,
@@ -51,15 +52,23 @@ function MonthYearPicker({
     <>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Month</span>
-        <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={month} onChange={(e) => onMonth(parseInt(e.target.value, 10))}>
-          {MONTH_NAMES.map((m, i) => <option key={m} value={i + 1}>{m}</option>)}
-        </select>
+        <div style={{ minWidth: 140 }}>
+          <CustomSelect
+            value={MONTH_NAMES[month - 1]}
+            options={MONTH_NAMES}
+            onChange={(m) => onMonth(MONTH_NAMES.indexOf(m) + 1)}
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-1">
         <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Year</span>
-        <select className="h-9 px-2.5 rounded-lg border border-border-subtle bg-surface-canvas text-text-primary font-body-sm text-body-sm" value={year} onChange={(e) => onYear(parseInt(e.target.value, 10))}>
-          {YEARS.map((y) => <option key={y} value={y}>{y}</option>)}
-        </select>
+        <div style={{ minWidth: 100 }}>
+          <CustomSelect
+            value={String(year)}
+            options={YEARS.map(String)}
+            onChange={(y) => onYear(parseInt(y, 10))}
+          />
+        </div>
       </div>
     </>
   );
@@ -119,7 +128,7 @@ function TpConsolidatedViewReportInner() {
           {!error && result && (
             <div className="space-y-4">
               <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-                <h2 className="font-headline-sm text-headline-sm text-text-primary underline">
+                <h2 className="font-headline-sm text-headline-sm text-text-primary">
                   Tour Plan - Consolidated View for - ({monthLabel(result.month)})
                 </h2>
                 <p className="font-body-md text-body-md text-status-danger font-semibold">Field Force Name : {result.fieldForceName}</p>
@@ -212,7 +221,7 @@ function TpViewReportInner() {
           {!error && result && (
             <div className="space-y-5">
               <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-                <h2 className="font-headline-sm text-headline-sm text-text-primary underline">
+                <h2 className="font-headline-sm text-headline-sm text-text-primary">
                   TP View For {result.employee.name} - {result.employee.designation} - {result.employee.hq} for the Month Of - {monthLabel(`${year}-${String(month).padStart(2,"0")}`)}
                 </h2>
               </div>
@@ -328,7 +337,7 @@ function TpStatusReportInner() {
 
       {viewBy === "state" && viewed && states && (
         <div className="bg-surface-card rounded-xl shadow-sm p-5 space-y-4">
-          <h2 className="font-headline-sm text-headline-sm text-text-primary underline text-center">TP - Status State-wise for the Month of {monthLabel(`${year}-${String(month).padStart(2,"0")}`)}</h2>
+          <h2 className="font-headline-sm text-headline-sm text-text-primary text-center">TP - Status State-wise for the Month of {monthLabel(`${year}-${String(month).padStart(2,"0")}`)}</h2>
           {states.length === 0 && <p className="text-text-muted text-sm text-center">No field force found.</p>}
           {states.map((g) => (
             <div key={g.state} className="space-y-1">
@@ -358,7 +367,7 @@ function TpStatusReportInner() {
           {!error && rows && rows.length > 0 && (
             <div className="space-y-4">
               <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-                <h2 className="font-headline-sm text-headline-sm text-text-primary underline">TP - Status for the Month of {monthLabel(`${year}-${String(month).padStart(2,"0")}`)}</h2>
+                <h2 className="font-headline-sm text-headline-sm text-text-primary">TP - Status for the Month of {monthLabel(`${year}-${String(month).padStart(2,"0")}`)}</h2>
                 <p className="font-body-md text-body-md text-status-danger font-semibold">Field Force Name : {selectedName}   Month : {MONTH_NAMES[month-1]}   Year : {year}</p>
               </div>
               <div className="overflow-x-auto rounded-lg border border-border-subtle">
@@ -461,7 +470,7 @@ function TpDatewiseReportInner() {
           {!error && result && (
             <div className="space-y-4">
               <div className="text-center space-y-1 border-b border-border-subtle pb-4">
-                <h2 className="font-headline-sm text-headline-sm text-text-primary underline">Tour Plan Datewise of {monthLabel(result.month)}</h2>
+                <h2 className="font-headline-sm text-headline-sm text-text-primary">Tour Plan Datewise of {monthLabel(result.month)}</h2>
                 <p className="font-body-md text-body-md text-status-danger font-semibold">Filed Force Name : {result.fieldForceName}</p>
               </div>
               <div className="overflow-x-auto rounded-lg border border-border-subtle">

@@ -7,7 +7,7 @@ import { apiClient, type DoctorsAddDeactDrillResult, type DoctorsAddDeactResult,
 import { CARD, TEAL, TH, TD, ffLine, prev, Err, Notes, RangeForm } from "@/components/r51-panels";
 
 // Round 54 -- MIS Reports: TP - Deviation For Managers, TP - Deviation At A Glance, Doctors - Addition/Deactivation Status.
-const titleCls = "text-lg font-bold underline text-center";
+const titleCls = "text-lg font-bold text-center";
 const bg = { background: TEAL, color: "#fff" };
 const link = "underline font-bold";
 

@@ -63,7 +63,7 @@ export function UploadFrame({ title, back, children }: { title: string; back?: b
       <div style={{ maxWidth: 1100, margin: "0 auto", display: "flex", justifyContent: "flex-end", minHeight: back ? 34 : 0 }}>
         {back && <button type="button" style={bPrimary} onClick={() => router.back()}>Back</button>}
       </div>
-      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 19, color: PURPLE, textDecoration: "underline", margin: "4px 0 18px" }}>{title}</div>
+      <div style={{ textAlign: "center", fontFamily: FONT, fontWeight: "bold", fontSize: 19, color: PURPLE, margin: "4px 0 18px" }}>{title}</div>
       {children}
     </div>
   );
