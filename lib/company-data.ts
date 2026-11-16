@@ -5,6 +5,7 @@ import {
   Cake,
   CalendarDays,
   ClipboardList,
+  FileSpreadsheet,
   FileBarChart,
   Gauge,
   MapPin,
@@ -63,6 +64,13 @@ export const companyNav: NavGroup[] = [
       { title: "BI Reports", href: "/admin/bi-reports", icon: ClipboardList },
       { title: "Alerts", href: "/admin/alerts", icon: AlertTriangle },
       { title: "Executive Dashboard", href: "/admin/executive", icon: ClipboardList },
+    ]
+  },
+  {
+    // Phase 2 ERP (ENT-ZVR-2026-P2)
+    title: "ERP",
+    items: [
+      { title: "Secondary Sales", href: "/admin/erp", icon: FileSpreadsheet },
     ]
   }
 ];

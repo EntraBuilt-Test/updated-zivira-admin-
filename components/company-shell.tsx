@@ -15,6 +15,7 @@ const searchPages = [
   { title: "MIS Reports", category: "Platform", href: "/admin/mis-reports" },
   { title: "Settings Options", category: "Platform", href: "/admin/options" },
   { title: "Doctor Celebrations", category: "Platform", href: "/admin/doctor-celebrations" },
+  { title: "Secondary Sales (ERP)", category: "ERP", href: "/admin/erp" },
   { title: "Sub Division Master", category: "Subdivision", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/subdivision/entry" },
   { title: "View - Productwise", category: "Subdivision", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/subdivision/view-productwise" },
   { title: "View - Field Forcewise", category: "Subdivision", href: "/admin/workspace/division-dashboard/division-navigation-tabs/division-master/subdivision/view-field-forcewise" },
