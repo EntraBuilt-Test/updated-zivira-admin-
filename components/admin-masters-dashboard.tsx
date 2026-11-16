@@ -138,10 +138,6 @@ export function AdminMastersDashboard() {
             <span className="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-text-muted text-[17px]">search</span>
             <input className="w-full h-[38px] pl-8 pr-3 rounded-lg bg-surface-canvas text-text-primary font-body-sm placeholder:text-text-muted border border-transparent focus:outline-none focus:border-border-strong focus:bg-surface-card shadow-sm transition-colors" placeholder="Search master records, SKUs, doctors..." type="text"/>
           </div>
-          <button className="h-[38px] px-3.5 rounded-lg bg-surface-subtle hover:bg-border-subtle text-text-primary font-label-md text-label-md flex items-center gap-1.5 transition-colors shadow-sm" type="button">
-            <span className="material-symbols-outlined text-[18px] text-text-secondary">download</span>
-            <span className="">Bulk Export Master Data</span>
-          </button>
           <div className="relative" ref={dropdownRef}>
             <button 
               className="h-[38px] px-4 rounded-lg bg-primary hover:bg-brand-primary-hover text-on-primary font-label-md text-label-md flex items-center gap-1.5 shadow-sm transition-all active:scale-95" 

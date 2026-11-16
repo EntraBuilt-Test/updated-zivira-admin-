@@ -200,9 +200,6 @@ export function DoctorCelebrations() {
               </div>
             )}
           </div>
-          <button className="button button-secondary" type="button">
-            <Download size={14} /> Export
-          </button>
         </div>
       </div>
       {/* Stats */}

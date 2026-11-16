@@ -827,9 +827,9 @@ export function AdminHomeDashboard() {
                     </td>
                     <td className="px-4 text-right py-3 text-sm text-text-primary whitespace-nowrap">
                       {isDelayed ? (
-                        <button className="px-2.5 py-1 rounded bg-status-danger text-on-primary font-label-sm text-label-sm hover:bg-error transition-colors shadow-sm">
-                          Ping MR
-                        </button>
+                        <span className="px-2.5 py-1 rounded bg-status-danger text-on-primary font-label-sm text-label-sm shadow-sm">
+                          DCR pending
+                        </span>
                       ) : (
                         <button 
                           onClick={() => viewEmployee(row.employeeCode)}
@@ -848,10 +848,6 @@ export function AdminHomeDashboard() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1 font-body-sm text-body-sm text-text-secondary">
           <div>Showing <strong className="text-text-primary">{displayRows.length}</strong> of <strong className="text-text-primary">{fieldForceRows.length}</strong> Medical Representatives</div>
           <div className="flex items-center gap-1.5">
-            <button className="px-2.5 py-1 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-muted font-label-md text-label-md disabled:opacity-40" disabled>Prev</button>
-            <button className="w-7 h-7 rounded border border-primary bg-primary text-on-primary font-label-md text-label-md font-semibold">1</button>
-            <button className="w-7 h-7 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md">2</button>
-            <button className="px-2.5 py-1 rounded border border-border-subtle bg-surface-canvas hover:bg-surface-subtle text-text-primary font-label-md text-label-md">Next</button>
           </div>
         </div>
       </section>
@@ -928,9 +924,6 @@ export function AdminHomeDashboard() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 rounded bg-status-danger-bg text-status-danger font-label-sm text-label-sm font-bold">Delayed</span>
-                  <button className="w-7 h-7 rounded border border-border-subtle bg-surface-card hover:bg-brand-primary-subtle hover:text-primary flex items-center justify-center text-text-muted shadow-sm transition-colors" title="Send WhatsApp/SMS Reminder">
-                    <span className="material-symbols-outlined text-[16px]">notifications_active</span>
-                  </button>
                 </div>
               </div>
             )) : (
@@ -944,9 +937,6 @@ export function AdminHomeDashboard() {
               <span className="material-symbols-outlined text-[16px]">verified</span>
               {fieldForceRows.length ? Math.round(((fieldForceRows.length - delayedRows.length) / fieldForceRows.length) * 100 * 10) / 10 : 100}% Compliance Today
             </span>
-            <button className="text-primary hover:text-brand-primary-hover font-label-md text-label-md font-semibold transition-colors">
-              Broadcast Batch Reminder
-            </button>
           </div>
         </div>
       </section>

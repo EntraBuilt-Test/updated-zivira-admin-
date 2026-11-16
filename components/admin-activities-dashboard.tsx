@@ -532,7 +532,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="material-symbols-outlined text-[14px]">{summary.callsDeltaPct >= 0 ? "arrow_upward" : "arrow_downward"}</span> {summary.callsDeltaPct >= 0 ? "+" : ""}{summary.callsDeltaPct}% vs yesterday
           </span>
 ) : (
-<span className="text-text-muted">{summaryError ? "Live data unavailable" : "Loading…"}</span>
+<span className="text-text-muted">{summary ? "No calls yesterday to compare" : summaryError ? "Live data unavailable" : "Loading…"}</span>
 )}
 <span className="text-text-secondary">{summary ? `${summary.totalCallsLoggedYesterday.toLocaleString()} yesterday` : ""}</span>
 </div>

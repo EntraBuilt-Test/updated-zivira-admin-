@@ -961,12 +961,12 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   if (pathStr.endsWith("mis-reports/visit-details/manager-visit-vacant-hqs")) return <VacantManagerVisitReport />;
   if (pathStr.endsWith("mis-reports/visit-details/chemist-unlisted-doctors")) return <ChemistUnlistedReport />;
   if (pathStr.endsWith("mis-reports/visit-details/territorywise-listed-doctor-visit")) return <TerritoryWiseReport />;
-  if (pathStr.endsWith("mis-reports/product-exposure/priority-wise")) return <ProductPriorityWiseReport />;
+  if (pathStr.endsWith("/product-exposure/priority-wise")) return <ProductPriorityWiseReport />;
   if (pathStr.endsWith("mis-reports/sample-input/sample-issued-fieldforce-wise")) return <SampleDetailsReport />;
-  if (pathStr.endsWith("mis-reports/product-exposure/speciality-category-wise")) return <ProductExposureSpecatReport />;
-  if (pathStr.endsWith("mis-reports/product-exposure/analysis")) return <ProductExposureReport />;
-  if (pathStr.endsWith("mis-reports/product-exposure/listeddr-productwise-visit")) return <ListedDrProductVisitReport />;
-  if (pathStr.endsWith("mis-reports/product-exposure/analysis-unlisted-doctor")) return <ProductExposureUnlistedReport />;
+  if (pathStr.endsWith("/product-exposure/speciality-category-wise")) return <ProductExposureSpecatReport />;
+  if (pathStr.endsWith("/product-exposure/analysis")) return <ProductExposureReport />;
+  if (pathStr.endsWith("/product-exposure/listeddr-productwise-visit")) return <ListedDrProductVisitReport />;
+  if (pathStr.endsWith("/product-exposure/analysis-unlisted-doctor")) return <ProductExposureUnlistedReport />;
   if (pathStr.endsWith("mis-reports/visit-details/based-on-modewise")) return <ModeWiseVisitReport />;
   if (pathStr.endsWith("mis-reports/visit-details/fixationwise-by-visit")) return <FixationwiseByVisitReport />;
   if (pathStr.endsWith("mis-reports/pob-rx/listed-dr-chemist-product-wise")) {

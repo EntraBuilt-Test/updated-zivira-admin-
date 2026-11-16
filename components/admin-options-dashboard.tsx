@@ -37,21 +37,6 @@ export function AdminOptionsDashboard({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3 shrink-0">
-          <button
-            className="px-3.5 py-2 rounded-lg border border-border-subtle bg-surface-card text-xs font-semibold text-text-secondary hover:bg-surface-subtle hover:text-text-primary flex items-center gap-2 shadow-sm transition-all"
-            type="button"
-          >
-            <span className="material-symbols-outlined text-[18px]">
-              download
-            </span>
-            <span className="">Export Options Matrix</span>
-          </button>
-          <button className="button button-secondary" type="button">
-            <span className="material-symbols-outlined text-[18px]">
-              add_circle
-            </span>
-            <span className="">Quick Action / Config</span>
-          </button>
         </div>
       </div>
       {/* QA-19: removed fixed KPI cards (18 Modules, 100% Operational, 0 Violations...). */}
@@ -154,14 +139,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -207,14 +184,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -259,14 +228,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -312,14 +273,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -364,14 +317,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -416,14 +361,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -468,14 +405,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -521,14 +450,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -573,14 +494,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -625,14 +538,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -677,14 +582,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -730,14 +627,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -782,14 +671,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -835,14 +716,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -887,14 +760,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -940,14 +805,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -993,14 +850,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
@@ -1046,14 +895,6 @@ export function AdminOptionsDashboard({
                   arrow_forward
                 </span>
               </span>
-              <button
-                className="text-text-muted hover:text-text-secondary p-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[16px]">
-                  more_vert
-                </span>
-              </button>
             </div>
           </div>
         </Link>
