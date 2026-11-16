@@ -159,7 +159,7 @@ export function AdminActivityReportsDashboard({ node, path }: { node: ZiviraTree
               Activity Reports
             </h1>
             <p className="mt-1 text-xs text-slate-500 max-w-3xl leading-relaxed">
-              Mirrors the legacy <code className="text-[11px] font-mono bg-slate-100 text-slate-700 px-1 py-0.5 rounded border border-slate-200">sanpharma.info</code> Activity Reports menu structure: Territory, Survey, TP, DCR and Customized Report.
+              Activity Reports: Territory, Survey, TP, DCR and Customized Report.
             </p>
           </div>
         </div>

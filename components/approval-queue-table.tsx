@@ -345,7 +345,7 @@ export function ApprovalQueueTable({ masterKey }: { masterKey: string }) {
           <div>
             <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Approvals</p>
             <h2 className="text-2xl font-bold text-text-primary">{schema.title}</h2>
-            <p className="text-sm text-text-muted mt-1">Pending requests awaiting HQ approval — click to approve or reject, exactly like sanpharma.info.</p>
+            <p className="text-sm text-text-muted mt-1">Pending requests awaiting HQ approval — click to approve or reject.</p>
           </div>
           <button className="bg-brand-primary text-white hover:bg-brand-primary/90 px-4 py-2 rounded-lg font-medium text-sm transition-colors" onClick={openAddForm} type="button">
             Add Request

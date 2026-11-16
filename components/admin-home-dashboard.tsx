@@ -46,10 +46,6 @@ const yearOptions = Array.from({ length: currentYear - 2016 + 1 }, (_, i) => Str
 type SelectOption = { label: string; value: string };
 
 // ─── Small helpers ────────────────────────────────────────────────────────────
-function valueFromCode(code: string, offset: number, min: number, max: number) {
-  const total = [...code].reduce((sum, char) => sum + char.charCodeAt(0), offset);
-  return min + (total % (max - min + 1));
-}
 function formatTime(isoString: string | null): string {
   if (!isoString) return "--";
   const d = new Date(isoString);
@@ -121,7 +117,7 @@ function WeeklyTrend({ rows, month, year }: { rows: Array<{ label: string; value
   );
 }
 
-function AttendanceSplit({ value }: { value: number }) {
+function AttendanceSplit({ value, total }: { value: number; total: number }) {
   const leave = 100 - value;
   // Circumference of r=38 is 238.76
   const c = 238.76;
@@ -147,14 +143,14 @@ function AttendanceSplit({ value }: { value: number }) {
             <span className="w-3 h-3 rounded-full bg-status-success"></span>
             <span className="font-body-sm text-body-sm text-text-secondary">Present (Active)</span>
           </div>
-          <span className="font-label-md text-label-md text-text-primary font-semibold">{Math.round((value / 100) * 194)} Reps</span>
+          <span className="font-label-md text-label-md text-text-primary font-semibold">{Math.round((value / 100) * total)} Reps</span>
         </div>
         <div className="flex items-center justify-between p-2 rounded-lg bg-surface-canvas">
           <div className="flex items-center gap-2">
             <span className="w-3 h-3 rounded-full bg-status-warning"></span>
-            <span className="font-body-sm text-body-sm text-text-secondary">On Leave / Rest</span>
+            <span className="font-body-sm text-body-sm text-text-secondary">Not checked in / Leave</span>
           </div>
-          <span className="font-label-md text-label-md text-text-primary font-semibold">{Math.round((leave / 100) * 194)} Reps</span>
+          <span className="font-label-md text-label-md text-text-primary font-semibold">{total - Math.round((value / 100) * total)} Reps</span>
         </div>
       </div>
     </>
@@ -271,6 +267,9 @@ export function AdminHomeDashboard() {
   const [fieldForceRows, setFieldForceRows] = useState<FieldForceRow[]>([]);
   const [notices, setNotices] = useState<Notice[]>([]);
   const [activity, setActivity] = useState<ActivityItem[]>([]);
+  // QA-16 (Nov 2026): real figures for the KPI cards.
+  const [allDcrs, setAllDcrs] = useState<Array<{ employeeCode: string; visitDate?: string; createdAt?: string; doctorId?: unknown; jointWork?: { accompanyingManager?: string } | null }>>([]);
+  const [doctorTotal, setDoctorTotal] = useState(0);
   // Item 12 (post-launch robustness round) -- Flash News/Quote of the Week
   // used to be admin-only content blobs with no delivery anywhere,
   // including back on the admin's own home screen. Real fetch of whatever
@@ -332,6 +331,11 @@ export function AdminHomeDashboard() {
 
       // 3. Activity feed
       const dcrData = await apiClient.dcrs();
+      setAllDcrs(dcrData.data as unknown as typeof allDcrs);
+      try {
+        const docRes = await fetch(`${getApiBaseUrl()}/company/doctors?limit=1`, { headers: { Authorization: `Bearer ${getToken() ?? ""}` } });
+        if (docRes.ok) { const dp = await docRes.json() as { total?: number }; setDoctorTotal(dp.total ?? 0); }
+      } catch { /* KPI only */ }
       const recent = dcrData.data.slice(0, 4);
       const tones: ActivityItem["tone"][] = ["success", "info", "primary", "warning"];
       const icons = ["assignment_turned_in", "location_on", "inventory", "schedule"];
@@ -358,34 +362,31 @@ export function AdminHomeDashboard() {
     void loadData();
   }, [loadData]);
   
-  // Chart seed
-  const chartSeed = employeeCode === "admin" ? "admin" : employeeCode;
-  const dcrTrend = useMemo(() => [
-    { label: "W1", value: 72 }, { label: "W2", value: 78 }, { label: "W3", value: 85 },
-    { label: "W4", value: 81 }, { label: "W5", value: 88 }, { label: "W6", value: 91 }
-  ], []);
-  
-  const fieldWorkDays = useMemo(() => [
-    { label: "ABM", value: valueFromCode(chartSeed, 1, 18, 25) },
-    { label: "BE",  value: valueFromCode(chartSeed, 2, 19, 26) }
-  ], [chartSeed]);
-  const callAverage = useMemo(() => [
-    { label: "ABM", value: valueFromCode(chartSeed, 7, 5, 10) }
-  ], [chartSeed]);
-  const callAdherence = useMemo(() => [
-    { label: "CORE",   value: valueFromCode(chartSeed, 12, 48, 82) }
-  ], [chartSeed]);
-  const productDetailed = useMemo(() => ["BEP","BRI","DEN"].map((label, i) => ({ label, value: valueFromCode(chartSeed, i + 20, 500, 3200) })), [chartSeed]);
-  const visitCalls = useMemo(() => [
-    { label: "1 Visit",  value: valueFromCode(chartSeed, 30, 18, 42) }
-  ], [chartSeed]);
-  
-  const fieldWorkTotal   = fieldWorkDays[0]?.value ?? 0;
-  const callAverageValue = (callAverage.reduce((s, r) => s + r.value, 0) / Math.max(callAverage.length, 1)).toFixed(1);
-  const adherenceValue   = callAdherence[0]?.value ?? 0;
-  const detailedDoctors  = productDetailed.reduce((s, r) => s + r.value, 0);
-  const totalVisits      = visitCalls.reduce((s, r) => s + r.value, 0) * 24;
-  
+  // QA-16 (Nov 2026): every KPI below is worked out from real DCRs for the
+  // selected month (previously generated by valueFromCode()).
+  const monthIdx = months.indexOf(month);
+  const monthDcrs = useMemo(() => allDcrs.filter((d) => {
+    const v = d.visitDate ?? d.createdAt;
+    if (!v) return false;
+    const dt = new Date(v);
+    return dt.getMonth() === monthIdx && String(dt.getFullYear()) === year;
+  }), [allDcrs, monthIdx, year]);
+  const docKey = (d: { doctorId?: unknown }) => (d.doctorId && typeof d.doctorId === "object" ? String((d.doctorId as { id?: string; _id?: string }).id ?? (d.doctorId as { _id?: string })._id ?? "") : String(d.doctorId ?? ""));
+  const repDays = new Set(monthDcrs.map((d) => `${d.employeeCode}|${String(d.visitDate ?? d.createdAt).slice(0, 10)}`));
+  const fieldWorkTotal   = new Set(monthDcrs.map((d) => String(d.visitDate ?? d.createdAt).slice(0, 10))).size;
+  const callAverageValue = (repDays.size ? monthDcrs.length / repDays.size : 0).toFixed(1);
+  const detailedDoctors  = new Set(monthDcrs.map(docKey).filter(Boolean)).size;
+  const adherenceValue   = doctorTotal ? Math.round((detailedDoctors / doctorTotal) * 100) : 0;
+  const totalVisits      = monthDcrs.filter((d) => d.jointWork?.accompanyingManager).length;
+  const activeReps = Math.max(fieldForceRows.length, 1);
+  const dcrTrend = useMemo(() => [1, 2, 3, 4, 5].map((w) => {
+    const reps = new Set(monthDcrs.filter((d) => Math.min(5, Math.ceil(new Date(d.visitDate ?? d.createdAt ?? "").getDate() / 7)) === w).map((d) => d.employeeCode));
+    return { label: `W${w}`, value: Math.round((reps.size / activeReps) * 100) };
+  }), [monthDcrs, activeReps]);
+  const trendPeak = Math.max(...dcrTrend.map((r) => r.value), 0);
+  const trendAvg = (dcrTrend.reduce((a, r) => a + r.value, 0) / dcrTrend.length).toFixed(1);
+  const presentPct = fieldForceRows.length ? Math.round((fieldForceRows.filter((r) => r.attendanceStatus && r.attendanceStatus !== "ABSENT").length / fieldForceRows.length) * 100) : 0;
+
   // Delayed DCRs
   const delayedRows = fieldForceRows.filter((r) => r.dcrStatus === "NOT_SUBMITTED");
   
@@ -531,11 +532,11 @@ export function AdminHomeDashboard() {
           </div>
           <div className="mt-4">
             <div className="w-full bg-surface-subtle rounded-full h-1.5 overflow-hidden">
-              <div className="bg-primary h-1.5 rounded-full transition-all duration-700" style={{ width: "82%" }}></div>
+              <div className="bg-primary h-1.5 rounded-full transition-all duration-700" style={{ width: `${Math.min(100, Math.round((fieldWorkTotal / 26) * 100))}%` }}></div>
             </div>
             <div className="flex items-center justify-between mt-2 font-body-sm text-body-sm text-text-muted">
               <span>From field force data</span>
-              <span className="font-label-sm text-label-sm text-text-secondary font-medium">82% Month</span>
+              <span className="font-label-sm text-label-sm text-text-secondary font-medium">{Math.min(100, Math.round((fieldWorkTotal / 26) * 100))}% of 26 days</span>
             </div>
           </div>
         </div>
@@ -546,7 +547,7 @@ export function AdminHomeDashboard() {
               <span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Call Average</span>
               <div className="flex items-baseline gap-2 mt-1">
                 <span className="font-metric-value text-metric-value text-text-primary">{callAverageValue}</span>
-                <span className="font-label-sm text-label-sm text-status-warning bg-status-warning-bg px-1.5 py-0.5 rounded font-semibold">-2.0 delta</span>
+                
               </div>
             </div>
             <div className="w-9 h-9 rounded-lg bg-status-warning-bg text-status-warning flex items-center justify-center flex-shrink-0">
@@ -555,11 +556,11 @@ export function AdminHomeDashboard() {
           </div>
           <div className="mt-4">
             <div className="w-full bg-surface-subtle rounded-full h-1.5 overflow-hidden">
-              <div className="bg-status-warning h-1.5 rounded-full transition-all duration-700" style={{ width: "77%" }}></div>
+              <div className="bg-status-warning h-1.5 rounded-full transition-all duration-700" style={{ width: `${Math.min(100, Math.round((Number(callAverageValue) / 9) * 100))}%` }}></div>
             </div>
             <div className="flex items-center justify-between mt-2 font-body-sm text-body-sm">
               <span className="text-text-muted">Target: 9.0 calls/day</span>
-              <span className="font-label-sm text-label-sm text-status-warning font-medium">77% reached</span>
+              <span className="font-label-sm text-label-sm text-status-warning font-medium">{Math.min(100, Math.round((Number(callAverageValue) / 9) * 100))}% reached</span>
             </div>
           </div>
         </div>
@@ -583,7 +584,7 @@ export function AdminHomeDashboard() {
             </div>
             <div className="flex items-center justify-between mt-2 font-body-sm text-body-sm">
               <span className="text-text-muted">Below 80% benchmark</span>
-              <span className="font-label-sm text-label-sm text-status-danger font-medium">-24% deficit</span>
+              <span className="font-label-sm text-label-sm text-status-danger font-medium">{adherenceValue - 80}% vs benchmark</span>
             </div>
           </div>
         </div>
@@ -602,12 +603,12 @@ export function AdminHomeDashboard() {
           </div>
           <div className="mt-4">
             <div className="w-full bg-surface-subtle rounded-full h-1.5 overflow-hidden">
-              <div className="bg-status-info h-1.5 rounded-full transition-all duration-700" style={{ width: "92%" }}></div>
+              <div className="bg-status-info h-1.5 rounded-full transition-all duration-700" style={{ width: `${adherenceValue}%` }}></div>
             </div>
             <div className="flex items-center justify-between mt-2 font-body-sm text-body-sm">
               <span className="text-text-muted">Detailed this month</span>
               <span className="font-label-sm text-label-sm text-status-success font-semibold flex items-center gap-0.5">
-                <span className="material-symbols-outlined text-[14px]">arrow_upward</span>12.4%
+                of {doctorTotal.toLocaleString()} doctors
               </span>
             </div>
           </div>
@@ -627,12 +628,12 @@ export function AdminHomeDashboard() {
           </div>
           <div className="mt-4">
             <div className="w-full bg-surface-subtle rounded-full h-1.5 overflow-hidden">
-              <div className="bg-secondary h-1.5 rounded-full transition-all duration-700" style={{ width: "73%" }}></div>
+              <div className="bg-secondary h-1.5 rounded-full transition-all duration-700" style={{ width: `${monthDcrs.length ? Math.round((totalVisits / monthDcrs.length) * 100) : 0}%` }}></div>
             </div>
             <div className="flex items-center justify-between mt-2 font-body-sm text-body-sm">
               <span className="text-text-muted">Total joint field visits</span>
               <span className="font-label-sm text-label-sm text-status-success font-semibold flex items-center gap-0.5">
-                <span className="material-symbols-outlined text-[14px]">arrow_upward</span>8.2% MoM
+                {monthDcrs.length} calls this month
               </span>
             </div>
           </div>
@@ -648,7 +649,7 @@ export function AdminHomeDashboard() {
               <p className="font-body-sm text-body-sm text-text-muted">Weekly submission rate • {month} {year}</p>
             </div>
             <span className="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-sm text-label-sm font-semibold">
-              91% Peak
+              {trendPeak}% Peak
             </span>
           </div>
           <WeeklyTrend rows={dcrTrend} month={month} year={year} />
@@ -657,7 +658,7 @@ export function AdminHomeDashboard() {
               <span className="w-2 h-2 rounded-full bg-status-success"></span>
               Weekly Target: 80%
             </span>
-            <span className="text-text-muted">4-week average: 85.5%</span>
+            <span className="text-text-muted">Month average: {trendAvg}%</span>
           </div>
         </div>
         
@@ -667,9 +668,9 @@ export function AdminHomeDashboard() {
               <h3 className="font-headline-sm text-headline-sm text-text-primary">Attendance Split</h3>
               <p className="font-body-sm text-body-sm text-text-muted">{month} {year} • Field Force</p>
             </div>
-            <span className="font-label-sm text-label-sm text-text-muted uppercase">194 Total</span>
+            <span className="font-label-sm text-label-sm text-text-muted uppercase">{fieldForceRows.length} Total</span>
           </div>
-          <AttendanceSplit value={76} />
+          <AttendanceSplit value={presentPct} total={fieldForceRows.length} />
         </div>
         
         <div className="lg:col-span-4 bg-surface-card rounded-xl p-card-padding-spacious shadow-sm flex flex-col justify-between">

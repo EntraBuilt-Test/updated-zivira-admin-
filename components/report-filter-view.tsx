@@ -303,7 +303,7 @@ export function ReportFilterView({ masterKey }: { masterKey: string }) {
             <h2 className="text-2xl font-bold text-text-primary">{schema.title}</h2>
             <p className="text-sm text-text-muted mt-1">
               Filter by {personField ? personField.label + ", " : ""}
-              {fromMonthField ? "From/To Month and Year" : "Month and Year"} — exactly like sanpharma.info.
+              {fromMonthField ? "From/To Month and Year" : "Month and Year"}.
             </p>
           </div>
           {!isReadOnly && (

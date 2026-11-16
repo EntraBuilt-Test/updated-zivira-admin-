@@ -175,7 +175,7 @@ export function CoverageAnalysis2Panel({ masterKey: _masterKey }: { masterKey: s
       <div>
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Report</p>
         <h2 className="text-2xl font-bold text-text-primary">Expense Analysis</h2>
-        <p className="text-sm text-text-muted mt-1">Matches sanpharma.info&apos;s own &quot;Coverage Analysis 2&quot; report exactly.</p>
+        <p className="text-sm text-text-muted mt-1">Doctor coverage analysis by field force and month.</p>
       </div>
 
       <div className="bg-surface-card p-5 rounded-xl border border-border-subtle shadow-sm flex flex-wrap items-end gap-3 w-full">

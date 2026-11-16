@@ -141,7 +141,7 @@ export function DcrBulkApproval() {
         <p className="text-sm font-medium text-brand-primary uppercase tracking-wider mb-1">Approvals</p>
         <h2 className="text-2xl font-bold text-text-primary">DCR Bulk Approval</h2>
         <p className="text-sm text-text-muted mt-1">
-          Pick a field rep and a month to review every activity date at once — approve or reject many in one action, like sanpharma.info&apos;s DCR_Bulk_Approval.aspx.
+          Pick a field rep and a month to review every activity date at once — approve or reject many in one action.
         </p>
       </div>
 

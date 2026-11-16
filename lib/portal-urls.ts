@@ -6,10 +6,10 @@
 // differ from these defaults (best-guess from each app's own repo/project
 // naming — please confirm and update if wrong).
 export const FIELD_PORTAL_URL =
-  (process.env.NEXT_PUBLIC_FIELD_PORTAL_URL || "https://updated-filed-repo.vercel.app").replace(/\/$/, "");
+  (process.env.NEXT_PUBLIC_FIELD_PORTAL_URL || "https://zivira-labs-field-force.vercel.app").replace(/\/$/, "");
 
 export const MANAGER_PORTAL_URL =
-  (process.env.NEXT_PUBLIC_MANAGER_PORTAL_URL || "https://updated-zivira-manager-portal.vercel.app").replace(/\/$/, "");
+  (process.env.NEXT_PUBLIC_MANAGER_PORTAL_URL || "https://zivira-labs-manager-portal.vercel.app").replace(/\/$/, "");
 
 export function autoLoginUrl(portalType: "manager" | "field", token: string) {
   const base = portalType === "manager" ? MANAGER_PORTAL_URL : FIELD_PORTAL_URL;

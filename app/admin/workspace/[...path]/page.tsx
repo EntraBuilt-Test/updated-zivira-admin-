@@ -148,8 +148,8 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
           isOptionsRealLeaf
             ? ""
             : isWiredLeaf
-            ? `Live data — every row is saved to MongoDB via the ${node.title} collection. Add, edit, and deactivate records below.`
-            : "Working modern page for this exact architecture tab. Data CRUD can be wired to its MongoDB collection."
+            ? "Live data — add, edit and deactivate records below."
+            : ""
         }
         action={<BackButton fallback="/admin/home" />}
       />
