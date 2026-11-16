@@ -7,8 +7,8 @@ import { apiClient, setToken } from "@/lib/api-client";
 export function LoginForm() {
   const router = useRouter();
   useEffect(() => { void apiClient.warmUp(); }, []);
-  const [username, setUsername] = useState("adminzivira");
-  const [password, setPassword] = useState("ziviramumbai");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -34,20 +34,14 @@ export function LoginForm() {
       <div className="space-y-1.5">
         <label htmlFor="username" className="block text-xs font-bold text-[#31234c]">Username</label>
         <div className="relative">
-          <select className="input" 
-            id="username" 
-            value={username} 
+          <input
+            id="username"
+            value={username}
+            autoComplete="username"
+            placeholder="Enter your username"
             onChange={(event) => setUsername(event.target.value)}
-            className="w-full h-10 bg-white border border-white/50 rounded-lg px-3 text-[#31234c] text-sm focus:outline-none focus:ring-2 focus:ring-[#f7931e]/50 focus:border-[#f7931e] transition-colors appearance-none shadow-sm"
-          >
-            <option value="adminzivira">Zivira Labs Admin (adminzivira)</option>
-            <option value="Zivira-SuperAdmin">Zivira-SuperAdmin</option>
-            <option value="Zivira-Manager">Zivira-Manager</option>
-            <option value="Zivira-fieldRepo">Zivira-fieldRepo</option>
-          </select>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-[#31234c]">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-          </div>
+            className="w-full h-10 bg-white border border-white/50 rounded-lg px-3 text-[#31234c] text-sm focus:outline-none focus:ring-2 focus:ring-[#f7931e]/50 focus:border-[#f7931e] transition-colors shadow-sm"
+          />
         </div>
       </div>
       
