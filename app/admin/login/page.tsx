@@ -35,7 +35,6 @@ export default function LoginPage() {
           
           <div className="mb-6">
             <h2 className="text-2xl font-black text-[#31234c] mb-1">Admin Sign In</h2>
-            <p className="text-xs text-gray-500">Seed user: adminzivira</p>
           </div>
           
           <LoginForm />
