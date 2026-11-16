@@ -8,7 +8,6 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
   const { path: rawPath } = await params;
   const path = rawPath.map(p => decodeURIComponent(p).replace(/\s+/g, "-"));
   const pathStr = path.join("/");
-  console.log("DEBUG PATHSTR:", pathStr);
   let node: any = findTreeNode(path);
 
   if (!node) {
@@ -90,6 +89,20 @@ export default async function AdminWorkspacePage({ params }: { params: Promise<{
     } else if (pathStr.endsWith("doctor/chemist")) {
       node = { title: "Chemist", slug: "chemist" };
     }
+  }
+
+  // QA-44: Product Exposure reports are also linked from the division tabs
+  // (not only under MIS Reports); give those paths a node so they render.
+  if (!node && pathStr.includes("/product-exposure/")) {
+    const peTitles: Record<string, string> = {
+      analysis: "Product Exposure Analysis",
+      "speciality-category-wise": "Speciality / Category Wise",
+      "listeddr-productwise-visit": "Listed Dr Productwise Visit",
+      "analysis-unlisted-doctor": "Analysis - Unlisted Doctor",
+      "priority-wise": "Priority Wise"
+    };
+    const last = path[path.length - 1];
+    if (peTitles[last]) node = { title: peTitles[last], slug: last };
   }
 
   if (!node) {
