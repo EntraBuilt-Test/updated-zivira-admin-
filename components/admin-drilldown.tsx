@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { GenericMasterTable } from "@/components/generic-master-table";
 import { MasterScreen } from "@/components/master-screen";
+import { ExpenseClaimsApprovalPanel } from "@/components/expense-claims-approval-panel";
 import { AdminTabGrid } from "@/components/admin-tab-grid";
 import { TaskModeCreationPage, TaskAssignSystemPage } from "@/components/task-management-panel";
 import { AdminDcrView } from "@/components/admin-dcr-view";
@@ -118,6 +119,19 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   // Customer section's Chemist Master and Listed Doctor Master tiles (see
   // the comment on these nodes in zivira-tree.ts for why the old slugs
   // collided with an unrelated generic master screen).
+  // QA-20 (Nov 2026): Chemist Mapping now shows the chemist -> rep mapping
+  // (chemists are linked to the rep who covers their patch).
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor/chemist-mapping") {
+    return <ChemistMaster />;
+  }
+  // QA-20: Expense Setup > SFC Updation / Work Type Wise - Allowance Fix use
+  // the same working screens as the Manager Expense menu.
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/expense/sfc-updation") {
+    return <ManagerSfcUpdation />;
+  }
+  if (pathStr === "division-dashboard/division-navigation-tabs/division-master/expense/wrk-type-wise-allowance-fix") {
+    return <ManagerWorkTypeAllowance />;
+  }
   if (pathStr === "division-dashboard/division-navigation-tabs/division-master/doctor/chemist-master") {
     return <ChemistMaster />;
   }
@@ -396,7 +410,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   // the same ReportFilterView the other "Expense Approval (Active)" entry
   // uses, matching expenseApprovalActive's real uiKind.
   if (pathStr.endsWith("expense-approval")) {
-    return <MasterScreen masterKey="expenseApprovalActive" />;
+    return (<><ExpenseClaimsApprovalPanel /><MasterScreen masterKey="expenseApprovalActive" /></>);
   }
 
   if (pathStr.endsWith("manager-expense/reports")) {
@@ -448,7 +462,7 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
   }
 
   if (pathStr.endsWith("activities/expense/approval-active")) {
-    return <MasterScreen masterKey="expenseApprovalActive" />;
+    return (<><ExpenseClaimsApprovalPanel /><MasterScreen masterKey="expenseApprovalActive" /></>);
   }
 
   if (pathStr.endsWith("activities/expense/approval-vacant-resigned")) {

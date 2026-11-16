@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { companyNav } from "@/lib/company-data";
-import { clearToken } from "@/lib/api-client";
+import { clearToken, getToken } from "@/lib/api-client";
 
 const searchPages = [
   { title: "Dashboard Home", category: "Platform", href: "/admin/home" },
@@ -41,6 +41,7 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const isHolidayFixation = pathname.includes("statewise-holiday-fixation") || pathname.includes("statewise%20holiday%20fixation") || pathname.includes("statewise holiday fixation");
   
+  const [authOk, setAuthOk] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   
@@ -165,6 +166,27 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // QA-17 (Nov 2026): no valid, unexpired session -> admin login screen.
+  useEffect(() => {
+    if (pathname === "/admin/login") { setAuthOk(true); return; }
+    const token = getToken();
+    let valid = false;
+    if (token) {
+      try {
+        const part = token.split(".")[1] ?? "";
+        const payload = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/"))) as { exp?: number };
+        valid = !payload.exp || payload.exp * 1000 > Date.now();
+      } catch { valid = false; }
+    }
+    if (!valid) {
+      clearToken();
+      setAuthOk(false);
+      router.replace("/admin/login");
+      return;
+    }
+    setAuthOk(true);
+  }, [pathname, router]);
+
   useEffect(() => {
     if (searchOpen) {
       setTimeout(() => searchInputRef.current?.focus(), 50);
@@ -175,6 +197,9 @@ export function CompanyShell({ children }: { children: React.ReactNode }) {
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
+  }
+  if (!authOk) {
+    return <div className="min-h-screen flex items-center justify-center text-sm text-text-muted">Checking your session…</div>;
   }
 
   function signOut() {

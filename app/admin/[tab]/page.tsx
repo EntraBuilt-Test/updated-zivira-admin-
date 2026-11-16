@@ -9,7 +9,6 @@ import { adminTabMeta, getAdminTab } from "@/lib/admin-tabs";
 
 import { AdminActivityReportsDashboard } from "@/components/admin-activity-reports-dashboard";
 
-import { AdminMisReportsDashboard } from "@/components/admin-mis-reports-dashboard";
 import { AdminOptionsDashboard } from "@/components/admin-options-dashboard";
 
 export default async function AdminTabPage({ params }: { params: Promise<{ tab: string }> }) {
@@ -28,6 +27,13 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
   }
 
   const rootPath = ["division-dashboard", "division-navigation-tabs", node.slug];
+  // Real screen first, then the tab's own sub-menu (if it has one).
+  const withGrid = (el: React.ReactNode) => (
+    <>
+      {el}
+      {node.children?.length ? <div className="mt-6"><AdminTabGrid node={node} path={rootPath} /></div> : null}
+    </>
+  );
 
   if (tab === "home") {
     return <AdminHomeDashboard />;
@@ -46,7 +52,14 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
   }
 
   if (tab === "mis-reports") {
-    return <AdminMisReportsDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): plain working MIS menu (the old landing page carried
+    // fixed sample figures such as Rs 4.86 Cr and 420 / 438 field force).
+    return (
+      <>
+        <PageHeader eyebrow={meta.eyebrow} title={meta.title} description={meta.description} action={<BackButton />} />
+        <AdminTabGrid node={node} path={rootPath} />
+      </>
+    );
   }
 
   if (tab === "options") {
@@ -54,53 +67,63 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
   }
 
   if (tab === "tour-plans") {
-    const { AdminTourPlansDashboard } = await import("@/components/admin-tour-plans-dashboard");
-    return <AdminTourPlansDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { AdminTourPlans } = await import("@/components/admin-tour-plans");
+    return withGrid(<AdminTourPlans />);
   }
 
   if (tab === "doctor-celebrations") {
-    const { AdminDoctorCelebrationsDashboard } = await import("@/components/admin-doctor-celebrations-dashboard");
-    return <AdminDoctorCelebrationsDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { DoctorCelebrations } = await import("@/components/doctor-celebrations");
+    return withGrid(<DoctorCelebrations />);
   }
 
   if (tab === "doctor-coverage") {
-    const { AdminDoctorCoverageDashboard } = await import("@/components/admin-doctor-coverage-dashboard");
-    return <AdminDoctorCoverageDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { DoctorCoverageLive } = await import("@/components/doctor-coverage-live");
+    return withGrid(<DoctorCoverageLive />);
   }
 
   if (tab === "branches-gst") {
-    const { AdminBranchesDashboard } = await import("@/components/admin-branches-gst-dashboard");
-    return <AdminBranchesDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { BranchesMaster } = await import("@/components/branches-master");
+    return withGrid(<BranchesMaster />);
   }
 
   if (tab === "compliance") {
-    const { AdminComplianceDashboard } = await import("@/components/admin-compliance-dashboard");
-    return <AdminComplianceDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { ComplianceAnalytics } = await import("@/components/compliance-analytics");
+    return withGrid(<ComplianceAnalytics />);
   }
 
   if (tab === "payroll") {
-    const { AdminPayrollDashboard } = await import("@/components/admin-payroll-dashboard");
-    return <AdminPayrollDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { PayrollHoldEngine } = await import("@/components/payroll-hold-engine");
+    return withGrid(<PayrollHoldEngine />);
   }
 
   if (tab === "rep-vs-manager") {
-    const { AdminRepVsManagerDashboard } = await import("@/components/admin-rep-vs-manager-dashboard");
-    return <AdminRepVsManagerDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { RepManagerAnalysis } = await import("@/components/rep-manager-analysis");
+    return withGrid(<RepManagerAnalysis />);
   }
 
   if (tab === "territory-coverage") {
-    const { AdminTerritoryCoverageDashboard } = await import("@/components/admin-territory-coverage-dashboard");
-    return <AdminTerritoryCoverageDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { TerritoryCoverageAnalytics } = await import("@/components/territory-coverage-analytics");
+    return withGrid(<TerritoryCoverageAnalytics />);
   }
 
   if (tab === "product-exposure") {
-    const { AdminProductExposureDashboard } = await import("@/components/admin-product-exposure-dashboard");
-    return <AdminProductExposureDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { ProductExposureDashboard } = await import("@/components/product-exposure-dashboard");
+    return withGrid(<ProductExposureDashboard />);
   }
 
   if (tab === "sample-distribution") {
-    const { AdminSampleDistributionDashboard } = await import("@/components/admin-sample-distribution-dashboard");
-    return <AdminSampleDistributionDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { SampleDistributionAnalytics } = await import("@/components/sample-distribution-analytics");
+    return withGrid(<SampleDistributionAnalytics />);
   }
 
   if (tab === "kpi-engine") {
@@ -114,13 +137,15 @@ export default async function AdminTabPage({ params }: { params: Promise<{ tab: 
   }
 
   if (tab === "alerts") {
-    const { AdminAlertsDashboard } = await import("@/components/admin-alerts-dashboard");
-    return <AdminAlertsDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { AlertsNotificationEngine } = await import("@/components/alerts-notification-engine");
+    return withGrid(<AlertsNotificationEngine />);
   }
 
   if (tab === "executive") {
-    const { AdminExecutiveDashboard } = await import("@/components/admin-executive-dashboard");
-    return <AdminExecutiveDashboard node={node} path={rootPath} />;
+    // QA-19 (Nov 2026): real-data screen instead of the fixed-number mock-up.
+    const { ExecutiveDashboard } = await import("@/components/executive-dashboard");
+    return withGrid(<ExecutiveDashboard />);
   }
 
   return (

@@ -290,6 +290,12 @@ async function request<T>(path: string, init: RequestInit = {}) {
       ...init.headers
     }
   });
+  if (response.status === 401 && typeof window !== "undefined" && !window.location.pathname.startsWith("/admin/login")) {
+    // QA-17: expired session -> back to login instead of half-loaded screens.
+    clearToken();
+    window.location.replace("/admin/login");
+    throw new Error("Your session has expired. Please sign in again.");
+  }
   const payload = await readJson(response);
 
   if (!response.ok) {
