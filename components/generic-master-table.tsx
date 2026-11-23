@@ -82,33 +82,6 @@ function computeNextCode(field: MasterField, rows: MasterRecord[]): string {
   return `${bestPrefix}${String(next).padStart(bestPadWidth, "0")}`;
 }
 
-// The Doctor — Additional Info map preview used to fetch a picture from a
-// third-party static-map service (staticmap.openstreetmap.de). That's an
-// external network call on every render — when it was slow, rate-limited,
-// or simply unreachable, the onError handler hid the <img>, so the box
-// looked like it "disappeared" after a while even though the location was
-// still saved. This draws the location "picture" locally as an inline SVG
-// data URI instead — a pin + the captured coordinates — so the box always
-// renders instantly and never depends on an outside service being up.
-function locationPreviewDataUri(lat: unknown, lon: unknown): string {
-  const latNum = Number(lat);
-  const lonNum = Number(lon);
-  const latText = Number.isFinite(latNum) ? latNum.toFixed(5) : String(lat ?? "");
-  const lonText = Number.isFinite(lonNum) ? lonNum.toFixed(5) : String(lon ?? "");
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="180" viewBox="0 0 320 180">` +
-    `<rect width="320" height="180" fill="#fdf0e4"/>` +
-    `<g stroke="#f2d3b6" stroke-width="1">` +
-    `<line x1="0" y1="45" x2="320" y2="45"/><line x1="0" y1="90" x2="320" y2="90"/><line x1="0" y1="135" x2="320" y2="135"/>` +
-    `<line x1="80" y1="0" x2="80" y2="180"/><line x1="160" y1="0" x2="160" y2="180"/><line x1="240" y1="0" x2="240" y2="180"/>` +
-    `</g>` +
-    `<path d="M160 62c-16 0-29 13-29 29 0 22 29 51 29 51s29-29 29-51c0-16-13-29-29-29z" fill="#ea580c"/>` +
-    `<circle cx="160" cy="91" r="10" fill="#fff7ed"/>` +
-    `<text x="160" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="15" fill="#7c2d12">${latText}, ${lonText}</text>` +
-    `</svg>`;
-  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
-}
-
 const exportMenuOptionStyle: CSSProperties = {
   display: "flex",
   alignItems: "center",
@@ -186,13 +159,6 @@ export function GenericMasterTable({
   // Full records per source master (not just distinct values), used to look up
   // a computed field's display value (e.g. Doctor Name from a chosen Doctor Code).
   const [sourceRecords, setSourceRecords] = useState<Record<string, MasterRecord[]>>({});
-  // Doctor — Additional Info's Add/Edit form replaces the raw Latitude /
-  // Longitude number inputs with a single clickable "Map" box: clicking it
-  // asks the browser to capture the device's current GPS location (instead
-  // of typing coordinates by hand) and stores lat/lng straight onto the
-  // form row, same as before — only how they're captured changed.
-  const [capturingLocation, setCapturingLocation] = useState(false);
-  const [locationError, setLocationError] = useState<string | null>(null);
 
   // "Reporting Structure" is a toggle on the same screen as Manager Expense
   // — Reports, but it's backed by a genuinely different table (division's
@@ -369,25 +335,6 @@ export function GenericMasterTable({
           if (f.label.toUpperCase() === "ACTIVE") return { ...f, label: "Status" };
           return f;
         });
-
-        if (masterKey === "doctorAdditionalInfo") {
-          // The client asked for the separate Latitude / Longitude columns to
-          // be replaced by a single "Map" column: if a doctor's location was
-          // sent, show the map picture right in the tab instead of two raw
-          // coordinate numbers. Latitude/Longitude stay real, editable form
-          // fields (so a location can still be captured) — they're just
-          // hidden from the table view in favor of the map preview.
-          schemaData.fields = schemaData.fields.map((f: any) =>
-            f.key === "latitude" || f.key === "longitude" ? { ...f, hideInTable: true } : f
-          );
-          const statusIdxForMap = schemaData.fields.findIndex((f: any) => f.key === "status" || f.label.toUpperCase() === "STATUS");
-          const mapField = { key: "mapPreview", label: "Map", type: "map", tableOnly: true } as any;
-          if (statusIdxForMap === -1) {
-            schemaData.fields.push(mapField);
-          } else {
-            schemaData.fields.splice(statusIdxForMap, 0, mapField);
-          }
-        }
 
         if (masterKey === "doctorMaster") {
           const extraFields = [
@@ -607,12 +554,11 @@ export function GenericMasterTable({
     );
   }
 
-  // Columns actually shown in the on-screen table (e.g. Doctor Additional
-  // Info hides raw Latitude/Longitude here in favor of the Map column).
+  // Columns actually shown in the on-screen table.
   const tableFields = schema.fields.filter((f: any) => !f.hideInTable);
   // Columns included in CSV/Excel/PDF exports — the reverse of tableFields:
-  // real data (like the hidden Latitude/Longitude) is still exported, only
-  // synthetic display-only columns (like the Map picture) are dropped since
+  // real data (including hidden columns) is still exported, only
+  // synthetic display-only columns are dropped since
   // they don't have a meaningful flat-file representation.
   const exportFields = schema.fields.filter((f: any) => !(f as any).tableOnly);
 
@@ -662,28 +608,6 @@ export function GenericMasterTable({
   // plain text, matching the styling already used in the dedicated master
   // components (hospital-master.tsx, chemist-master.tsx, employee-manager.tsx).
   function renderCellValue(f: MasterField, row: MasterRecord) {
-    if ((f as any).type === "map") {
-      const lat = (row as any).latitude;
-      const lon = (row as any).longitude;
-      const hasLocation = lat !== undefined && lat !== null && String(lat).trim() !== "" &&
-        lon !== undefined && lon !== null && String(lon).trim() !== "";
-      if (!hasLocation) {
-        return <span style={{ color: "var(--muted)", fontSize: "12px" }}>No location sent</span>;
-      }
-      const mapImgSrc = locationPreviewDataUri(lat, lon);
-      const mapLink = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=16/${lat}/${lon}`;
-      return (
-        <a href={mapLink} target="_blank" rel="noopener noreferrer" title="Open this exact location in a map" style={{ display: "inline-block", lineHeight: 0 }}>
-          <img
-            src={mapImgSrc}
-            alt="Captured location"
-            width={110}
-            height={70}
-            style={{ borderRadius: "6px", border: "1px solid var(--line)", objectFit: "cover" }}
-          />
-        </a>
-      );
-    }
     const raw = f.computed ? computedValueFor(f, row) : row[f.key];
     if (isActiveInactiveField(f)) {
       // Masters whose registry entry doesn't declare its own status field
@@ -721,43 +645,6 @@ export function GenericMasterTable({
     return String(raw ?? "");
   }
 
-  // Asks the browser for the device's current GPS position and writes it
-  // straight onto the open form row's latitude/longitude — this is what the
-  // Doctor — Additional Info form's Map box calls when clicked, replacing
-  // manual Latitude/Longitude typing with a single "capture my location" tap.
-  function captureLocation() {
-    if (!formRow) return;
-    if (typeof navigator === "undefined" || !navigator.geolocation) {
-      setLocationError("Location capture isn't supported in this browser.");
-      return;
-    }
-    setLocationError(null);
-    setCapturingLocation(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setFormRow((prev) =>
-          prev
-            ? {
-                ...prev,
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-              }
-            : prev
-        );
-        setCapturingLocation(false);
-      },
-      (geoError) => {
-        setLocationError(
-          geoError.code === geoError.PERMISSION_DENIED
-            ? "Location permission was denied. Allow location access and try again."
-            : "Couldn't capture the current location. Please try again."
-        );
-        setCapturingLocation(false);
-      },
-      { enableHighAccuracy: true, timeout: 15000 }
-    );
-  }
-
   async function openAddForm() {
     const codeField = autoCodeField();
     // Recompute against a fresh fetch rather than whatever `rows` happened
@@ -785,12 +672,10 @@ export function GenericMasterTable({
         blank[f.key] = "";
       }
     }
-    setLocationError(null);
     setFormRow(blank);
   }
 
   function openEditForm(row: MasterRecord) {
-    setLocationError(null);
     const next: Record<string, unknown> = { ...row };
     // Same "no status ever saved on this old record" gap as the table
     // display — default it to Active here too so Edit opens with a real
@@ -858,7 +743,7 @@ export function GenericMasterTable({
   // on doctorCode. Saving used to send the whole merged form to the
   // doctorMaster collection alone: fields that actually belong to the other
   // 3 collections (e.g. Potential/Visit Frequency, Area Manager, DOB/
-  // Anniversary/Remarks/Latitude/Longitude) never reached a collection that
+  // Anniversary/Remarks) never reached a collection that
   // stores them. On Add, that left those columns permanently blank (no
   // classification/mapping/additionalInfo row was ever created to join
   // against); on Edit, changes to those fields looked accepted in the form
@@ -1296,10 +1181,6 @@ export function GenericMasterTable({
               <div className="subdivision-form-card" style={{ boxShadow: "none", padding: 0 }}>
                 {schema.fields
                   .filter((f: any) => !f.tableOnly)
-                  // Doctor — Additional Info: Longitude is captured together
-                  // with Latitude by the single Map box below, so it doesn't
-                  // get its own separate field row in the form.
-                  .filter((f: any) => !(masterKey === "doctorAdditionalInfo" && f.key === "longitude"))
                   .map((f: MasterField) => {
                   let opts = optionsFor(f);
                   // Any master whose single key field is itself a lookup into
@@ -1327,40 +1208,6 @@ export function GenericMasterTable({
                     width: "100%", padding: "8px 12px", borderRadius: "6px",
                     border: "1px solid #e5e7eb", outline: "none", fontSize: "14px", background: "var(--panel)"
                   };
-                  if (masterKey === "doctorAdditionalInfo" && f.key === "latitude") {
-                    const lat = formRow["latitude"];
-                    const lon = formRow["longitude"];
-                    const hasLocation = lat !== undefined && lat !== null && String(lat).trim() !== "" &&
-                      lon !== undefined && lon !== null && String(lon).trim() !== "";
-                    const mapImgSrc = hasLocation ? locationPreviewDataUri(lat, lon) : "";
-                    return (
-                      <label className="field" key="map-box" style={{ display: "block", marginBottom: "12px" }}>
-                        <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>
-                          Map
-                        </span>
-                        <button
-                          type="button"
-                          onClick={captureLocation}
-                          disabled={capturingLocation}
-                          title={hasLocation ? "Click to re-capture the current location" : "Click to capture the current location"}
-                        >
-                          {hasLocation ? (
-                            <img
-                              src={mapImgSrc}
-                              alt="Captured location"
-                            />
-                          ) : (
-                            <div style={{ height: "160px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "6px", color: "var(--muted)", fontSize: "13px" }}>
-                              <span>{capturingLocation ? "Capturing location…" : "Click to capture the current location"}</span>
-                            </div>
-                          )}
-                        </button>
-                        {locationError && (
-                          <span style={{ display: "block", marginTop: "4px", fontSize: "12px", color: "#ef4444" }}>{locationError}</span>
-                        )}
-                      </label>
-                    );
-                  }
                   return (
                     <label className="field" key={f.key} style={{ display: "block", marginBottom: "12px" }}>
                       <span style={{ display: "block", marginBottom: "4px", fontSize: "13px", fontWeight: 500 }}>

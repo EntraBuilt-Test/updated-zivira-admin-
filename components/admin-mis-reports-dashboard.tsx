@@ -116,7 +116,7 @@ const MIS_GROUPS: MisGroup[] = [
       {
         slug: "visit-details",
         title: "Visit Details",
-        desc: "Doctor visits, Chemist meetings, Joint work & GPS",
+        desc: "Doctor visits, Chemist meetings & Joint work",
         badge: {
           text: "10 sub tabs",
           className: "bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10"

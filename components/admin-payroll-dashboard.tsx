@@ -130,7 +130,6 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
               <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">Reconciled Travel (TA/DA)</p>
               <div className="flex items-baseline gap-2 mt-1">
                 <h3 className="text-2xl font-black text-text-primary">₹32,48,600</h3>
-                <span className="text-[11px] font-medium text-text-secondary">GPS Verified</span>
               </div>
             </div>
             <div className="w-10 h-10 rounded-lg bg-status-info-bg text-blue-600 flex items-center justify-center">
@@ -287,7 +286,6 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹36,000</td>
                   <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">₹14,850</div>
-                    <div className="text-[10px] text-text-muted">GPS: 1,420 km</div>
                   </td>
                   <td className="py-3.5 px-4 font-extrabold text-[#b43403] text-sm text-text-primary whitespace-nowrap">
                     ₹50,850
@@ -419,7 +417,6 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
                   <td className="py-3.5 px-4 font-semibold text-text-primary text-sm whitespace-nowrap">₹34,000</td>
                   <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
                     <div className="font-bold text-text-primary">₹15,200</div>
-                    <div className="text-[10px] text-text-muted">GPS: 1,380 km</div>
                   </td>
                   <td className="py-3.5 px-4 font-extrabold text-text-primary text-sm whitespace-nowrap">
                     ₹49,200
@@ -558,10 +555,6 @@ export function AdminPayrollDashboard({ node, path }: { node: ZiviraTreeNode; pa
             </h4>
             
             <div className="text-[11px] space-y-2 text-text-secondary">
-              <div className="flex items-center justify-between">
-                <span>GPS Distance Validation Adherence:</span>
-                <span className="font-bold text-emerald-600">98.2% Match</span>
-              </div>
               <div className="w-full bg-surface-subtle h-1.5 rounded-full overflow-hidden">
                 <div className="bg-emerald-500 h-full rounded-full" style={{ "width": "98.2%" }}></div>
               </div>

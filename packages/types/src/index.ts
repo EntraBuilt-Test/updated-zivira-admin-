@@ -108,7 +108,6 @@ export type Doctor = {
   telephone?: string | null;
   priorityProducts?: string[];
   mappedProducts?: string[];
-  geoTags?: { lat: number; lng: number; address?: string }[];
   supportiveChemists?: { dealerId: string; dealerName: string }[];
   id: string;
   tenantSlug: string;

@@ -241,7 +241,7 @@ export function AdminExecutiveDashboard({
             </div>
             <div className="flex items-center gap-1.5 mt-2">
               <span className="text-[11px] font-medium text-slate-400">
-                GPS spoofing, missing doctor signature
+                missing doctor signature
               </span>
             </div>
           </div>

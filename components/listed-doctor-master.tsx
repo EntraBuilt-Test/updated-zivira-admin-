@@ -487,10 +487,6 @@ export function ListedDoctorMaster() {
                           {opts.products.map(pn => <label key={pn} style={{ display: "flex", gap: 4, alignItems: "center", fontSize: 13 }}><input type="checkbox" checked={mapped.includes(pn)} onChange={() => setMapped(mapped.includes(pn) ? mapped.filter(x => x !== pn) : [...mapped, pn])} />{pn}</label>)}
                         </div>
                       </div>
-                      <div className="field" style={{ gridColumn: "span 2" }}>
-                        <label>Geo Tags (captured from the field app)</label>
-                        <span style={{ fontSize: 13 }}>{Array.isArray(selectedDoc?.geoTags) && selectedDoc.geoTags.length ? `${selectedDoc.geoTags.length} tag(s); latest ${selectedDoc.geoTags[selectedDoc.geoTags.length - 1].lat}, ${selectedDoc.geoTags[selectedDoc.geoTags.length - 1].lng}` : "No geo tag captured yet."}</span>
-                      </div>
                     </>
                   )}
                 </>

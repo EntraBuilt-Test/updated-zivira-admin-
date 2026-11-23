@@ -62,10 +62,6 @@ export function AdminRepVsManagerDashboard({ node, path }: { node: ZiviraTreeNod
 <span className="px-2.5 py-0.5 rounded-full bg-surface-subtle text-text-secondary text-xs font-medium">
                   Manager Quota: 12 Days/Mo
                 </span>
-<span className="px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success border border-status-success-bg text-xs font-medium flex items-center gap-1.5">
-<span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  GPS Beat Validation: 98.2%
-                </span>
 </div>
 </div>
 <div className="flex flex-wrap items-center gap-2.5">

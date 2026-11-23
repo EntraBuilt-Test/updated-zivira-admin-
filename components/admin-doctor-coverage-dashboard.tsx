@@ -302,7 +302,7 @@ export function AdminDoctorCoverageDashboard({ node, path }: { node: ZiviraTreeN
 </td>
 <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="font-medium text-text-primary">11 Sep 2026</div>
-<div className="text-[10px] text-text-muted">DCR #85102 (GPS Tagged)</div>
+<div className="text-[10px] text-text-muted">DCR #85102</div>
 </td>
 <td className="py-3.5 px-4 text-sm text-text-primary whitespace-nowrap">
 <div className="flex flex-wrap gap-1 max-w-[170px]">

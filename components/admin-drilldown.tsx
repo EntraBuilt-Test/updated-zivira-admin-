@@ -22,7 +22,6 @@ import { UnlistedDoctorMaster } from "@/components/unlisted-doctor-master";
 import { OrderBookingSetupPanel } from "@/components/order-booking-setup-panel";
 import { CallFeedbackCreationPanel } from "@/components/call-feedback-creation-panel";
 import { CallRemarksTemplatesPanel } from "@/components/call-remarks-templates-panel";
-import { GpsGeoFencePanel } from "@/components/gps-geofence-panel";
 import { TpDeviationManagersReport, TpDeviationAtGlanceReport, DoctorsAddDeactReport } from "@/components/r54-panels";
 import { InputDetailsReport, SampleRxQuantityReport, DelayedStatusReport, LeaveStatusActiveReport, LeaveStatusPeriodicallyReport, MailStatusReport, TpDeviationBaselevelReport } from "@/components/r53-panels";
 import { ProductExposureSpecatReport } from "@/components/r55-panels";
@@ -687,10 +686,6 @@ export function AdminDrilldown({ node, path }: { node: ZiviraTreeNode; path: str
 
   if (pathStr.endsWith("app-setup/notification-message")) {
     return <MasterScreen masterKey="notificationMessage" />;
-  }
-
-  if (pathStr.endsWith("app-setup/gps-geofence-tagg-deletion")) {
-    return <GpsGeoFencePanel initialMode="allocation" />;
   }
 
   if (pathStr.endsWith("app-setup/dynamic-app-link")) {

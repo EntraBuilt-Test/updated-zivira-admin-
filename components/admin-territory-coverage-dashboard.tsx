@@ -426,7 +426,7 @@ export function AdminTerritoryCoverageDashboard({ node, path }: { node: ZiviraTr
             </button>
             <button className="w-full bg-surface-card border border-border-subtle hover:bg-surface-subtle text-text-secondary font-semibold py-2 rounded-lg text-xs transition-colors flex items-center justify-center gap-2">
               <span className="material-symbols-outlined">{`route`}</span>
-              <span>View Route & GPS Beat Optimization</span>
+              <span>View Route Optimization</span>
             </button>
           </div>
         </div>

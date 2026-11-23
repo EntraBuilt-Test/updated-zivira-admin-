@@ -46,7 +46,6 @@ const PARAMS: { key: string; label: string; defaultOn?: boolean }[] = [
   { key: "day1", label: "DAY1" },
   { key: "day2", label: "DAY2" },
   { key: "day3", label: "DAY3" },
-  { key: "geoTagCount", label: "Geo Tag Count" },
   { key: "uniqueCode", label: "Unique Code" },
   { key: "regNo", label: "Reg No" },
   { key: "avgPatientDay", label: "Avg Patient/day" },

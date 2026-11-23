@@ -386,7 +386,7 @@ export function AdminOptionsDashboard({
                 App Setup
               </h3>
               <p className="text-xs text-text-secondary mt-1 line-clamp-2 leading-relaxed">
-                Mobile client sync policy, GPS geofencing radius, offline
+                Mobile client sync policy, offline
                 storage thresholds, and app build push.
               </p>
             </div>
@@ -395,7 +395,7 @@ export function AdminOptionsDashboard({
             <div className="flex items-center justify-between text-xs text-text-secondary mb-2">
               <span className="font-medium">Field App Build</span>
               <span className="text-text-secondary font-semibold">
-                v4.8 • GPS Geo
+                v4.8
               </span>
             </div>
             <div className="flex items-center justify-between">

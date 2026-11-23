@@ -281,7 +281,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
   }, []);
 
   // Item A (post-launch robustness round) -- real data backing the
-  // "Real-time Field Activity Telemetry", "Live Rep Route & Geofence" and
+  // "Real-time Field Activity Telemetry", the check-ins list and
   // "E-Detailing VA Session Metrics" panels below, all 3 previously
   // 100% hardcoded mock content. See the comment on the JSX below for
   // exactly what real data exists and what had to be honestly scoped down.
@@ -313,8 +313,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
   })();
   const todaysDcrs = dcrs.filter((d) => (d.visitDateOnly ?? d.visitDate?.slice(0, 10)) === todayStr);
   const todaysTotal = todaysDcrs.length;
-  const todaysGpsVisits = todaysDcrs
-    .filter((d) => d.gpsLocation && d.gpsLocation.latitude !== null && d.gpsLocation.longitude !== null)
+  const todaysVisits = [...todaysDcrs]
     .sort((a, b) => new Date(b.visitDate).getTime() - new Date(a.visitDate).getTime())
     .slice(0, 8);
 
@@ -327,7 +326,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [dateFilter, setDateFilter] = useState(todayStr);
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusChip, setStatusChip] = useState<"all" | "gps" | "flagged" | "pending" | "approved">("all");
+  const [statusChip, setStatusChip] = useState<"all" | "pending" | "approved">("all");
   const [activeTab, setActiveTab] = useState<"calls" | "dcrApprovals" | "chemistOrders" | "dispatches">("calls");
   const [approvalDcrRows, setApprovalDcrRows] = useState<MasterRecord[]>([]);
   const [approvalDcrKey, setApprovalDcrKey] = useState(0);
@@ -375,10 +374,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
   const visibleDcrs = dcrs.filter((d) => {
     if (territoryFilter !== ALL_TERRITORIES && territoryByCode.get(d.employeeCode) !== territoryFilter) return false;
     if (dateFilter && (d.visitDateOnly ?? d.visitDate?.slice(0, 10)) !== dateFilter) return false;
-    const hasGps = !!(d.gpsLocation && d.gpsLocation.latitude !== null && d.gpsLocation.longitude !== null);
     const isApproved = String(d.status) === "APPROVED" || String(d.status) === "AUTO_APPROVED" || String(d.status) === "MANAGER_APPROVED";
-    if (statusChip === "gps" && !hasGps) return false;
-    if (statusChip === "flagged" && hasGps) return false;
     if (statusChip === "pending" && d.status !== "SUBMITTED") return false;
     if (statusChip === "approved" && !isApproved) return false;
     if (searchTerm.trim()) {
@@ -392,8 +388,6 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 
   const statusCounts = {
     all: dcrs.length,
-    gps: dcrs.filter((d) => d.gpsLocation && d.gpsLocation.latitude !== null && d.gpsLocation.longitude !== null).length,
-    flagged: dcrs.filter((d) => !(d.gpsLocation && d.gpsLocation.latitude !== null && d.gpsLocation.longitude !== null)).length,
     pending: dcrs.filter((d) => d.status === "SUBMITTED").length,
     approved: dcrs.filter((d) => String(d.status) === "APPROVED" || String(d.status) === "AUTO_APPROVED" || String(d.status) === "MANAGER_APPROVED").length
   };
@@ -480,7 +474,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
       <div className="flex flex-col w-full space-y-6">
 {/* TOP BREADCRUMB & EXECUTIVE ACTION BAR */}
 <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4 pb-1">
-<div className="flex flex-col space-y-1"><div className="flex items-center gap-2"><span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span><span className="text-text-muted text-body-sm font-body-sm">/</span><span className="font-label-md text-label-md text-primary font-semibold">Activities</span></div><div className="flex items-center gap-3 flex-wrap"><h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Activities</h1><span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-md text-label-md"><span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>Live In-Flight (Sync 10s)</span></div><p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2"><span className="">Real-time field force telemetry, physician call audit, sample custody verification, and geofence verification across nationwide operating hubs.</span></p></div>
+<div className="flex flex-col space-y-1"><div className="flex items-center gap-2"><span className="font-label-sm text-label-sm uppercase tracking-wider text-text-muted">Platform</span><span className="text-text-muted text-body-sm font-body-sm">/</span><span className="font-label-md text-label-md text-primary font-semibold">Activities</span></div><div className="flex items-center gap-3 flex-wrap"><h1 className="font-headline-lg text-headline-lg text-text-primary tracking-tight">Activities</h1><span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-status-success-bg text-status-success font-label-md text-label-md"><span className="w-2 h-2 rounded-full bg-status-success animate-pulse"></span>Live In-Flight (Sync 10s)</span></div><p className="font-body-sm text-body-sm text-text-secondary flex items-center gap-2"><span className="">Real-time field force telemetry, physician call audit, sample custody verification, across nationwide operating hubs.</span></p></div>
 {/* ACTION CONTROLS & COMMAND FILTERS */}
 <div className="flex flex-wrap items-center gap-2.5 flex-shrink-0">
 <ZoneDropdown value={territoryFilter} options={territoryOptions} onChange={setTerritoryFilter} />
@@ -553,10 +547,6 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 </div>
 <div className="space-y-1.5">
-<div className="flex items-center gap-1.5 text-text-muted font-label-sm text-label-sm">
-<span className="material-symbols-outlined text-[15px] text-tertiary">gps_off</span>
-<span className="">{summary ? `${summary.gpsNotCapturedDetailingToday} of these had no GPS captured` : "Loading…"}</span>
-</div>
 </div>
 </div>
 {/* Card 3 */}
@@ -609,9 +599,6 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
         </span>
 <span className="px-2 py-0.5 rounded-full bg-surface-subtle text-text-secondary font-label-sm text-label-sm">
           {summary ? summary.pendingApprovals.deviation : "–"} Deviation
-        </span>
-<span className="px-2 py-0.5 rounded-full bg-status-danger-bg text-status-danger font-label-sm text-label-sm">
-          {summary ? summary.gpsNotCapturedToday : "–"} GPS Not Captured Today
         </span>
 </div>
 </div>
@@ -799,9 +786,9 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <button onClick={() => setActiveTab("dispatches")} className={`px-3 py-1.5 rounded-md font-label-md text-label-md transition-colors ${activeTab === "dispatches" ? "bg-surface-card text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`} type="button">
           Sample / Promo Dispatches
         </button>
-<button onClick={() => timelineRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })} className="px-3 py-1.5 rounded-md font-label-md text-label-md text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1" type="button" title="Scrolls to today's real GPS-stamped check-ins -- no continuous location feed exists in this codebase to build an actual live map from (same honest scoping as the panel below)">
-<span className="material-symbols-outlined text-[16px]">location_on</span>
-<span className="">Timeline Map</span>
+<button onClick={() => timelineRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })} className="px-3 py-1.5 rounded-md font-label-md text-label-md text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1" type="button" title="Scrolls to today's check-ins">
+<span className="material-symbols-outlined text-[16px]">schedule</span>
+<span className="">Today&apos;s Check-ins</span>
 </button>
 </div>
 {/* Quick Operations Actions -- only meaningful on the DCR Approvals tab */}
@@ -827,12 +814,6 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <button onClick={() => setStatusChip("all")} className={`px-2.5 py-1 rounded-full font-semibold transition-colors ${statusChip === "all" ? "bg-brand-primary-subtle text-primary" : "bg-surface-canvas hover:bg-surface-subtle text-text-secondary"}`} type="button">
           All ({statusCounts.all.toLocaleString()})
         </button>
-<button onClick={() => setStatusChip("gps")} className={`px-2.5 py-1 rounded-full transition-colors ${statusChip === "gps" ? "bg-brand-primary-subtle text-primary font-semibold" : "bg-surface-canvas hover:bg-surface-subtle text-text-secondary"}`} type="button">
-          Verified GPS ({statusCounts.gps.toLocaleString()})
-        </button>
-<button onClick={() => setStatusChip("flagged")} className={`px-2.5 py-1 rounded-full transition-colors ${statusChip === "flagged" ? "bg-status-danger text-on-primary font-semibold" : "bg-status-danger-bg text-status-danger hover:opacity-90"}`} type="button">
-          Flagged Location ({statusCounts.flagged.toLocaleString()})
-        </button>
 <button onClick={() => setStatusChip("pending")} className={`px-2.5 py-1 rounded-full transition-colors ${statusChip === "pending" ? "bg-status-warning text-on-primary font-semibold" : "bg-status-warning-bg text-status-warning hover:opacity-90"}`} type="button">
           Pending Review ({statusCounts.pending.toLocaleString()})
         </button>
@@ -844,7 +825,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 {/* ITEM A (post-launch robustness round): replaces 6 hardcoded fake rows
     with the real most-recent DCRs (GET /company/dcrs, already used
-    elsewhere in this app, newly typed with gpsLocation/hospitalClinic/
+    elsewhere in this app, newly typed with hospitalClinic/
     checkInTime). True server push isn't implemented anywhere in this
     codebase, so this is honestly a "recent activity, refreshed on load /
     manual refresh" view, not a live-push feed -- labeled as such below
@@ -869,7 +850,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <tr className="bg-surface-canvas text-text-muted font-label-sm text-label-sm uppercase tracking-wider h-table-header-height">
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Medical Rep (MR)</th>
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Doctor / Hospital</th>
-<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Timestamp &amp; GPS</th>
+<th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Timestamp</th>
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Products Detailed</th>
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Samples / Inputs</th>
 <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Status</th>
@@ -885,8 +866,6 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 {visibleDcrs.slice(0, 20).map((dcr) => {
   const doctor = typeof dcr.doctorId === "object" ? dcr.doctorId : null;
   const initials = (dcr.employeeName || dcr.employeeCode || "?").split(" ").map((s) => s[0]).join("").slice(0, 2).toUpperCase();
-  const gps = dcr.gpsLocation;
-  const hasGps = gps && gps.latitude !== null && gps.longitude !== null;
   const samplesCount = (dcr.samplesGiven ?? []).reduce((sum, s) => sum + (s.qty || 0), 0);
   const inputsCount = (dcr.inputsGiven ?? []).reduce((sum, i) => sum + (i.qty || 0), 0);
   return (
@@ -909,9 +888,6 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
       <td className="px-4 py-3 text-sm whitespace-nowrap">
         <div className="flex flex-col">
           <span className="font-label-md text-label-md text-text-primary">{dcr.checkInTime ?? new Date(dcr.visitDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
-          <span className={"font-body-sm text-body-sm " + (hasGps ? "text-status-success" : "text-text-muted")}>
-            {hasGps ? `${gps!.latitude!.toFixed(4)}°, ${gps!.longitude!.toFixed(4)}°` : "GPS not captured"}
-          </span>
         </div>
       </td>
       <td className="px-4 py-3 text-sm whitespace-nowrap">
@@ -1031,12 +1007,9 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 </div>
 )}
 
-{/* ITEM A: replaces the fake animated-map "Live Rep Route & Geofence" and
-    fabricated "E-Detailing VA Session Metrics" panels. Real GPS data only
-    exists per-DCR-visit (DcrModel.gpsLocation) -- there is no continuous
-    location-ping stream anywhere in this codebase, so a genuinely "live
-    route" can't be built; this honestly shows today's real GPS-stamped
-    check-ins instead. E-Detailing metrics are real download counts from
+{/* ITEM A: replaces the fake animated-map panel and fabricated
+    "E-Detailing VA Session Metrics" panels. Location is not collected
+    anywhere in the platform, so this lists today's real DCR check-ins. E-Detailing metrics are real download counts from
     SlideDownloadModel only -- no duration/engagement field exists. */}
 <div ref={timelineRef} className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
 <div className="lg:col-span-7 bg-surface-card rounded-xl shadow-sm p-card-padding-spacious flex flex-col space-y-4">
@@ -1046,22 +1019,22 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 <span className="material-symbols-outlined text-[20px]">explore</span>
 </div>
 <div>
-<h2 className="font-headline-sm text-headline-sm text-text-primary">Today&apos;s GPS-Stamped Check-ins</h2>
-<span className="font-body-sm text-body-sm text-text-muted">Real per-visit GPS captured on DCR submission — no continuous location tracking exists, so this is a list, not a live map.</span>
+<h2 className="font-headline-sm text-headline-sm text-text-primary">Today&apos;s Check-ins</h2>
+<span className="font-body-sm text-body-sm text-text-muted">Latest DCRs submitted today.</span>
 </div>
 </div>
 </div>
 <div className="space-y-2 flex-1 overflow-y-auto max-h-72">
-{todaysGpsVisits.length === 0 ? (
-  <p className="text-sm text-text-muted italic px-1 py-4 text-center">No GPS-stamped visits logged yet today.</p>
+{todaysVisits.length === 0 ? (
+  <p className="text-sm text-text-muted italic px-1 py-4 text-center">No visits logged yet today.</p>
 ) : (
-  todaysGpsVisits.map((dcr) => {
+  todaysVisits.map((dcr) => {
     const doctor = typeof dcr.doctorId === "object" ? dcr.doctorId : null;
     return (
       <div key={dcr.id} className="p-2.5 rounded-lg bg-surface-canvas flex items-center justify-between gap-3">
         <div className="min-w-0">
           <span className="font-label-md text-label-md text-text-primary truncate block">{dcr.employeeName || dcr.employeeCode} — {doctor?.name ?? dcr.hospitalClinic ?? "Visit"}</span>
-          <span className="text-[11px] text-text-muted">{dcr.gpsLocation!.latitude!.toFixed(4)}°, {dcr.gpsLocation!.longitude!.toFixed(4)}°</span>
+          <span className="text-[11px] text-text-muted">{doctor?.specialty ?? dcr.hospitalClinic ?? ""}</span>
         </div>
         <span className="text-[11px] text-text-secondary font-medium whitespace-nowrap">{dcr.checkInTime ?? new Date(dcr.visitDate).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
       </div>
@@ -1070,7 +1043,7 @@ export function AdminActivitiesDashboard({ node, path }: { node: ZiviraTreeNode;
 )}
 </div>
 <div className="text-[11px] text-text-muted pt-1 border-t border-border-subtle">
-{todaysTotal > 0 ? `${todaysGpsVisits.length} of ${todaysTotal} DCRs submitted today have GPS captured` : "No DCRs submitted today yet"}
+{todaysTotal > 0 ? `Showing ${todaysVisits.length} of ${todaysTotal} DCRs submitted today` : "No DCRs submitted today yet"}
 </div>
 </div>
 

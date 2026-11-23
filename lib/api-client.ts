@@ -339,12 +339,11 @@ export type DcrRecord = Omit<DcrExtended, "doctorId" | "samplesGiven" | "inputsG
   jointWork?: DcrExtended["jointWork"] & { wasJoint?: boolean; managerName?: string };
   // Item A (post-launch robustness round) -- real fields GET /company/dcrs
   // already returns that the type didn't carry yet, needed to replace the
-  // Activities dashboard's fake Telemetry table/Geofence panel with real data.
+  // Activities dashboard's fake Telemetry table with real data.
   employeeName?: string;
   hospitalClinic?: string | null;
   checkInTime?: string | null;
   visitDateOnly?: string;
-  gpsLocation?: { latitude: number | null; longitude: number | null; label?: string | null };
 };
 
 // Item A (post-launch robustness round) -- real download-count metrics
@@ -646,7 +645,7 @@ export type DcrTimeStatusRow = {
   perDay: DcrTimeStatusDay[];
 };
 
-export type DcrCheckinCheckoutRow = { date: string; name: string; checkIn: string; checkOut: string; lat?: number; lng?: number };
+export type DcrCheckinCheckoutRow = { date: string; name: string; checkIn: string; checkOut: string };
 
 // Customized Report builder
 export type CustomReportSummary = { id: string; name: string; defaultParams: string[]; parameterCount: number };
@@ -830,8 +829,6 @@ export type ActivitiesSummary = {
   totalCallsLoggedYesterday: number;
   callsDeltaPct: number | null;
   doctorDetailingVisitsToday: number;
-  gpsNotCapturedToday: number;
-  gpsNotCapturedDetailingToday: number;
   chemistStockistOrdersToday: number;
   chemistStockistOrderQtyToday: number;
   chemistStockistOrderValueToday: number;

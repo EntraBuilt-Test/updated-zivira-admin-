@@ -58,10 +58,6 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
             Deadline: 28 Sep
           </span>
-<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-surface-subtle text-text-secondary border border-border-subtle">
-<svg className="w-3 h-3 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path></svg>
-            GPS Beat Sync: Active
-          </span>
 </div>
 </div>
 {/* Page Header */}
@@ -270,8 +266,7 @@ export function AdminTourPlansDashboard({ node, path }: { node: ZiviraTreeNode; 
 <div>
 <div className="font-bold text-text-primary flex items-center gap-1.5">
                           Rahul Sharma
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" title="Active GPS Beat"></span>
-</div>
+                          </div>
 <div className="text-[11px] text-text-muted">MR-1049 • Mumbai Metro (West)</div>
 </div>
 </div>
