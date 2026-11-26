@@ -83,6 +83,18 @@ export function StatusLine({ r, err, extra }: { r: LegacyUploadResult | null; er
 }
 export const smallNote: CSSProperties = { color: "#6b7280", fontSize: 12, marginTop: 4 };
 
+// The history table styles itself, so it renders as a proper bordered table on EVERY upload page
+// (the Chemists / Listed Doctor pages use their own frame and never load KIT_CSS).
+const HISTORY_CSS = `
+.ut-hist { border-collapse: collapse; font-size: 13px; width: 100%; font-family: Arial, Helvetica, sans-serif; }
+.ut-hist th, .ut-hist td { border: 1px solid #cbd5e1; padding: 6px 10px; text-align: left; vertical-align: middle; }
+.ut-hist th { background: #f1f5f9; position: sticky; top: 0; z-index: 1; white-space: nowrap; font-weight: 700; color: #1f2937; }
+.ut-hist tbody tr:nth-child(even) td { background: #f8fafc; }
+.ut-hist tbody tr:hover td { background: #eef2ff; }
+.ut-hist td.ut-num { text-align: center; width: 48px; }
+.ut-hist td.ut-file { max-width: 260px; word-break: break-word; }
+.ut-hist td.ut-reason { max-width: 260px; }
+`;
 /** Upload History of one tool: newest first, latest 50, from the server; Not Uploaded List link only when rejected > 0. */
 export function UploadHistory({ toolKey, refresh }: { toolKey: string; refresh: unknown }) {
   const [rows, setRows] = useState<UploadLogRow[] | null>(null);
@@ -90,26 +102,27 @@ export function UploadHistory({ toolKey, refresh }: { toolKey: string; refresh: 
   useEffect(() => { apiClient.uploadLog(toolKey).then((h) => { setRows(h); setErr(""); }).catch((e) => setErr(e instanceof Error ? e.message : "Could not load the upload history")); }, [toolKey, refresh]);
   const latest = rows?.[0];
   return (
-    <div style={{ maxWidth: 1000, margin: "18px auto 0" }}>
+    <div style={{ maxWidth: 1100, margin: "18px auto 0" }}>
       <div style={{ fontWeight: 700, fontSize: 16, margin: "0 0 6px", textAlign: "center" }}>Upload History</div>
       {err && <div style={{ color: RED, textAlign: "center", fontSize: 13 }}>{err}</div>}
-      <div style={{ overflow: "auto", maxHeight: 460, border: "1px solid #cbd5e1", background: "#fff" }}>
-        <table className="ut-tbl">
+      <style>{HISTORY_CSS}</style>
+      <div style={{ overflow: "auto", maxHeight: 460, border: "1px solid #cbd5e1", borderRadius: 6, background: "#fff" }}>
+        <table className="ut-hist">
           <thead><tr><th>S.No</th><th>Uploaded Time</th><th>File Name</th><th>Records</th><th>Reason</th><th>Uploaded by</th><th>Not Uploaded List</th></tr></thead>
           <tbody>
             {rows && rows.length === 0 && <tr><td colSpan={7} style={{ textAlign: "center", color: "#6b7280" }}>No uploads yet</td></tr>}
             {(rows ?? []).map((h, i) => (
               <tr key={h.id}>
-                <td>{i + 1}</td>
+                <td className="ut-num">{i + 1}</td>
                 <td style={{ whiteSpace: "nowrap" }}>{fmtTime(h.uploadedAt)}</td>
-                <td style={{ wordBreak: "break-word" }}>{h.fileName}</td>
+                <td className="ut-file">{h.fileName}</td>
                 <td style={{ whiteSpace: "nowrap" }}>
                   <span style={{ display: "inline-block", padding: "1px 9px", borderRadius: 10, fontWeight: 600, fontSize: 13, background: "#dcfce7", color: "#166534" }}>Success: {h.success}</span>{" "}
                   <span style={{ display: "inline-block", padding: "1px 9px", borderRadius: 10, fontWeight: 600, fontSize: 13, background: "#fee2e2", color: "#991b1b" }}>Rejected: {h.rejected}</span>
                 </td>
-                <td style={{ fontSize: 13, color: h.topReason ? "#991b1b" : undefined }}>{h.topReason || "-"}</td>
-                <td>{h.uploadedBy}</td>
-                <td>{h.rejected > 0 ? <button type="button" style={bLink} onClick={() => download(apiClient.uploadLogNotUploaded(toolKey, h.id, h.fileName), setErr)}>Not Uploaded List</button> : ""}</td>
+                <td className="ut-reason" style={{ color: h.topReason ? "#991b1b" : undefined }}>{h.topReason || "-"}</td>
+                <td style={{ whiteSpace: "nowrap" }}>{h.uploadedBy}</td>
+                <td style={{ whiteSpace: "nowrap" }}>{h.rejected > 0 ? <button type="button" style={bLink} onClick={() => download(apiClient.uploadLogNotUploaded(toolKey, h.id, h.fileName), setErr)}>Not Uploaded List</button> : ""}</td>
               </tr>
             ))}
           </tbody>

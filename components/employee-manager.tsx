@@ -3,6 +3,7 @@
 import type { Employee } from "@zivira/types";
 import { RefreshCw, X, AlertTriangle } from "lucide-react";
 import { ColumnFilterDropdown } from "@/components/column-filter-dropdown";
+import { CustomSelect } from "@/components/custom-select";
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
 import { apiClient } from "@/lib/api-client";
@@ -24,6 +25,75 @@ const DESIGNATION_TO_ROLE: Record<string, string> = {
 // Sample initial data with all SFA master columns
 const initialFieldForce: any[] = [];
 
+const MANAGER_ROLES = new Set(["ABM", "RBM", "ZBM", "NBH", "BH"]);
+const BASE_REGIONS = ["Tamil Nadu", "Kerala", "Karnataka", "Andhra Pradesh", "Telangana", "Maharashtra", "Gujarat", "Delhi"];
+const DEFAULT_DIVISIONS = ["Astra", "Aura", "Zivira"];
+const DEPARTMENTS = ["Sales", "Marketing", "Medical Affairs", "Production", "Quality Assurance (QA)", "Quality Control (QC)", "Research & Development (R&D)"];
+const DESIGNATIONS: { value: string; label: string }[] = [
+  { value: "Medical Representative", label: "Medical Representative (MR)" },
+  { value: "Area Sales Manager", label: "Area Sales Manager (ASM)" },
+  { value: "Regional Sales Manager", label: "Regional Sales Manager (RSM)" },
+  { value: "Zonal Sales Manager", label: "Zonal Sales Manager (ZSM)" },
+  { value: "Product Manager", label: "Product Manager" },
+  { value: "Finance Executive", label: "Finance Executive" },
+  { value: "HR Executive", label: "HR Executive" }
+];
+// Probation / Trainee / Confirmed. Stored as employmentStatus -- separate
+// from Active/Inactive, which still controls the employee's login.
+const EMPLOYMENT_STATUS: { value: string; label: string }[] = [
+  { value: "PROBATION", label: "Probation" },
+  { value: "TRAINEE", label: "Trainee" },
+  { value: "CONFIRMED", label: "Confirmed" }
+];
+const labelOf = (list: { value: string; label: string }[], v: string) => list.find((o) => o.value === v)?.label ?? v;
+const valueOf = (list: { value: string; label: string }[], l: string) => list.find((o) => o.label === l)?.value ?? l;
+
+// Next employee code = the most common code pattern + (highest number + 1),
+// keeping the zero padding. e.g. E118, E119, E120 -> E121; EMP0099 -> EMP0100.
+function nextEmployeeCode(list: any[]): string {
+  const groups = new Map<string, { count: number; max: number; width: number }>();
+  const taken = new Set<string>();
+  for (const e of list) {
+    const code = String(e?.employeeCode || "").trim().toUpperCase();
+    if (!code) continue;
+    taken.add(code);
+    if (e?.codePending || code.startsWith("MGR-PENDING")) continue;
+    const m = /^(.*?)(\d+)$/.exec(code);
+    if (!m) continue;
+    const g = groups.get(m[1]) ?? { count: 0, max: 0, width: 0 };
+    g.count += 1;
+    g.max = Math.max(g.max, Number(m[2]));
+    g.width = Math.max(g.width, m[2].length);
+    groups.set(m[1], g);
+  }
+  let prefix = "E";
+  let best = { count: 0, max: 0, width: 3 };
+  for (const [p, g] of groups) if (g.count > best.count) { prefix = p; best = g; }
+  let n = best.max + 1;
+  let code = prefix + String(n).padStart(best.width, "0");
+  while (taken.has(code)) { n += 1; code = prefix + String(n).padStart(best.width, "0"); }
+  return code;
+}
+
+const BLANK_FORM = {
+  employeeCode: "",
+  name: "",
+  gender: "Male",
+  dob: "",
+  joinDate: "",
+  phone: "",
+  secondaryPhone: "",
+  email: "",
+  department: "Sales",
+  designation: "Medical Representative",
+  division: "Zivira",
+  reportingManager: "",
+  region: "Tamil Nadu",
+  hq: "",
+  drivingLicense: "",
+  employmentStatus: "PROBATION"
+};
+
 export function EmployeeManager() {
   const [employees, setEmployees] = useState<any[]>(initialFieldForce);
   const [showForm, setShowForm] = useState(false);
@@ -39,25 +109,9 @@ export function EmployeeManager() {
   }, [employees, columnFilters]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({
-    employeeCode: "",
-    name: "",
-    gender: "Male",
-    dob: "",
-    joinDate: "",
-    phone: "",
-    email: "",
-    department: "Sales",
-    designation: "Medical Representative",
-    division: "Zivira",
-    reportingManager: "",
-    region: "Tamil Nadu",
-    hq: "",
-    patch: "",
-    drivingLicense: "",
-    sfCode: "",
-    status: "ACTIVE"
-  });
+  const [form, setForm] = useState({ ...BLANK_FORM });
+  const [hqMaster, setHqMaster] = useState<any[]>([]);
+  const [divisionNames, setDivisionNames] = useState<string[]>(DEFAULT_DIVISIONS);
   const [saving, setSaving] = useState(false);
   // Round 60 -- "Code pending" managers (auto-created by the Salesforce upload): Complete details sets the real employee code and re-links the team.
   const [completeFor, setCompleteFor] = useState<any | null>(null);
@@ -102,15 +156,10 @@ export function EmployeeManager() {
       const mapped = response.data.map((emp, i) => ({
         ...emp,
         employeeCode: emp.employeeCode || `EMP-MR-${String(i + 1).padStart(4, "0")}`,
-        gender: (emp as any).gender || (i % 2 === 0 ? "Male" : "Female"),
-        dob: emp.dob || "1990-01-01",
-        joinDate: emp.joinDate || "2022-01-01",
-        phone: emp.phone || "9876543210",
-        email: emp.email || `${emp.name.toLowerCase().replace(/\s+/g, ".")}@example.com`,
-        department: (emp as any).department || "Sales",
-        region: (emp as any).region || "Tamil Nadu",
-        hq: (emp as any).hq || emp.territory || "Chennai Central HQ",
-        patch: (emp as any).patch || "T. Nagar"
+        gender: (emp as any).gender || "",
+        department: (emp as any).department || "",
+        region: (emp as any).region || (emp as any).state || "",
+        hq: (emp as any).hq || emp.territory || ""
       }));
       // Merge with initial data to ensure complete entries
       setEmployees([...initialFieldForce, ...mapped.filter(m => !initialFieldForce.some(f => f.id === m.id))]);
@@ -121,50 +170,90 @@ export function EmployeeManager() {
     }
   }
 
+  // HQ + Division masters feed the HQ and Division dropdowns.
+  async function loadMasters() {
+    try {
+      const res: any = await apiClient.masterRecords("territoryHqMaster");
+      setHqMaster((res?.data ?? []).filter((r: any) => String(r.status || "ACTIVE").toUpperCase() !== "INACTIVE"));
+    } catch { setHqMaster([]); }
+    try {
+      const res: any = await apiClient.masterRecords("divisionMaster");
+      const names = Array.from(new Set<string>((res?.data ?? [])
+        .filter((r: any) => String(r.status || "ACTIVE").toUpperCase() !== "INACTIVE")
+        .map((r: any) => String(r.divisionName || "").trim()).filter(Boolean)));
+      if (names.length) setDivisionNames(names);
+    } catch { /* keep defaults */ }
+  }
+
+  function openAddForm() {
+    setForm({ ...BLANK_FORM, division: divisionNames.includes("Zivira") ? "Zivira" : divisionNames[0] ?? "Zivira", employeeCode: nextEmployeeCode(employees) });
+    setShowForm(true);
+  }
+
+  const lc = (v: unknown) => String(v ?? "").trim().toLowerCase();
+  // HQ name -> state, from the Territory / Headquarters master.
+  const hqState = useMemo(() => {
+    const m = new Map<string, string>();
+    for (const r of hqMaster) if (r.headquartersName && r.state) m.set(lc(r.headquartersName), String(r.state));
+    return m;
+  }, [hqMaster]);
+  const regionOptions = useMemo(() => {
+    const extra = [...hqMaster.map((r) => String(r.state || "")), ...employees.map((e) => String(e.state || ""))]
+      .map((v) => v.trim()).filter((v) => v && !BASE_REGIONS.some((b) => lc(b) === lc(v)));
+    return [...BASE_REGIONS, ...Array.from(new Set(extra)).sort()];
+  }, [hqMaster, employees]);
+  // Managers whose region (their own state, or their HQ's state) is the selected region.
+  const allManagers = useMemo(
+    () => employees.filter((e) => MANAGER_ROLES.has(String(e.role || "").toUpperCase()) && e.status !== "INACTIVE" && !e.codePending),
+    [employees]
+  );
+  const regionManagers = useMemo(
+    () => allManagers.filter((e) => lc(e.state || hqState.get(lc(e.territory)) || "") === lc(form.region)),
+    [allManagers, hqState, form.region]
+  );
+  const managerList = regionManagers.length ? regionManagers : allManagers;
+  const managerLabel = (e: any) => `${e.name} (${e.employeeCode})`;
+  const hqOptions = useMemo(() => {
+    const inRegion = hqMaster.filter((r) => lc(r.state) === lc(form.region));
+    const inDivision = inRegion.filter((r) => !r.division || lc(r.division) === lc(form.division));
+    const pick = inDivision.length ? inDivision : inRegion.length ? inRegion : hqMaster;
+    let names = pick.map((r) => String(r.headquartersName || "").trim()).filter(Boolean);
+    if (!names.length) names = employees.map((e) => String(e.territory || "").trim()).filter((v) => v && v !== "Pending");
+    return Array.from(new Set(names)).sort();
+  }, [hqMaster, employees, form.region, form.division]);
+
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!form.name.trim() || !form.employeeCode.trim() || !form.hq.trim()) return;
+    if (!form.name.trim() || !form.employeeCode.trim()) return;
+    if (!form.hq.trim()) { setError("Please select the HQ."); return; }
 
     setSaving(true);
     setError("");
     try {
-      // The backend's Employee model requires "role" (a fixed enum) and
-      // "territory" — neither is a field this form shows directly, so they
-      // have to be derived from Designation and HQ respectively. Previously
-      // this form never called the API at all (it only updated local
-      // state), which is why nothing ever actually persisted.
+      // role comes from Designation, territory from HQ, state from Region.
       await apiClient.createEmployee({
-        name: form.name,
-        employeeCode: form.employeeCode,
+        name: form.name.trim(),
+        employeeCode: form.employeeCode.trim(),
+        gender: form.gender,
+        dob: form.dob || undefined,
+        joinDate: form.joinDate || undefined,
+        phone: form.phone.trim() || undefined,
+        secondaryPhone: form.secondaryPhone.trim() || undefined,
+        email: form.email.trim() || undefined,
         designation: form.designation,
         division: form.division,
+        state: form.region,
         reportingManager: form.reportingManager || undefined,
         territory: form.hq,
+        department: form.department,
         role: (DESIGNATION_TO_ROLE[form.designation] ?? "OTHER") as any,
-        drivingLicense: form.drivingLicense || undefined,
-        sfCode: form.sfCode || undefined,
-        status: form.status as "ACTIVE" | "INACTIVE"
+        drivingLicense: form.drivingLicense.trim() || undefined,
+        employmentStatus: form.employmentStatus,
+        status: "ACTIVE"
       } as any);
       setShowForm(false);
-      setForm({
-        employeeCode: "",
-        name: "",
-        gender: "Male",
-        dob: "",
-        joinDate: "",
-        phone: "",
-        email: "",
-        department: "Sales",
-        designation: "Medical Representative",
-        division: "Zivira",
-        reportingManager: "",
-        region: "Tamil Nadu",
-        hq: "",
-        patch: "",
-        drivingLicense: "",
-        sfCode: "",
-        status: "ACTIVE"
-      });
+      setForm({ ...BLANK_FORM });
+      setNotice(`${form.name.trim()} added with Employee Code ${form.employeeCode.trim().toUpperCase()}.`);
       await loadEmployees();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save employee");
@@ -175,12 +264,13 @@ export function EmployeeManager() {
 
   useEffect(() => {
     void loadEmployees();
+    void loadMasters();
   }, []);
 
   return (
     <>
       <div className="flex items-center gap-3 mb-4">
-        <button className="button" onClick={() => setShowForm((value) => !value)} type="button">
+        <button className="button" onClick={() => (showForm ? setShowForm(false) : openAddForm())} type="button">
           Add Employee
         </button>
         <button className="button button-secondary" onClick={loadEmployees} type="button">
@@ -229,7 +319,8 @@ export function EmployeeManager() {
             <form className="form-grid" onSubmit={handleSave} style={{ padding: "24px", overflowY: "auto" }}>
           <div className="field">
             <label>Employee Code</label>
-            <input required value={form.employeeCode} onChange={(e) => setForm({ ...form, employeeCode: e.target.value })} placeholder="e.g. EMP-MR-0001" />
+            <input required readOnly value={form.employeeCode} style={{ background: "var(--surface-subtle, #f3f4f6)", fontWeight: 600 }} title="Generated automatically" />
+            <span style={{ fontSize: 11, color: "var(--muted)", fontWeight: 400 }}>Generated automatically (next number)</span>
           </div>
           <div className="field">
             <label>Employee Name</label>
@@ -237,11 +328,7 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Gender</label>
-            <select className="input" value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value })}>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
+            <CustomSelect value={form.gender} options={["Male", "Female", "Other"]} onChange={(v) => setForm({ ...form, gender: v })} />
           </div>
           <div className="field">
             <label>Date of Birth</label>
@@ -253,83 +340,55 @@ export function EmployeeManager() {
           </div>
           <div className="field">
             <label>Mobile Number</label>
-            <input required value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="9876543210" />
+            <input required inputMode="numeric" maxLength={10} pattern="[0-9]{10}" title="10 digit mobile number" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })} placeholder="9876543210" />
+          </div>
+          <div className="field">
+            <label>Secondary Mobile Number</label>
+            <input inputMode="numeric" maxLength={10} pattern="[0-9]{10}" title="10 digit mobile number" value={form.secondaryPhone} onChange={(e) => setForm({ ...form, secondaryPhone: e.target.value.replace(/\D/g, "") })} placeholder="Optional" />
           </div>
           <div className="field">
             <label>Email ID</label>
             <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="rahul@example.com" />
           </div>
           <div className="field">
-            <label>Department</label>
-            <select className="input" value={form.department} onChange={(e) => setForm({ ...form, department: e.target.value })}>
-              <option value="Sales">Sales</option>
-              <option value="Marketing">Marketing</option>
-              <option value="Medical Affairs">Medical Affairs</option>
-              <option value="Production">Production</option>
-              <option value="Quality Assurance (QA)">Quality Assurance (QA)</option>
-              <option value="Quality Control (QC)">Quality Control (QC)</option>
-              <option value="Research & Development (R&D)">Research & Development (R&D)</option>
-            </select>
-          </div>
-          <div className="field">
             <label>Designation</label>
-            <select className="input" value={form.designation} onChange={(e) => setForm({ ...form, designation: e.target.value })}>
-              <option value="Medical Representative">Medical Representative (MR)</option>
-              <option value="Area Sales Manager">Area Sales Manager (ASM)</option>
-              <option value="Regional Sales Manager">Regional Sales Manager (RSM)</option>
-              <option value="Zonal Sales Manager">Zonal Sales Manager (ZSM)</option>
-              <option value="Product Manager">Product Manager</option>
-              <option value="Finance Executive">Finance Executive</option>
-              <option value="HR Executive">HR Executive</option>
-            </select>
+            <CustomSelect value={labelOf(DESIGNATIONS, form.designation)} options={DESIGNATIONS.map((d) => d.label)} onChange={(v) => setForm({ ...form, designation: valueOf(DESIGNATIONS, v) })} />
           </div>
           <div className="field">
             <label>Division</label>
-            <select className="input" value={form.division} onChange={(e) => setForm({ ...form, division: e.target.value })}>
-              <option value="Astra">Astra</option>
-              <option value="Aura">Aura</option>
-              <option value="Zivira">Zivira</option>
-            </select>
-          </div>
-          <div className="field">
-            <label>Reporting Manager</label>
-            <input value={form.reportingManager} onChange={(e) => setForm({ ...form, reportingManager: e.target.value })} placeholder="Manager Name" />
+            <CustomSelect value={form.division} options={divisionNames} onChange={(v) => setForm({ ...form, division: v, hq: "" })} />
           </div>
           <div className="field">
             <label>Region</label>
-            <select className="input" required value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value })}>
-              <option value="Tamil Nadu">Tamil Nadu</option>
-              <option value="Kerala">Kerala</option>
-              <option value="Karnataka">Karnataka</option>
-              <option value="Andhra Pradesh">Andhra Pradesh</option>
-              <option value="Telangana">Telangana</option>
-              <option value="Maharashtra">Maharashtra</option>
-              <option value="Gujarat">Gujarat</option>
-              <option value="Delhi">Delhi</option>
-            </select>
+            <CustomSelect value={form.region} options={regionOptions} onChange={(v) => setForm({ ...form, region: v, reportingManager: "", hq: "" })} />
+          </div>
+          <div className="field">
+            <label>Reporting Manager</label>
+            <CustomSelect
+              value={(() => { const m = managerList.find((e) => e.employeeCode === form.reportingManager); return m ? managerLabel(m) : ""; })()}
+              options={["No reporting manager", ...managerList.map(managerLabel)]}
+              placeholder={managerList.length ? "Select manager" : "No managers found"}
+              onChange={(v) => setForm({ ...form, reportingManager: managerList.find((e) => managerLabel(e) === v)?.employeeCode ?? "" })}
+            />
+            {!regionManagers.length && allManagers.length ? (
+              <span style={{ fontSize: 11, color: "#b45309", fontWeight: 400 }}>No manager found in {form.region} - showing all managers</span>
+            ) : null}
           </div>
           <div className="field">
             <label>HQ</label>
-            <input required value={form.hq} onChange={(e) => setForm({ ...form, hq: e.target.value })} placeholder="e.g. Chennai Central HQ" />
+            <CustomSelect value={form.hq} options={hqOptions} placeholder={hqOptions.length ? "Select HQ" : "No HQ in Territory / HQ Master"} onChange={(v) => setForm({ ...form, hq: v })} />
           </div>
           <div className="field">
-            <label>Patch</label>
-            <input required value={form.patch} onChange={(e) => setForm({ ...form, patch: e.target.value })} placeholder="e.g. T. Nagar" />
+            <label>Department</label>
+            <CustomSelect value={form.department} options={DEPARTMENTS} onChange={(v) => setForm({ ...form, department: v })} />
           </div>
           <div className="field">
             <label>Driving License</label>
             <input value={form.drivingLicense} onChange={(e) => setForm({ ...form, drivingLicense: e.target.value })} placeholder="e.g. DL-MH-20-1234567" />
           </div>
           <div className="field">
-            <label>Saneforce Code</label>
-            <input value={form.sfCode} onChange={(e) => setForm({ ...form, sfCode: e.target.value })} placeholder="e.g. 1886532" />
-          </div>
-          <div className="field">
             <label>Employee Status</label>
-            <select className="input" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as any })}>
-              <option value="ACTIVE">Active</option>
-              <option value="INACTIVE">Inactive</option>
-            </select>
+            <CustomSelect value={labelOf(EMPLOYMENT_STATUS, form.employmentStatus)} options={EMPLOYMENT_STATUS.map((o) => o.label)} onChange={(v) => setForm({ ...form, employmentStatus: valueOf(EMPLOYMENT_STATUS, v) })} />
           </div>
           <div style={{ gridColumn: "span 2", display: "flex", gap: "10px", justifyContent: "flex-end", marginTop: "12px" }}>
               <button className="button button-secondary" type="button" onClick={() => setShowForm(false)}>Cancel</button>
@@ -351,17 +410,17 @@ export function EmployeeManager() {
                 { key: "dob", label: "DOB" },
                 { key: "joinDate", label: "DOJ" },
                 { key: "phone", label: "Mobile" },
+                { key: "secondaryPhone", label: "Secondary Mobile" },
                 { key: "email", label: "Email" },
-                { key: "department", label: "Department" },
                 { key: "designation", label: "Designation" },
                 { key: "division", label: "Division" },
                 { key: "reportingManager", label: "Reporting Manager" },
                 { key: "region", label: "Region" },
                 { key: "hq", label: "HQ" },
-                { key: "patch", label: "Patch" },
+                { key: "department", label: "Department" },
                 { key: "drivingLicense", label: "Driving License" }
               ].map(f => {
-                const isFiltered = ["Gender", "Department", "Designation", "Division", "Region", "HQ", "Patch"].includes(f.label);
+                const isFiltered = ["Gender", "Department", "Designation", "Division", "Region", "HQ"].includes(f.label);
                 let options: {label: string, value: string}[] = [];
                 if (isFiltered) {
                   const uniqueValues = Array.from(new Set(employees.map(r => String((r as any)[f.key] || "")))).filter(Boolean).sort();
@@ -386,6 +445,7 @@ export function EmployeeManager() {
                 );
               })}
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Status</th>
+              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Login</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Left Date</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
             </tr>
@@ -395,19 +455,20 @@ export function EmployeeManager() {
               <tr className="hover:bg-surface-subtle/50 transition-colors group" key={employee.id || i}>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" style={{ fontWeight: 600 }}>{employee.employeeCode}{employee.codePending && <span title="Auto-created from a manager name in the Salesforce upload; the real code is not known yet" style={{ marginLeft: 8, padding: "1px 8px", borderRadius: 10, fontSize: 11, fontWeight: 700, background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d" }}>Code pending</span>}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap"><strong>{employee.name}</strong></td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.gender}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.dob)}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{formatDate(employee.joinDate)}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.gender || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.dob ? formatDate(employee.dob) : "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.joinDate ? formatDate(employee.joinDate) : "—"}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.phone || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.secondaryPhone || "—"}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.email || "—"}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.department}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.designation}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.division}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.reportingManager || "—"}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.region}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{(() => { const m = employees.find((x) => x.employeeCode === employee.reportingManager); return m ? `${m.name} (${m.employeeCode})` : employee.reportingManager || "—"; })()}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.region || "—"}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.hq || "—"}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.patch || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.department || "—"}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{(employee as any).drivingLicense || "—"}</td>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.employmentStatus ? labelOf(EMPLOYMENT_STATUS, employee.employmentStatus) : "—"}</td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
                   <span style={{ 
                     padding: "2px 8px", 
@@ -433,7 +494,7 @@ export function EmployeeManager() {
             ))}
             {employees.length === 0 && (
               <tr className="hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={18} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={20} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No field force found
                 </td>
               </tr>

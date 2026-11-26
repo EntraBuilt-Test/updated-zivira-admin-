@@ -242,3 +242,50 @@ select { transition: none !important; }
   color: #ffffff !important;
   font-weight: 600 !important;
 }
+
+/* Every dropdown opens as a white rounded list with an orange selected row
+   (same look as the column-filter / CustomSelect menus). Uses the browser's
+   customizable <select> (Chrome / Edge 135+); older browsers keep the normal
+   list, so nothing breaks there. Multi-selects and list boxes are left alone. */
+@supports (appearance: base-select) {
+  select:not([multiple]):not([size]),
+  select:not([multiple]):not([size])::picker(select) {
+    appearance: base-select;
+  }
+  select:not([multiple]):not([size]) {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  select:not([multiple]):not([size])::picker-icon { display: none; }
+  select:not([multiple]):not([size])::picker(select) {
+    background: var(--panel, #ffffff);
+    border: 1px solid var(--border, #e5e7eb);
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    padding: 4px 0;
+    margin-top: 4px;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  select:not([multiple]):not([size]) option {
+    padding: 8px 14px;
+    font-size: 14px;
+    color: var(--text-primary, #111827);
+    background: transparent;
+    cursor: pointer;
+    min-height: 0;
+  }
+  select:not([multiple]):not([size]) option:hover,
+  select:not([multiple]):not([size]) option:focus-visible {
+    background: rgba(249, 115, 22, 0.1);
+    outline: none;
+  }
+  select:not([multiple]):not([size]) option:checked {
+    background: var(--brand, #ea580c);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  select:not([multiple]):not([size]) option::checkmark { display: none; }
+  select:not([multiple]):not([size]) option:disabled { color: var(--muted, #9ca3af); cursor: default; }
+}
