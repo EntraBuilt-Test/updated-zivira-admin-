@@ -1,6 +1,6 @@
 "use client";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronDown, Check } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 // Round 39 item 8 -- instant-open select. Changes vs. the previous version:
 //  * the outside-click listener is attached only while the menu is open
@@ -48,19 +48,18 @@ function CustomSelectImpl({
                 type="button"
                 className={isSelected ? "cs-option cs-option-selected" : "cs-option"}
                 style={{
-                  padding: "8px 14px",
+                  padding: "8px 16px",
                   textAlign: "left",
-                  fontSize: "14px",
+                  fontSize: "13px",
                   cursor: "pointer",
                   border: "none",
-                  background: isSelected ? "var(--brand, #ea580c)" : "transparent",
-                  color: isSelected ? "#ffffff" : "var(--text-primary)",
+                  borderLeft: isSelected ? "3px solid #f97316" : "3px solid transparent",
+                  background: isSelected ? "rgba(249, 115, 22, 0.1)" : "transparent",
+                  color: isSelected ? "#f97316" : "var(--ink)",
                   fontWeight: isSelected ? 600 : 400,
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
                   width: "100%",
-                  gap: "10px",
                 }}
                 onClick={() => {
                   onChange(opt);
@@ -68,9 +67,6 @@ function CustomSelectImpl({
                 }}
               >
                 <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{opt}</span>
-                {isSelected && (
-                  <Check size={15} style={{ strokeWidth: 2.5, flexShrink: 0, color: "#ffffff" }} />
-                )}
               </button>
             );
           })
@@ -96,14 +92,14 @@ function CustomSelectImpl({
             minWidth: "100%",
             width: "max-content",
             maxWidth: "min(90vw, 420px)",
-            maxHeight: "240px",
+            maxHeight: "320px",
             overflowY: "auto",
             background: "var(--panel)",
             border: "1px solid var(--border)",
-            borderRadius: "8px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
+            borderRadius: "6px",
+            boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
             zIndex: 60,
-            padding: "4px 0",
+            padding: "6px 0",
             display: "flex",
             flexDirection: "column"
           }}
