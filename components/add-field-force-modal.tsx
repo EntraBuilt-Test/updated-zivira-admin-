@@ -5,6 +5,23 @@ import { X, User, Briefcase, MapPin, Building2, Shield, Calendar, Phone, Mail, F
 import { apiClient } from "@/lib/api-client";
 import { ModernDatePicker } from "@/components/modern-date-picker";
 
+const HR_ONLY = true;
+
+export function HrOnlyNotice({ onClose }: { onClose: () => void }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+      <div style={{ background: "var(--panel)", borderRadius: 10, padding: 24, maxWidth: 420, width: "100%", boxShadow: "0 20px 25px -5px rgba(0,0,0,0.15)" }}>
+        <h3 style={{ margin: 0, fontSize: "1.05rem", fontWeight: 700, color: "var(--ink)" }}>Employees are added in the HR app</h3>
+        <p style={{ margin: "10px 0 0", fontSize: 14, color: "var(--muted)", lineHeight: 1.5 }}>
+          Adding, editing, resigning and resetting logins for employees is now done by HR in the HR portal
+          (menu: <strong>Field Force Employees</strong>). Admin can view the employee list and all reports.
+        </p>
+        <button type="button" className="button" style={{ marginTop: 18, width: "100%" }} onClick={onClose}>OK</button>
+      </div>
+    </div>
+  );
+}
+
 interface AddFieldForceModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -36,6 +53,8 @@ export function AddFieldForceModal({ isOpen, onClose, onSuccess }: AddFieldForce
   });
 
   if (!isOpen) return null;
+  // Adding employees moved to the HR app (Field Force Employees tab). Admin is view-only.
+  if (HR_ONLY) return <HrOnlyNotice onClose={onClose} />;
 
   async function handleSave(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

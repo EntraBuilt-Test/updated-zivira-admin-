@@ -270,13 +270,13 @@ export function EmployeeManager() {
   return (
     <>
       <div className="flex items-center gap-3 mb-4">
-        <button className="button" onClick={() => (showForm ? setShowForm(false) : openAddForm())} type="button">
-          Add Employee
-        </button>
         <button className="button button-secondary" onClick={loadEmployees} type="button">
           <RefreshCw size={17} />
           {loading ? "Refreshing" : "Refresh"}
         </button>
+      </div>
+      <div style={{ margin: "0 0 12px", padding: "10px 14px", borderRadius: 8, background: "#fff7ed", border: "1px solid #fdba74", color: "#9a3412", fontSize: 13 }}>
+        <strong>View only.</strong> Adding, editing, resigning and resetting logins for employees is now done by HR in the HR portal (menu: Field Force Employees).
       </div>
       {notice && (
         <div style={{ margin: "8px 0", padding: "8px 12px", borderRadius: 8, background: "#ecfdf5", border: "1px solid #6ee7b7", color: "#065f46", fontSize: 13, display: "flex", justifyContent: "space-between", gap: 12 }}>
@@ -447,7 +447,6 @@ export function EmployeeManager() {
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Employee Status</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Login</th>
               <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Left Date</th>
-              <th className="px-4 py-3 text-xs font-semibold text-text-secondary uppercase tracking-wider whitespace-nowrap border-b border-border-subtle bg-surface-subtle">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border-subtle">
@@ -483,18 +482,11 @@ export function EmployeeManager() {
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">{employee.leftDate ? formatDate(employee.leftDate) : "—"}</td>
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
-                  {employee.codePending ? (
-                    <button type="button" className="px-3 py-1 rounded bg-primary text-on-primary text-xs font-semibold" onClick={() => openComplete(employee)}>Complete details</button>
-                  ) : employee.status === "ACTIVE" ? (
-                    <button type="button" className="px-3 py-1 rounded border border-border-subtle text-xs font-semibold hover:bg-surface-subtle" onClick={() => { setResignFor(employee); setResignDate(""); setError(""); }}>Mark Resigned</button>
-                  ) : "—"}
-                </td>
               </tr>
             ))}
             {employees.length === 0 && (
               <tr className="hover:bg-surface-subtle/50 transition-colors group">
-                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={20} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
+                <td className="px-4 py-3 text-sm text-text-primary whitespace-nowrap" colSpan={19} style={{ textAlign: "center", color: "var(--muted)", padding: "32px" }}>
                   No field force found
                 </td>
               </tr>
